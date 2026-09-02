@@ -10,7 +10,7 @@
 
 | 项 | 决定 |
 |----|------|
-| 名称 | `competitive-analysis`（竞品分析） |
+| 名称 | `Competitive-Analysis`（竞品分析） |
 | 入口 | 用户给出明确目标（如「做 AI 学习助手，给我做竞品分析」） |
 | 输出 | 数据驱动的分析报告 |
 | 结论风格 | 客观呈现事实，不下可行性结论（判断交给用户） |
@@ -129,7 +129,7 @@
 ### 1. 目录架构
 
 ```
-competitive-analysis/
+Competitive-Analysis/
 ├── SKILL.md                  # 主文件（必需）：元数据 + 核心流程 + 赛道自适应策略 + Pass Gate 门禁
 ├── references/               # 深度参考指南（按需动态加载）
 │   ├── frameworks.md         # 五层分析框架（SWOT、波特五力、矩阵规范）
@@ -156,7 +156,7 @@ competitive-analysis/
 1. **输入阶段（Input Spec）**：解析用户 Prompt，提取 Case ID、赛道特征与预期关键对标项；
 2. **草稿阶段（Drafting）**：全球双语检索，推演五层分析，严格遵守数据红线与双矩阵要求生成 11 模块候选报告；
 3. **测试验收阶段（Evaluation Gate）**：**强制按 `assets/eval-template.md` 执行三段式审查与 P0/P1/P2 门禁裁决**。必须达到 `Pass`（P0=0 且 P1(Open)=0）方可放行；
-4. **最终交付阶段（Final Delivery）**：通过验收后，在 `competitive-analysis/.output/<主题>竞品分析/` 下完成双文档落盘交付（`<主题>竞品分析报告.md` + `验收结果详细说明.md`）。
+4. **最终交付阶段（Final Delivery）**：通过验收后，在 `Competitive-Analysis/.output/<主题>竞品分析/` 下完成双文档落盘交付（`<主题>竞品分析报告.md` + `验收结果详细说明.md`）。
 
 ## 九、标准 Skill 应具备的模块（大纲 / 检查清单）
 
@@ -164,7 +164,7 @@ competitive-analysis/
 
 | 字段 | 是否必需 | 说明 |
 |------|---------|------|
-| `name` | 必需 | `competitive-analysis` |
+| `name` | 必需 | `Competitive-Analysis` |
 | `description` | 必需 | 触发条件：用户给出产品想法并要做竞品分析时 |
 | `compatibility` | 可选 | 所需工具 / 依赖 |
 
@@ -233,7 +233,7 @@ competitive-analysis/
   - **P1（核心 / 体验）**：海外赛道缺少 Reddit/Trustpilot 真实差评；赛道自适应策略未深度生效；功能矩阵缺少差异化分析。
   - **P2（一般 / 润色）**：专业术语缺少中英文注释；长段落可浓缩为结构化清单；数据时效性更新。
 - **状态枚举（Status）**：
-  - `[Fixed]`：已在当前优化版本中完成补充与修复闭环；
+  - `[Fixed]`：已在本轮优化中完成补充与修复闭环；
   - `[Open]`：已知改进项，纳入后续产品功能或模型迭代池；
   - `[Disclosed]`：客观未公开商业机密数据，通过披露声明兜底合规，无需修改模型。
 
@@ -260,7 +260,7 @@ competitive-analysis/
 - **输入 Prompt**：`我要做一个AI学习助手的应用 竞品有sitor 杭州思特云公司的 以这个为例 来给我生成一份竞品分析报告`
 - **赛道特征**：海外/本土 B2C 教育工具
 - **预期对标项**：Sitor、可汗学院 Khanmigo、多邻国 Duolingo、字节 Gauth；苏格拉底启发式教学架构
-- **报告路径**：`competitive-analysis/result/AI学习助手竞品分析.md`
+- **报告路径**：`Competitive-Analysis/result/AI学习助手竞品分析.md`
 - **测试裁决**：`✅ PASS`（P0=0, P1(Open)=0）
 - **1. 结果是什么**：完整覆盖国内外 5 大竞品（Sitor/作业帮/Duolingo/Khanmigo/Quizlet），构建 11 模块与双矩阵，提炼出「分步脚手架启发式教学 + 动态认知热力图 + 游戏化留存」的核心破局点。
 - **2. 结果缺什么**：Sitor 作为垂直初创公司，其真实月活（MAU）与续费率无公开数据（已严格标注红线）；AI 推理 Token 成本在客单价中的精确占比缺乏各家公开财报支持。
@@ -274,7 +274,7 @@ competitive-analysis/
 - **输入 Prompt**：`我要做一个企业内部的通用在线文档工具 有飞书表格 飞书文档 腾讯文档 等等 我的需求就是专为企业内部使用 可以让企业部署在自己的服务器上 数据完全自己掌控 依据这个 你给我做一个竞品分析`
 - **赛道特征**：大厂垄断红海 / B2B 基础设施
 - **预期对标项**：飞书文档、腾讯文档、Outline、AFFiNE、OnlyOffice；信创国密合规与 CRDT/OT 选型
-- **报告路径**：`competitive-analysis/result/企业内部文档工具竞品分析.md`
+- **报告路径**：`Competitive-Analysis/result/企业内部文档工具竞品分析.md`
 - **测试裁决**：`✅ PASS`（P0=0, P1(Open)=0）
 - **1. 结果是什么**：对标飞书文档私有化、腾讯文档企业版、Outline、AFFiNE、OnlyOffice，穿透信创国密合规、OT/CRDT 算法选型与物理单租户架构。
 - **2. 结果缺什么**：飞书/腾讯官方针对中大型企业私有化部署的具体定制报价单（属于商务保密范畴，仅能获取行业区间）。
@@ -288,7 +288,7 @@ competitive-analysis/
 - **输入 Prompt**：`用生成的skill 我们来做一个电商应用的竞品分析 主要是做二手高奢订制品的一个电商平台`
 - **赛道特征**：法律/监管敏感与灰区赛道
 - **预期对标项**：Chrono24、1stDibs、包拯、闲鱼/小红书改制博主、得物；商标权利用尽司法判例与来料加工
-- **报告路径**：`competitive-analysis/result/二手高奢订制品电商竞品分析.md`
+- **报告路径**：`Competitive-Analysis/result/二手高奢订制品电商竞品分析.md`
 - **测试裁决**：`✅ PASS`（P0=0, P1(Open)=0）
 - **1. 结果是什么**：对标 Chrono24、1stDibs、包拯、小红书/闲鱼散户与得物；严格界定最高法“商标权利用尽”司法判例，确立「C2B2C 纯委托加工（来料加工）」合规防火墙与全工序防偷换节点存证。
 - **2. 结果缺什么**：国内改包作坊年 GMV 与海外独立改装厂牌（Artisans de Genève）真实出货量无公开数据。
@@ -302,7 +302,7 @@ competitive-analysis/
 - **输入 Prompt**：`再来给我写一个 个人待办以及时间管理的竞品分析 例如番茄时钟等`
 - **赛道特征**：高度同质化红海 / C 端生产力工具
 - **预期对标项**：滴答清单、Todoist、Forest 专注森林、Structured、Motion；时间块排程与游戏化
-- **报告路径**：`competitive-analysis/result/个人待办与时间管理竞品分析.md`
+- **报告路径**：`Competitive-Analysis/result/个人待办与时间管理竞品分析.md`
 - **测试裁决**：`✅ PASS`（P0=0, P1(Open)=0）
 - **1. 结果是什么**：对标滴答清单、Todoist、Forest、Structured、Motion 五大流派，抓取 12.5 亿~15.7 亿美元大盘数据，提炼出「自然语言输入 + AI 动态插空排程 + 灵动岛番茄微游戏」的破局闭环。
 - **2. 结果缺什么**：Forest 与滴答清单各功能层级的具体付费转化率（未公开）。
@@ -316,7 +316,7 @@ competitive-analysis/
 - **输入 Prompt**：`我们来做一个 AI记账的工具 这个工具 主要针对的是街边的小商户 进货/库存/出库等日常记录`
 - **赛道特征**：大厂垄断 / 极度下沉红海
 - **预期对标项**：智慧记（金蝶）、秦丝科技、管家婆、收钱吧；纯语音/拍照交互与赊账催收
-- **报告路径**：`competitive-analysis/result/小商户AI进销存记账工具竞品分析.md`
+- **报告路径**：`Competitive-Analysis/result/小商户AI进销存记账工具竞品分析.md`
 - **测试裁决**：`✅ PASS`（P0=0, P1(Open)=0）
 - **1. 结果是什么**：对标智慧记、秦丝、管家婆、收钱吧；基于 1.25 亿个体户基本盘与 95% 未数字化现状，提出「纯语音/拍照交互 + 独立赊账微信催款 + 99~199 元极轻年费」卡位方案。
 - **2. 结果缺什么**：智慧记云版与秦丝在小微档口店主的年流失率（Churn Rate）无公开数据。
@@ -330,7 +330,7 @@ competitive-analysis/
 - **输入 Prompt**：`你自己想一个应用来做一个竞品分析测试（定位：宠物殡葬与善终 O2O 平台）`
 - **赛道特征**：法律敏感与监管灰区 / 数据极度稀缺
 - **预期对标项**：天宠、宠慕、恩宠堂、美团/大众点评、无证黑作坊；动物无害化资质与视频防掉包
-- **报告路径**：`competitive-analysis/result/宠物殡葬服务平台竞品分析.md`
+- **报告路径**：`Competitive-Analysis/result/宠物殡葬服务平台竞品分析.md`
 - **测试裁决**：`✅ PASS`（P0=0, P1(Open)=0）
 - **1. 结果是什么**：对标天宠、宠慕、恩宠堂、美团/点评与灰色作坊；并列保留 18.25 亿 vs 43.5 亿 vs 50 亿三方大盘口径；提出「IoT 火化全程直播存证 + 资质硬核验」打穿信任黑箱。
 - **2. 结果缺什么**：头部私营工坊真实火化炉能耗成本与单次真实利润率（线下口口相传，非公开）。
@@ -344,7 +344,7 @@ competitive-analysis/
 - **输入 Prompt**：`我们来做一个AI旅游攻略助手的应用 用户说出具体的地方 时间 然后根据用户的偏好来生成旅游攻略 同时还有当地的美食攻略 避坑指南 等等`
 - **赛道特征**：内容平台蚕食型赛道
 - **预期对标项**：携程 AI 问答、小红书、马蜂窝、TripIt、Mindtrip；结构化动态路书 vs 碎片化 UGC
-- **报告路径**：`competitive-analysis/result/AI旅游攻略助手竞品分析.md`
+- **报告路径**：`Competitive-Analysis/result/AI旅游攻略助手竞品分析.md`
 - **测试裁决**：`✅ PASS`（P0=0, P1(Open)=0）
 - **1. 结果是什么**：对标携程 AI 问答、小红书、马蜂窝、TripIt、Mindtrip；精准指出小红书 UGC 碎片化、携程强行导流带货的槽点，提出「对话式动态路书 + 避坑红线地图 + 一键按天排期」的独立工具价值。
 - **2. 结果缺什么**：Mindtrip 等海外新兴 AI 旅游产品的真实客群复购率与转化佣金比率。
@@ -358,7 +358,7 @@ competitive-analysis/
 - **输入 Prompt**：`我想做一个做饭的应用 教人们怎么做饭`
 - **赛道特征**：内容平台蚕食型 / 生活工具
 - **预期对标项**：下厨房、抖音/B站短视频、SideChef、Kitchen Stories；清冰箱搭配与做菜免触手势
-- **报告路径**：`competitive-analysis/result/AI做饭教学应用竞品分析.md`
+- **报告路径**：`Competitive-Analysis/result/AI做饭教学应用竞品分析.md`
 - **测试裁决**：`✅ PASS`（P0=0, P1(Open)=0）
 - **1. 结果是什么**：对标下厨房、抖音/B站菜谱、SideChef、Kitchen Stories；提出「动态食材库存清冰箱搭配 + 语音手势免触碰分步做菜看板 + “少许/适量”量化转换」方案。
 - **2. 结果缺什么**：下厨房近年会员付费流失率与广告营收下滑的具体财务数据。
@@ -372,7 +372,7 @@ competitive-analysis/
 - **输入 Prompt**：`面向欧美中产的 AI 智能健身应用 做一个竞品分析`
 - **赛道特征**：海外出海 / 全球高净值赛道
 - **预期对标项**：Freeletics、Whoop、Fitbod、Apple Fitness+、Peloton；Grand View Research 研报、Reddit 差评与 Apple Watch 生态
-- **报告路径**：`competitive-analysis/result/欧美中产AI智能健身应用竞品分析.md`
+- **报告路径**：`Competitive-Analysis/result/欧美中产AI智能健身应用竞品分析.md`
 - **测试裁决**：`✅ PASS`（P0=0, P1(Open)=0）
 - **1. 结果是什么**：调用 Grand View Research（全球健身 App 2030 年 340.5 亿美元，CAGR 14.8%）研报；对标 Freeletics、Whoop、Fitbod、Apple Fitness+、Peloton；深挖 Reddit r/fitness 槽点（千篇一律波比跳、无器械动作替换、伤病不自适应）；提出「可穿戴生理负荷 + AI 动态自适应训练调整」方案。
 - **2. 结果缺什么**：Fitbod 在欧美不同年龄段用户的平均生命周期价值（LTV）与获客成本（CAC）公开数据不足。
@@ -389,6 +389,6 @@ competitive-analysis/
 当前 Skill 已完成工业级升级并在 9 个跨行业场景中完成严苛验证：
 
 1. **统一交付物料包规范**：
-   - 无论是生产交付还是用例测试，统一在 `competitive-analysis/.output/<主题>竞品分析/` 下生成专属主题目录；
+   - 无论是生产交付还是用例测试，统一在 `Competitive-Analysis/.output/<主题>竞品分析/` 下生成专属主题目录；
    - 目录下标准化包含两个文件：`<主题>竞品分析报告.md`（11 模块主文档）与 `验收结果详细说明.md`（Pass Gate 验收评测）。
 2. **测试评估常态化**：后续新增任何功能或行业用例，均必须先以《三段式测试评估模型》进行自检与评审。
