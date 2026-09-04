@@ -95,7 +95,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ### 步骤 1：输入解析 + 浏览器工具检测
 - **优先读项目 `.spec/` 已有产出**：
-  - PRD：`.spec/PRD/VN/`；
+  - PRD：`.spec/PRD/VN/`（先读 `PRD速查表.md` 建索引，按锚点回原文）；
   - 原型：`.spec/原型/`；
   - 后端 TDD：`.spec/TDD/VN/`；
   - 前端 FTDD：`.spec/FTDD/VN/`；

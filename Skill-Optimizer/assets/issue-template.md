@@ -1,6 +1,6 @@
 # <一句话标题：说清问题>
 
-> 归属 skill：`<Skill-Name>` ｜ 日期：YYYY-MM-DD ｜ 来源：埋点 / 挖掘 / 用户
+> 归属 skill：`<Skill-Name>` ｜ 日期：YYYY-MM-DD ｜ 来源：埋点 / 挖掘 / 体检 / 用户
 
 ## 基本信息
 

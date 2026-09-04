@@ -60,7 +60,7 @@ PRD-Design（写需求）──► Prototype-Design（出原型）──► Back
         └──────────── PRD-Review（审需求）◄──────────────────┘
 ```
 
-- `PRD-Design` 产出 PRD（含页面视图清单），是 `Backend-Tech-Design` 的需求输入；
+- `PRD-Design` 产出 PRD（含 PRD 速查表），是 `Backend-Tech-Design` 的需求输入；
 - `Prototype-Design` 产出原型图，帮助理解交互与页面结构；
 - `Backend-Tech-Design` 是 PRD 域界铁律中「技术方案文档（TDD）」的承接方——PRD 不写数据库/接口/选型，这里才写。
 

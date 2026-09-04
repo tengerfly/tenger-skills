@@ -69,7 +69,7 @@ PRD-Design（写需求）──► Prototype-Design（出原型）──► Back
         └──────────── PRD-Review（审需求）
 ```
 
-- `PRD-Design` 产出 PRD（含页面视图清单），是前端方案的需求输入；
+- `PRD-Design` 产出 PRD（含 PRD 速查表），是前端方案的需求输入；
 - `Prototype-Design` 产出原型图，前端页面清单、组件拆分必须与原型一一对应；
 - `Backend-Tech-Design` 产出后端技术方案（含接口清单），前端 fetch 封装与接口对接的唯一依据；
 - `Frontend-Tech-Design` 是 PRD 域界铁律中「前端怎么设计与实现」的承接方——PRD 不写控件/选型，这里才写。

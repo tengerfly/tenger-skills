@@ -25,6 +25,7 @@ issue/
 
 - **各 skill 埋点**（主通道）：执行收尾自查上报，规则见 `Skill-Optimizer/references/instrumentation-guide.md`
 - **Skill-Optimizer 兜底 / 挖掘**：用户喊「记个问题 / 复盘」、或从 `chats/` 挖掘确认后落盘
+- **Skill-Optimizer 体检**：模式④ 体检发现、经用户裁决「记 issue」的问题（来源填「体检」）
 
 ## 问题字段与状态机
 

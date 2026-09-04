@@ -29,7 +29,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - 后端代码：**项目目录**（Backend-Dev 产出，或实际工程目录）；
 - 前端代码：`Frontend-Dev` 步骤 1 用户确认的目标目录；
 - TDD：`.spec/TDD/VN/`；FTDD：`.spec/FTDD/VN/`；
-- PRD：`.spec/PRD/VN/`；原型：`.spec/原型/`；
+- PRD：`.spec/PRD/VN/`（先读 `PRD速查表.md` 建索引，按锚点回原文）；原型：`.spec/原型/`；
 - 缺失则回退到用户指定路径 / 粘贴内容。
 - **代码与文档不在同一仓库 / 目录时**：以 **TDD「接口清单」+ FTDD「fetch 对接表」为契约中介**做三方比对，不要求代码与文档物理同仓。
 

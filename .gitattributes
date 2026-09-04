@@ -1,0 +1,2 @@
+# 统一换行符为 LF，覆盖 Windows 的 core.autocrlf=true（检出时不再转回 CRLF）
+* text=auto eol=lf

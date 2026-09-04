@@ -127,7 +127,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 ### 步骤 1：输入解析 + 浏览器工具检测
 
 - **优先读项目 `.spec/` 已有产出**：
-  - PRD：`.spec/PRD/VN/`（overview + `页面视图.md` + 模块文档）；
+  - PRD：`.spec/PRD/VN/`（**先读 `PRD速查表.md` 建六大索引**；overview + 模块文档按需按锚点回读）；
   - 原型：`.spec/原型/`（HTML 原型 + README）；
   - 后端 TDD：`.spec/TDD/VN/`（overview + 模块文档，取接口清单）。
   - 缺失则回退到用户指定路径 / 粘贴内容。
@@ -222,7 +222,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 ### 6.1 页面清单（总文档 §4）
 
 - **页面 = 路由**：每个页面一个路由，命名语义化（`/login` `/users` `/users/:id`）；
-- 页面清单来自 PRD `页面视图.md` 与原型图，逐页标注：路由路径、页面职责、所属模块、对应原型文件；
+- 页面清单来自 PRD 速查表「页面/视图索引」与各模块 §3.1、原型布局清单，逐页标注：路由路径、页面职责、所属模块、对应原型文件；
 - 页面只做「编排」，不承载复杂逻辑——逻辑下沉到 hooks 与组件。
 
 ### 6.2 组件分层（总文档 §5）

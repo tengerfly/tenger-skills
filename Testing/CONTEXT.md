@@ -42,6 +42,7 @@
 | D-08 | 2026-09-02 | 测试产物归档到 `.spec/测试/`，含：`测试计划.md`（流程模板填充）、`测试用例.md`、`测试问题文档.md`、`screenshots/`、`接口性能清单.md` | 与其它 skill 的 `.spec` 归档习惯一致（统一放项目目录 `.spec/测试/`） | ✅ 已确认（沿用约定） |
 | D-09 | 2026-09-04 | 浏览器工具为**硬性前置**：开工预检 Playwright → browser-use，任一可用才开工；均不可用 → 报错提醒安装，不测试、不产出。midscenejs 保持可选增强（缺失降级并明示） | 用户裁决：硬依赖 skill 仅 Frontend-Tech-Design / Frontend-Dev / Testing 三个；测试无法脱离浏览器执行 | ✅ 已确认（用户 2026-09-04 指定） |
 | D-10 | 2026-09-04 | 检测范围**不穷举**：凡当前环境可用的、能驱动真实浏览器打开页面/交互/截图的工具均算（Playwright → browser-use → 其他如 CodeBuddy 的 agent-browser）；同日 Prototype-Review 亦升为硬依赖 | 用户指出 CodeBuddy 环境的浏览器工具为 agent-browser，按固定名单检测会漏判；原型评审同样依赖截图走查 | ✅ 已确认（用户 2026-09-04 指定） |
+| D-11 | 2026-09-05 | **UI 还原度检查接入 `Fidelity-Review`**：有 UI 设计稿基准（`.spec/设计稿/` 或用户指定外部稿）时，步骤 6 样式测试调用 `Fidelity-Review`（Testing 场景模式）做视觉还原 + 交互还原 + 超长文案专项，按其 `mini-issue` 模板就地收轻量清单并入测试问题文档；无设计稿基准则跳过并明示（回退原型基准 + midscenejs 视觉断言） | 用户裁决：页面还原度 skill 独立成 `Fidelity-Review`，Testing 测试流程内部会调用它；Fidelity-Review 只审不改、不建任务清单（由 Testing 统一裁决），避免双闭环 | ✅ 已确认（用户 2026-09-05 指定） |
 
 ## 四、待决问题清单（Open Questions）
 

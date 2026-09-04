@@ -1,7 +1,7 @@
 # Testing —— 项目测试 Skill
 
 > **状态**：✅ 定稿
-> **术语与决策基准**：[CONTEXT.md](CONTEXT.md)（术语表 + 决策日志 D-01~D-08）
+> **术语与决策基准**：[CONTEXT.md](CONTEXT.md)（术语表 + 决策日志 D-01~D-11）
 
 ---
 
@@ -15,7 +15,7 @@
 
 1. **三线并行测试**：
    - **功能测试**：每个业务对象的**所有状态**走一遍 + 页面**所有可点击元素**点一遍 + 五类异常分支；
-   - **样式测试**：用 **midscenejs** 做 AI 视觉断言，逐页验证布局/间距/配色/字号/三态，发现问题**立即截图**；
+   - **样式测试**：用 **midscenejs** 做 AI 视觉断言，逐页验证布局/间距/配色/字号/三态，发现问题**立即截图**；有 UI 设计稿基准时**内嵌 `Fidelity-Review`** 做 UI 还原度检查（视觉还原 + 交互还原 + 超长文案专项），就地收轻量清单并入问题文档；
    - **接口性能测试**：监听所有接口耗时，**慢接口逐条列出**（路径 + 耗时 + 触发场景）。
 2. **测试流程模板驱动**：先按 `assets/test-process-template.md` 生成测试计划，再按 `assets/test-case-template.md` 派生测试用例，最后按 `assets/bug-report-template.md` 汇总问题文档——**先计划后执行，不边测边想**。
 3. **浏览器工具分层**：开工硬性预检 **Playwright → browser-use → 其他（如 agent-browser）**（全无即报错等安装，不工作）；功能遍历 + 慢接口监听优先 **Playwright**；样式视觉断言用 **midscenejs**（可选增强，按测试线组合）。
@@ -48,10 +48,10 @@ PRD + 原型 + 项目代码
 ```
 Testing/
 ├── SKILL.md                        # 主指令：测试九条铁律 + 流水线 + 全状态/全点击/样式/性能规程
-├── CONTEXT.md                      # ★ 术语对齐源与决策日志（D-01~D-08）
+├── CONTEXT.md                      # ★ 术语对齐源与决策日志（D-01~D-11）
 ├── references/                     # 深度指南（按需加载）
 │   ├── test-case-guide.md          # 测试用例编写规范（全状态覆盖 + 全点击覆盖 + 异常分支）
-│   ├── style-test-guide.md         # 样式测试指南（midscenejs 视觉断言 + 三态 + 截图 + 模型配置）
+│   ├── style-test-guide.md         # 样式测试指南（midscenejs 视觉断言 + 三态 + 截图 + UI 还原度检查·Fidelity-Review 内嵌）
 │   ├── api-perf-guide.md           # 接口性能测试指南（慢接口识别 + 监听方式 + 阈值）
 │   └── browser-guide.md            # 浏览器工具选择与集成（Playwright / browser-use / midscenejs）
 ├── assets/                         # 输出模板

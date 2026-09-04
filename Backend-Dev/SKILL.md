@@ -102,7 +102,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - **优先读项目 `.spec/` 已有产出**：
   - 后端 TDD：`.spec/TDD/VN/`（overview + `NN_xxx.md`，取选型 / 表结构 / 接口 / 模块边界 / 测试用例）——**核心输入**；
   - 前端 FTDD：`.spec/FTDD/VN/`（overview + 模块文档，取 fetch 接口清单）——**契约对齐依据**；
-  - PRD：`.spec/PRD/VN/`、原型：`.spec/原型/`——业务上下文；
+  - PRD：`.spec/PRD/VN/`（先读 `PRD速查表.md` 建索引，按锚点回原文）、原型：`.spec/原型/`——业务上下文；
   - 缺失则回退到用户指定路径 / 粘贴内容。
 - **评审任务清单检测（闭环修复入口）**：检查 `.spec/代码评审/任务清单.md`，筛出 `已确认` 且 `修改方` 含 `Backend-Dev` 的任务——这些是本次必须修复的问题点/优化点，逐条纳入开发计划（`PLAN.md`）对应功能点，按优先级处理；
 - **锁定技术栈**：TDD 明确指定 → 跟随 TDD；TDD 缺失/未明确 → 按默认 **TypeScript + NestJS 微服务** 执行，具体选型（通信方式/ORM/包管理）用「澄清协议」确认（见第五节）。

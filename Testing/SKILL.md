@@ -6,7 +6,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 # 项目测试 Skill
 
-> **术语与决策基准**：所有概念以 [CONTEXT.md](CONTEXT.md) 术语表与决策日志（D-01~D-08）为准。
+> **术语与决策基准**：所有概念以 [CONTEXT.md](CONTEXT.md) 术语表与决策日志（D-01~D-11）为准。
 > **定位**：高级测试专家，依据 PRD + UI 设计稿，把「可运行项目」跑成一份「可信的测试问题清单」。
 > **第一原则**：**全状态 · 全点击 · 样式问题必截图 · 慢接口必列出 · 问题必分级可复现**。
 
@@ -68,7 +68,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 输入（PRD + 原型 + 项目代码位置）
         │
         ▼
-[1] 输入解析（读 PRD 页面视图/AC + 原型 + 项目 README/路由 + 接口清单）
+[1] 输入解析（读 PRD 速查表/模块页面描述/AC + 原型 + 项目 README/路由 + 接口清单）
         │
         ▼
 [2] 环境准备（本地 install + dev server + ◉ 浏览器工具硬性预检 Playwright→browser-use→其他如 agent-browser，全无→报错等安装；midscenejs 为可选增强）
@@ -99,8 +99,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ### 步骤 1：输入解析
 - **确认项目代码位置（用户未提供则必问）**：本地目录 + git 地址；目录名用用户给定名称；
-- **读需求**：优先 `.spec/PRD/VN/`（overview + 页面视图.md + 模块 §9 AC）；缺失回退用户指定；
-- **读设计稿**：优先 `.spec/原型/`（HTML + README）；缺失回退用户指定（截图/Figma 导出）；
+- **读需求**：优先 `.spec/PRD/VN/`（**先读 `PRD速查表.md` 建六大索引**；AC 清单直接用速查表 §六，断言细节按锚点回模块 §9）；缺失回退用户指定；
+- **读设计稿/视觉基准**：优先 `.spec/设计稿/`（UI-UX-Design 高保真稿 HTML + design-system，供 UI 还原度检查基准）→ 次之 `.spec/原型/`（HTML + README）；均缺失回退用户指定（截图/Figma 导出）；
 - **读代码**：`README.md`/`package.json`/路由配置 → 梳理页面清单、启动命令、接口清单（前端 `src/api` 或后端 TDD）；
 - **提取测试面**：页面清单 + 每页业务状态集合 + 可交互元素清单 + 接口清单。
 
@@ -124,7 +124,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
 按 §五「全状态覆盖」与 §六「全点击覆盖」执行，结果回填 `测试用例.md`。
 
 ### 步骤 6：样式测试
-按 §七 + `references/style-test-guide.md` 执行，样式问题截图存证。
+- 先按 §七 + `references/style-test-guide.md` 执行三态与基础视觉断言，样式问题截图存证；
+- **存在 UI 设计稿基准时（`.spec/设计稿/` 或用户指定外部设计稿）调用 `Fidelity-Review`（Testing 场景模式）做「UI 还原度检查」**：视觉还原 + 交互还原 + 超长文案专项逐页走查，就地接收其轻量问题清单（`mini-issue`），样式/交互/溢出类缺陷并入本测试问题文档；无设计稿基准则跳过并明示（维持原型基准 + midscenejs 视觉断言）。
 
 ### 步骤 7：接口性能测试
 按 §八 + `references/api-perf-guide.md` 执行，慢接口逐条记录。
@@ -153,14 +154,15 @@ compatibility: Claude Code / Agent SDK / OpenCode
 3. **点击副作用**：注意点击后的状态变化、弹窗、跳转、请求，异常当场记录；
 4. **覆盖自检**：元素清单逐项勾选，未点到的元素标注原因（如需要特定权限则登记为风险）。
 
-## 七、样式测试（midscenejs 视觉断言 + 截图）
+## 七、样式测试（视觉断言 + UI 还原度检查 + 截图）
 
 > 权威细则见 `references/style-test-guide.md`。核心：
 
 - **视觉断言**：用 midscenejs `aiAssert`/`aiQuery` 判断「当前页面是否符合设计稿/自然语言描述」（纯截图驱动、无需选择器）；
 - **三态必测**：每页加载态 / 空态 / 错误态逐一验证；
 - **截图存证**：发现样式问题 → `recordToReport` 或 `page.screenshot()` 立即截图，命名 `<页面>_<问题简述>_<序号>.png`；
-- **比对基准**：以原型为基准，重点核对布局 / 间距 / 配色 / 字号 / 圆角 / 三态；
+- **比对基准**：有 UI 设计稿基准时以设计稿为基准（还原走查交由 `Fidelity-Review` Testing 场景执行）；无设计稿则回退以原型为基准，重点核对布局 / 间距 / 配色 / 字号 / 圆角 / 三态；
+- **UI 还原度检查（有设计稿基准时）**：调用 `Fidelity-Review`（Testing 场景模式）做视觉还原 + 交互还原 + 超长文案专项，按其 `assets/mini-issue-template.md` 就地接收轻量问题清单，样式/交互/溢出类缺陷并入本测试问题文档；
 - **工具降级（仅 midscenejs 层）**：midscenejs 不可用 → Playwright `toHaveScreenshot` 截图比对；再不可用 → browser-use 截图 + 人工比对，并向用户说明降级原因。全部浏览器工具不可用不会发生（步骤 2 硬性预检已报错等安装）。
 
 ## 八、接口性能测试（慢接口识别）
@@ -217,8 +219,9 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - `references/style-test-guide.md`：样式测试指南（midscenejs 视觉断言 + 三态 + 截图 + 模型配置）
 - `references/api-perf-guide.md`：接口性能测试指南（慢接口识别 + 监听方式 + 阈值）
 - `references/browser-guide.md`：浏览器工具选择与集成（Playwright / browser-use / midscenejs 优先级与组合）
-- `CONTEXT.md`：术语表 + 决策日志（D-01~D-08）
+- `CONTEXT.md`：术语表 + 决策日志（D-01~D-11）
 - **产出位置**：`.spec/测试/`
+- **兄弟 skill**：`Fidelity-Review`（Testing 场景模式）——有 UI 设计稿基准时承接 UI 还原度检查（视觉还原 + 交互还原 + 超长文案专项），就地输出轻量问题清单供本 skill 汇总
 
 ## 十三、运行问题埋点（收尾自查）
 
