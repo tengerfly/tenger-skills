@@ -4,11 +4,11 @@
 
 ## 简介
 
-本仓库沉淀了 12 个专业「技能（Skill）」+ 1 个编排总控 Skill，覆盖从产品想法到上线测试的完整软件开发链路：
+本仓库沉淀了 12 个专业「技能（Skill）」+ 1 个编排总控 Skill + 1 个元优化 Skill，覆盖从产品想法到上线测试的完整软件开发链路，并支持对 Skill 本身的长期记录与优化：
 
 **竞品分析 → 需求（PRD）→ 需求评审 → 原型 → 原型评审 → 技术方案 → 技术方案评审 → 开发 → 代码评审 → 测试**
 
-每个 Skill 是一份结构化的指导文档，帮助 Claude 在对应场景下采用经过验证的方法与流程完成任务；各 Skill 之间通过「产出物」衔接，形成端到端的交付流水线。其中 [`Workflow`](./Workflow) 是**编排总控**，负责把另外 12 个专业 Skill 按流水线串起来自动调度（详见「全流程编排」章节）。
+每个 Skill 是一份结构化的指导文档，帮助 Claude 在对应场景下采用经过验证的方法与流程完成任务；各 Skill 之间通过「产出物」衔接，形成端到端的交付流水线。其中 [`Workflow`](./Workflow) 是**编排总控**，负责把另外 12 个专业 Skill 按流水线串起来自动调度（详见「全流程编排」章节）；[`Skill-Optimizer`](./Skill-Optimizer) 是**元优化器**（链外），负责把各 Skill 运行中暴露的问题记录、挖掘并优化沉淀（详见「Skill 元优化」章节）。
 
 ## 标准开发流程
 
@@ -127,6 +127,7 @@ flowchart TD
 | Skill | 目录 | 说明 | 状态 |
 |-------|------|------|------|
 | **全流程编排（总控）** | [**Workflow**](./Workflow) | 把 12 个专业 Skill 串成流水线：调度 + 状态（`.spec/PIPELINE.md`）+ 门禁 + 回退 | ✅ 完成 |
+| **Skill 元优化（链外）** | [**Skill-Optimizer**](./Skill-Optimizer) | 记录 / 挖掘 / 优化各 Skill：问题入 `issue/` 池（埋点 + 兜底 + 聊天记录挖掘），全方位优化沉淀（问题修复 + 性能体积 + 触发精准 + 术语一致），标准先行、长期迭代 | ✅ 完成 |
 | 竞品分析 | [Competitive-Analysis](./Competitive-Analysis) | 竞品调研、对比与分析 | ✅ 完成 |
 | 产品需求文档（PRD） | [PRD-Design](./PRD-Design) | PRD 编写 | ✅ 完成 |
 | 需求评审 | [PRD-Review](./PRD-Review) | PRD 评审 | ✅ 完成 |
@@ -146,6 +147,7 @@ flowchart TD
 tenger-skills/
 ├── README.md                  # 仓库说明（本文件）
 ├── Workflow/                  # 全流程编排 Skill（总控）
+├── Skill-Optimizer/           # Skill 元优化 Skill（链外，长期迭代）
 ├── Competitive-Analysis/      # 竞品分析 Skill
 ├── PRD-Design/                # 产品需求文档（PRD）Skill
 ├── PRD-Review/                # 需求评审 Skill
@@ -157,7 +159,9 @@ tenger-skills/
 ├── Backend-Dev/               # 后端开发 Skill
 ├── Frontend-Dev/              # 前端开发 Skill
 ├── Code-Review/               # 代码评审 Skill
-└── Testing/                   # 项目测试 Skill
+├── Testing/                   # 项目测试 Skill
+├── issue/                     # 问题池（Skill-Optimizer 唯一事实源）
+└── chats/                     # 待挖掘的聊天记录
 ```
 
 ## 什么是 Skill
@@ -176,12 +180,24 @@ skill-name/
 
 > 各 Skill 的完整模块大纲见其目录下的 `README.md`。
 
+## Skill 元优化
+
+[`Skill-Optimizer`](./Skill-Optimizer)（链外，任何时刻可触发）负责让 Skill 越用越贴合个人需求——**长期迭代，不参与任何业务交付**：
+
+| 模式 | 触发 | 干什么 |
+|---|---|---|
+| ① 记录（兜底） | 「记个问题」「这个 skill 哪里不好」 | 把问题写入 `issue/` 池 |
+| ② 挖掘 | 丢聊天记录进 `chats/`（或粘贴） | 从记录提取优化点，确认后落 issue |
+| ③ 优化 | 「优化 / 精简 / 迭代 XX skill」 | 读 issue 做全方位优化（问题修复 + 性能体积 + 触发精准 + 术语一致），沉淀回各 Skill |
+
+核心机制：**标准先行**（每模式有固定标准，流程不漂移，标准本身也可被优化）、**问题池 `issue/`**（埋点为主 + 兜底）、**状态机 `待处理 → 处理中 → 已沉淀 / 已忽略`**（已沉淀强制留痕）、**自我指涉**（先优化自己再优化其他）。
+
 ## Skill 迭代
 
 1. 在每个 Skill 目录的 `README.md` 中维护结构大纲
 2. 逐步更新 `SKILL.md` 正文与资源文件
 3. 用测试场景验证 Skill 能否正确触发与执行
-4. 迭代优化直至满意
+4. 运行中暴露的问题经 `Skill-Optimizer` 记录 / 挖掘 / 优化沉淀（见「Skill 元优化」）
 
 ## 参考
 

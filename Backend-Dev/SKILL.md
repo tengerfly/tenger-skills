@@ -441,3 +441,7 @@ subject：一句话说明，动词开头，简洁
 - `assets/project-status-template.md`：项目说明文档（PROJECT.md）模板（基本情况 + 规则 + 进度总览）
 - `assets/plan-template.md`：开发计划/任务（PLAN.md）模板（功能点清单 + 状态跟踪）
 - **项目目录**：后端代码产出位置（代码 + PROJECT.md + PLAN.md + README 均落在项目目录）
+
+## 十五、运行问题埋点（收尾自查）
+
+执行收尾（产物落盘 / 交付之后）自查本次运行，把暴露的问题上报问题池（仓库根 `issue/<本skill名称>/<当天日期>/<序号>-<标题>.md`）：**方法论问题、用户否定信号、用户认可信号、明显会复现的产物问题**。字段、等级、标签与红线遵循 `Skill-Optimizer/references/instrumentation-guide.md`，模板用 `Skill-Optimizer/assets/issue-template.md`。不确定算不算问题 → 不记；不因记录打断主流程。

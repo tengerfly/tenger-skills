@@ -219,3 +219,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - `references/browser-guide.md`：浏览器工具选择与集成（Playwright / browser-use / midscenejs 优先级与组合）
 - `CONTEXT.md`：术语表 + 决策日志（D-01~D-08）
 - **产出位置**：`.spec/测试/`
+
+## 十三、运行问题埋点（收尾自查）
+
+执行收尾（产物落盘 / 交付之后）自查本次运行，把暴露的问题上报问题池（仓库根 `issue/<本skill名称>/<当天日期>/<序号>-<标题>.md`）：**方法论问题、用户否定信号、用户认可信号、明显会复现的产物问题**。字段、等级、标签与红线遵循 `Skill-Optimizer/references/instrumentation-guide.md`，模板用 `Skill-Optimizer/assets/issue-template.md`。不确定算不算问题 → 不记；不因记录打断主流程。

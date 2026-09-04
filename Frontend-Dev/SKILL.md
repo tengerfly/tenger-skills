@@ -481,3 +481,7 @@ api（请求层）                 request.ts 封装 + 按域拆分 src/api/<模
 - `assets/module-code-template.md`：页面/模块代码骨架模板（测试先行 + api/hooks/组件/页面容器 + 抽离记录 + 还原核对 + 功能点提交）
 - `assets/project-status-template.md`：**项目说明与进度文档 `PROJECT.md` 模板**（基本情况 + 项目规则 + 开发计划与任务清单 + 关键决策记录 + 还原核对记录）
 - **产出位置**：用户在步骤 1 给定的目标目录 + git 地址（目录名用给定目录名或用户自定义名称，不套用任何按端命名的约定）
+
+## 十五、运行问题埋点（收尾自查）
+
+执行收尾（产物落盘 / 交付之后）自查本次运行，把暴露的问题上报问题池（仓库根 `issue/<本skill名称>/<当天日期>/<序号>-<标题>.md`）：**方法论问题、用户否定信号、用户认可信号、明显会复现的产物问题**。字段、等级、标签与红线遵循 `Skill-Optimizer/references/instrumentation-guide.md`，模板用 `Skill-Optimizer/assets/issue-template.md`。不确定算不算问题 → 不记；不因记录打断主流程。

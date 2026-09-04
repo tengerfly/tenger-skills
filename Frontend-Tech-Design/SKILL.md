@@ -315,3 +315,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - `assets/overview-template.md`：总技术文档模板（10 方面）
 - `assets/module-template.md`：模块技术方案模板（9 方面）
 - `.spec/FTDD/VN/`：前端技术方案产出目录
+
+## 十三、运行问题埋点（收尾自查）
+
+执行收尾（产物落盘 / 交付之后）自查本次运行，把暴露的问题上报问题池（仓库根 `issue/<本skill名称>/<当天日期>/<序号>-<标题>.md`）：**方法论问题、用户否定信号、用户认可信号、明显会复现的产物问题**。字段、等级、标签与红线遵循 `Skill-Optimizer/references/instrumentation-guide.md`，模板用 `Skill-Optimizer/assets/issue-template.md`。不确定算不算问题 → 不记；不因记录打断主流程。

@@ -137,3 +137,7 @@ description: 竞品分析。当用户给出一个产品想法或明确目标（�
 - `assets/matrix-template.md`：功能点对比矩阵与优缺点矩阵模板
 - `assets/eval-template.md`：标准化竞品分析测试与评估报告模板（Pass Gate 门禁验收标准）
 - `.output/`：最终交付物料根目录（下辖各 `<主题>竞品分析/` 文件夹）
+
+## 运行问题埋点（收尾自查）
+
+执行收尾（产物落盘 / 交付之后）自查本次运行，把暴露的问题上报问题池（仓库根 `issue/<本skill名称>/<当天日期>/<序号>-<标题>.md`）：**方法论问题、用户否定信号、用户认可信号、明显会复现的产物问题**。字段、等级、标签与红线遵循 `Skill-Optimizer/references/instrumentation-guide.md`，模板用 `Skill-Optimizer/assets/issue-template.md`。不确定算不算问题 → 不记；不因记录打断主流程。

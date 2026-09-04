@@ -272,3 +272,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 - 深度指南（references/）：prd-structure（章节架构 + 页面视图清单）、mermaid-patterns（五类图：泳道/流程/状态机/关联关系图/页面布局图）、gherkin-guide（AC 单源规范）、tech-feasibility-guide（复杂度预警 + 实现词汇负面清单 + 业务信息清单规范）；
 - 输出模板（assets/）：overview-template、module-template、pages-template（页面视图清单）、eval-template；
+
+## 十一、运行问题埋点（收尾自查）
+
+执行收尾（产物落盘 / 交付之后）自查本次运行，把暴露的问题上报问题池（仓库根 `issue/<本skill名称>/<当天日期>/<序号>-<标题>.md`）：**方法论问题、用户否定信号、用户认可信号、明显会复现的产物问题**。字段、等级、标签与红线遵循 `Skill-Optimizer/references/instrumentation-guide.md`，模板用 `Skill-Optimizer/assets/issue-template.md`。不确定算不算问题 → 不记；不因记录打断主流程。
