@@ -1,6 +1,7 @@
 # 文案与字段一致性检查清单（Copywriting & Field Consistency Checklist）
 
 > 目标：确保原型中的文字、标签、提示语、表格列、表单项与 PRD 的业务定义完全对齐，杜绝错别字、表意偏差、模糊占位文案（Lorem Ipsum 等）。
+> 对照物：PRD（经 SKILL 步骤 1 先读的 `PRD速查表.md` 建立索引定位，逐字级细节按锚点回模块原文）。
 
 ---
 

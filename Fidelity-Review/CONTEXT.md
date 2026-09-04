@@ -41,6 +41,7 @@
 | D-07 | 2026-09-05 | 浏览器工具 = **硬依赖**（Playwright 优先 → browser-use → 其他浏览器工具，全无 → 报错等安装不工作，禁止静默降级） | 视觉/溢出问题必须真实渲染截图取证，交互验证必须真实点击；截图必证是铁律（用户裁决，与 UI-UX-Review / Prototype-Review / Testing 同档） | ✅ 已确认 |
 | D-08 | 2026-09-05 | 只审不改 + 截图必证 + 成因必写 + 方向明确 + 防评审死循环三招（修复判据/分级冻结/轮次上限 3），产出范式沿用 Prototype-Review / UI-UX-Review 家族模板 | 与仓库评审类 skill 统一；防止「改不干净再挑一轮」死循环 | ✅ 已确认 |
 | D-09 | 2026-09-05 | **承接 UI-UX-Review CONTEXT 开放问题 Q1**：「页面还原度考核（前端实现页 vs 设计稿第三方验收）归属」= 独立成 `Fidelity-Review` skill（原候选之一落地），不并入 UI-UX-Review | 用户本次明确要做独立页面还原度 skill；与 UI-UX-Review（审设计稿）评审对象、阶段、时机均不同，独立最清晰 | ✅ 已确认 |
+| D-10 | 2026-09-05 | PRD 仅作交互存在性辅助基准，回溯时统一经 `PRD速查表.md` 入口：若 `.spec/PRD/VN/` 含 `PRD速查表.md`，先读它定位模块再按锚点回原文。同步 SKILL.md（§1.3 输入源 / 步骤 1）与 references/design-source-guide §三、interaction-checklist §四、overflow-guide §二 | 全仓约定「先读速查表建索引、逐字细节按锚点回原文」（PRD-Design 产出），本 skill 建时未同步为唯一遗漏，本次全仓核查补齐 | ✅ 已确认 |
 
 ## 四、待决问题清单（Open Questions）
 

@@ -33,6 +33,7 @@
 | # | 日期 | 决策 | 理由 | 状态 |
 |---|---|---|---|---|
 | D-01 | 2026-09-05 | 模式④自身体检发现的 3 条当场修复：① 步骤 7 防评审死循环机制补齐第 3 招完整版——补「轮次上限 3：再评审轮次达 3 仍未收敛即停止循环交用户裁决」；description 同步补「防评审死循环三招内建」声明（与 UI-UX-Review / Fidelity-Review / PRD-Review 同档评审 skill 口径对齐）；② frontmatter 补 `compatibility` 字段（全仓 17 个 skill 唯二缺失之一，Competitive-Analysis 同批已补）；③ 新建本 CONTEXT.md 补齐仓库三件套约定 | 体检维度二·逻辑闭环（P0）+ 维度五·跨位置同步（P1×2）；经用户授权「后续问题一律当场修」 | ✅ 已确认 |
+| D-02 | 2026-09-05 | 文案比对清单补速查表对照物声明：`references/copywriting-consistency-checklist.md` 头部加「对照物：PRD（经 SKILL 步骤 1 先读的 `PRD速查表.md` 建立索引定位，逐字级细节按锚点回模块原文）」 | SKILL 步骤 1 已声明先读速查表，但该清单是独立加载的执行文档、头部缺对照物来源声明，与同仓库 UI-UX-Review 同款清单（已标「PRD（速查表优先建索引）」）不一致，本次全仓核查补齐 | ✅ 已确认 |
 
 ## 四、待决问题清单（Open Questions）
 
