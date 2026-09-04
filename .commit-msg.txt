@@ -1,7 +1,0 @@
-feat: 新增原型评审 Skill、Workflow 12 节点编排与浏览器工具两级策略
-
-- 新增 Prototype-Review 原型评审 Skill：页面完整性/文案一致性/交互闭环/原型质量四维度对照 PRD 评审，只审不改，产出单一事实源任务清单（.spec/原型评审/）打通评审-修复闭环
-- Workflow 升级为 12 节点编排：⑤原型评审入链，评审回退分流（原型缺陷回退 Prototype-Design，需求冲突回退 PRD-Design）
-- Prototype-Design 新增步骤③信息载体确认 Gate（页面 vs 弹框），流水线重排为 9 步，新增 page-inventory/wireframe 模板与实战参考
-- 落地浏览器工具两级策略（能力检测非名单穷举，Playwright → browser-use → 其他如 agent-browser）：硬依赖 Prototype-Review / Frontend-Tech-Design / Frontend-Dev / Testing（全无报错等安装），软检测 Tech-Review / Backend-Tech-Design（全无跳过辅助步骤）
-- 根 README 新增浏览器工具策略小节；Testing/CONTEXT 决策 D-09/D-10 留痕
