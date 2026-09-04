@@ -15,8 +15,8 @@ issue/
 ├── Skill-Optimizer/
 │   └── 2026-09-04/
 │       └── 01-xxx.md
-└── PRD-Design/
-    └── 2026-09-05/
+└── Prototype-Design/
+    └── 2026-09-04/
         ├── 01-xxx.md
         └── 02-xxx.md
 ```

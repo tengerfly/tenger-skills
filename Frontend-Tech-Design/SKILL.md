@@ -1,6 +1,6 @@
 ---
 name: Frontend-Tech-Design
-description: 前端技术方案文档（Frontend Technical Design Document）编写。前端技术专家依据 PRD 需求文档、高保真原型图与后端技术文档（TDD），先通过苏格拉底式提问澄清技术选型（档位「企业级生产 / demo」、组件库、暗黑模式与主题切换、国际化、浏览器兼容性），再输出总技术文档（技术选型 + 前端架构图 + 页面清单 + 组件清单 + 工程目录结构 + 各模块「应做/不应做」边界 + fetch/CSS/hooks 全局规范）与各模块技术方案（页面与组件拆分 + hooks 数据流 + fetch 接口对接实例 + 组件级测试用例）。固定技术栈 pnpm + Vite + TypeScript + React（hooks 为主）+ 原生 fetch；CSS 预编译 + 模块化 + 全局样式抽离；测试先行（Vitest + React Testing Library）。开工先检测浏览器工具（Playwright 优先 → browser-use 次之 → 其他浏览器工具如 agent-browser，列举不穷举；任一可用即用于核验组件库与框架的官方文档与版本兼容性），全无时直接报错提醒用户安装，不跳过。当用户要求编写前端技术文档、前端技术方案、前端架构设计、FTDD 文档时触发。
+description: 前端技术方案文档（Frontend Technical Design Document）编写。前端技术专家依据 PRD 需求文档、低保真原型（Prototype-Design 产出）与后端技术文档（TDD），先通过苏格拉底式提问澄清技术选型（档位「企业级生产 / demo」、组件库、暗黑模式与主题切换、国际化、浏览器兼容性），再输出总技术文档（技术选型 + 前端架构图 + 页面清单 + 组件清单 + 工程目录结构 + 各模块「应做/不应做」边界 + fetch/CSS/hooks 全局规范）与各模块技术方案（页面与组件拆分 + hooks 数据流 + fetch 接口对接实例 + 组件级测试用例）。固定技术栈 pnpm + Vite + TypeScript + React（hooks 为主）+ 原生 fetch；CSS 预编译 + 模块化 + 全局样式抽离；测试先行（Vitest + React Testing Library）。开工先检测浏览器工具（Playwright 优先 → browser-use 次之 → 其他浏览器工具如 agent-browser，列举不穷举；任一可用即用于核验组件库与框架的官方文档与版本兼容性），全无时直接报错提醒用户安装，不跳过。当用户要求编写前端技术文档、前端技术方案、前端架构设计、FTDD 文档时触发。
 compatibility: Claude Code / Agent SDK / OpenCode
 ---
 
@@ -10,7 +10,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ## 一、角色定位与第一原则
 
-你是 **前端技术专家 / 前端架构师**。你的使命是：依据已定稿的 PRD 需求文档、高保真原型图与后端技术文档（TDD），产出一份**可落地、可评审、可 TDD 开发**的前端技术方案文档包。
+你是 **前端技术专家 / 前端架构师**。你的使命是：依据已定稿的 PRD 需求文档、低保真原型（Prototype-Design 产出）与后端技术文档（TDD），产出一份**可落地、可评审、可 TDD 开发**的前端技术方案文档包。
 
 **第一原则**：「先定选型与边界，再逐模块展开；每个模块先有测试用例，后有实现方案。」
 

@@ -6,7 +6,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 # 产品需求文档（PRD）编写 Skill
 
-> **术语与决策基准**：所有概念以 [CONTEXT.md](CONTEXT.md) 术语表与决策日志（D-01~D-12）为准，写作中发现冲突以 CONTEXT.md 为准。
+> **术语与决策基准**：所有概念以 [CONTEXT.md](CONTEXT.md) 术语表与决策日志（D-01~D-15）为准，写作中发现冲突以 CONTEXT.md 为准。
 
 ## 一、角色定位与第一原则
 
@@ -62,7 +62,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 **✅ 适用**：0 到 1 创新需求（PRD_V1）；存量迭代升级（读旧档全量归档出 V2）；模糊想法澄清规划；局部文档按新标准补全。
 
-**❌ 不适用**：纯技术架构与数据库设计（TDD 承接）；纯 UI 视觉与高保真原型（设计师承接）；市场推广运营策划。
+**❌ 不适用**：纯技术架构与数据库设计（TDD 承接）；纯 UI 视觉与设计稿（UI-UX-Design 承接）；市场推广运营策划。
 
 ---
 

@@ -1,9 +1,9 @@
 # UI-UX-Design —— UI/UX 设计稿生成 Skill（Superdesign 底座）
 
-把「PRD + 布局清单」变成**布局零改动、去 AI 味、风格统一**的设计稿级 HTML。
+把「PRD + 布局清单 + 低保真原型」变成**布局零改动、去 AI 味、风格统一**的设计稿级 HTML。
 
 - **角色**：设计总监 + Superdesign 编排器——管标准、决策、门禁、归档；视觉稿生成本体由 Superdesign 底座执行（CLI 驱动，画布迭代）。
-- **上游**：`Prototype-Design`（重构后）产出「布局清单」（载体划分 / 页面区块结构 / 组件类型）；本 skill 定义其输入契约（`assets/layout-inventory-contract.md`），Prototype-Design 重构时对齐。
+- **上游**：`Prototype-Design`（重构后）产出**双输入**——「布局清单」（载体级：载体划分 + 宿主/入口/出口，不含页内区块级拆解）与「低保真原型 HTML」（页内区块结构实物）；本 skill 定义其输入契约（`assets/layout-inventory-contract.md`），对齐 D-10 双输入契约。
 - **核心流程**：环境检测 Gate → 布局清单校验 + 设计任务清单 → 风格情报 → **风格决策 Gate**（三套差异化方案，默认零额度）→ **设计规范 Gate**（生成前沉淀 Design System，用户确认）→ 逐页生成（Superdesign）→ **质量门禁**（布局零改动 / 规范一致性 / 反 AI 味 / 文案保真）→ 归档 `.spec/设计稿/`。
 
 ## 目录

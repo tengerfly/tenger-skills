@@ -19,12 +19,12 @@
 | 语言 | 无偏好，按需求特征推荐（高并发→Go，企业级→Java，AI→Python） |
 | 产出 | 总技术文档（选型+架构图+模块边界+关联+表结构）+ 各模块技术方案（流程图+测试用例） |
 | 测试用例 | Gherkin 场景 + 代码级用例骨架（承接 PRD 的 AC） |
-| 浏览器 | 检测 browser-use，可用则查官方文档，不可用则跳过 |
+| 浏览器 | 软检测：Playwright → browser-use → 其他浏览器工具，任一可用即查官方文档，全无则跳过不阻塞 |
 
 ## 三、流水线全景
 
 ```
-输入解析(读PRD+原型 / browser-use检测) ──► 技术选型澄清(档位必问) ──► 总技术文档 ──► Scope Gate ──► 逐模块方案 ──► 全局一致性检查 ──► 归档到 .spec/
+输入解析(读PRD+原型 / 浏览器工具软检测) ──► 技术选型澄清(档位必问) ──► 总技术文档 ──► Scope Gate ──► 逐模块方案 ──► 全局一致性检查 ──► 归档到 .spec/
 ```
 
 ## 四、目录结构
@@ -55,13 +55,20 @@ Backend-Tech-Design/
 ## 六、与其它 Skill 的关系
 
 ```
-PRD-Design（写需求）──► Prototype-Design（出原型）──► Backend-Tech-Design（写后端技术方案）
-        │                                                   │
-        └──────────── PRD-Review（审需求）◄──────────────────┘
+PRD-Design（写需求）──► Prototype-Design（出原型）──► Prototype-Review（审原型）
+        │                                                            │
+        │                                                            ▼
+        │                                            UI-UX-Design（出设计稿，⑥ 可选）
+        │                                                            │
+        │                                                            ▼
+        │                                            UI-UX-Review（审设计稿，⑦ 可选跟随）
+        │                                                            │
+        └──────────── PRD-Review（审需求）            ▼
+                                     Backend-Tech-Design（写后端技术方案，⑧）
 ```
 
 - `PRD-Design` 产出 PRD（含 PRD 速查表），是 `Backend-Tech-Design` 的需求输入；
-- `Prototype-Design` 产出原型图，帮助理解交互与页面结构；
+- `Prototype-Design` 产出低保真原型 + 布局清单；`UI-UX-Design` 产出设计稿（⑥ 可选，跳过时上游为原型评审产物）——帮助理解交互与页面结构；
 - `Backend-Tech-Design` 是 PRD 域界铁律中「技术方案文档（TDD）」的承接方——PRD 不写数据库/接口/选型，这里才写。
 
 

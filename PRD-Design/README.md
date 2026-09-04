@@ -1,7 +1,7 @@
 # PRD-Design —— 工业级 PRD 生成 Skill
 
 > **状态**：✅ 定稿
-> **术语与决策基准**：[CONTEXT.md](CONTEXT.md)（术语表 + 决策日志 D-01~D-12）
+> **术语与决策基准**：[CONTEXT.md](CONTEXT.md)（术语表 + 决策日志 D-01~D-15）
 
 ---
 
@@ -53,7 +53,7 @@ PRD-Design/
 ├── CONTEXT.md                        # ★ 术语对齐源与决策日志（重构期新增）
 ├── references/                       # 深度指南（按需加载）
 │   ├── prd-structure.md              # 总纲十一章 + 模块九章架构与深度要求
-│   ├── mermaid-patterns.md           # 五类图规范（泳道/流程/状态机/关联图/★页面布局图）
+│   ├── mermaid-patterns.md           # 四类图规范（泳道/流程/状态机/关联关系图）
 │   ├── gherkin-guide.md              # AC 单源编号、覆盖矩阵、断言对照表
 │   └── tech-feasibility-guide.md     # 复杂度预警 + 实现词汇负面清单 + 业务信息清单规范
 ├── assets/                           # 输出模板

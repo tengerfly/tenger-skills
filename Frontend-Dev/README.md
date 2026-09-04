@@ -92,7 +92,7 @@ PRD-Design（写需求）──► Prototype-Design（出原型）──► Back
 
 - `Frontend-Tech-Design` 产出前端技术方案（选型/页面清单/组件清单/目录结构/fetch 对接/测试用例），是 `Frontend-Dev` 的**施工图**；
 - `Backend-Tech-Design` 产出后端接口清单，是 `Frontend-Dev` 的**接口契约源**；
-- `Prototype-Design` 产出高保真原型，是 `Frontend-Dev` 的**还原目标**；
+- `Prototype-Design` 产出低保真原型（结构还原基线；有 UI 设计稿时视觉细节以设计稿为基准），是 `Frontend-Dev` 的**还原目标**；
 - `Backend-Dev` 与 `Frontend-Dev` 是「技术方案域界铁律」两端代码承接方——方案不写代码，这里才写。
 
 

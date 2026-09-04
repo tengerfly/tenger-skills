@@ -54,7 +54,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 [7] 归档 .spec/TDD/VN/
 ```
 
-### 步骤 1：输入解析 + browser-use 检测
+### 步骤 1：输入解析 + 浏览器工具检测
 - **优先读项目 `.spec/` 已有产出**：`.spec/PRD/VN/`（**先读 `PRD速查表.md` 建六大索引**，overview + 模块文档按需按锚点回读）与 `.spec/原型/`；缺失则回退到用户指定路径 / 粘贴内容；
 - **评审任务清单检测（闭环修复入口）**：检查 `.spec/技术方案评审/任务清单.md`，筛出 `已确认` 且 `修改方` 含 `Backend-Tech-Design` 的任务——这些是本次必须修复的问题点/优化点，逐条纳入对应模块方案（新建时融入设计，改稿时作为变更项处理）；
 - **检测浏览器工具**：Playwright 优先 → browser-use 次之 → 其他浏览器工具（如 CodeBuddy 的 agent-browser），列举不穷举；任一可用即用于查阅技术选型的官方文档与版本兼容性；全无则直接跳过，不阻塞流程（选型仍基于内置知识给出）。

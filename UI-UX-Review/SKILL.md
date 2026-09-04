@@ -88,7 +88,7 @@ flowchart TD
 
 ### 步骤 1：资产解析与浏览器环境预检
 1. **定位输入资产**：
-   - 检查并读取 PRD 目录（`overview.md`、`页面视图.md`、各模块规格；有 `PRD速查表.md` 先读它建索引）；
+   - 检查并读取 PRD 目录（`overview.md`、各模块规格 `NN_xxx.md`；有 `PRD速查表.md` 先读它建索引）；
    - 检查并读取 `.spec/原型/布局清单.md`（或设计任务清单）与 `.spec/设计稿/design-system.md`；
    - 检查并读取设计稿工程（`.spec/设计稿/` 的 HTML 文件清单、`README.md`）。
    - 任一缺失 → 停下提示用户。

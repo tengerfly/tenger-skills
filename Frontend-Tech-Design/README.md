@@ -5,7 +5,7 @@
 
 ## 一、这是什么
 
-一个由 **前端技术专家 / 前端架构师** 人设驱动的 Skill：把已定稿的 PRD 需求文档、高保真原型图与后端技术文档（TDD），翻译成**技术选型清晰、页面组件划分明确、每个模块可 TDD 开发**的前端技术方案文档包。
+一个由 **前端技术专家 / 前端架构师** 人设驱动的 Skill：把已定稿的 PRD 需求文档、低保真原型（Prototype-Design 产出）与后端技术文档（TDD），翻译成**技术选型清晰、页面组件划分明确、每个模块可 TDD 开发**的前端技术方案文档包。
 
 > 术语说明：FTDD = **Frontend Technical Design Document（前端技术方案文档）**，是 `PRD-Design`（PRD 只写需求）与 `Backend-Tech-Design`（后端技术方案）的前端承接方；同时全程遵循 **Test-Driven Development（测试驱动开发）**——先写测试用例、再写代码。
 
@@ -63,15 +63,22 @@ Frontend-Tech-Design/
 ## 六、与其它 Skill 的关系
 
 ```
-PRD-Design（写需求）──► Prototype-Design（出原型）──► Backend-Tech-Design（写后端技术方案）
+PRD-Design（写需求）──► Prototype-Design（出原型）──► Prototype-Review（审原型）
         │                       │                            │
-        │                       └────────► Frontend-Tech-Design（写前端技术方案）◄──┘
-        └──────────── PRD-Review（审需求）
+        │                       │                            ▼
+        │                       │            UI-UX-Design（出设计稿，⑥ 可选）
+        │                       │                            │
+        │                       │                            ▼
+        │                       │            UI-UX-Review（审设计稿，⑦ 可选跟随）
+        │                       │                            │
+        ├──► Backend-Tech-Design（写后端技术方案，⑧）◄────────┘
+        │                       │
+        └── PRD-Review（审需求） └──► Frontend-Tech-Design（写前端技术方案，⑨）
 ```
 
 - `PRD-Design` 产出 PRD（含 PRD 速查表），是前端方案的需求输入；
-- `Prototype-Design` 产出原型图，前端页面清单、组件拆分必须与原型一一对应；
-- `Backend-Tech-Design` 产出后端技术方案（含接口清单），前端 fetch 封装与接口对接的唯一依据；
+- `Prototype-Design` 产出低保真原型 + 布局清单，前端页面清单、组件拆分必须与原型一一对应；
+- `Backend-Tech-Design` 产出后端技术方案（含接口清单），前端 fetch 封装与接口对接的唯一依据（TDD → FTDD 硬串行）；
 - `Frontend-Tech-Design` 是 PRD 域界铁律中「前端怎么设计与实现」的承接方——PRD 不写控件/选型，这里才写。
 
 
