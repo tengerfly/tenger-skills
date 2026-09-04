@@ -64,5 +64,4 @@
 
 ## 五、配套资源
 
-- 真实案例完整落地与早期踩坑：`real-case-learning-path.md`
 - 完整性检测门禁：`completeness-check.md`（迭代后同样按 CK 清单回检）
