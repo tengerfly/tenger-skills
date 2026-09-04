@@ -16,8 +16,8 @@
 
 | 维度 | 参考规范清单 | 重点检查内容 |
 |---|---|---|
-| **页面与载体完整性** | `references/page-completeness-checklist.md` | PRD 功能点与原型页面的映射覆盖；独立页、弹框、抽屉的载体形式是否合规；导航层级与面包屑。 |
-| **文案与字段一致性** | `references/copywriting-consistency-checklist.md` | 标题、CTA 按钮、Toast 提示、表格列名与 PRD 原文逐字比对；表单 Label、必填星号、占位符对齐。 |
+| **页面与载体完整性** | `references/page-completeness-checklist.md` | PRD 功能点与原型页面的映射覆盖（防漏）+ 无依据的冗余按钮/区块/装饰排查（防加戏）；独立页、弹框、抽屉的载体形式是否合规；导航层级与面包屑。 |
+| **文案与字段一致性** | `references/copywriting-consistency-checklist.md` | 标题、CTA 按钮、Toast 提示、表格列名与 PRD 原文逐字比对 + PRD 未要求的多余文案排查；表单 Label、必填星号、占位符对齐。 |
 | **交互与流程闭环** | `references/interaction-closure-checklist.md` | 页面无死胡同；弹框打开/关闭/确认三态闭环；全流程正向与逆向分支畅通；空/载/错/满全状态覆盖。 |
 | **原型自身质量** | `references/prototype-quality-checklist.md` | 浏览器控制台无报错；无布局错位与层级遮挡；拒绝廉价 AI 模板感；组件可正常交互。 |
 | **浏览器工具硬门禁** | `references/browser-inspection-guide.md` | 开工预检 Playwright → browser-use → 其他浏览器工具（如 agent-browser），任一可用即截图存证；全无则报错提醒安装，不工作。 |

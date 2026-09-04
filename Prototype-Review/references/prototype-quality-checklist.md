@@ -26,3 +26,4 @@
 ### 2.2 组件真实可交互性
 - [ ] **交互微动效与反馈**：按钮 hover/active 有微动效与光标切换（`cursor: pointer`）；表格行悬停有底色高亮。
 - [ ] **真实组件行为**：Tab 切换能真实切换对应面板；手风琴折叠能展开收起；筛选下拉框能点击展开并选中。
+- [ ] **简洁大方，无冗余装饰**：界面无多余装饰元素、无无依据的按钮/提示文案（防加戏，详见 `page-completeness-checklist.md` §三 与 `copywriting-consistency-checklist.md` §三）。
