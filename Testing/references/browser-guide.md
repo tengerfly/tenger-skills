@@ -8,7 +8,7 @@
 
 | 测试线 | 首选工具 | 备选 | 兜底 |
 |---|---|---|---|
-| 功能遍历（全状态 + 全点击） | **Playwright** | browser-use | midscenejs `aiAct` |
+| 功能遍历（全状态 + 全点击） | **Playwright** | browser-use | —（全无 → 开工预检已报错等安装） |
 | 接口性能监听（慢接口） | **Playwright**（`response.timing()`） | `performance.getEntriesByType` | — |
 | 样式视觉断言 + 截图 | **midscenejs**（`aiAssert`） | Playwright `toHaveScreenshot` | browser-use 截图人工比对 |
 
@@ -21,7 +21,9 @@
   ├─ 是 → 功能遍历 + 接口监听用 Playwright
   └─ 否 → [检测 2] browser-use 是否可用？
             ├─ 是 → 功能遍历用 browser-use
-            └─ 否 → 用 midscenejs aiAct 兜底（需模型）
+            └─ 否 → [检测 3] 其他浏览器工具是否可用？（如 agent-browser，列举不穷举）
+                      ├─ 是 → 用该工具做功能遍历
+                      └─ 否 → 【环境错误】硬性预检失败：报错提醒用户安装，停止工作不测试
 
 [检测 3] midscenejs 是否可用（依赖 + 模型 API Key）？
   ├─ 是 → 样式断言用 midscenejs
@@ -57,12 +59,12 @@
 - 用一个 Playwright 测试工程 + midscenejs fixture，即可同时覆盖三条线，报告统一；
 - 若 Playwright 不可用：功能/截图用 browser-use，接口耗时用页面内 `performance` API，样式人工比对。
 
-## 七、工具不可用时的降级告知
+## 七、工具缺失的处理（硬门禁 + 可选增强降级）
 
-任何工具不可用，都必须在测试计划与问题文档中明示降级方案与原因，禁止「声称已自动测试」而实际未做。示例：
+- **任何浏览器工具都不存在（Playwright / browser-use / agent-browser 等全无）= 硬门禁失败**：开工预检（SKILL 步骤 2）直接报错提醒安装，停止工作不测试——不降级、不跳过、不产出测试计划；
+- **运行期可选增强缺失**（如 midscenejs 无依赖 / 无模型 Key）→ 降级并告知：必须在测试计划与问题文档中明示降级方案与原因，禁止「声称已自动测试」而实际未做。示例：
 
 ```
-【提示】未检测到 Playwright，功能遍历改用 browser-use；
-       未配置 midscenejs 模型，样式测试降级为 browser-use 截图 + 人工比对；
-       慢接口监听改用页面 performance API 采集。
+【提示】未配置 midscenejs 模型，样式测试降级为 Playwright/browser-use 截图 + 人工比对；
+       慢接口监听改用页面 performance API 采集（browser-use 无 response.timing 时）。
 ```

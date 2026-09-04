@@ -6,7 +6,8 @@
 
 ## 一、文件组织
 
-- 每个核心页面一个 HTML 文件，命名语义化：`index.html`（入口）、`list.html`、`detail.html`、`publish.html` 等；
+- 每个独立页面一个 HTML 文件（以步骤 3 信息载体确认 Gate 的清单为准），命名语义化：`index.html`（入口）、`list.html`、`detail.html`、`publish.html` 等；
+- 弹框 / 抽屉 / 页内区块**不单独成文件**，内嵌在宿主页面中实现（原生 JS 控制显隐）；
 - 所有文件放在 `.spec/原型/` 同一目录下，便于相对路径跳转；
 - 附一个 `README.md` 说明页面清单与跳转关系。
 

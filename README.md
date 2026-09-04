@@ -4,20 +4,20 @@
 
 ## 简介
 
-本仓库沉淀了 11 个可复用的「技能（Skill）」，覆盖从产品想法到上线测试的完整软件开发链路：
+本仓库沉淀了 12 个专业「技能（Skill）」+ 1 个编排总控 Skill，覆盖从产品想法到上线测试的完整软件开发链路：
 
-**竞品分析 → 需求（PRD）→ 需求评审 → 原型 → 技术方案 → 技术方案评审 → 开发 → 代码评审 → 测试**
+**竞品分析 → 需求（PRD）→ 需求评审 → 原型 → 原型评审 → 技术方案 → 技术方案评审 → 开发 → 代码评审 → 测试**
 
-每个 Skill 是一份结构化的指导文档，帮助 Claude 在对应场景下采用经过验证的方法与流程完成任务；各 Skill 之间通过「产出物」衔接，形成端到端的交付流水线。
+每个 Skill 是一份结构化的指导文档，帮助 Claude 在对应场景下采用经过验证的方法与流程完成任务；各 Skill 之间通过「产出物」衔接，形成端到端的交付流水线。其中 [`Workflow`](./Workflow) 是**编排总控**，负责把另外 12 个专业 Skill 按流水线串起来自动调度（详见「全流程编排」章节）。
 
 ## 标准开发流程
 
-11 个 Skill 按软件开发生命周期串成一条流水线，分四个阶段：
+12 个 Skill 按软件开发生命周期串成一条流水线，分四个阶段：
 
 | 阶段 | Skill 链路 | 产出物 | 交付对象 |
 |------|-----------|--------|---------|
 | ① 需求 | 竞品分析 → PRD 编写 ⇄ 需求评审 | 竞品分析报告 / PRD | 原型设计 |
-| ② 设计 | 原型设计 → 后端技术方案 + 前端技术方案 ⇄ 技术方案评审 | 高保真原型 / TDD / FTDD | 开发 |
+| ② 设计 | 原型设计 ⇄ 原型评审 → 后端技术方案 + 前端技术方案 ⇄ 技术方案评审 | 高保真原型 / TDD / FTDD | 开发 |
 | ③ 开发 | 后端开发 + 前端开发 ⇄ 代码评审 | 可运行代码工程 | 测试 |
 | ④ 测试 | 项目测试 | 分级测试问题文档 | 上线 |
 
@@ -27,6 +27,9 @@ flowchart TD
     PRD --> PR[需求评审<br/>PRD-Review]
     PR -. 意见回退 .-> PRD
     PRD --> PT[原型设计<br/>Prototype-Design]
+    PT --> PTR[原型评审<br/>Prototype-Review]
+    PTR -. 原型缺陷回退 .-> PT
+    PTR -. 需求冲突回退 .-> PRD
     PT --> BTD[后端技术方案<br/>Backend-Tech-Design]
     PT --> FTD[前端技术方案<br/>Frontend-Tech-Design]
     BTD --> TR[技术方案评审<br/>Tech-Review]
@@ -43,7 +46,37 @@ flowchart TD
     T --> DONE[上线]
 ```
 
-> 三个评审类 Skill（需求评审 / 技术方案评审 / 代码评审）遵循「只审不改」原则，输出分级问题清单，回退给上游修订。
+> 四个评审类 Skill（需求评审 / 原型评审 / 技术方案评审 / 代码评审）遵循「只审不改 · 分工明确」原则：**只找问题、不做修改**——输出分级问题清单回退给上游，修改一律由对应产出方 skill（`PRD-Design` / `Prototype-Design` / `Backend-Tech-Design` / `Frontend-Tech-Design` / `Backend-Dev` / `Frontend-Dev`）执行。
+
+## 全流程编排
+
+[`Workflow`](./Workflow) 是**可选的编排 Skill**：把 12 个专业 Skill 串成一条链，并支持**从任意节点起跑**。
+
+**核心原则**：一条链，任意起点，逐步推进，随时可停。
+
+| 项 | 约定 |
+|---|---|
+| 起点 | 用户点名，或从 `.spec/` 已有产物自动推断（推断后需用户确认）。**每个节点都可以作为起点** |
+| 终点 | 用户点名；**不点名 = 只跑起点这一个节点**，跑完停下，后续由用户决定 |
+| 跳过 | 任一节点可跳过（含四次评审），PIPELINE 标记 `已跳过` 并写原因 |
+| 推进节奏 | 每完成一个节点 → 回填 PIPELINE → 输出交接摘要 → **停下等用户决定**（继续 / 跳过 / 重做 / 就到这） |
+| 状态源 | 被开发项目根目录 `.spec/PIPELINE.md`（只记录本次路径涉及的节点） |
+| 串行约束 | `TDD → FTDD`（FTDD 依赖 TDD 接口契约）、`后端开发 → 前端开发`（前端按后端真实契约对接）两处硬串行，不并行 |
+| 回退 | 评审节点（PRD / 原型 / 技术方案 / 代码评审）任务清单 `已确认` 未清零即回退修改方，轮次上限 3 |
+
+**举例**：
+
+| 用户说 | 起点 | 跑什么 |
+|---|---|---|
+| 「从零开发 XX」 | 竞品分析 | 一路到测试 |
+| 「只做竞品分析」 | 竞品分析 | 只跑这一个 |
+| 「根据我的 PRD 生成原型」 | 原型设计 | 只跑原型，跑完停 |
+| 「评审原型」 | 原型评审 | 只跑原型评审，跑完停 |
+| 「我有 PRD 了，走后续开发」 | 原型设计 | 原型 → … → 测试 |
+| 「评审这份代码」 | 代码评审 | 只跑这一个 |
+| 「测试这个项目」 | 测试 | 只跑这一个 |
+
+> `Workflow` 只做调度、记账与守门，**不产出任何业务文档**；12 个专业 Skill 永远可独立调用，行为不受影响。
 
 ## 产物目录约定
 
@@ -58,6 +91,7 @@ flowchart TD
 │   │   ├── V1/             # 第 1 版：overview.md + 页面视图.md + NN_xxx.md + 验收结果详细说明.md
 │   │   └── V2/             # 迭代版（若有，全量归档并做差异对比）
 │   ├── 原型/                # 高保真原型（Prototype-Design）
+│   ├── 原型评审/            # 原型评审产物（Prototype-Review：页面/文案/交互评审 + 汇总报告 + 任务清单）
 │   ├── TDD/                # 后端技术文档（Backend-Tech-Design）
 │   │   ├── V1/             # overview.md + NN_xxx.md
 │   │   └── V2/
@@ -77,14 +111,27 @@ flowchart TD
 - **版本用子目录**：PRD / TDD / FTDD 按 `V1`、`V2` 分子目录，迭代时全量归档新版本。
 - **竞品分析例外**：`Competitive-Analysis` 在立项前执行，产物留在本仓库 `Competitive-Analysis/.output/<主题>竞品分析/`。
 
+## 浏览器工具策略
+
+各 Skill 涉及浏览器工具（截图、页面核验、AI 视觉断言）时，统一按**两级策略**处理；检测顺序为 **Playwright 优先 → browser-use 次之 → 其他浏览器工具（如 CodeBuddy 的 agent-browser）**——列举不穷举，凡当前环境可用的、能驱动真实浏览器打开页面/交互/截图的工具均算：
+
+| 级别 | Skill | 行为 |
+|------|-------|------|
+| **硬依赖** | `Prototype-Review` / `Frontend-Tech-Design` / `Frontend-Dev` / `Testing` | 开工前必检：任一可用即开工；全无 → 报错提醒安装，**安装完成才工作** |
+| **软检测** | `Tech-Review` / `Backend-Tech-Design` | 有则用（版本核验），无则**跳过对应辅助步骤**，不阻塞 |
+
+> 不涉及浏览器工具的 Skill（如 `Backend-Dev`、`Code-Review`）不做检测；`midscenejs` 仅为 `Testing` 样式视觉断言的可选增强。
+
 ## Skill 清单
 
 | Skill | 目录 | 说明 | 状态 |
 |-------|------|------|------|
+| **全流程编排（总控）** | [**Workflow**](./Workflow) | 把 12 个专业 Skill 串成流水线：调度 + 状态（`.spec/PIPELINE.md`）+ 门禁 + 回退 | ✅ 完成 |
 | 竞品分析 | [Competitive-Analysis](./Competitive-Analysis) | 竞品调研、对比与分析 | ✅ 完成 |
 | 产品需求文档（PRD） | [PRD-Design](./PRD-Design) | PRD 编写 | ✅ 完成 |
 | 需求评审 | [PRD-Review](./PRD-Review) | PRD 评审 | ✅ 完成 |
 | 原型设计 | [Prototype-Design](./Prototype-Design) | 高保真可交互原型图 | ✅ 完成 |
+| 原型评审 | [Prototype-Review](./Prototype-Review) | 原型与 PRD 一致性、页面完整性、交互闭环及原型缺陷评审（支持浏览器截图核验） | ✅ 完成 |
 | 后端技术方案 | [Backend-Tech-Design](./Backend-Tech-Design) | 后端技术方案文档（TDD）编写 | ✅ 完成 |
 | 前端技术方案 | [Frontend-Tech-Design](./Frontend-Tech-Design) | 前端技术方案文档（FTDD）编写 | ✅ 完成 |
 | 技术方案评审 | [Tech-Review](./Tech-Review) | 后端/前端技术方案评审（闭环 + 关联关系） | ✅ 完成 |
@@ -98,10 +145,12 @@ flowchart TD
 ```
 tenger-skills/
 ├── README.md                  # 仓库说明（本文件）
+├── Workflow/                  # 全流程编排 Skill（总控）
 ├── Competitive-Analysis/      # 竞品分析 Skill
 ├── PRD-Design/                # 产品需求文档（PRD）Skill
 ├── PRD-Review/                # 需求评审 Skill
 ├── Prototype-Design/          # 原型设计 Skill
+├── Prototype-Review/          # 原型评审 Skill
 ├── Backend-Tech-Design/       # 后端技术方案（TDD）Skill
 ├── Frontend-Tech-Design/      # 前端技术方案（FTDD）Skill
 ├── Tech-Review/               # 技术方案评审 Skill

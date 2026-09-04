@@ -1,6 +1,6 @@
 ---
 name: Frontend-Tech-Design
-description: 前端技术方案文档（Frontend Technical Design Document）编写。前端技术专家依据 PRD 需求文档、高保真原型图与后端技术文档（TDD），先通过苏格拉底式提问澄清技术选型（档位「企业级生产 / demo」、组件库、暗黑模式与主题切换、国际化、浏览器兼容性），再输出总技术文档（技术选型 + 前端架构图 + 页面清单 + 组件清单 + 工程目录结构 + 各模块「应做/不应做」边界 + fetch/CSS/hooks 全局规范）与各模块技术方案（页面与组件拆分 + hooks 数据流 + fetch 接口对接实例 + 组件级测试用例）。固定技术栈 pnpm + Vite + TypeScript + React（hooks 为主）+ 原生 fetch；CSS 预编译 + 模块化 + 全局样式抽离；测试先行（Vitest + React Testing Library）。browser-use 不可用时直接报错提醒用户安装。当用户要求编写前端技术文档、前端技术方案、前端架构设计、FTDD 文档时触发。
+description: 前端技术方案文档（Frontend Technical Design Document）编写。前端技术专家依据 PRD 需求文档、高保真原型图与后端技术文档（TDD），先通过苏格拉底式提问澄清技术选型（档位「企业级生产 / demo」、组件库、暗黑模式与主题切换、国际化、浏览器兼容性），再输出总技术文档（技术选型 + 前端架构图 + 页面清单 + 组件清单 + 工程目录结构 + 各模块「应做/不应做」边界 + fetch/CSS/hooks 全局规范）与各模块技术方案（页面与组件拆分 + hooks 数据流 + fetch 接口对接实例 + 组件级测试用例）。固定技术栈 pnpm + Vite + TypeScript + React（hooks 为主）+ 原生 fetch；CSS 预编译 + 模块化 + 全局样式抽离；测试先行（Vitest + React Testing Library）。开工先检测浏览器工具（Playwright 优先 → browser-use 次之 → 其他浏览器工具如 agent-browser，列举不穷举；任一可用即用于核验组件库与框架的官方文档与版本兼容性），全无时直接报错提醒用户安装，不跳过。当用户要求编写前端技术文档、前端技术方案、前端架构设计、FTDD 文档时触发。
 compatibility: Claude Code / Agent SDK / OpenCode
 ---
 
@@ -103,7 +103,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 输入（优先读项目 `.spec/` 已有 PRD + 原型 + 后端 TDD；缺失回退用户指定）
         │
         ▼
-[1] 输入解析 + browser-use 检测（不可用则报错提醒安装，不跳过）
+[1] 输入解析 + 浏览器工具检测（Playwright → browser-use → 其他如 agent-browser，全无则报错提醒安装，不跳过）
         │
         ▼
 [2] 技术选型澄清（档位必问 + 组件库必问 + 暗黑/国际化/兼容性必问）
@@ -124,7 +124,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 [7] 归档 .spec/FTDD/VN/
 ```
 
-### 步骤 1：输入解析 + browser-use 检测
+### 步骤 1：输入解析 + 浏览器工具检测
 
 - **优先读项目 `.spec/` 已有产出**：
   - PRD：`.spec/PRD/VN/`（overview + `页面视图.md` + 模块文档）；
@@ -132,10 +132,10 @@ compatibility: Claude Code / Agent SDK / OpenCode
   - 后端 TDD：`.spec/TDD/VN/`（overview + 模块文档，取接口清单）。
   - 缺失则回退到用户指定路径 / 粘贴内容。
 - **评审任务清单检测（闭环修复入口）**：检查 `.spec/技术方案评审/任务清单.md`，筛出 `已确认` 且 `修改方` 含 `Frontend-Tech-Design` 的任务——这些是本次必须修复的问题点/优化点，逐条纳入对应模块方案（新建时融入设计，改稿时作为变更项处理）；
-- **检测 browser-use（强制）**：
-  - browser-use 可用 → 用于查阅组件库 / Vite / React 官方文档与版本兼容性；
-  - browser-use **不可用 → 直接报错提醒用户安装**，**不跳过、不静默降级**：
-    > `【环境错误】未检测到 browser-use 浏览器工具。请先安装 browser-use 后再继续，否则无法保证选型与文档的版本准确性。`
+- **检测浏览器工具（强制）**：
+  - 检测顺序：**Playwright 优先 → browser-use 次之 → 其他浏览器工具（如 CodeBuddy 的 agent-browser）**——列举不穷举，凡能驱动真实浏览器打开页面/交互/截图的工具均算；任一可用 → 用于查阅组件库 / Vite / React 官方文档与版本兼容性；
+  - **全部不可用 → 直接报错提醒用户安装**，**不跳过、不静默降级**：
+    > `【环境错误】未检测到任何可用的浏览器工具（Playwright / browser-use / agent-browser 等）。请先安装并启用任一浏览器工具后再继续，否则无法保证选型与文档的版本准确性。`
   - 与后端 `Backend-Tech-Design`（不可用则跳过）**不同**——前端技术方案高度依赖组件库与构建工具的官方版本信息，缺浏览器工具会导致选型失真，必须报错中断。
 
 ### 步骤 2：技术选型澄清（见第五节规程）
@@ -291,7 +291,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 | 未问档位就直接按企业级写 | 步骤 2 档位每次必问 |
 | 未问组件库就默认 Ant Design | 组件库每次必问，让用户决定 |
 | 未问暗黑模式/国际化/浏览器兼容性 | 三项每次必问，缺一不放行 |
-| browser-use 不可用却继续产出 | 报错提醒用户安装，不跳过 |
+| 任何浏览器工具都不可用却继续产出 | 报错提醒用户安装，不跳过 |
 | 用 axios 而非 fetch | 统一原生 fetch 封装 |
 | 组件里堆满业务逻辑 | 逻辑下沉 hooks，组件只渲染 |
 | CSS 全局样式与组件样式混在一起 | 全局抽离 `src/styles/`，组件用 CSS Modules |

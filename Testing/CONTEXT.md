@@ -23,7 +23,7 @@
 | 全点击覆盖 | Full Click Coverage | 页面上**每一个可交互元素**（按钮/链接/输入框/下拉/开关/勾选/可点击卡片…）都至少触发一次并验证其反馈 | ❌ 不是「只点主按钮」；含次按钮、图标按钮、表格行操作等 |
 | 样式问题 | Style Defect | 页面视觉与 UI 设计稿/原型的偏差：布局错位、间距/配色/字号不符、组件溢出、遮挡、错位、三态（加载/空/错误）缺失或错乱 | ❌ 不是「功能不可用」；样式问题可与功能问题并存，分别记录 |
 | 慢接口 | Slow API | 响应耗时超过阈值的后端接口调用。默认阈值：`>1000ms` 记为慢、`>3000ms` 记为很慢、`>5000ms` 记为严重（【设计假设】，可在测试计划中调整） | ❌ 不是「接口报错」；报错是功能/异常问题，慢是性能问题，分别记录 |
-| 浏览器工具 | Browser Tool | 驱动真实浏览器跑项目与截图的工具，优先级：**Playwright → browser-use → midscenejs 视觉层**。功能遍历与网络监听优先 Playwright；不可用则用 browser-use；样式/视觉断言用 midscenejs | ❌ 三者不是互斥替代，可组合：功能用 Playwright/browser-use，样式用 midscenejs |
+| 浏览器工具 | Browser Tool | 驱动真实浏览器跑项目与截图的工具，优先级：**Playwright → browser-use → 其他浏览器工具（如 agent-browser）→ midscenejs 视觉层**。功能遍历与网络监听优先 Playwright；不可用则用 browser-use；再不可用则用其他浏览器工具；样式/视觉断言用 midscenejs。**任何浏览器工具都不存在 = 硬门禁失败，报错等安装不工作（D-09/D-10）** | ❌ 不是互斥替代，可组合：功能用 Playwright/browser-use，样式用 midscenejs；检测按能力判断，非名单穷举 |
 | 视觉断言 | Visual Assertion | 用 AI 判断「当前页面是否符合某自然语言描述/设计稿」，由 midscenejs `aiAssert`/`aiQuery`/`aiBoolean` 提供，纯截图驱动、无需选择器 | ❌ 不是 DOM 断言；不是像素级 diff（那是 Playwright toHaveScreenshot） |
 | 三态 | Loading/Empty/Error | 页面/区块的三种通用状态：加载中（骨架/进度）、空数据（空态文案/插画）、错误（失败提示/重试入口）。样式测试必须逐一验证 | ❌ 不是业务状态机（那是「全状态覆盖」的对象生命周期） |
 | 设计假设 | Design Assumption | 测试中未经用户确认、但为推进而采用的合理默认值（如慢接口阈值、截图保存格式），必须显式标注 `【设计假设】` | ❌ 不是「事实」；用户可推翻并回填 |
@@ -40,6 +40,8 @@
 | D-06 | 2026-09-02 | 样式问题**必须截图**作为证据：截图存入 `.spec/测试/screenshots/`，问题文档内嵌相对路径引用；截图工具优先级 Playwright → browser-use → midscenejs `recordToReport` | 用户明确「发现页面样式问题直接截图」 | ✅ 已确认（用户口述） |
 | D-07 | 2026-09-02 | 测试用例可追溯：每条用例编号 `TC-<页面/模块>-<序号>` 并标注来源 PRD 的 `AC-Mxx-nnn` 或原型页面；缺陷反向标注关联用例号 | 与 PRD-Design 的 AC 单源、Frontend-Dev 的 TC↔AC 追溯对齐 | ✅ 已确认（沿用约定） |
 | D-08 | 2026-09-02 | 测试产物归档到 `.spec/测试/`，含：`测试计划.md`（流程模板填充）、`测试用例.md`、`测试问题文档.md`、`screenshots/`、`接口性能清单.md` | 与其它 skill 的 `.spec` 归档习惯一致（统一放项目目录 `.spec/测试/`） | ✅ 已确认（沿用约定） |
+| D-09 | 2026-09-04 | 浏览器工具为**硬性前置**：开工预检 Playwright → browser-use，任一可用才开工；均不可用 → 报错提醒安装，不测试、不产出。midscenejs 保持可选增强（缺失降级并明示） | 用户裁决：硬依赖 skill 仅 Frontend-Tech-Design / Frontend-Dev / Testing 三个；测试无法脱离浏览器执行 | ✅ 已确认（用户 2026-09-04 指定） |
+| D-10 | 2026-09-04 | 检测范围**不穷举**：凡当前环境可用的、能驱动真实浏览器打开页面/交互/截图的工具均算（Playwright → browser-use → 其他如 CodeBuddy 的 agent-browser）；同日 Prototype-Review 亦升为硬依赖 | 用户指出 CodeBuddy 环境的浏览器工具为 agent-browser，按固定名单检测会漏判；原型评审同样依赖截图走查 | ✅ 已确认（用户 2026-09-04 指定） |
 
 ## 四、待决问题清单（Open Questions）
 

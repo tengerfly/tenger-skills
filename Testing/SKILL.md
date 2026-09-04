@@ -1,6 +1,6 @@
 ---
 name: Testing
-description: 项目测试（功能 + 样式 + 接口性能三合一）。高级测试专家依据需求文档（PRD）与 UI 设计稿（原型），本地启动并自动运行真实项目做全流程测试：先按测试流程模板生成测试计划与测试用例（功能用例覆盖全状态 + 全点击，样式用例覆盖三态，性能用例覆盖全接口），再用浏览器工具（Playwright 优先 → browser-use 次之 → midscenejs 做 AI 视觉断言）逐条执行——所有业务状态走一遍、页面所有可点击元素点一遍、发现样式问题立即截图存证、慢接口（>1000ms）逐条列出；最后输出一份分级（P0/P1/P2）的测试问题文档（含复现步骤与证据）。当用户要求测试项目、跑项目、E2E 测试、验收测试、UI 走查、找 bug、样式检查、接口性能排查时触发。
+description: 项目测试（功能 + 样式 + 接口性能三合一）。高级测试专家依据需求文档（PRD）与 UI 设计稿（原型），本地启动并自动运行真实项目做全流程测试：先按测试流程模板生成测试计划与测试用例（功能用例覆盖全状态 + 全点击，样式用例覆盖三态，性能用例覆盖全接口），开工先做浏览器工具硬性预检（Playwright 优先 → browser-use 次之 → 其他浏览器工具如 agent-browser，列举不穷举；任一可用才开工；全无则报错提醒安装，不跳过、不降级），再用浏览器工具逐条执行（midscenejs 为样式视觉断言的可选增强）——所有业务状态走一遍、页面所有可点击元素点一遍、发现样式问题立即截图存证、慢接口（>1000ms）逐条列出；最后输出一份分级（P0/P1/P2）的测试问题文档（含复现步骤与证据）。当用户要求测试项目、跑项目、E2E 测试、验收测试、UI 走查、找 bug、样式检查、接口性能排查时触发。
 compatibility: Claude Code / Agent SDK / OpenCode
 ---
 
@@ -71,7 +71,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 [1] 输入解析（读 PRD 页面视图/AC + 原型 + 项目 README/路由 + 接口清单）
         │
         ▼
-[2] 环境准备（本地 install + dev server + 浏览器工具检测 Playwright→browser-use→midscenejs）
+[2] 环境准备（本地 install + dev server + ◉ 浏览器工具硬性预检 Playwright→browser-use→其他如 agent-browser，全无→报错等安装；midscenejs 为可选增强）
         │
         ▼
 [3] 生成测试计划（填充测试流程模板）+ 测试用例（填充测试用例模板）
@@ -106,10 +106,11 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ### 步骤 2：环境准备
 - 按项目 README 本地安装依赖、启动 dev server（或构建 + 静态服务），确认 `http://localhost:{{port}}` 可访问；
-- **浏览器工具检测**（`references/browser-guide.md`）：
-  - 功能遍历 + 网络监听优先 **Playwright**；
-  - Playwright 不可用 → **browser-use**；
-  - 样式视觉断言 → **midscenejs**（需装 `@midscene/web` + 配置模型，见 `references/style-test-guide.md`）；
+- **浏览器工具硬性预检**（`references/browser-guide.md`，缺失不工作）：
+  - 检测顺序：**Playwright 优先 → browser-use 次之 → 其他浏览器工具（如 CodeBuddy 的 agent-browser）**——列举不穷举，凡当前环境可用的、能驱动真实浏览器打开页面/交互/截图的工具均算；任一可用即作为功能遍历与网络监听的工具；
+  - **全部不可用 → 立即报错并停止，不测试、不产出任何东西**：
+    > `【环境错误】未检测到任何可用的浏览器工具（Playwright / browser-use / agent-browser 等）。项目测试硬性依赖浏览器工具驱动真实页面执行，请先安装并启用任一浏览器工具，安装完成后重新运行本 skill。`
+  - 样式视觉断言 → **midscenejs 为可选增强**（需装 `@midscene/web` + 配置模型，见 `references/style-test-guide.md`）；不启用则在 Scope Gate 确认降级方案；
 - 记录最终工具方案，写入测试计划。
 
 ### 步骤 3：生成测试计划 + 测试用例
@@ -160,7 +161,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - **三态必测**：每页加载态 / 空态 / 错误态逐一验证；
 - **截图存证**：发现样式问题 → `recordToReport` 或 `page.screenshot()` 立即截图，命名 `<页面>_<问题简述>_<序号>.png`；
 - **比对基准**：以原型为基准，重点核对布局 / 间距 / 配色 / 字号 / 圆角 / 三态；
-- **工具降级**：midscenejs 不可用 → Playwright `toHaveScreenshot` 截图比对；Playwright 也不可用 → browser-use 截图 + 人工比对，并向用户说明降级原因。
+- **工具降级（仅 midscenejs 层）**：midscenejs 不可用 → Playwright `toHaveScreenshot` 截图比对；再不可用 → browser-use 截图 + 人工比对，并向用户说明降级原因。全部浏览器工具不可用不会发生（步骤 2 硬性预检已报错等安装）。
 
 ## 八、接口性能测试（慢接口识别）
 
@@ -204,7 +205,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 | 预期结果自己编、无 AC/原型来源 | 预期必须有来源，拿不准标【设计假设】（铁律 1） |
 | 三态没测（加载/空/错误） | 每页三态逐一验证并截图（铁律 8） |
 | 接口清单没提取就做性能测试 | 步骤 1 从后端 TDD/前端 api 提取接口清单 |
-| 工具不可用仍声称已自动测试 | 检测并降级，向用户明示降级原因 |
+| 浏览器工具均不可用仍开工或声称已自动测试 | 步骤 2 硬性预检直接报错等安装，禁止跳过（midscenejs 缺失按可选增强降级并明示） |
 | 遇到不确定自己拍板 | 停下问用户，给选项（§十） |
 
 ## 十二、资源清单

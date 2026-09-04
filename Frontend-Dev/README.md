@@ -25,7 +25,7 @@
 | 模块化 | `features/<模块>/components/`（模块私有）+ `src/components/`（跨模块/基础） |
 | 组件抽离铁律 | 模块内 ≥2 次复用 → `features/<模块>/components/`；两个模块共用 → 提升到 `src/components/` |
 | 测试 | 测试先行，承接 FTDD 模块测试用例（TC-Mxx ↔ AC-Mxx，渲染/交互/数据流/边界/异常） |
-| 还原校验 | Playwright 截图比对 → browser-use → 均不可用则跳过并提示，静态对照兜底 |
+| 浏览器工具硬门禁 | 开工预检 Playwright → browser-use → 其他（如 agent-browser），任一可用即用于还原校验；全无报错等安装，不跳过（SKILL 步骤 1） |
 | 不确定即问 | 遇到不确定问题不自己发挥，停下来问用户；有选项则给出选项（含推荐项）让用户选（SKILL §八） |
 | 开发计划/任务 | 开发前列「功能点」原子开发计划 → 生成开发任务清单（todo 面板 + `PROJECT.md`）；每完成一个功能点更新任务状态 |
 | 进度文档 | `PROJECT.md`：基本情况 + 项目规则 + 开发计划与任务清单 + 关键决策 + 还原核对；断点续做先读它恢复进度与规则 |
@@ -59,7 +59,7 @@ Frontend-Dev/
 │   ├── code-style-guide.md         # 前端代码编写规范（简洁性/命名/TS 类型/注释简单易懂+传参必注/SCSS token，React/TS 示例）
 │   ├── test-guide.md               # 测试实现规范（测试先行/承接 FTDD 用例/五类覆盖/Vitest+RTL 配置）
 │   ├── tech-stack-guide.md         # 各端工程落地骨架 + §六 提交门禁（eslint/stylelint/commitlint）+ §七 monorepo 落地
-│   └── fidelity-guide.md           # 页面还原度校验（Playwright/browser-use/静态对照流程 + 差异分类）
+│   └── fidelity-guide.md           # 页面还原度校验（Playwright/browser-use 截图比对 + 差异分类）
 ├── assets/                         # 输出模板
 │   ├── project-structure-template.md # 工程目录结构模板（对齐 FTDD §6 + 基础设施 + monorepo 落位 + 提交门禁文件 + 运行说明）
 │   ├── module-code-template.md     # 页面/模块代码骨架模板（测试先行 + api/hooks/组件/页面容器 + 抽离 + 还原核对 + 更新任务 + 提交）
@@ -76,7 +76,7 @@ Frontend-Dev/
 4. Scope 确认范围后，**列「功能点」原子开发计划 → 生成开发任务清单（todo 面板 + `PROJECT.md`）**；
 5. 逐页面「测试先行」实现（先写测试 → api → hooks → 组件 → 页面容器）；**遇到不确定即停下来问用户并给选项**；
 6. 每完成一个功能点 → **更新任务状态（todo + PROJECT.md）** → 自检 → `git commit`（过 eslint + stylelint + commitlint，一次提交一件事，不擅自 push）；
-7. 执行组件抽离落地检查 + 接口契约对齐 + 全局一致性检查（含还原核对：Playwright / browser-use / 静态对照）；
+7. 执行组件抽离落地检查 + 接口契约对齐 + 全局一致性检查（含还原核对：Playwright / browser-use 截图比对）；
 8. 交付：代码在用户指定目录，收口 `PROJECT.md` + README 运行说明与关键决策记录。
 
 ## 六、与其它 Skill 的关系

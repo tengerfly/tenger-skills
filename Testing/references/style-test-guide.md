@@ -87,4 +87,4 @@ test('首页空态样式', async ({ page, aiAssert }) => {
 | 2 | Playwright `toHaveScreenshot` | 像素级截图比对，需基线截图；无 AI 语义判断 |
 | 3 | browser-use 截图 + 人工比对 | 截图后人工对照设计稿，最兜底 |
 
-> midscenejs 不可用（无依赖/无 Key）时，降级到 Playwright 或 browser-use 截图，并向用户说明：`【提示】未配置 midscenejs，样式测试已降级为截图人工比对。`
+> midscenejs 不可用（无依赖/无 Key）时，降级到 Playwright 或 browser-use 截图，并向用户说明：`【提示】未配置 midscenejs，样式测试已降级为截图人工比对。`（midscenejs 为可选增强；全部浏览器工具均不可用属硬门禁失败，开工预检即报错等安装，不进入降级链。）

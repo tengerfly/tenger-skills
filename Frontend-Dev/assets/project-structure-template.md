@@ -153,7 +153,7 @@ pnpm test:coverage
 | /orders | 订单列表 | 01 订单模块 | 见基线清单 |
 
 ## 还原核对记录
-方式：Playwright 自动截图 / 静态对照
+方式：Playwright 自动截图 / browser-use 截图
 结论：逐页结论表（见 fidelity-guide §3.3）
 ```
 

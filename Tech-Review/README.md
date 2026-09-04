@@ -35,7 +35,7 @@
 输入解析 ──► 双视角并行评审 ──► 前后端关联一致性专项核查 ──► 两份角色文档落盘 ──► 汇总去重 ──► 归档到 .spec/
 ```
 
-1. **输入解析**：定位 PRD / 原型 / TDD / FTDD 四类文档，检测 browser-user；
+1. **输入解析**：定位 PRD / 原型 / TDD / FTDD 四类文档，检测浏览器工具（Playwright → browser-use）；
 2. **双视角并行评审**：后端按 `backend-checklist.md`、前端按 `frontend-checklist.md` 逐条找断点；
 3. **前后端关联一致性专项核查**：按 `integration-checklist.md` 核查接口 / 数据 / 状态 / 权限一致性；
 4. **两份角色文档**：`后端技术方案评审.md` / `前端技术方案评审.md`；
