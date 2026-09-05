@@ -26,7 +26,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ### 1.2 输入与输出
 - **输入源**：
-  - PRD 文档目录（默认被开发项目 `.spec/PRD/`）——若存在 `PRD速查表.md`，**先读它建立六大索引**（术语/页面/模块/规则/字段/AC），逐字比对时按锚点回原文；
+  - PRD 文档目录（默认被开发项目 `.spec/PRD/`）——若存在 `PRD速查表.md`，**先读它建立六大索引**（术语/页面/模块/业务规则/业务信息/AC），逐字比对时按锚点回原文；
   - 布局清单（`.spec/原型/布局清单.md` 或 UI-UX-Design 步骤 2 展开的「设计任务清单」）；
   - 设计规范归档副本（`.spec/设计稿/design-system.md`；权威源 `.superdesign/design-system.md`，以归档副本为评审对照，缺副本时指明）；
   - 设计稿工程目录（默认 `.spec/设计稿/`，含各页定稿 HTML、`README.md`——记录页面清单 / draftId / 版本 / 输入来源 / 质量门禁记录）。

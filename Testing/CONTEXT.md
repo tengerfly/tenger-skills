@@ -44,6 +44,7 @@
 | D-10 | 2026-09-04 | 检测范围**不穷举**：凡当前环境可用的、能驱动真实浏览器打开页面/交互/截图的工具均算（Playwright → browser-use → 其他如 CodeBuddy 的 agent-browser）；同日 Prototype-Review 亦升为硬依赖 | 用户指出 CodeBuddy 环境的浏览器工具为 agent-browser，按固定名单检测会漏判；原型评审同样依赖截图走查 | ✅ 已确认（用户 2026-09-04 指定） |
 | D-11 | 2026-09-05 | **UI 还原度检查接入 `Fidelity-Review`**：有 UI 设计稿基准（`.spec/设计稿/` 或用户指定外部稿）时，步骤 6 样式测试调用 `Fidelity-Review`（Testing 场景模式）做视觉还原 + 交互还原 + 超长文案专项，按其 `mini-issue` 模板就地收轻量清单并入测试问题文档；无设计稿基准则跳过并明示（回退原型基准 + midscenejs 视觉断言） | 用户裁决：页面还原度 skill 独立成 `Fidelity-Review`，Testing 测试流程内部会调用它；Fidelity-Review 只审不改、不建任务清单（由 Testing 统一裁决），避免双闭环 | ✅ 已确认（用户 2026-09-05 指定） |
 | D-12 | 2026-09-05 | 模式④自身体检发现的 2 条 P2 当场修复：① 步骤 1「UI-UX-Design 高保真稿 HTML」→「UI-UX-Design 设计稿 HTML」，对齐 CONTEXT 术语表「设计稿（Design Mockup）」权威定义；② description「与 UI 设计稿（原型）」→「与 UI 设计稿/原型（设计稿优先，缺失回退原型）」，消除括号歧义，与步骤 1 双通道基准一致 | 体检维度一·术语一致 + 维度五·跨位置同步；经用户授权「后续问题一律当场修」 | ✅ 已确认 |
+| D-13 | 2026-09-05 | references 层速查表入口补齐：`references/test-case-guide.md` §2.1「从 PRD 各模块文档的 Mermaid 状态机图提取状态」处补注「各模块文档（经 SKILL 步骤 1 先读 `PRD速查表.md` 建索引，按锚点定位模块）」，消除该独立加载执行文档脱离 SKILL 步骤 1 速查表声明的失同步（`assets/test-process-template.md` 已含速查表，此清单为遗漏） | 体检维度五·跨位置同步（P1）；经用户授权「后续问题一律当场修」 | ✅ 已确认 |
 
 ## 四、待决问题清单（Open Questions）
 
