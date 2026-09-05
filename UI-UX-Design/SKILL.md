@@ -200,6 +200,15 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - `<body>` 无 class，全部布局在一个根 `<div>` 内；每个 `<a>` 有唯一描述性 id 且不嵌套；链接用完整 https URL 或 `#hash` 占位，**禁止相对路径**；
 - 违反渲染契约会被拒绝并返回修复指引，轻问题以 `warnings[]` 返回——必须处理后再回传。
 
+### 直编闭环流程（每次更新云端都最新 · 用户拍板 2026-09-05）
+
+1. **本地直编 / 迭升完成**（改 `.spec/设计稿/*.html`）→ 保存；
+2. **自动本地打开确认**：起本地静态服务 / 打开 HTML 渲染，请用户确认「没问题」——用户确认的是本地最新稿，不是旧云稿；
+3. **用户确认 OK → 立即 `import-design-draft --into <draftId>` 回传云端**（同一轮内完成，不留「本地新/云端旧」中间态）——评审/宿主入口（主态页点「设置」等 `<a>`）指向的是云端草稿 URL，云端才是单一事实源；只改本地 = 用户看到旧稿 = 误判「模块没生成」；
+4. 回传后用 `get-design` 核 version 递增，README 稿源对照同步为已回传版本——不得以「待回传/本地直编」当定稿交付。
+
+> 目标：每次更新后云端都是最新页面，「待回传」不跨会话存在。详见 references/superdesign-sop.md §六·附 / design-review-gate.md §七，学径 2026-09-05 案例。
+
 ## 八、命令速查（详见 references/superdesign-sop.md）
 
 ```bash
@@ -277,6 +286,8 @@ superdesign upload-asset <file> --project-id <id> --purpose brand|content|refere
 | 只把 .superdesign/ 当交付物 | 归档只认 .spec/设计稿/，.superdesign 是工作目录 |
 | 跨会话重复建项目 | 先查 .superdesign/resume.json / fetch-design-nodes 找回 |
 | import 直编的 HTML 用相对路径引用图片 | 只允许 https 公网 URL 或 data:；先 upload-asset 取公网 URL |
+| 只改了本地 .spec/设计稿/*.html 就宣布完成 | 直编/迭升后必须 import-design-draft 回传云端；云端（宿主入口指向的 draft URL）是评审单一事实源，只改本地 = 用户看到旧稿（学径 2026-09-05：设置弹框 V1.4 迭升未回传） |
+| 迭升新增模块/分类后未核宿主入口链 | 单稿迭升后查「宿主页入口链接 → 目标云稿」整条链 + README 稿源对照，任一环旧即遗漏 |
 
 ## 十二、资源清单
 
