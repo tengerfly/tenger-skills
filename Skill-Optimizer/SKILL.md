@@ -1,6 +1,6 @@
 ---
 name: Skill-Optimizer
-description: Skill 元优化器（长期迭代）。对本仓库各 Skill 做问题记录、聊天挖掘、自洽体检与全方位优化：① 记录——用户说「记个问题」「这个 skill 哪里不好」「复盘这次运行」时，把问题写入 issue 池；② 挖掘——用户提供聊天记录（chats/ 目录或直接粘贴）时，从中提取暴露的优化点并沉淀；③ 优化——用户说「优化/精简/迭代 XX skill」时，读 issue 池做全方位优化（问题修复 + 性能体积精简 + 触发精准 + 术语一致），把改进沉淀回各 Skill 的 SKILL.md / references / CONTEXT.md；④ 体检——用户说「体检/检查 XX skill」「XX 自洽吗/前后一致吗」时，对 skill 做五维自洽体检（术语一致/逻辑闭环/文句质量/声明-流程一致/跨位置同步），出问题清单交用户逐条裁决。当用户要求记录 skill 问题、复盘或提取优化点、优化/精简/迭代某个 skill、体检或检查某 skill 的自洽一致性时触发。
+description: Skill 元优化器（长期迭代）。对本仓库各 Skill 做问题记录、聊天挖掘、自洽体检与全方位优化：① 记录——用户说「记个问题」「这个 skill 哪里不好」「复盘这次运行」时，把问题写入 issue 池；② 挖掘——用户提供聊天记录（chats/ 目录或直接粘贴）时，从中提取暴露的优化点并沉淀；③ 优化——用户说「优化/精简/迭代 XX skill」时，读 issue 池做七维全方位优化（问题修复 + 触发精准 + 上下文体积 + 指令写法 + 流程稳定 + 简洁不落俗 + 术语一致），把改进沉淀回各 Skill 的 SKILL.md / references / CONTEXT.md；④ 体检——用户说「体检/检查 XX skill」「XX 自洽吗/前后一致吗」时，对 skill 做六维自洽体检（术语一致/逻辑闭环/文句质量/声明-流程一致/跨位置同步/简洁不落俗），出问题清单交用户逐条裁决。当用户要求记录 skill 问题、复盘或提取优化点、优化/精简/迭代某个 skill、体检或检查某 skill 的自洽一致性时触发。
 compatibility: Claude Code / Agent SDK / OpenCode
 ---
 
@@ -19,11 +19,11 @@ compatibility: Claude Code / Agent SDK / OpenCode
 | ① 记录 | 用户喊「记个问题 / 复盘这次运行」 | 把问题写入 issue 池 | `issue/<skill>/<日期>/xx.md` |
 | ② 挖掘 | 用户给聊天记录（chats/ 或粘贴） | 从记录提取优化点 | 提取清单 → 确认后落 issue |
 | ③ 优化 | 用户喊「优化 / 精简 / 迭代 XX」 | 读 issue 做全方位优化，沉淀回 skill | 各 skill 的 SKILL.md / references / CONTEXT.md |
-| ④ 体检 | 用户喊「体检 / 检查 XX」「XX 自洽吗 / 前后一致吗」 | 五维自洽体检，出问题清单 | 问题清单 → 用户逐条裁决（当场修 / 记 issue / 忽略） |
+| ④ 体检 | 用户喊「体检 / 检查 XX」「XX 自洽吗 / 前后一致吗」 | 六维自洽体检，出问题清单 | 问题清单 → 用户逐条裁决（当场修 / 记 issue / 忽略） |
 
-**标准先行**：每个模式都有固定标准——记录按 `assets/issue-template.md`、挖掘按 `assets/signal-checklist.md`、优化按 `assets/optimize-checklist.md`、体检按 `assets/self-audit-checklist.md`。执行严格按标准逐项走，保证每次流程固定，不凭感觉发挥。
+**标准先行**：每个模式都有固定标准——记录按 `assets/issue-template.md`、挖掘按 `assets/signal-checklist.md`、优化按 `assets/optimize-checklist.md`、体检按 `assets/self-audit-checklist.md`；另有通用编写规范 `assets/skill-writing-standard.md`（优化维度二~六判据来源）。执行严格按标准逐项走，保证每次流程固定，不凭感觉发挥。
 
-**自我指涉（含标准）**：本 skill 自身也是被优化对象，其问题（**含四份标准本身的问题**）记到 `issue/Skill-Optimizer/`，可自优化；**优化顺序永远是「先优化自己——先修订标准，再用修订后的标准干活——再优化其他 skill」**。
+**自我指涉（含标准）**：本 skill 自身也是被优化对象，其问题（**含五份标准本身的问题**）记到 `issue/Skill-Optimizer/`，可自优化；**优化顺序永远是「先优化自己——先修订标准，再用修订后的标准干活——再优化其他 skill」**。
 
 **长期迭代**：这是一个持续过程——issue 池不断积累，优化按需 / 周期性进行，不是一次性动作。
 
@@ -124,20 +124,23 @@ issue/
 
 **触发**：用户说「优化 XX」「精简 XX」「迭代 XX」「让 XX 更贴合我的需求」。
 
-**顺序**：**先优化本 skill（Skill-Optimizer）自己——含先修订四份标准（标准有问题时），再用修订后的标准执行 → 再优化目标 skill**。
+**顺序**：**先优化本 skill（Skill-Optimizer）自己——含先修订五份标准（标准有问题时），再用修订后的标准执行 → 再优化目标 skill**。
 
-**全方位核验维度**（按 `assets/optimize-checklist.md` 逐项执行）：
+**全方位核验维度**（按 `assets/optimize-checklist.md` 逐项执行，维度二~六判据见 `assets/skill-writing-standard.md`）：
 
 | 维度 | 检查什么 |
 |---|---|
 | ① 问题修复 | 读 `issue/<目标skill>/` 里「待处理 / 处理中」的项，逐条修 |
-| ② 性能体积 | SKILL.md / references 是否过大冗余 → 精简、下沉 references、压缩描述 |
-| ③ 触发精准 | description 触发词是否准确、是否误触发 / 漏触发 |
-| ④ 术语一致 | 与 CONTEXT.md 术语是否冲突 |
+| ② 入口·触发精准 | description 覆盖 what + when 与动词/场景/同义表达 |
+| ③ 省·上下文体积 | SKILL.md ≤ 500 行硬红线；下沉 references；scripts 封装；assets 不加载 |
+| ④ 准·指令写法 | 问题引导注意力 + 禁令清单 + 铁律/Red Flag |
+| ⑤ 稳·流程稳定 | 工作流清单 BLOCKING/REQUIRED + 确认节点 + 交付清单 + 参数系统 |
+| ⑥ 简洁不落俗 | 反 AI 味套话、删冗余措辞 |
+| ⑦ 术语一致 | 与 CONTEXT.md 术语是否冲突 |
 
 **流程**：
 1. 读 `issue/<目标skill>/`，列出待修问题；
-2. 按 optimize-checklist 对目标 skill 做四维度核验；
+2. 按 optimize-checklist 对目标 skill 做七维度核验；
 3. 改动 SKILL.md / references / assets（只动有依据的，见铁律）；
 4. 在目标 skill 的 `CONTEXT.md` 决策日志追加一条 `D-xx`（记录：改了什么、依据哪条 issue）；
 5. 回填 issue 状态：已解决 → `已沉淀` + 沉淀目标 + 沉淀位置（文件 / D-xx）；不处理 → `已忽略` + 理由。
@@ -146,18 +149,19 @@ issue/
 
 **触发**：用户说「体检 / 检查 XX skill」「看看 XX 自洽吗 / 前后一致吗 / 逻辑有没有闭环」。
 
-**干什么**：把目标 skill 当产品查 bug——按 `assets/self-audit-checklist.md` 做**五维自洽体检**：
+**干什么**：把目标 skill 当产品查 bug——按 `assets/self-audit-checklist.md` 做**六维自洽体检**：
 ① **术语·命名一致**——同一概念同指异名（A / A1）、与 CONTEXT.md 术语表冲突、旧术语残留；
 ② **逻辑闭环**——悬空引用（「见 §X / D-xx / 某文件」目标不存在或编号对不上）、流程断头、宣称的 Gate/检测没落地、并列枚举数量前后不一致；
 ③ **文句质量**——病句、错别字、模板占位符没替换；
 ④ **声明-流程一致**——凡声明「硬依赖 / 前置 / 需要 X（如浏览器工具）」，正文必须有对应「检测 → 阻塞/跳过 → 报错」步骤，两边对不上即缺陷；
-⑤ **跨位置同步**——关键事实 / 编号 / 术语 / 引用分散在多文件时只改一处 = 失同步，按关键事实全仓 grep 比对检出。
+⑤ **跨位置同步**——关键事实 / 编号 / 术语 / 引用分散在多文件时只改一处 = 失同步，按关键事实全仓 grep 比对检出；
+⑥ **简洁不落俗**——AI 味套话（「确保高质量」「综上所述」类）、冗词、emoji/加粗/表格堆砌。
 
 **范围（默认）**：目标 skill 全套文件（SKILL.md / README.md / CONTEXT.md / assets / references）+ 它在全仓的交叉引用（根 README / Workflow / 其他 skill / issue 池）。也可全仓体检（逐 skill 跑，产出汇总）。
 
 **流程**：
 1. 定位目标 skill（用户点名，或根据上下文判断后向用户确认）；
-2. 加载 `assets/self-audit-checklist.md`，按五维逐项核验（机械 grep + AI 通读双通道）；
+2. 加载 `assets/self-audit-checklist.md`，按六维逐项核验（机械 grep + AI 通读双通道）；
 3. 产出**问题清单**：每条含 等级（P0/P1/P2）+ 位置（文件/节）+ 现象 + 修复方向 + 修复判据；
 4. **逐条向用户裁决**：当场修 → 改完在目标 skill CONTEXT.md 记一条 D-x；记 issue → 按 `assets/issue-template.md` 落 `issue/<skill>/<日期>/`（来源填「体检」）；忽略 → 说明理由；
 5. 输出体检小结：查了哪些文件、发现几条、每条去向，与用户确认后收尾。
@@ -192,8 +196,9 @@ issue/
 
 - `assets/issue-template.md`：问题文件模板
 - `assets/signal-checklist.md`：挖掘模式信号识别清单
-- `assets/optimize-checklist.md`：全方位优化检查清单（含性能体积）
-- `assets/self-audit-checklist.md`：体检模式自洽检查清单（模式④标准，五维）
+- `assets/skill-writing-standard.md`：Skill 编写规范（通用底座，优化维度二~六判据来源）
+- `assets/optimize-checklist.md`：全方位优化检查清单（七维）
+- `assets/self-audit-checklist.md`：体检模式自洽检查清单（模式④标准，六维）
 - `references/instrumentation-guide.md`：埋点规范（各 skill 自查上报规则）
 - `issue/`：问题池（唯一事实源）
 - `chats/`：待挖掘的聊天记录目录

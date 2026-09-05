@@ -23,14 +23,16 @@
 | 挖掘 | Mining | 从聊天记录（`chats/` 目录或粘贴文本）提取优化点的模式，按 signal-checklist 扫四类信号 | ❌ 不是复盘本次会话（那属兜底记录） |
 | 信号 | Signal | 聊天记录里可识别的优化线索，四类：负面/正面/返工/触发痕迹 | ❌ 不是问题本身（信号需聚合提炼才成为问题） |
 | 沉淀 | Precipitate | 优化完成的落点动作：issue 状态改「已沉淀」，强制填沉淀目标 + 沉淀位置 | ❌ 不是「已解决」（已解决无从验证是否真变成了 skill 改进） |
-| 标准 | Standard | 每个模式的固定执行依据：issue-template（记录）/ signal-checklist（挖掘）/ optimize-checklist（优化）/ self-audit-checklist（体检） | ❌ 不是参考资料（标准是必须逐项走的强约束） |
+| 标准 | Standard | 本 skill 的固定执行依据，共五份：四份模式标准（issue-template 记录 / signal-checklist 挖掘 / optimize-checklist 优化 / self-audit-checklist 体检）+ 一份编写规范（skill-writing-standard，优化维度二~六判据来源） | ❌ 不是参考资料（标准是必须逐项走的强约束） |
 | 标准可迭代 | Standard Iterability | 标准本身也是被优化对象：标准有问题记到 `issue/Skill-Optimizer/`，优化时先修标准再用 | ❌ 不是随意改标准（同样走 issue + 决策日志留痕） |
-| 全方位优化 | Full-spectrum Optimization | 优化模式的四维度核验：问题修复/性能体积/触发精准/术语一致 | ❌ 不只是修 issue（还有性能体积等非 issue 驱动维度） |
-| 性能体积 | Performance & Size | skill 文件过大/冗余/token 超载导致的执行性能问题；优化手段：精简/下沉 references/压缩描述 | ❌ 不是业务代码性能（那是 Testing / Code-Review 管的） |
+| 全方位优化 | Full-spectrum Optimization | 优化模式的七维度核验：问题修复/入口·触发精准/省·上下文体积/准·指令写法/稳·流程稳定/简洁不落俗/术语一致 | ❌ 不只是修 issue（还有体积、指令、流程、文风等非 issue 驱动维度） |
+| 编写规范 | Writing Standard | `assets/skill-writing-standard.md`，一个 Skill 该怎么写的通用底座（入口/省/准/稳/简洁不落俗），是 optimize-checklist 维度二~六的判据来源 | ❌ 不是模式标准（4 份模式标准各对应一个模式的执行 checklist；编写规范是通用知识底座） |
+| 简洁不落俗 | Concise & Unclichéd | 反 AI 味套话的写作要求：删空洞承诺性措辞（「确保高质量」类）、套话开场/收尾/过渡、冗余引导语、emoji/加粗/表格堆砌；一句话能说清不写三句 | ❌ 不是「省」（省管结构体积，简洁不落俗管行文表达） |
+| 性能体积 | Performance & Size | skill 文件过大/冗余/token 超载导致的执行性能问题；硬红线 SKILL.md ≤ 500 行，超限下沉 references；其余手段：精简/scripts 封装/assets 不加载/压缩描述 | ❌ 不是业务代码性能（那是 Testing / Code-Review 管的） |
 | 自我指涉 | Self-reference | 元技能自身也进 issue 池可自优化；优化顺序永远是先己后人 | ❌ 不是只优化别人 |
 | 正面参考 | Positive Reference | 用户明确认可、值得沉淀的做法，作为优化方法借鉴 | 与「反面参考」成对，好做法坏做法都有案例可依 |
 | 反面参考 | Negative Reference | 用户明确否定的做法，作为坏案例避免再犯 | ❌ 不是待修问题（它是已确认的坏案例记录） |
-| 自洽体检 | Self-audit / Consistency Audit | 模式④：把目标 skill 当产品查 bug，按 self-audit-checklist 五维核验（术语一致 / 逻辑闭环 / 文句质量 / 声明-流程一致 / 跨位置同步），产出问题清单交用户逐条裁决 | ❌ 不是优化（只出清单不改，改动逐条经批准）；❌ 不是 issue（issue 记运行中已暴露的问题，体检查存量文档缺陷） |
+| 自洽体检 | Self-audit / Consistency Audit | 模式④：把目标 skill 当产品查 bug，按 self-audit-checklist 六维核验（术语一致 / 逻辑闭环 / 文句质量 / 声明-流程一致 / 跨位置同步 / 简洁不落俗），产出问题清单交用户逐条裁决 | ❌ 不是优化（只出清单不改，改动逐条经批准）；❌ 不是 issue（issue 记运行中已暴露的问题，体检查存量文档缺陷） |
 
 ## 三、决策日志（Decision Log）
 
@@ -49,8 +51,9 @@
 | D-11 | 2026-09-04 | 评审死循环对策采纳（作为后续对评审 skill 的优化方向）：招1 问题带修复判据 / 招2 分级冻结 / 招3 轮次超限交裁决 / 升级进 issue 池 | 用户确认：评审-改-再评审不收敛需在 skill 层堵住 | ✅ 已确认 |
 | D-12 | 2026-09-05 | 新增模式④ 自洽体检：独立入口；范围默认 = 单 skill 全套文件 + 全仓交叉引用；问题去向 = 逐条用户裁决（当场修 → 目标 skill CONTEXT 记 D-x / 记 issue 来源=体检 / 忽略）；防迭代失同步 = 轻量核验（不维护持久清单），优化收尾强制同步验证；原优化侧泛用「体检」措辞改为「核验/检查」以免与模式④冲突 | 用户诉求：检查 skill 逻辑闭环与一致性（A/A1 同指异名、逻辑断头、文句、声明需浏览器却无硬依赖、迭代只改一处失同步）；四项均选推荐方案 | ✅ 已确认 |
 | D-13 | 2026-09-05 | 模式④自身体检发现的 3 条 P2 当场修复：① SKILL.md 第八节标题显标「7 条铁律」，对齐 self-audit-checklist 维度二「铁律 X 条」枚举一致要求；② 第三节来源字段显标「4 种」，与「10 个预定义标签」等枚举标注风格统一；③ SKILL.md 第二节示例结构与 issue/README.md 示例结构把不存在的 `PRD-Design/2026-09-04`（与 `2026-09-05`）改为实际存在的 `Prototype-Design/2026-09-04`，使示例可被读者对照实际目录验证 | 体检维度二·枚举一致 / 维度二·逻辑闭环，经用户裁决「当场修」 | ✅ 已确认 |
+| D-14 | 2026-09-05 | 优化标准四维→七维（新增入口·触发精准 / 准·指令写法 / 稳·流程稳定 / 简洁不落俗；原性能体积→省·上下文体积并定 SKILL.md ≤ 500 行硬红线）；体检标准五维→六维（新增简洁不落俗/文风）；新增第五份标准 `assets/skill-writing-standard.md`（编写规范通用底座，优化维度二~六判据来源）；关闭 Q2 量化部分 | 用户提交「如何写好 Skill」心得（入口/省/准/稳 + 简洁不落俗）要求沉淀为优化标准；三个结构性决策均选最全方案（扩维 + 独立编写规范 + 500 行硬红线 + 体检同步加维） | ✅ 已确认 |
 
 ## 四、待决问题清单（Open Questions）
 
 - [ ] Q1：埋点如何落到各专业 skill（当前 15 个；`instrumentation-guide.md` 已备，具体落地作为 Skill-Optimizer 上线后第一批优化任务）
-- [ ] Q2：性能体积是否需要量化阈值（如 SKILL.md 行数 / token 上限），当前按定性判断
+- [x] Q2：~~性能体积量化阈值~~ 已定（D-14）：SKILL.md ≤ 500 行硬红线，超限强制下沉 references
