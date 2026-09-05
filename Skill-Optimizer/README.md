@@ -23,7 +23,7 @@
 |---|---|
 | 记录 | `assets/issue-template.md`（问题字段） |
 | 挖掘 | `assets/signal-checklist.md`（四类信号） |
-| 优化 | `assets/optimize-checklist.md`（七维度核验） |
+| 优化 | `assets/optimize-checklist.md`（八维度核验） |
 | 体检 | `assets/self-audit-checklist.md`（六维自洽检查） |
 
 **标准本身也可被优化**：标准有问题 → 记到 `issue/Skill-Optimizer/` → 优化时先修标准，再用修订后的标准干活。
@@ -38,7 +38,7 @@
 
 `待处理 → 处理中 → 已沉淀 / 已忽略`；「已沉淀」强制填沉淀目标 + 沉淀位置（文件 / 决策号 D-xx），让「问题 → 改进」双向可追溯。
 
-### 全方位优化（七维度）
+### 全方位优化（八维度）
 
 1. **问题修复**：读 issue 池「待处理」项逐条修；
 2. **入口·触发精准**：description 覆盖 what + when 与动词/场景/同义表达；
@@ -46,9 +46,10 @@
 4. **准·指令写法**：问题引导注意力 + 禁令清单 + 铁律/Red Flag；
 5. **稳·流程稳定**：工作流清单 BLOCKING/REQUIRED + 确认节点 + 交付清单 + 参数系统；
 6. **简洁不落俗**：反 AI 味套话、删冗余措辞；
-7. **术语一致**：与 CONTEXT.md 术语表对齐。
+7. **术语一致**：与 CONTEXT.md 术语表对齐；
+8. **心法注入**：把《Vibe Coding 高效能秘籍》心法落到 skill 执行层（做减法 / 决策规划分离 / review 独立性 / 验收标准前置 / 派活四件套 / 苏格拉底反问 / 自动化兜底）。
 
-维度二~六的判据来源 = `assets/skill-writing-standard.md`（编写规范）。
+维度二~六的判据来源 = `assets/skill-writing-standard.md`（编写规范）；维度八判据来源 = `assets/vibe-principles-mapping.md`（心法映射表）。
 
 ### 自我指涉
 
@@ -61,12 +62,13 @@ Skill-Optimizer/
 ├── SKILL.md                       # 主指令（四模式 + 字段 + 状态机 + 铁律）
 ├── CONTEXT.md                     # 术语对齐 + 决策日志
 ├── README.md                      # 本文件
-├── assets/                        # 五份标准（4 模式标准 + 1 编写规范）
+├── assets/                        # 六份标准（4 模式标准 + 1 编写规范 + 1 心法映射）
 │   ├── issue-template.md          # 记录模式：问题文件模板
 │   ├── signal-checklist.md        # 挖掘模式：信号识别清单
-│   ├── optimize-checklist.md      # 优化模式：全方位核验清单（七维）
+│   ├── optimize-checklist.md      # 优化模式：全方位核验清单（八维）
 │   ├── self-audit-checklist.md    # 体检模式：自洽检查清单（六维）
-│   └── skill-writing-standard.md  # 编写规范：优化维度二~六判据来源
+│   ├── skill-writing-standard.md  # 编写规范：优化维度二~六判据来源
+│   └── vibe-principles-mapping.md # 心法映射：优化维度八判据来源
 └── references/
     └── instrumentation-guide.md   # 埋点规范（各 skill 自查上报规则）
 
@@ -78,5 +80,5 @@ chats/                             # 待挖掘的聊天记录（仓库根）
 
 - **记个问题**：对它说「记个问题：PRD-Design 老是漏问入口」；
 - **挖掘记录**：把聊天记录丢进 `chats/`，说「挖掘 chats/ 里的优化点」，提取清单经你确认后落 issue；
-- **优化 skill**：说「优化 PRD-Design」，它先自检（含修订标准），再读 issue 做七维度核验，改动留痕到目标 skill 的 CONTEXT.md 决策日志并回填 issue 状态。
+- **优化 skill**：说「优化 PRD-Design」，它先自检（含修订标准），再读 issue 做八维度核验，改动留痕到目标 skill 的 CONTEXT.md 决策日志并回填 issue 状态。
 - **体检 skill**：说「体检 PRD-Design」或「检查 PRD-Design 自洽性」，它对 skill 全套文件 + 全仓交叉引用做六维自洽体检，产出问题清单后逐条经你裁决（当场修 / 记 issue / 忽略）。

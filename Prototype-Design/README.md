@@ -40,7 +40,7 @@
 Prototype-Design/
 ├── SKILL.md                          # 主指令：流水线 + 布局清单Gate + 低保真视觉规范 + 逻辑闭环检测
 ├── README.md                         # 本文档
-├── CONTEXT.md                        # 决策日志（D-01~D-09）
+├── CONTEXT.md                        # 决策日志（D-01~D-11）
 ├── references/                       # 深度指南（按需加载）
 │   ├── html-spec.md                  # 低保真 HTML 原型实现规范
 │   ├── completeness-check.md         # 逻辑闭环检测门禁（6 项）

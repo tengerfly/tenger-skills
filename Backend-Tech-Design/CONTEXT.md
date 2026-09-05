@@ -31,6 +31,7 @@
 | # | 日期 | 决策 | 理由 | 状态 |
 |---|---|---|---|---|
 | D-01 | 2026-09-05 | 模式④自身体检发现的 3 条当场修复：① 新建本 CONTEXT.md 补齐仓库三件套约定（SKILL + README + CONTEXT + assets + references）；② README.md 浏览器行 + 流水线行从「browser-use 单工具」旧表述改为三级软检测（Playwright → browser-use → 其他），与 SKILL.md 步骤 1 / description / 根 README 软检测组口径一致；③ SKILL.md 步骤 1 标题同步改「浏览器工具检测」；④ README「与其它 Skill 的关系」图从旧 11 节点链更新为 14 节点链（补 Prototype-Review / UI-UX-Design / UI-UX-Review 环节，上游对齐根 README mermaid `UIR --> BTD`） | 体检维度五·跨位置同步（P1×3）+ 三件套缺失（P1）；经用户授权「后续问题一律当场修」 | ✅ 已确认 |
+| D-02 | 2026-09-05 | 心法优化（注入心法2 + 心法3）：① 心法2「做减法」——新增 §4.4 做减法铁律（默认最小实现 / 反对提前抽象 / 自动化最后 / 每项选型给「为什么现在就需要」）；② 心法3「决策规划分离·讨论先行」——步骤 4 Scope Gate 补「主动邀请抬杠」（主动点出风险 / 极限场景，邀请用户挑战）；③ README 目录结构补 CONTEXT.md 行 | 用户要求按《Vibe Coding 高效能秘籍》心法全面优化 skill；Backend-Tech-Design 属「规划类 + 开发方案类」注入心法2（做减法）+ 心法3（讨论先行），其档位机制 / Scope Gate / TDD 已内建 | ✅ 已确认 |
 
 ## 四、待决问题清单（Open Questions）
 

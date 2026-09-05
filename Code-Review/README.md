@@ -85,7 +85,7 @@ Code-Review/
 │   ├── backend-checklist.md        # 后端代码评审检查清单
 │   ├── frontend-checklist.md       # 前端代码评审检查清单
 │   ├── contract-checklist.md       # 接口契约一致性检查清单（核心）
-│   └── static-verification-guide.md# 静态验证命令与取证规程
+│   └── static-verification-guide.md # 静态验证命令与取证规程
 ├── assets/                         # 输出模板
 │   ├── role-review-template.md     # 单视角评审报告模板（两份共用）
 │   ├── summary-template.md         # 汇总报告模板

@@ -1,6 +1,6 @@
 ---
 name: Skill-Optimizer
-description: Skill 元优化器（长期迭代）。对本仓库各 Skill 做问题记录、聊天挖掘、自洽体检与全方位优化：① 记录——用户说「记个问题」「这个 skill 哪里不好」「复盘这次运行」时，把问题写入 issue 池；② 挖掘——用户提供聊天记录（chats/ 目录或直接粘贴）时，从中提取暴露的优化点并沉淀；③ 优化——用户说「优化/精简/迭代 XX skill」时，读 issue 池做七维全方位优化（问题修复 + 触发精准 + 上下文体积 + 指令写法 + 流程稳定 + 简洁不落俗 + 术语一致），把改进沉淀回各 Skill 的 SKILL.md / references / CONTEXT.md；④ 体检——用户说「体检/检查 XX skill」「XX 自洽吗/前后一致吗」时，对 skill 做六维自洽体检（术语一致/逻辑闭环/文句质量/声明-流程一致/跨位置同步/简洁不落俗），出问题清单交用户逐条裁决。当用户要求记录 skill 问题、复盘或提取优化点、优化/精简/迭代某个 skill、体检或检查某 skill 的自洽一致性时触发。
+description: Skill 元优化器（长期迭代）。对本仓库各 Skill 做问题记录、聊天挖掘、自洽体检与全方位优化：① 记录——用户说「记个问题」「这个 skill 哪里不好」「复盘这次运行」时，把问题写入 issue 池；② 挖掘——用户提供聊天记录（chats/ 目录或直接粘贴）时，从中提取暴露的优化点并沉淀；③ 优化——用户说「优化/精简/迭代 XX skill」时，读 issue 池做八维全方位优化（问题修复 + 触发精准 + 上下文体积 + 指令写法 + 流程稳定 + 简洁不落俗 + 术语一致 + 心法注入），把改进沉淀回各 Skill 的 SKILL.md / references / CONTEXT.md；④ 体检——用户说「体检/检查 XX skill」「XX 自洽吗/前后一致吗」时，对 skill 做六维自洽体检（术语一致/逻辑闭环/文句质量/声明-流程一致/跨位置同步/简洁不落俗），出问题清单交用户逐条裁决。当用户要求记录 skill 问题、复盘或提取优化点、优化/精简/迭代某个 skill、体检或检查某 skill 的自洽一致性时触发。
 compatibility: Claude Code / Agent SDK / OpenCode
 ---
 
@@ -23,7 +23,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 **标准先行**：每个模式都有固定标准——记录按 `assets/issue-template.md`、挖掘按 `assets/signal-checklist.md`、优化按 `assets/optimize-checklist.md`、体检按 `assets/self-audit-checklist.md`；另有通用编写规范 `assets/skill-writing-standard.md`（优化维度二~六判据来源）。执行严格按标准逐项走，保证每次流程固定，不凭感觉发挥。
 
-**自我指涉（含标准）**：本 skill 自身也是被优化对象，其问题（**含五份标准本身的问题**）记到 `issue/Skill-Optimizer/`，可自优化；**优化顺序永远是「先优化自己——先修订标准，再用修订后的标准干活——再优化其他 skill」**。
+**自我指涉（含标准）**：本 skill 自身也是被优化对象，其问题（**含六份标准本身的问题**）记到 `issue/Skill-Optimizer/`，可自优化；**优化顺序永远是「先优化自己——先修订标准，再用修订后的标准干活——再优化其他 skill」**。
 
 **长期迭代**：这是一个持续过程——issue 池不断积累，优化按需 / 周期性进行，不是一次性动作。
 
@@ -124,9 +124,9 @@ issue/
 
 **触发**：用户说「优化 XX」「精简 XX」「迭代 XX」「让 XX 更贴合我的需求」。
 
-**顺序**：**先优化本 skill（Skill-Optimizer）自己——含先修订五份标准（标准有问题时），再用修订后的标准执行 → 再优化目标 skill**。
+**顺序**：**先优化本 skill（Skill-Optimizer）自己——含先修订六份标准（标准有问题时），再用修订后的标准执行 → 再优化目标 skill**。
 
-**全方位核验维度**（按 `assets/optimize-checklist.md` 逐项执行，维度二~六判据见 `assets/skill-writing-standard.md`）：
+**全方位核验维度**（按 `assets/optimize-checklist.md` 逐项执行，维度二~六判据见 `assets/skill-writing-standard.md`，维度八判据见 `assets/vibe-principles-mapping.md`）：
 
 | 维度 | 检查什么 |
 |---|---|
@@ -137,10 +137,11 @@ issue/
 | ⑤ 稳·流程稳定 | 工作流清单 BLOCKING/REQUIRED + 确认节点 + 交付清单 + 参数系统 |
 | ⑥ 简洁不落俗 | 反 AI 味套话、删冗余措辞 |
 | ⑦ 术语一致 | 与 CONTEXT.md 术语是否冲突 |
+| ⑧ 心法注入 | 把秘籍心法落到 skill 执行层（13 类，见 `vibe-principles-mapping.md`：七类基础 + 问题引导指令/不要配应该/确定性 vs AI 分工/模型越强流程越轻/认知四象限定位/错题本一增一减） |
 
 **流程**：
 1. 读 `issue/<目标skill>/`，列出待修问题；
-2. 按 optimize-checklist 对目标 skill 做七维度核验；
+2. 按 optimize-checklist 对目标 skill 做八维度核验；
 3. 改动 SKILL.md / references / assets（只动有依据的，见铁律）；
 4. 在目标 skill 的 `CONTEXT.md` 决策日志追加一条 `D-xx`（记录：改了什么、依据哪条 issue）；
 5. 回填 issue 状态：已解决 → `已沉淀` + 沉淀目标 + 沉淀位置（文件 / D-xx）；不处理 → `已忽略` + 理由。
@@ -197,7 +198,8 @@ issue/
 - `assets/issue-template.md`：问题文件模板
 - `assets/signal-checklist.md`：挖掘模式信号识别清单
 - `assets/skill-writing-standard.md`：Skill 编写规范（通用底座，优化维度二~六判据来源）
-- `assets/optimize-checklist.md`：全方位优化检查清单（七维）
+- `assets/vibe-principles-mapping.md`：心法映射表（优化维度八判据来源）
+- `assets/optimize-checklist.md`：全方位优化检查清单（八维）
 - `assets/self-audit-checklist.md`：体检模式自洽检查清单（模式④标准，六维）
 - `references/instrumentation-guide.md`：埋点规范（各 skill 自查上报规则）
 - `issue/`：问题池（唯一事实源）

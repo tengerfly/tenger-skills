@@ -54,6 +54,7 @@
 Frontend-Dev/
 ├── SKILL.md                        # 主指令：第一原则 + 流水线 + 端判定 + 产出位置 + monorepo/共享类型 + 组件抽离铁律 + 不确定即问 + 开发计划/任务 + 功能点提交 + 还原校验 + 代码/测试规范
 ├── README.md                       # 本文档
+├── CONTEXT.md                      # 术语对齐源 + 决策日志
 ├── references/                     # 深度指南（按需加载）
 │   ├── architecture-guide.md       # 前端分层与模块化规范（分层职责/依赖方向/组件抽离铁律/目录组织/hooks 优先）
 │   ├── code-style-guide.md         # 前端代码编写规范（简洁性/命名/TS 类型/注释简单易懂+传参必注/SCSS token，React/TS 示例）

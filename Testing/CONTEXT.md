@@ -51,6 +51,7 @@
 | D-12 | 2026-09-05 | 模式④自身体检发现的 2 条 P2 当场修复：① 步骤 1「UI-UX-Design 高保真稿 HTML」→「UI-UX-Design 设计稿 HTML」，对齐 CONTEXT 术语表「设计稿（Design Mockup）」权威定义；② description「与 UI 设计稿（原型）」→「与 UI 设计稿/原型（设计稿优先，缺失回退原型）」，消除括号歧义，与步骤 1 双通道基准一致 | 体检维度一·术语一致 + 维度五·跨位置同步；经用户授权「后续问题一律当场修」 | ✅ 已确认 |
 | D-13 | 2026-09-05 | references 层速查表入口补齐：`references/test-case-guide.md` §2.1「从 PRD 各模块文档的 Mermaid 状态机图提取状态」处补注「各模块文档（经 SKILL 步骤 1 先读 `PRD速查表.md` 建索引，按锚点定位模块）」，消除该独立加载执行文档脱离 SKILL 步骤 1 速查表声明的失同步（`assets/test-process-template.md` 已含速查表，此清单为遗漏） | 体检维度五·跨位置同步（P1）；经用户授权「后续问题一律当场修」 | ✅ 已确认 |
 | D-14 | 2026-09-05 | **据《Vibe Coding 高效能秘籍》测试流程 + UI 测试方法论做增强重构**：① 新增 `references/acceptance-loop-guide.md`（验收闭环流水线 typecheck→lint→单测→build→e2e + hooks 必跑 + checklist 定义合格 + 验收标准前置）；② `style-test-guide.md` 融入「给 Agent 装眼睛三层看 + 7 类 UI 坑 + Midscene 四种用例形态（含 startObserving 瞬时 UI）+ axe-core 精确阈值 + cache（断言不缓存）+ 测试信号可靠」；③ `test-case-guide.md` 补「用例分层 P0 冒烟集 + flaky 处理」；④ SKILL.md 角色定位补「验收闭环视角」、步骤 2 补「验收闭环流水线核查」 | 用户要求据秘籍「测试流程 + UI 测试」重构 Testing；保留既有全状态/全点击/三态/截图必证框架，只补秘籍独有而本 skill 缺失的方法论点 | ✅ 已确认 |
+| D-15 | 2026-09-05 | 心法优化（修失同步）：SKILL.md 第 9 行 + 资源清单、README 第 4 行 + 目录结构共 4 处「决策日志 D-01~D-11」→「D-01~D-14」（D-12/D-13/D-14 加入后引用范围未同步）；README 目录结构补 `acceptance-loop-guide.md`（D-14 新增的执行文档，README 漏列） | 用户要求按《Vibe Coding 高效能秘籍》心法全面优化 skill；Testing 已在 D-14 据秘籍完成增强重构（验收闭环/给 Agent 装眼睛/Midscene/axe-core/用例分层/flaky），心法覆盖已充分，本次仅修跨位置失同步 | ✅ 已确认 |
 
 ## 四、待决问题清单（Open Questions）
 

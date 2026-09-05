@@ -33,6 +33,7 @@
 Backend-Tech-Design/
 ├── SKILL.md                        # 主指令：流水线 + 技术选型澄清 + 模块边界 + TDD测试用例规范
 ├── README.md                       # 本文档
+├── CONTEXT.md                      # 术语对齐源 + 决策日志
 ├── references/                     # 深度指南（按需加载）
 │   ├── tdd-structure.md            # 技术方案结构范式（必须/可选章节 + 开关规则）
 │   ├── tech-stack-guide.md         # 技术选型指南（语言/数据库/缓存/检索/队列/Docker + 档位差异）

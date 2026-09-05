@@ -28,7 +28,8 @@
 | # | 日期 | 决策 | 理由 | 状态 |
 |---|---|---|---|---|
 | D-01 | 2026-09-05 | 模式④自身体检发现的 4 条当场修复：① SKILL.md:65 数据红线第 8 条 Pass 标准 `P1≤1` → `P1(Open)=0`，对齐全仓 13 处一致表述；② SKILL.md:48 CONDITIONAL PASS 条件「存在 P1 Open」→「P0=0 但 P1(Open)>1」，与 README:249 口径一致；③ README.md:3 状态「🚧 规范草稿」→「✅ 已落地」，与根 README:146 一致；正文保留作设计草案参考；④ SKILL.md frontmatter 补 `compatibility: Claude Code / Agent SDK / OpenCode`，与全仓 15 个 skill 模板一致 | 体检维度二·逻辑闭环（P0×2）+ 维度五·跨位置同步（P1×2）；4 条经用户裁决「当场修」 | ✅ 已确认 |
+| D-02 | 2026-09-05 | 心法优化（README 重写 + SKILL.md 心法注入）：① README 重写为标准 skill 说明——原为「设计草稿 + 9 大测试用例」大杂烩，红线 5 条 vs 8 条、6 步 vs 7 步、`result/` vs `.output/` 严重失同步，且引用 9 个已不存在的 `result/` 文件（悬空引用）；② SKILL.md 注入心法——输入阶段补「派活四件套」（心法1）、Pass Gate 验收补「苏格拉底三问」（心法6）、数据红线后补「Red Flag 症状清单」、第 6 步与流程图标 ⛔ BLOCKING | 用户要求按《Vibe Coding 高效能秘籍》心法全面优化 skill；竞品分析属「分析类」注入派活四件套 + 苏格拉底反问；README 失同步为 P0 存量缺陷（对应 Q1 重改） | ✅ 已确认 |
 
 ## 四、待决问题清单（Open Questions）
 
-- [ ] Q1：README 正文（5 条数据红线 / 6 步流程 / 简版五层框架）与 SKILL.md 正文（8 条 / 7 步 / 详版）的同步是否需要做「重改」对齐——本次体检仅做「轻改」（改状态行 + 加权威声明），重改作为后续优化任务评估
+- [x] Q1：~~README 正文与 SKILL.md 失同步~~ 已解决（D-02）：README 重写为标准 skill 说明，与 SKILL.md 对齐（8 条红线 / 7 步流程 / `.output/` 产物目录），删除设计草稿与 9 大测试用例（引用的 `result/` 文件已不存在）

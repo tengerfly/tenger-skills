@@ -34,6 +34,7 @@
 |---|---|---|---|---|
 | D-01 | 2026-09-05 | 模式④自身体检发现的 3 条当场修复：① description「高保真原型文档」→「低保真原型（Prototype-Design 产出）」，对齐仓库术语体系；② description 补「防评审死循环三招内建」声明 + 步骤 6 补「轮次上限 3」（三招补齐完整版，与 PRD-Review / Prototype-Review / UI-UX-Review 同档评审 skill 口径对齐）；③ 新建本 CONTEXT.md 补齐仓库三件套约定 | 体检维度一·术语一致（P0）+ 维度二·逻辑闭环（P0）+ 三件套缺失（P1）；经用户授权「后续问题一律当场修」 | ✅ 已确认 |
 | D-02 | 2026-09-05 | references 层速查表入口补齐：`references/backend-checklist.md` 与 `references/frontend-checklist.md` 头部「评审基线：需求文档（PRD）」补注「经 SKILL 步骤 1 先读 `PRD速查表.md` 建索引，逐字细节按锚点回原文」，消除两份清单独立加载时脱离 SKILL 步骤 1 速查表声明的失同步 | 体检维度五·跨位置同步（P1×2）；经用户授权「后续问题一律当场修」 | ✅ 已确认 |
+| D-03 | 2026-09-05 | 心法4「review 独立性」注入：步骤 2 双视角并行评审补「独立 review 中间层」——两视角各自独立上下文（subagent / 新会话）评审、互不可见结论、不参考生成过程、可换模型交叉审查；铁律 4「视角隔离」升级为「视角隔离 + 独立上下文」；README 目录结构补 CONTEXT.md 行 | 用户要求按《Vibe Coding 高效能秘籍》心法全面优化 skill；Tech-Review 属「评审类」注入心法4（review 独立性），原仅有「双视角隔离」、缺独立性两个来源 | ✅ 已确认 |
 
 ## 四、待决问题清单（Open Questions）
 

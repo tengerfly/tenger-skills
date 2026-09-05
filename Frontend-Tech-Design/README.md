@@ -38,6 +38,7 @@
 Frontend-Tech-Design/
 ├── SKILL.md                        # 主指令：内容维度 + 流水线 + 技术选型澄清 + 页面组件/hooks/fetch/CSS/测试规范
 ├── README.md                       # 本文档
+├── CONTEXT.md                      # 术语对齐源 + 决策日志
 ├── references/                     # 深度指南（按需加载）
 │   ├── doc-structure.md            # 技术方案文档结构指南（总文档 10 方面 + 模块文档 9 方面）
 │   ├── tech-stack-guide.md         # 前端技术选型指南（档位差异 + 组件库/状态管理/路由/测试对比 + 浏览器兼容性）

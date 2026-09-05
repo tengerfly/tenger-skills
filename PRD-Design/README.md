@@ -1,7 +1,7 @@
 # PRD-Design —— 工业级 PRD 生成 Skill
 
 > **状态**：✅ 定稿
-> **术语与决策基准**：[CONTEXT.md](CONTEXT.md)（术语表 + 决策日志 D-01~D-15）
+> **术语与决策基准**：[CONTEXT.md](CONTEXT.md)（术语表 + 决策日志 D-01~D-16）
 
 ---
 

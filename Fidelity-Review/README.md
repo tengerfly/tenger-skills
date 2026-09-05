@@ -45,7 +45,7 @@
 Fidelity-Review/
 ├── SKILL.md                        # 主指令：三大评审面 + 7 步 SOP + 铁律 + 严重度 + 双模式
 ├── README.md                       # 本文档
-├── CONTEXT.md                      # 术语表 + 决策日志（D-01~D-09）
+├── CONTEXT.md                      # 术语表 + 决策日志（D-01~D-13）
 ├── references/                     # 评审执行细则
 │   ├── visual-checklist.md         # 视觉还原逐项比对清单
 │   ├── interaction-checklist.md    # 交互还原走查清单

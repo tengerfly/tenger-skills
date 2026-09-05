@@ -119,10 +119,11 @@ Workflow/
 |---------|-------|
 | ③ PRD 评审 | `PRD-Design` |
 | ⑤ 原型评审 | `Prototype-Design`（原型缺陷） / `PRD-Design`（需求冲突） |
-| ⑨ 技术方案评审 | `Backend-Tech-Design` / `Frontend-Tech-Design`（按归因，双方则先后端后前端） |
-| ⑫ 代码评审 | `Backend-Dev` / `Frontend-Dev`（按归因，双方则先后端后前端） |
+| ⑦ UI/UX 评审 | `UI-UX-Design`（设计稿缺陷） / `Prototype-Design`（布局冲突） / `PRD-Design`（需求冲突） |
+| ⑩ 技术方案评审 | `Backend-Tech-Design` / `Frontend-Tech-Design`（按归因，双方则先后端后前端） |
+| ⑬ 代码评审 | `Backend-Dev` / `Frontend-Dev`（按归因，双方则先后端后前端） |
 
-> 评审节点与 ⑥ 均**可跳过**：用户说「跳过代码评审，直接测试」即从 ⑪ 跳到 ⑬；用户说「跳过原型评审，直接做方案」即从 ④ 跳到 ⑦；用户说「跳过设计稿，直接做技术方案」即从 ⑤ 跳到 ⑦。
+> 评审节点与 ⑥⑦ 均**可跳过**：用户说「跳过代码评审，直接测试」即从 ⑫ 跳到 ⑭；用户说「跳过原型评审，直接做方案」即从 ④ 跳到 ⑧；用户说「跳过 UI/UX 评审，直接做方案」即从 ⑥ 跳到 ⑧；用户说「跳过设计稿，直接做技术方案」即从 ⑤ 跳到 ⑧。
 
 ## 七、铁律
 

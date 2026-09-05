@@ -30,6 +30,7 @@
 Prototype-Review/
 ├── SKILL.md                                 # 主流程、严重度定义与五大铁律
 ├── README.md                                # 模块定位与使用指引
+├── CONTEXT.md                               # 术语对齐源 + 决策日志
 ├── references/                              # 标准化检查清单与操作指引
 │   ├── page-completeness-checklist.md       # 页面与载体完整性清单
 │   ├── copywriting-consistency-checklist.md # 文案与字段一致性清单

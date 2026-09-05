@@ -46,6 +46,8 @@
 | D-09 | 2026-09-05 | **承接 UI-UX-Review CONTEXT 开放问题 Q1**：「页面还原度考核（前端实现页 vs 设计稿第三方验收）归属」= 独立成 `Fidelity-Review` skill（原候选之一落地），不并入 UI-UX-Review | 用户本次明确要做独立页面还原度 skill；与 UI-UX-Review（审设计稿）评审对象、阶段、时机均不同，独立最清晰 | ✅ 已确认 |
 | D-10 | 2026-09-05 | PRD 仅作交互存在性辅助基准，回溯时统一经 `PRD速查表.md` 入口：若 `.spec/PRD/VN/` 含 `PRD速查表.md`，先读它定位模块再按锚点回原文。同步 SKILL.md（§1.3 输入源 / 步骤 1）与 references/design-source-guide §三、interaction-checklist §四、overflow-guide §二 | 全仓约定「先读速查表建索引、逐字细节按锚点回原文」（PRD-Design 产出），本 skill 建时未同步为唯一遗漏，本次全仓核查补齐 | ✅ 已确认 |
 | D-11 | 2026-09-05 | **据《Vibe Coding 高效能秘籍》UI 测试方法论做增强重构**：① `visual-checklist.md` §三颜色补「axe-core 对比度精确判定」（AI 观感会漏判，WCAG ≥4.5:1 用确定性工具算）、§八状态补「暗色模式 + 窄屏/响应式视口」（边界造条件）；② `interaction-checklist.md` §一补「读页面结构驱动交互」两条路线；③ `overflow-guide.md` 归属为「边界造条件三类之一」（长文案/暗色/窄屏）；④ SKILL.md §1.1 视觉还原面补暗色/窄屏 + 对比度精确判定 | 用户要求据秘籍「UI 测试」重构 Fidelity-Review（用户明确 UI 视觉审查 = 本 skill）；保留既有双通道/三评审面/截图必证/防死循环框架，只补秘籍 vc-06 装眼睛 + vc-07 axe-core 中本 skill 缺失的「造条件 + 读结构 + 精确阈值」 | ✅ 已确认 |
+| D-12 | 2026-09-05 | 心法优化（修失同步）：SKILL.md 资源清单 + README 目录结构「决策日志 D-01~D-09」→「D-01~D-11」（D-10/D-11 加入后引用范围未同步） | 用户要求按《Vibe Coding 高效能秘籍》心法全面优化 skill；Fidelity-Review 已在 D-11 据秘籍完成增强重构（axe-core 精确判定/暗色窄屏边界造条件/读结构驱动交互），心法覆盖已充分，本次仅修跨位置失同步 | ✅ 已确认 |
+| D-13 | 2026-09-05 | 二轮心法优化（据《vibe-coding-学习笔记.md》）：步骤 3 前补「独立走查纪律（review 独立性）」——评审只认实现产物 + 设计稿基准、不参考 Frontend-Dev 实现过程与口头说明（不被实现者锚定）；页面多时可开新会话/subagent 独立走查合并，或换模型交叉复查关键页 | 全仓评审类 skill 均已内建 review 独立性来源（独立上下文/subagent/交叉模型），本 skill 此前仅「第三方独立验收」职责层表述、缺独立性动作来源，按同类对齐补齐（用户裁定全 skill 只补有执行价值缺口） | ✅ 已确认 |
 
 ## 四、待决问题清单（Open Questions）
 

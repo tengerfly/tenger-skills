@@ -6,7 +6,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 # 项目测试 Skill
 
-> **术语与决策基准**：所有概念以 [CONTEXT.md](CONTEXT.md) 术语表与决策日志（D-01~D-11）为准。
+> **术语与决策基准**：所有概念以 [CONTEXT.md](CONTEXT.md) 术语表与决策日志（D-01~D-14）为准。
 > **定位**：高级测试专家，依据 PRD + UI 设计稿，把「可运行项目」跑成一份「可信的测试问题清单」。
 > **第一原则**：**全状态 · 全点击 · 样式问题必截图 · 慢接口必列出 · 问题必分级可复现**。
 
@@ -223,7 +223,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - `references/acceptance-loop-guide.md`：验收闭环指南（代码层闭环流水线 + hooks 必跑 + checklist 定义合格 + 验收标准前置）
 - `references/api-perf-guide.md`：接口性能测试指南（慢接口识别 + 监听方式 + 阈值）
 - `references/browser-guide.md`：浏览器工具选择与集成（Playwright / browser-use / midscenejs 优先级与组合）
-- `CONTEXT.md`：术语表 + 决策日志（D-01~D-11）
+- `CONTEXT.md`：术语表 + 决策日志（D-01~D-14）
 - **产出位置**：`.spec/测试/`
 - **兄弟 skill**：`Fidelity-Review`（Testing 场景模式）——有 UI 设计稿基准时承接 UI 还原度检查（视觉还原 + 交互还原 + 超长文案专项），就地输出轻量问题清单供本 skill 汇总
 

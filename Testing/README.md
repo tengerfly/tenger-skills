@@ -1,7 +1,7 @@
 # Testing —— 项目测试 Skill
 
 > **状态**：✅ 定稿
-> **术语与决策基准**：[CONTEXT.md](CONTEXT.md)（术语表 + 决策日志 D-01~D-11）
+> **术语与决策基准**：[CONTEXT.md](CONTEXT.md)（术语表 + 决策日志 D-01~D-14）
 
 ---
 
@@ -48,10 +48,11 @@ PRD + 原型 + 项目代码
 ```
 Testing/
 ├── SKILL.md                        # 主指令：测试九条铁律 + 流水线 + 全状态/全点击/样式/性能规程
-├── CONTEXT.md                      # ★ 术语对齐源与决策日志（D-01~D-11）
+├── CONTEXT.md                      # ★ 术语对齐源与决策日志（D-01~D-14）
 ├── references/                     # 深度指南（按需加载）
 │   ├── test-case-guide.md          # 测试用例编写规范（全状态覆盖 + 全点击覆盖 + 异常分支）
 │   ├── style-test-guide.md         # 样式测试指南（midscenejs 视觉断言 + 三态 + 截图 + UI 还原度检查·Fidelity-Review 内嵌）
+│   ├── acceptance-loop-guide.md    # 验收闭环指南（代码层闭环流水线 + hooks 必跑 + checklist + 验收标准前置）
 │   ├── api-perf-guide.md           # 接口性能测试指南（慢接口识别 + 监听方式 + 阈值）
 │   └── browser-guide.md            # 浏览器工具选择与集成（Playwright / browser-use / midscenejs）
 ├── assets/                         # 输出模板

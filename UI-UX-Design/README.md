@@ -11,7 +11,7 @@
 | 文件 | 说明 |
 |---|---|
 | `SKILL.md` | 核心标准：流水线 9 步 3 Gate / 分工模型 / 迭代路由 / 成本红线 / 去 AI 味 12 条 |
-| `CONTEXT.md` | 术语表 + 决策日志（D-01~D-09）+ 待决问题 |
+| `CONTEXT.md` | 术语表 + 决策日志（D-01~D-12）+ 待决问题 |
 | `assets/layout-inventory-contract.md` | 布局清单输入契约（Prototype-Design 对齐此产出） |
 | `assets/design-task-list-template.md` | 设计任务清单（逐页 brief）+ 基线复刻规则 |
 | `assets/style-proposal-template.md` | 三套风格方案提案（双通道：文字小样 / 出稿对比） |

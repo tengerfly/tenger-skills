@@ -50,6 +50,7 @@
 Backend-Dev/
 ├── SKILL.md                        # 主指令：双原则 + 流水线 + 澄清协议 + 技术栈锁定 + 微服务/分层/代码/接口/测试规范
 ├── README.md                       # 本文档
+├── CONTEXT.md                      # 术语对齐源 + 决策日志
 ├── references/                     # 深度指南（按需加载）
 │   ├── architecture-guide.md       # 微服务架构与模块化规范（服务内四层/服务间边界/Monorepo/数据模型）
 │   ├── code-style-guide.md         # 代码编写规范（简洁性/命名/注释/错误处理/统一响应，多语言示例）

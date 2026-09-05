@@ -48,6 +48,7 @@
 Tech-Review/
 ├── SKILL.md                        # 主指令：双视角 + 评审流水线 + 闭环/关联重点 + 严重度 + 铁律
 ├── README.md                       # 本文档
+├── CONTEXT.md                      # 术语对齐源 + 决策日志
 ├── references/                     # 评审检查清单（评审时逐条执行）
 │   ├── backend-checklist.md        # 后端技术方案评审检查清单
 │   ├── frontend-checklist.md       # 前端技术方案评审检查清单
