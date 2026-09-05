@@ -27,6 +27,9 @@
 | 还原度报告 | Fidelity Report | `.spec/页面还原评审/页面还原度评审报告.md`：分三大评审面逐页问题清单，每条含出处/现象/期望 vs 实际/成因/严重度/修改建议/建议修改方 | ❌ 不是任务清单（报告是分析；清单是任务收口） |
 | 评审任务清单 | Review Issue List | `.spec/页面还原评审/任务清单.md`，单一事实源，状态 待确认→已确认→已修复/已忽略 | ❌ 只在独立模式产出；Testing 场景不建 |
 | 轻量问题清单 | Mini Issue List | Testing 调用本 skill 时就地输出的问题清单（编号/页面/现象/严重度/截图/建议），供 Testing 汇总 | ❌ 不是任务清单（无状态机、无修改方闭环） |
+| 边界条件造访 | Boundary Probing | 主动造条件暴露「正常数据/默认视口下不触发」的视觉问题，三类：长文案 / 暗色模式 / 窄屏（秘籍 vc-06 第三关） | ❌ 不是「只测 Happy Path」；极端状态必须主动走一遍 |
+| 读结构驱动交互 | Structure-Driven Interaction | 用浏览器工具 `snapshot` 拿元素树（DOM/可访问性树）驱动交互、判断「有没有、能不能」，比截图省 token；与截图视觉验证配合（结构驱动交互 + 截图做最终视觉验收） | ❌ 不是替代截图；两者配合 |
+| 精确判定工具 | Deterministic Checker | 有数字定义的值（如 WCAG 对比度 4.5:1）用确定性代码（axe-core）算精确值，AI 视觉断言是「观感级」会漏判 | ❌ 不是替代 AI 断言，而是分工：模糊观感给模型、精确数值给代码 |
 
 ## 三、决策日志（Decision Log）
 
@@ -42,6 +45,7 @@
 | D-08 | 2026-09-05 | 只审不改 + 截图必证 + 成因必写 + 方向明确 + 防评审死循环三招（修复判据/分级冻结/轮次上限 3），产出范式沿用 Prototype-Review / UI-UX-Review 家族模板 | 与仓库评审类 skill 统一；防止「改不干净再挑一轮」死循环 | ✅ 已确认 |
 | D-09 | 2026-09-05 | **承接 UI-UX-Review CONTEXT 开放问题 Q1**：「页面还原度考核（前端实现页 vs 设计稿第三方验收）归属」= 独立成 `Fidelity-Review` skill（原候选之一落地），不并入 UI-UX-Review | 用户本次明确要做独立页面还原度 skill；与 UI-UX-Review（审设计稿）评审对象、阶段、时机均不同，独立最清晰 | ✅ 已确认 |
 | D-10 | 2026-09-05 | PRD 仅作交互存在性辅助基准，回溯时统一经 `PRD速查表.md` 入口：若 `.spec/PRD/VN/` 含 `PRD速查表.md`，先读它定位模块再按锚点回原文。同步 SKILL.md（§1.3 输入源 / 步骤 1）与 references/design-source-guide §三、interaction-checklist §四、overflow-guide §二 | 全仓约定「先读速查表建索引、逐字细节按锚点回原文」（PRD-Design 产出），本 skill 建时未同步为唯一遗漏，本次全仓核查补齐 | ✅ 已确认 |
+| D-11 | 2026-09-05 | **据《Vibe Coding 高效能秘籍》UI 测试方法论做增强重构**：① `visual-checklist.md` §三颜色补「axe-core 对比度精确判定」（AI 观感会漏判，WCAG ≥4.5:1 用确定性工具算）、§八状态补「暗色模式 + 窄屏/响应式视口」（边界造条件）；② `interaction-checklist.md` §一补「读页面结构驱动交互」两条路线；③ `overflow-guide.md` 归属为「边界造条件三类之一」（长文案/暗色/窄屏）；④ SKILL.md §1.1 视觉还原面补暗色/窄屏 + 对比度精确判定 | 用户要求据秘籍「UI 测试」重构 Fidelity-Review（用户明确 UI 视觉审查 = 本 skill）；保留既有双通道/三评审面/截图必证/防死循环框架，只补秘籍 vc-06 装眼睛 + vc-07 axe-core 中本 skill 缺失的「造条件 + 读结构 + 精确阈值」 | ✅ 已确认 |
 
 ## 四、待决问题清单（Open Questions）
 

@@ -15,7 +15,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ### 1.1 评审目标（三大评审面）
 
-1. **视觉还原（Visual Fidelity）**：对照 UI 设计稿，逐页核对实现页的**页面设计 / 布局 / 层级 / 颜色 / 字号字重 / 间距 / 圆角阴影 / 图标图片 / 三态**等视觉要素是否与设计稿一致——找「画出来长这样、实现出来变样了」的点。设计稿是「应然」，实现页是「实然」。
+1. **视觉还原（Visual Fidelity）**：对照 UI 设计稿，逐页核对实现页的**页面设计 / 布局 / 层级 / 颜色 / 字号字重 / 间距 / 圆角阴影 / 图标图片 / 三态 / 暗色模式 / 窄屏视口**等视觉要素是否与设计稿一致——找「画出来长这样、实现出来变样了」的点。设计稿是「应然」，实现页是「实然」。对比度这类有数字定义的值（WCAG ≥ 4.5:1）用 axe-core 精确判定，不依赖 AI 观感。
 2. **交互还原（Interaction Fidelity）**：对照设计稿能推断出的交互 + 通用 UI 交互常识，核对实现页的**可点元素能否点击、点击有无正确反馈、交互方式是否与设计稿一致**（按钮该点得动却点不动、hover/禁用/选中态缺失、跳转链路不通、Tab 切换/弹层抽屉开关/表单校验反馈等普适交互是否工作）。**边界**：只到「交互是否按设计稿还原、是否可用」，不展开业务逻辑正确性（点了后端是否成功、状态流转对不对归 Code-Review / Testing）。
 3. **内容健壮性（超长文案专项）**：设计稿常用理想文案，实现页接真实/较长文案后易崩——**一行文字设计稿里刚好，实现页因文案多导致溢出容器、遮挡、换行错乱、挤压布局、截断异常**等。此专项为评审的特色增值点。
 
@@ -158,9 +158,9 @@ flowchart TD
 
 ## 七、资源清单
 
-- `references/visual-checklist.md`：视觉还原逐项比对清单
-- `references/interaction-checklist.md`：交互还原走查清单
-- `references/overflow-guide.md`：超长文案/样式错乱专项指引
+- `references/visual-checklist.md`：视觉还原逐项比对清单（含 axe-core 对比度精确判定 + 暗色/窄屏极端状态）
+- `references/interaction-checklist.md`：交互还原走查清单（含读页面结构驱动交互）
+- `references/overflow-guide.md`：长文案健壮性专项指引（边界造条件三类之一，暗色/窄屏见 visual-checklist）
 - `references/design-source-guide.md`：双通道设计稿基准获取与映射细则
 - `references/browser-guide.md`：浏览器工具预检与双开截图并排比对法
 - `assets/review-report-template.md`：还原度评审报告模板

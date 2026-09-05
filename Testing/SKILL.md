@@ -16,6 +16,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 **第一原则：「全状态覆盖 + 全点击覆盖 + 样式问题必截图 + 慢接口必列出 + 问题必分级可复现。」**
 
+> **验收闭环视角（贯穿全流程）**：测试不只是抓错，而是把「对错的判断」从消耗人注意力的人工检查，变成机器自动执行的流程。测试时同步核查「代码层闭环（typecheck/lint/单测/build/e2e）+ hooks 必跑 + checklist 定义合格 + 验收标准前置」是否闭环（细则见 `references/acceptance-loop-guide.md`）；UI 视觉层闭环（给 Agent 装眼睛 + Midscene 自然语言回归 + axe-core 精确阈值）细则见 `references/style-test-guide.md`。**能被机器自动拦下的错误，就不该消耗人的注意力。**
+
 - **全状态覆盖**：每个业务对象的**所有生命周期状态**都至少走一遍（不是只走主流程）；
 - **全点击覆盖**：页面**每一个可交互元素**都至少点一次并验证反馈；
 - **样式问题必截图**：发现视觉偏差立即截图存证，绝不只写文字描述；
@@ -105,6 +107,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - **提取测试面**：页面清单 + 每页业务状态集合 + 可交互元素清单 + 接口清单。
 
 ### 步骤 2：环境准备
+- **验收闭环流水线核查**（`references/acceptance-loop-guide.md`）：确认项目 typecheck / lint / 单测 / build / e2e 命令与 hooks 配置，测试计划中登记「闭环是否闭环」（缺 hooks / 缺强制验证 = P1 系统性问题）；
 - 按项目 README 本地安装依赖、启动 dev server（或构建 + 静态服务），确认 `http://localhost:{{port}}` 可访问；
 - **浏览器工具硬性预检**（`references/browser-guide.md`，缺失不工作）：
   - 检测顺序：**Playwright 优先 → browser-use 次之 → 其他浏览器工具（如 CodeBuddy 的 agent-browser）**——列举不穷举，凡当前环境可用的、能驱动真实浏览器打开页面/交互/截图的工具均算；任一可用即作为功能遍历与网络监听的工具；
@@ -215,8 +218,9 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - `assets/test-process-template.md`：**测试流程模板**（阶段骨架 + 门禁 + 每阶段输入/输出/动作）
 - `assets/test-case-template.md`：**测试用例模板**（功能/样式/性能三类 + 编号规则 + 优先级）
 - `assets/bug-report-template.md`：**测试问题文档模板**（分级缺陷清单 + 慢接口专项 + 证据目录）
-- `references/test-case-guide.md`：测试用例编写规范（全状态覆盖 + 全点击覆盖 + 异常分支）
-- `references/style-test-guide.md`：样式测试指南（midscenejs 视觉断言 + 三态 + 截图 + 模型配置）
+- `references/test-case-guide.md`：测试用例编写规范（全状态覆盖 + 全点击覆盖 + 异常分支 + 用例分层 P0 冒烟集 + flaky 处理）
+- `references/style-test-guide.md`：样式测试指南（给 Agent 装眼睛三层看 + 7 类 UI 坑 + midscenejs 自然语言回归 + axe-core 精确阈值 + 三态 + 截图 + cache）
+- `references/acceptance-loop-guide.md`：验收闭环指南（代码层闭环流水线 + hooks 必跑 + checklist 定义合格 + 验收标准前置）
 - `references/api-perf-guide.md`：接口性能测试指南（慢接口识别 + 监听方式 + 阈值）
 - `references/browser-guide.md`：浏览器工具选择与集成（Playwright / browser-use / midscenejs 优先级与组合）
 - `CONTEXT.md`：术语表 + 决策日志（D-01~D-11）

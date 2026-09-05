@@ -27,6 +27,11 @@
 | 视觉断言 | Visual Assertion | 用 AI 判断「当前页面是否符合某自然语言描述/设计稿」，由 midscenejs `aiAssert`/`aiQuery`/`aiBoolean` 提供，纯截图驱动、无需选择器 | ❌ 不是 DOM 断言；不是像素级 diff（那是 Playwright toHaveScreenshot） |
 | 三态 | Loading/Empty/Error | 页面/区块的三种通用状态：加载中（骨架/进度）、空数据（空态文案/插画）、错误（失败提示/重试入口）。样式测试必须逐一验证 | ❌ 不是业务状态机（那是「全状态覆盖」的对象生命周期） |
 | 设计假设 | Design Assumption | 测试中未经用户确认、但为推进而采用的合理默认值（如慢接口阈值、截图保存格式），必须显式标注 `【设计假设】` | ❌ 不是「事实」；用户可推翻并回填 |
+| 验收闭环 | Acceptance Loop | 把「对错的判断」从人工检查变成机器自动执行的流程：代码层 typecheck→lint→单测→build→e2e 流水线 + hooks 必跑 + checklist 定义合格 + 验收标准前置；UI 视觉层给 Agent 装眼睛 + 自然语言回归 + 精确阈值 | ❌ 不是「只抓错」；核心价值是把 Agent 工作模式从「写完宣布完成」改成「收到机器反馈自己修」 |
+| 给 Agent 装眼睛 | Give Agent Eyes | UI 视觉层验收的三层能力：① 截图视觉验证（看像素答「长得对不对」）② 读页面结构驱动交互（snapshot 拿元素树，答「有没有、能不能」，省 token）③ 造条件（极端数据/暗色/窄屏主动暴露边界问题） | ❌ 不是单一截图；三层配合才覆盖 7 类 UI 坑 |
+| 精确阈值工具 | Deterministic Checker | AI 视觉断言是「观感级」，有数字定义的东西（如 WCAG 对比度 4.5:1）会漏判，改用确定性代码（axe-core）算精确值 | ❌ 不是替代 AI 断言，而是分工：模糊观感给模型、精确数值给代码 |
+| 用例分层 | Case Tiering | 给用例加分组/优先级元数据（P0 冒烟集 + 全量集），P0 冒烟集每次提交必绿，挂提交链路自动触发 | ❌ 不是「跑全量」；跑全量太重，只跑相关分组才可持续 |
+| flaky 用例 | Flaky Case | AI 断言非确定性导致时红时绿的不稳定用例；失败自动重跑两次红才算真红 + 十轮摇摆自动标记 | ❌ 不是「页面真坏」；要先判断是用例写错还是页面问题（需人判断） |
 
 ## 三、决策日志（Decision Log）
 
@@ -45,6 +50,7 @@
 | D-11 | 2026-09-05 | **UI 还原度检查接入 `Fidelity-Review`**：有 UI 设计稿基准（`.spec/设计稿/` 或用户指定外部稿）时，步骤 6 样式测试调用 `Fidelity-Review`（Testing 场景模式）做视觉还原 + 交互还原 + 超长文案专项，按其 `mini-issue` 模板就地收轻量清单并入测试问题文档；无设计稿基准则跳过并明示（回退原型基准 + midscenejs 视觉断言） | 用户裁决：页面还原度 skill 独立成 `Fidelity-Review`，Testing 测试流程内部会调用它；Fidelity-Review 只审不改、不建任务清单（由 Testing 统一裁决），避免双闭环 | ✅ 已确认（用户 2026-09-05 指定） |
 | D-12 | 2026-09-05 | 模式④自身体检发现的 2 条 P2 当场修复：① 步骤 1「UI-UX-Design 高保真稿 HTML」→「UI-UX-Design 设计稿 HTML」，对齐 CONTEXT 术语表「设计稿（Design Mockup）」权威定义；② description「与 UI 设计稿（原型）」→「与 UI 设计稿/原型（设计稿优先，缺失回退原型）」，消除括号歧义，与步骤 1 双通道基准一致 | 体检维度一·术语一致 + 维度五·跨位置同步；经用户授权「后续问题一律当场修」 | ✅ 已确认 |
 | D-13 | 2026-09-05 | references 层速查表入口补齐：`references/test-case-guide.md` §2.1「从 PRD 各模块文档的 Mermaid 状态机图提取状态」处补注「各模块文档（经 SKILL 步骤 1 先读 `PRD速查表.md` 建索引，按锚点定位模块）」，消除该独立加载执行文档脱离 SKILL 步骤 1 速查表声明的失同步（`assets/test-process-template.md` 已含速查表，此清单为遗漏） | 体检维度五·跨位置同步（P1）；经用户授权「后续问题一律当场修」 | ✅ 已确认 |
+| D-14 | 2026-09-05 | **据《Vibe Coding 高效能秘籍》测试流程 + UI 测试方法论做增强重构**：① 新增 `references/acceptance-loop-guide.md`（验收闭环流水线 typecheck→lint→单测→build→e2e + hooks 必跑 + checklist 定义合格 + 验收标准前置）；② `style-test-guide.md` 融入「给 Agent 装眼睛三层看 + 7 类 UI 坑 + Midscene 四种用例形态（含 startObserving 瞬时 UI）+ axe-core 精确阈值 + cache（断言不缓存）+ 测试信号可靠」；③ `test-case-guide.md` 补「用例分层 P0 冒烟集 + flaky 处理」；④ SKILL.md 角色定位补「验收闭环视角」、步骤 2 补「验收闭环流水线核查」 | 用户要求据秘籍「测试流程 + UI 测试」重构 Testing；保留既有全状态/全点击/三态/截图必证框架，只补秘籍独有而本 skill 缺失的方法论点 | ✅ 已确认 |
 
 ## 四、待决问题清单（Open Questions）
 

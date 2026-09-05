@@ -1,3 +1,6 @@
 # IDE 项目数据（工作记忆、团队、自动化配置等，不纳入版本控制）
 .codebuddy/
 .superdesign
+
+# 学习资料（本地参考，不提交远程）
+vibe Coding 高效能秘籍/
