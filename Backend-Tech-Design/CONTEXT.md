@@ -25,6 +25,7 @@
 | 浏览器软检测 | Soft Browser Detection | Playwright → browser-use → 其他浏览器工具三级检测；任一可用即用于查阅选型官方文档与版本兼容性；**全无则跳过，不阻塞**（选型基于内置知识） | ❌ 不是硬依赖（对照根 README 浏览器两级策略的「软检测」组） |
 | 评审任务清单回填 | Review Task List Write-back | 步骤 1 检测 `.spec/技术方案评审/任务清单.md` 归本 skill 的 `已确认` 任务纳入修改；步骤 7 修完回填 `已修复` + 修改说明 | ❌ 不是本 skill 产出任务清单（清单由 Tech-Review 产出，本 skill 只消费回填） |
 | AC 追溯 | AC Traceability | 测试用例标注对应 PRD 的 AC 编号（`AC-Mxx-nnn`），保证需求 ↔ 测试双向可溯 | ❌ 不是重新定义 AC（AC 由 PRD-Design 单源定义） |
+| 选型一次定稿 | Selection Finalized at Design | TDD 阶段定全**所有**技术决策（语言/框架、服务拆分、服务间通信方式、ORM、包管理与仓库形态、数据库/缓存/检索/队列、测试、部署——含 §4.5 开发实施选型），步骤 4 用户确认后即成定稿写入总文档；开发阶段（Backend-Dev）零选型决策 | ❌ 不是把选型留到开发期逐步问（开发 = 照图施工） |
 
 ## 三、决策日志（Decision Log）
 
@@ -32,6 +33,7 @@
 |---|---|---|---|---|
 | D-01 | 2026-09-05 | 模式④自身体检发现的 3 条当场修复：① 新建本 CONTEXT.md 补齐仓库三件套约定（SKILL + README + CONTEXT + assets + references）；② README.md 浏览器行 + 流水线行从「browser-use 单工具」旧表述改为三级软检测（Playwright → browser-use → 其他），与 SKILL.md 步骤 1 / description / 根 README 软检测组口径一致；③ SKILL.md 步骤 1 标题同步改「浏览器工具检测」；④ README「与其它 Skill 的关系」图从旧 11 节点链更新为 14 节点链（补 Prototype-Review / UI-UX-Design / UI-UX-Review 环节，上游对齐根 README mermaid `UIR --> BTD`） | 体检维度五·跨位置同步（P1×3）+ 三件套缺失（P1）；经用户授权「后续问题一律当场修」 | ✅ 已确认 |
 | D-02 | 2026-09-05 | 心法优化（注入心法2 + 心法3）：① 心法2「做减法」——新增 §4.4 做减法铁律（默认最小实现 / 反对提前抽象 / 自动化最后 / 每项选型给「为什么现在就需要」）；② 心法3「决策规划分离·讨论先行」——步骤 4 Scope Gate 补「主动邀请抬杠」（主动点出风险 / 极限场景，邀请用户挑战）；③ README 目录结构补 CONTEXT.md 行 | 用户要求按《Vibe Coding 高效能秘籍》心法全面优化 skill；Backend-Tech-Design 属「规划类 + 开发方案类」注入心法2（做减法）+ 心法3（讨论先行），其档位机制 / Scope Gate / TDD 已内建 | ✅ 已确认 |
+| D-03 | 2026-09-05 | 技术方案阶段定全所有选型、开发期零选型决策：① 步骤 2 改「一次定全，开发期零决策」并补验收判断（Backend-Dev 应能直接从 TDD 拿到全部选型）；② 新增 §4.5 开发实施选型表（服务拆分形态/服务间通信/ORM/包管理与仓库形态/测试框架/部署）与定稿口径；③ 步骤 4 Scope Gate 确认清单补「开发实施选型全部定稿无悬空」；④ 流程图 [2]/常见错误表同步；⑤ CONTEXT 术语表加「选型一次定稿」 | 用户明确「后端技术方案编写时所有确定（用什么技术/方式/数据库等）都要在技术方案阶段定好，不是到开发阶段再决定」——方案定全、开发（Backend-Dev）照图施工 | ✅ 已确认 |
 
 ## 四、待决问题清单（Open Questions）
 

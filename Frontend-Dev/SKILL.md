@@ -59,7 +59,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
         │
         ▼
 [1] 输入解析 + 目标端判定（web / app / 小程序）+ 产出位置确认（目标目录 + git 地址，必问）
-    + 读取项目说明文档 PROJECT.md（若有→恢复进度与规则）+ ◉ 浏览器工具硬性预检（Playwright → browser-use → 其他如 agent-browser，全无 → 报错等安装）
+    + 读取项目说明文档 PROJECT.md（若有→恢复进度与规则）+ 既有前端工程盘点（无 PROJECT.md → 读现有代码结构沉淀基线）
+    + ◉ 浏览器工具硬性预检（Playwright → browser-use → 其他如 agent-browser，全无 → 报错等安装）
         │
         ▼
 [2] 技术栈锁定（FTDD 存在→读选型；缺失→补选型：档位必问 + 组件库/端相关必问；覆盖端不符→阻塞）
@@ -113,6 +114,10 @@ compatibility: Claude Code / Agent SDK / OpenCode
   - 检查项目目录是否已存在 `PROJECT.md`（项目说明与进度文档，模板见 `assets/project-status-template.md`，生成见步骤 6）——**存在则先读它**：恢复「项目基本情况 / 项目规则 / 开发计划与任务清单（已做/未做/进行中）/ 关键决策记录 / 还原核对记录」；
   - 据此跳过已完成功能点，从「未做 / 进行中」处继续，**不重做、不丢进度**；
   - 不存在则视为新项目，后续在步骤 6 新建。
+- **既有前端工程盘点（用户直接给已有前端代码 / 在已有前端工程上做开发，且无 `PROJECT.md`）**：
+  - **先读当前项目结构再动手**：读目录树（`src/` 下 pages/components/hooks/api/features 的组织方式）、技术栈与依赖（`package.json`：框架/组件库/状态管理/路由/CSS 方案/测试）、现有页面与模块、样式方案（预编译/CSS Modules/token）、共享包与 monorepo 布局、lint/tsconfig/提交约定等工程规范；
+  - 把读到的结构**沉淀为 `PROJECT.md`「项目现状基线」**（技术栈现状 / 目录结构 / 代码约定：组件归属、命名、请求封装、样式写法 / 已有页面与能力清单）；
+  - 后续开发**严格跟随项目现有结构与模式**：新增页面/组件/hooks/api 落进现有目录、复用现有封装与约定，**不套本 skill 默认模板、不擅自换技术栈或重构**（确需调整 → 停下问用户给选择项，见 §八）。
 - **优先读项目 `.spec/` 已有产出**：
   - 前端 FTDD：`.spec/FTDD/VN/`（overview + `NN_xxx.md`，取选型 / 页面清单 / 组件清单 / 目录结构 / 模块边界 / fetch 对接 / 测试用例）——**核心输入（施工图）**；
   - 原型：`.spec/原型/`（HTML 原型 + README）——**结构还原基线**；
@@ -136,7 +141,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ### 步骤 3：工程初始化
 
-依据 `assets/project-structure-template.md` 与 `references/tech-stack-guide.md` 搭骨架：
+- **既有工程（步骤 1 已盘点）→ 不「重新初始化」**：沿用项目现有工程配置、目录结构与代码约定，只按需补齐缺失的基础设施；根配置/跨包配置改动前先问用户（§八）；
+- **全新工程** → 依据 `assets/project-structure-template.md` 与 `references/tech-stack-guide.md` 搭骨架：
 - **目录结构**：按 FTDD overview §6 的工程目录逐项落地（`src/api` `src/components` `src/hooks` `src/pages` `src/styles` `src/features` `src/router` `src/store` 等）；
 - **依赖清单**：锁定 package.json 依赖与版本（组件库/状态管理/路由/CSS/测试按 FTDD）；
 - **全局基础设施（先落地，模块才能复用）**：
@@ -291,7 +297,7 @@ FTDD overview「技术选型总览」已定框架/组件库/状态管理/路由/
 
 - **组件库必问**（让用户决定：Ant Design / Arco / Naive UI / 自研，按 PRD 形态推荐）；
 - **端相关选型必问**：web → 按默认 React 栈；app → React Native / Flutter / uni-app（按团队熟悉度与性能需求推荐）；小程序 → 微信原生 / Taro / uni-app（需与 React 技能栈复用则优先 Taro）；
-- 补完选型后，**先口头向用户确认选型清单**再进入步骤 3。
+- 补完选型后，**先向用户一次性确认全部选型清单**（确认后即定稿，不再实现中途逐个问），结论记入 `PROJECT.md`「关键决策记录」再进入步骤 3。
 
 ### 6.3 端覆盖不符：阻塞
 
@@ -433,6 +439,8 @@ api（请求层）                 request.ts 封装 + 按域拆分 src/api/<模
 
 | 常见错误 | 纠正方式 |
 |---|---|
+| 用户给已有前端工程却按默认模板重新初始化/换技术栈 | 步骤 1 先盘点既有代码结构、沉淀 PROJECT.md「现状基线」，严格按现状开发（§三 步骤 1） |
+| 开发中途再选/再换技术选型（组件库/状态库/路由等） | 选型在 FTDD 或启动前已定稿，开发期零选型决策，从 FTDD/项目现状读（§六） |
 | 技术栈与 FTDD 不一致（擅自换组件库/状态库） | 从 FTDD 读选型，不重新选型；缺失才补 |
 | FTDD 缺失时未问档位/组件库直接开发 | 步骤 2 补选型：档位 + 组件库 + 端选型必问 |
 | FTDD 覆盖端与目标端不符仍硬写 | 阻塞，提示先由 Frontend-Tech-Design 补对应端方案 |
