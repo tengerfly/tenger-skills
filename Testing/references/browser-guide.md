@@ -68,3 +68,17 @@
 【提示】未配置 midscenejs 模型，样式测试降级为 Playwright/browser-use 截图 + 人工比对；
        慢接口监听改用页面 performance API 采集（browser-use 无 response.timing 时）。
 ```
+
+## 八、悬浮层 hover 可达性验证（一类问题：dropdown / tooltip / popover）
+
+> 类别：CSS `:hover`/`group-hover` 类浮层在**真实指针轨迹**下的暴露问题——hover 断点导致移向浮层即隐藏、tooltip 方向越界被容器/相邻元素遮挡、层级（z-index）不足被盖、点击穿透。典型症状来自学径项目：头像下拉菜单与头像间 8px 空隙使菜单中途消失（无法点到设置）；图谱右上 icon 的 tooltip 上浮越过内容区顶被裁剪。**只用合成 hover 事件（JS dispatch）无法触发 `:hover`**，必须用浏览器工具的真实 hover（如 agent-browser `hover <sel/@ref>`、Playwright `page.hover`）。
+
+- [ ] **浮层打开**：hover 触发器（按钮/头像/icon）→ 浮层出现（用 `snapshot` 或截图验证文本可见）；
+- [ ] **hover 通路连续（桥接区）**：从触发器移向浮层内目标元素（可 hover 浮层内 ref/selector）→ 浮层**不得中途隐藏**；若浮层定位在触发器下方带空隙（`mt`/gap），hover 轨迹会离开触发器与浮层 → 判定「hover 断点」，正确实现用 `top-full + padding-top` 透明桥接或浮层紧贴；
+- [ ] **浮层内元素可点**：hover 到浮层内按钮/链接后执行 `click`，确认未因隐藏/pointer-events 失败；浮层目标离屏/越界会点不到；
+- [ ] **tooltip 方向与裁剪**：确认 tooltip 弹出方向不越过会被 `overflow:hidden`/sticky 兄弟（顶栏 z 层）裁剪或遮挡的边界；对疑似越界浮层做**顶部/底部边缘截图**目检；
+- [ ] **层级**：浮层 z-index 高于可能覆盖它的 sticky 顶栏与同级卡片；多个相邻浮层互不遮挡关键触发点；
+- [ ] **浮层内入口闭环**：下拉/菜单里的一切入口项（如头像菜单「设置」）点击后必须到达其目标载体（弹框/页面/动作），不得是无动作按钮；入口指向外链/云端预览稿时，测试沙箱若无法跟随外域跳转，改做静态 DOM 断言（href 目标存在且指向正确稿）+ 标注「真实浏览器跳转待实现环境复验」；
+
+> 工具备注：agent-browser 的 `hover` 是真实指针移动；对无文本/无 id 的 icon 触发器，先给它补描述性 `id`（利于 snapshot/selector 定位，也利于还原评审与自动化复用）。
+> 案例：`.spec/设计评审/沉淀_评审盲区复盘_导航换行与大屏铺开.md`（学径）；通用教训已沉淀于 UI-UX-Review `rendered-quality-checklist.md`。
