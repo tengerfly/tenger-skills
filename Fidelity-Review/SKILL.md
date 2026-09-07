@@ -52,6 +52,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
 2. **页面清单 × 基准对齐**：按 `references/design-source-guide.md` 建逐页映射 `实现页 URL ↔ 设计稿页面`，记录响应式断点；通道 A 摘 token 速查，通道 B 记录目测基准；生成比对范围清单交用户确认后再继续。
 3. **双开截图 + 点击验证**：相同视口并排截图；逐元素点击记录有反应/无反应/反应对不对。独立走查纪律：只认渲染产物与基准，不参考实现者说明或自查结论；任务重可开独立会话/换模型交叉复查。
 4. **视觉 + 交互还原走查**：视觉按 `references/visual-checklist.md`（含设计稿有而实现没有、实现多出的双向比对）；交互按 `references/interaction-checklist.md`（可点性/反馈/方式一致/跳转链路）。
+
+   逐区块断言（页面级截图无法暴露的局部偏离必须单列）：标题字号体系一致、空态唯一且间距正确、弹框/Tab 方向与设计稿一致、Loading 居中、错误/选择状态在切换时重置、文案逐字取自设计稿、待确认等入口位于设计稿指定的 icon 位。
 5. **超长文案专项**：按 `references/overflow-guide.md`，识别动态文本位，用真实业务文案 + 更极端长文案替换后截图判定；给出 min-width/ellipsis/flex 收缩等修改方向。
 6. **分级输出报告**：按 `assets/review-report-template.md` 生成报告；每条含编号/页面/基准出处/现象+截图/期望 vs 实际/成因/严重度/建议/修改方；分组统计 P0/P1/P2。
 7. **双模式收尾**：
