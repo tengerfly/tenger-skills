@@ -4,7 +4,7 @@
 
 ## 一、交付
 
-- `.output/<主题>竞品分析/`：报告（11 模块）+ 验收结果详细说明（三段式 Pass Gate）。
+- `.spec/<主题>竞品分析/`：报告（11 模块）+ 验收结果详细说明（三段式 Pass Gate）。
 - 纪律：一切结论有据可依；禁编造；预测必标；多方口径并列。
 
 ## 二、五层框架
@@ -28,7 +28,7 @@ Competitive-Analysis/
 ├── SKILL.md
 ├── references/（dimensions / frameworks）
 ├── assets/（report / matrix / eval 模板）
-└── .output/<主题>竞品分析/
+└── .spec/<主题>竞品分析/
 ```
 
 快速上手：给想法并说做竞品调研；本 skill 自动调研、过门禁后落盘。

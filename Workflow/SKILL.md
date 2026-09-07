@@ -32,7 +32,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 | # | 节点 | 调用 | 前置（缺失阻塞） | 产出 |
 |---|---|---|---|---|
-| ① | 竞品分析 | Competitive-Analysis | 用户想法 | 仓库 `.output/<主题>竞品分析/` |
+| ① | 竞品分析 | Competitive-Analysis | 用户想法 | `.spec/<主题>竞品分析/` |
 | ② | PRD 设计 | PRD-Design | 用户想法（竞品报告可选） | `.spec/PRD/V1/` |
 | ③ | PRD 评审 | PRD-Review ⇄ PRD-Design | PRD | `.spec/需求评审/` |
 | ④ | 原型设计 | Prototype-Design | PRD | `.spec/原型/` |
@@ -154,4 +154,4 @@ PIPELINE：<路径>
 
 - `assets/pipeline-template.md`
 - 同级子 skill：Competitive-Analysis、PRD-Design、PRD-Review、Prototype-Design、Prototype-Review、UI-UX-Design、UI-UX-Review、Backend-Tech-Design、Frontend-Tech-Design、Tech-Review、Backend-Dev、Frontend-Dev、Code-Review、Testing
-- 产物归档：被开发项目 `.spec/`；竞品分析留本仓库 `.output/`
+- 产物归档：被开发项目 `.spec/`；竞品分析产物 `.spec/<主题>竞品分析/`

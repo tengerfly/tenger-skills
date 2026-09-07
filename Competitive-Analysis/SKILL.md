@@ -8,7 +8,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ## 交付物
 
-每次执行在 `Competitive-Analysis/.output/<主题>竞品分析/` 下生成两个文档：
+每次执行在 `.spec/<主题>竞品分析/` 下生成两个文档：
 - `<主题>竞品分析报告.md`（11 模块主文档）
 - `验收结果详细说明.md`（按 `assets/eval-template.md` 的三段式验收）
 
@@ -95,7 +95,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 - `references/dimensions.md` / `frameworks.md`
 - `assets/report-template.md` / `matrix-template.md` / `eval-template.md`
-- `.output/`：最终交付物料根目录
+- `.spec/`：被开发项目交付产物根目录（下辖 `<主题>竞品分析/`）
 
 ## 运行问题埋点
 
