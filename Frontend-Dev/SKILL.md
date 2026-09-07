@@ -170,6 +170,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ## 十三、还原度校验
 
+> ⚠️ REQUIRED：每完成一个页面/功能点，必须先浏览器双开截图（设计稿 vs 实现页）核验，**存在整体结构、配色、字号层级或三态偏离即返工**；只跑通功能不算完成。
+
 1. 本地起 dev server，Playwright 同开还原基准（原型 HTML；有设计稿同时开设计稿）与实现页，截图并排比对。
 2. Playwright 异常 → browser-use 等兜底。
 3. 工具全异常 → 停下报错，禁静默降级静态对照。
