@@ -8,6 +8,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 > 只做三件事：记账（PIPELINE.md）、调度（按序启用子 skill）、守门（前置检查与评审回退）。干活的是 14 个子 skill。
 > 原则：一条链，任意起点，逐步推进，随时可停。
+> 链外修复闭环：`Bug-Fix`（bug 诊断 + 修复委托，见 README 第 16 专业）不入主链、独立触发；⑭ 测试发现的可运行性问题可转 `Bug-Fix` 走「定位→方案→开发→回归」修复闭环，修复沉淀写入源仓库 `bug-patterns/` 集中池反哺方案/开发 skill。
 
 ## 一、核心模型
 
@@ -45,7 +46,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 | ⑪ | 后端开发 | Backend-Dev | TDD（FTDD 可选） | 代码 + PROJECT.md + PLAN.md |
 | ⑫ | 前端开发 | Frontend-Dev | FTDD（TDD/设计稿可选） | 代码 + PROJECT.md |
 | ⑬ | 代码评审 | Code-Review ⇄ ⑪/⑫ | 任一端代码 | `.spec/代码评审/` |
-| ⑭ | 测试 | Testing | 可运行代码 + PRD | `.spec/测试/`（有设计稿时内嵌 Fidelity-Review） |
+| ⑭ | 测试 | Testing | 可运行代码 + PRD | `.spec/测试/`（有设计稿时内嵌 Fidelity-Review）；发现可运行性问题 → 转 `Bug-Fix` 修复闭环 |
 
 **硬串行**：⑧ TDD → ⑨ FTDD（FTDD 须读 TDD 接口契约）；⑪ 后端 → ⑫ 前端（按真实契约对接）。
 
@@ -154,4 +155,5 @@ PIPELINE：<路径>
 
 - `assets/pipeline-template.md`
 - 同级子 skill：Competitive-Analysis、PRD-Design、PRD-Review、Prototype-Design、Prototype-Review、UI-UX-Design、UI-UX-Review、Backend-Tech-Design、Frontend-Tech-Design、Tech-Review、Backend-Dev、Frontend-Dev、Code-Review、Testing
+- 链外（不入主链，独立触发）：`Fidelity-Review`（还原验收，⑭ 内嵌）、`Bug-Fix`（修复闭环，承接 ⑭ 发现的可运行性问题）
 - 产物归档：被开发项目 `.spec/`；竞品分析产物 `.spec/<主题>竞品分析/`
