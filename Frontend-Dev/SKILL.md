@@ -78,7 +78,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 | 样式 | Sass/Less（按 FTDD 选型）+ 隔离方案（React Modules / Vue scoped） | 框架样式 | rpx/wxss（750 换算） |
 | 测试 | Vitest + RTL | 框架方案 | 逻辑单测 |
 
-还原基线跨端一致，只做语法/容器适配，不因端改视觉。
+还原基线跨端一致，只做语法/容器适配，不因端改视觉。框架级等价映射（Vue3/Taro/uni-app/RN/Electron/Flutter）见 `references/framework-equivalence-guide.md`。
 
 ## 五、monorepo 与共享类型
 
@@ -89,9 +89,10 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ## 六、技术栈锁定
 
-- 优先读 FTDD，不重选。
-- 缺失补选型：档位（企业级默认/快速）必问 + 组件库必问（Ant/Arco/Naive/自研）+ 端选型必问（app: RN/Flutter/uni-app；小程序: 原生/Taro/uni-app，复用 React 优先 Taro）。
+- 优先读 FTDD，不重选：框架/组件库/路由/状态/请求载体/测试库以 FTDD 选型为准（FTDD 可选 Vue3/Taro/uni-app/React Native/Electron，非仅 React）。
+- 缺失补选型：档位（企业级默认/快速）必问 + 端形态与技术框架必问（清单同 FTDD `tech-stack-guide.md` §二）+ 组件库按所选框架配套推荐。
 - 覆盖端不符：`【阻塞】FTDD 仅覆盖 {{覆盖端}}，目标为 {{目标端}}，请先补方案。`
+- ⛔ **施工框架与 FTDD 选型不一致 → 阻塞对齐**，禁自主切回 React 基线；非 React 框架施工按 `references/framework-equivalence-guide.md` 等价映射执行（React 基线 guide 中的 hooks/RTL/CSS Modules 语境按其 §二替换规则读作所选框架等价物）。
 
 ## 七、模块化与组件抽离
 
@@ -142,6 +143,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
 | 开发中换选型 | 选型定稿零决策 |
 | 与 FTDD 不一致 | 读 FTDD |
 | 缺失不问档位/组件库 | 补选型必问 |
+| 施工框架与 FTDD 选型不一致 | 阻塞对齐，按 framework-equivalence-guide 等价映射 |
+| 非 React 框架仍按 React 写法施工 | 读 framework-equivalence-guide §一/二 等价映射 |
 | 覆盖端不符硬写 | 阻塞补方案 |
 | 自由发挥样式 | 对照还原基线 + token |
 | 复用 ≥2 不抽离/复制 | 编码当下抽离 |
@@ -181,7 +184,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ## 十四、资源清单
 
-- `references/architecture-guide.md`、`code-style-guide.md`、`test-guide.md`、`tech-stack-guide.md`、`fidelity-guide.md`、`ui-states-guide.md`
+- `references/architecture-guide.md`、`code-style-guide.md`、`test-guide.md`、`tech-stack-guide.md`、`fidelity-guide.md`、`ui-states-guide.md`、`framework-equivalence-guide.md`
 - `assets/project-structure-template.md`、`module-code-template.md`、`project-status-template.md`
 - 产出位置：步骤 1 用户给定目录 + git 地址
 

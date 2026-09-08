@@ -37,6 +37,7 @@
 | D-06 | 09-07 | 设计稿唯一基准与状态自洽：禁自创文案/区块/空态，字号 token 统一、弹框方向照稿、Loading 居中、Tab 切换清状态、文件选择防抖、待确认 icon 位 | 用户逐条反馈（自创稿/竖版弹框/重复空态/加载/错误残留/闪烁） | ✅ |
 | D-07 | 09-08 | 沉淀 10 大 UI 状态实现指南（ui-states-guide.md，框架无关 + React/Vue 注记）；铁律/步骤 4/6/13 与 FTDD §9 适用状态挂钩，状态缺失=功能点未完成 | 外部方法论 ui-ux-design.md：状态稳健不只 Success 态；规范先行链路 | ✅ |
 | D-08 | 09-08 | 体检修复：删根目录遗留重复副本 fidelity-guide.md（正主 references/ 版）；fidelity-guide 状态口径与 SKILL 同步（三态/适用状态，挂钩 FTDD §9 + ui-states-guide 指针）；补跨 skill 寻址注记；FTDD 多框架施工缺口记 issue/Frontend-Dev/2026-09-08/01（P1 待处理） | Skill-Optimizer 模式④体检（六维机械核验） | ✅ |
+| D-09 | 09-08 | 多框架施工适配（修 issue 01）：新增 references/framework-equivalence-guide.md（7 框架核心概念等价映射总表 + 6 条施工切换规则 + 切换自查清单）；SKILL §六补「施工框架与 FTDD 选型不一致 → 阻塞对齐」+ 非 React 框架等价映射路由；错误对照表加 2 行 | Skill-Optimizer 模式③优化（issue 01 P1） | ✅ |
 
 ## 四、待决问题
 
