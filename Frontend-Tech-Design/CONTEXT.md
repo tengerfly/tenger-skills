@@ -24,6 +24,8 @@
 | 苏格拉底拷问协议 | FTDD 澄清执行规范：决策树单步提问 + 边界/节点拷问 + 收敛证明 | 不是泛泛聊天；未过门槛不定稿 |
 | 收敛证明 | 决策可定稿的四条件：结论落到具体范围 + 方案/理由/备选 + 失败/10x/漏项已拷问 + 用户认可 | 缺一即 P0，退回补问 |
 | 节点拷问 | 关键数据流/交互链路逐节点问触发/数据来源/异常/失败恢复 | 禁止只设计正常主链路 |
+| 方案决策规则 | Decision Rules | decision-rules.md：架构范式/微前端/状态管理/性能硬规则/构建工具/渲染策略/安全的选型与量化阈值 | 与 Frontend-Dev 分工：本份管方案层，那份管编码层 |
+| 案例库 | Case Library | case-library/：architecture-patterns + state-management + performance-security + 同行样本 | 借鉴不照搬，选型仍须收敛证明 |
 
 ## 三、决策日志
 
@@ -38,6 +40,7 @@
 | D-07 | 09-08 | 选型机制重构：废「固定技术栈不询问」→ 默认基线（React）+ 端形态/技术框架每次必问可换（Vue3/Taro/uni-app/RN/Electron，Flutter 备选点名才选）；tech-stack-guide 重构为端形态×框架清单 + 8 框架配套生态 + 通用决策；输入描述 PRD+低保真原型 → PRD+UI 设计稿（缺省回退原型） | 用户裁决：技术方案针对整个前端版图不能定死 React；原生小程序仅简单场景，复杂场景用跨端框架 | ✅ |
 | D-08 | 09-08 | 预处理器与隔离方案动态化：Sass/Less 按项目生态选型、组件样式隔离 React→CSS Modules / Vue→scoped，全链（SKILL/overview/css-guide/README）清写死；css-guide 示例以 SCSS 表述 + Less 等价映射 + 补 Vue scoped 对照；§八补「有设计稿时 token 值以 design-system.md 为唯一来源」强化规范先行链路 | 用户裁决：不写死 SCSS 与 CSS Modules，随框架动态处理 | ✅ |
 | D-09 | 09-08 | 体检修复：术语统一「默认技术基线」→「默认基线」（与 CONTEXT 术语表/README 一致）；module-template §9 补跨 skill 寻址注记（../Frontend-Dev/references/） | Skill-Optimizer 模式④体检（六维机械核验） | ✅ |
+| D-10 | 09-08 | 新增 decision-rules（架构范式/状态/性能/构建/渲染/安全选型+量化阈值）+ case-library（架构范式/状态管理/性能安全/同行样本 4 文件） | 用户提供前端技术方案案例库资源清单，要求系统增强；借鉴 peterhdd engineering-frontend-developer | ✅ |
 
 ## 四、待决问题
 

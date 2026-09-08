@@ -35,8 +35,8 @@
 Prototype-Design/
 ├── SKILL.md
 ├── README.md
-├── CONTEXT.md                  # D-01~D-12
-├── references/                 # html-spec / completeness-check / iteration-regression-guard
+├── CONTEXT.md                  # D-01~D-13
+├── references/                 # html-spec / completeness-check / iteration-regression-guard / case-library
 ├── assets/                     # layout-inventory / prototype-readme 模板
 └── .spec/原型/                  # 布局清单 + README + HTML
 ```

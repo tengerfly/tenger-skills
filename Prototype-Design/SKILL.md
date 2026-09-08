@@ -104,6 +104,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 ## 八、资源清单
 
 - `references/html-spec.md` / `completeness-check.md` / `iteration-regression-guard.md`
+- `references/case-library/`：方法学（保真度分级/反模式/可用性/AI 边界/生命周期状态）+ 工具 + 动作型范本（按需加载）
 - `assets/layout-inventory-template.md` / `prototype-readme-template.md`
 - `.spec/原型/`：产出目录
 

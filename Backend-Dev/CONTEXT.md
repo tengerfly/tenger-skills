@@ -25,6 +25,8 @@
 | 小步提交 | Small-step Commit | 一功能点一 commit；提交前 eslint + commitlint（Conventional Commits） | 不是每行一提交 |
 | 项目现状基线 | Existing-Project Baseline | 既有代码无 PROJECT/PLAN → 先盘点结构/栈/依赖/规范/git 沉淀 PROJECT.md；按现状开发，不套默认模板、不擅自重构 | 现状优先于模板 |
 | 开发期零选型决策 | Zero Selection at Dev | 选型只来三个来源：读 TDD / 项目现状 / 无 TDD 全新开发启动前一次问清并记 PROJECT.md；实现期不再补选型 | 不是开发期逐步澄清 |
+| 编码层决策规则 | Decision Rules | decision-rules.md：框架选型/分层职责/API/鉴权/数据层/质量六板斧/安全编码的硬规则 | 与 Backend-Tech-Design 决策规则分工：那份管方案层，本份管编码层 |
+| 案例库 | Case Library | case-library/：language-patterns + api-security + quality-engineering + 同行样本 | 借鉴不照搬，TDD 选型优先 |
 
 ## 三、决策日志
 
@@ -34,6 +36,7 @@
 | D-02 | 2026-09-05 | 注入心法「做减法」：§1.1 补不提前抽象——TDD 明确要的才写，需求出现再重构 | 按 Vibe Coding 心法全面优化；Backend-Dev 属开发类 | ✅ 已确认 |
 | D-03 | 2026-09-05 | 步骤 3 补「验收标准前置（DoD）」：功能点动手前先写完成定义并进 PLAN.md，完成后按同一标准自检 | 学习笔记 3.1：先给任务级验收标准、完成后自检自打回 | ✅ 已确认 |
 | D-04 | 2026-09-05 | 开工方式二分改三模式 + 技术栈决策不落开发期：新增既有项目盘点模式；技术栈三来源锁定；澄清场景删技术栈；步骤 2 既有项目不擅自分服务；术语表补两条 | 用户要求技术方案阶段定全确定、已有项目先盘点再按结构开发 | ✅ 已确认 |
+| D-05 | 2026-09-08 | 新增 decision-rules（编码层硬规则：框架/分层/API/鉴权/数据层/质量六板斧/安全）+ case-library（语言规范/API安全/质量工程化/同行样本 4 文件） | 用户提供后端开发案例库资源清单，要求系统增强 | ✅ 已确认 |
 
 ## 四、待决问题
 

@@ -168,7 +168,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ## 十二、资源清单
 
-- `references/doc-structure.md`、`tech-stack-guide.md`、`component-design-guide.md`、`fetch-guide.md`、`css-guide.md`、`module-design-guide.md`、`test-guide.md`、`socratic-grilling.md`
+- `references/doc-structure.md`、`tech-stack-guide.md`、`component-design-guide.md`、`fetch-guide.md`、`css-guide.md`、`module-design-guide.md`、`test-guide.md`、`socratic-grilling.md`、`decision-rules.md`
+- `references/case-library/`：架构范式 + 状态管理 + 性能安全 + 同行样本（按需加载）
 - `assets/overview-template.md`、`module-template.md`
 - `.spec/FTDD/VN/`：产出目录
 

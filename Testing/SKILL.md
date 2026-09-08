@@ -120,7 +120,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
 ## 十二、资源清单
 
 - `assets/test-process-template.md`、`test-case-template.md`、`bug-report-template.md`
-- `references/test-case-guide.md`、`style-test-guide.md`、`acceptance-loop-guide.md`、`api-perf-guide.md`、`browser-guide.md`
+- `references/test-case-guide.md`、`style-test-guide.md`、`acceptance-loop-guide.md`、`api-perf-guide.md`、`browser-guide.md`、`decision-rules.md`
+- `references/case-library/`：测试方法学 + 框架速查 + 专项 + 同行样本（按需加载）
 - `CONTEXT.md`；产出位置 `.spec/测试/`
 - 兄弟 skill：`Fidelity-Review`（Testing 场景模式，有设计稿时承接 UI 还原度检查）
 

@@ -23,7 +23,7 @@
 ```
 Testing/
 ├── SKILL.md / README.md / CONTEXT.md
-├── references/（test-case / style-test / acceptance-loop / api-perf / browser）
+├── references/（test-case / style-test / acceptance-loop / api-perf / browser / decision-rules / case-library）
 ├── assets/（test-process / test-case / bug-report 模板）
 └── .spec/测试/
 ```

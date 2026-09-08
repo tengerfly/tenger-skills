@@ -29,7 +29,7 @@
 ```
 Frontend-Tech-Design/
 ├── SKILL.md / README.md / CONTEXT.md
-├── references/（doc-structure / tech-stack / component-design / fetch / css / module-design / test / socratic-grilling）
+├── references/（doc-structure / tech-stack / component-design / fetch / css / module-design / test / socratic-grilling / decision-rules / case-library）
 ├── assets/（overview-template / module-template）
 └── .spec/FTDD/VN/
 ```

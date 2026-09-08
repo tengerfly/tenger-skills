@@ -217,6 +217,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 ## 十、配套物料
 
 - references/：prd-structure、mermaid-patterns、gherkin-guide、tech-feasibility-guide、socratic-grilling。
+- references/case-library/：方法论框架库（frameworks/prd-templates/zh-cases），按需加载。
 - assets/：overview-template、module-template、quickref-template、eval-template。
 
 ## 十一、运行问题埋点

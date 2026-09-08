@@ -43,7 +43,9 @@ Backend-Dev/
 │   ├── architecture-guide.md   # 架构与模块化
 │   ├── code-style-guide.md     # 代码规范
 │   ├── test-guide.md           # 测试规范
-│   └── tech-stack-guide.md     # 工程落地骨架
+│   ├── tech-stack-guide.md     # 工程落地骨架
+│   ├── decision-rules.md       # 编码层工程决策规则
+│   └── case-library/           # 语言规范/API安全/质量工程化/同行样本
 ├── assets/                     # 输出模板
 │   ├── project-structure-template.md
 │   ├── module-code-template.md

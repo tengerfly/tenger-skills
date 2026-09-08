@@ -33,7 +33,7 @@ Frontend-Dev/
 ├── SKILL.md
 ├── README.md
 ├── CONTEXT.md
-├── references/   # architecture / code-style / test / tech-stack / fidelity
+├── references/   # architecture / code-style / test / tech-stack / fidelity / ui-states / framework-equivalence / decision-rules / case-library
 ├── assets/       # project-structure / module-code / project-status 模板
 ```
 

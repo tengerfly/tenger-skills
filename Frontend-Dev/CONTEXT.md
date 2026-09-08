@@ -24,6 +24,8 @@
 | 断点续做 | PROJECT.md 是唯一恢复入口 | 不靠记忆 |
 | 契约双向核对 | fetch ↔ FTDD ↔ TDD 一致 | 不是单向参照 |
 | 项目现状基线 | 既有工程先盘点沉淀 PROJECT.md，按现状开发 | 现状优先于模板 |
+| 编码层决策规则 | Decision Rules | decision-rules.md：组件模式/状态管理/样式/数据表单/测试/工程化规范的量化硬规则 | 与 FTDD 分工：那份管方案层，本份管编码层 |
+| 案例库 | Case Library | case-library/：component-patterns + framework-patterns + quality-conventions + 同行样本 | 借鉴不照搬，FTDD 选型与多框架等价映射优先 |
 
 ## 三、决策日志
 
@@ -38,6 +40,7 @@
 | D-07 | 09-08 | 沉淀 10 大 UI 状态实现指南（ui-states-guide.md，框架无关 + React/Vue 注记）；铁律/步骤 4/6/13 与 FTDD §9 适用状态挂钩，状态缺失=功能点未完成 | 外部方法论 ui-ux-design.md：状态稳健不只 Success 态；规范先行链路 | ✅ |
 | D-08 | 09-08 | 体检修复：删根目录遗留重复副本 fidelity-guide.md（正主 references/ 版）；fidelity-guide 状态口径与 SKILL 同步（三态/适用状态，挂钩 FTDD §9 + ui-states-guide 指针）；补跨 skill 寻址注记；FTDD 多框架施工缺口记 issue/Frontend-Dev/2026-09-08/01（P1 待处理） | Skill-Optimizer 模式④体检（六维机械核验） | ✅ |
 | D-09 | 09-08 | 多框架施工适配（修 issue 01）：新增 references/framework-equivalence-guide.md（7 框架核心概念等价映射总表 + 6 条施工切换规则 + 切换自查清单）；SKILL §六补「施工框架与 FTDD 选型不一致 → 阻塞对齐」+ 非 React 框架等价映射路由；错误对照表加 2 行 | Skill-Optimizer 模式③优化（issue 01 P1） | ✅ |
+| D-10 | 09-08 | 新增 decision-rules（组件模式/状态/样式/数据表单/测试/工程化规范硬规则）+ case-library（组件模式/框架写法/质量规范/同行样本 4 文件） | 用户提供前端开发案例库资源清单，要求系统增强；借鉴 lobehub/qumge 范本 | ✅ |
 
 ## 四、待决问题
 

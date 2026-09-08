@@ -184,7 +184,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ## 十四、资源清单
 
-- `references/architecture-guide.md`、`code-style-guide.md`、`test-guide.md`、`tech-stack-guide.md`、`fidelity-guide.md`、`ui-states-guide.md`、`framework-equivalence-guide.md`
+- `references/architecture-guide.md`、`code-style-guide.md`、`test-guide.md`、`tech-stack-guide.md`、`fidelity-guide.md`、`ui-states-guide.md`、`framework-equivalence-guide.md`、`decision-rules.md`
+- `references/case-library/`：组件模式 + 框架写法 + 质量规范 + 同行样本（按需加载）
 - `assets/project-structure-template.md`、`module-code-template.md`、`project-status-template.md`
 - 产出位置：步骤 1 用户给定目录 + git 地址
 

@@ -1,7 +1,7 @@
 # PRD-Design —— 工业级 PRD 生成 Skill
 
 > 状态：✅ 定稿
-> 术语与决策基准：[CONTEXT.md](CONTEXT.md)（术语表 + D-01~D-22）
+> 术语与决策基准：[CONTEXT.md](CONTEXT.md)（术语表 + D-01~D-24）
 
 ## 一、定位与第一原则
 
@@ -34,7 +34,7 @@ PRD-Design/
 ├── SKILL.md
 ├── README.md
 ├── CONTEXT.md
-├── references/   # prd-structure / mermaid-patterns / gherkin-guide / tech-feasibility-guide / socratic-grilling
+├── references/   # prd-structure / mermaid-patterns / gherkin-guide / tech-feasibility-guide / socratic-grilling / case-library
 ├── assets/       # overview / module / quickref / eval 模板
 └── .spec/PRD/VN/ # overview + 速查表 + NN_xxx + 验收说明
 ```
