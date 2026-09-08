@@ -17,6 +17,20 @@
 - 业务组件可复用基础组件，禁止反向依赖（基础组件不得 import 业务组件）；
 - 跨模块复用的业务组件提升到 `src/components/`（全局），仅单模块用的留在 `features/<模块>/components/`。
 
+### 1.1 容器组件 vs 展示组件（Smart / Dumb 黄金法则）
+
+> 框架无关的职责划分，总逻辑架构通用；落地写法随框架而异（React：props + 回调函数；Vue：props + emits）。
+
+| 角色 | 职责 | 数据边界 | 典型落点 |
+|---|---|---|---|
+| 容器组件（Smart） | 连接数据源：API、全局状态库（Zustand/Redux/Pinia）、路由 | 可发起请求、可读写全局状态 | `pages/` 页面容器、确需自取数的模块容器 |
+| 展示组件（Dumb） | 纯渲染 + 交互转发 | **只通过 props 接收数据，只通过回调/事件向外通知（React 回调 props / Vue emits）；内部不发 HTTP 请求、不绑定全局状态库** | `components/` 基础组件、绝大多数业务组件 |
+
+**判定与收益**：
+- 展示组件高度可复用、极易单元测试与 Storybook 化（给定 props 断言输出即可）；
+- 业务组件默认按展示组件写：数据由容器组合好经 props 下传；确需自取数的业务组件实为「模块级容器」，须在组件拆分表中标注；
+- 数据获取统一经 hooks（React）/ 组合式函数（Vue）由容器侧完成后下传，展示组件不感知数据来源。
+
 ---
 
 ## 二、组件拆分原则
@@ -39,16 +53,16 @@ interface UserTableProps {
 
 ---
 
-## 三、hooks 优先（模块化开发核心）
+## 三、逻辑层优先：hooks / 组合式函数（模块化开发核心）
 
-> 逻辑一律抽成自定义 hooks，组件只负责渲染与绑定。
+> 逻辑一律抽成独立逻辑单元，组件只负责渲染与绑定。React 用自定义 hooks，Vue3 用组合式函数（composables，可放 `src/composables/`），命名与职责规范一致。下文目录与示例以 React hooks 表述，Vue 等价映射。
 
-### 3.1 hooks 分层
+### 3.1 逻辑层分层
 
 | 类型 | 目录 | 示例 |
 |------|------|------|
-| 通用 hooks | `src/hooks/` | `useFetch` / `useDebounce` / `useLocalStorage` |
-| 模块私有 hooks | `src/features/<模块>/hooks/` | `useUserList` / `useOrderForm` |
+| 通用逻辑单元 | `src/hooks/`（Vue 可 `src/composables/`） | `useFetch` / `useDebounce` / `useLocalStorage` |
+| 模块私有逻辑单元 | `src/features/<模块>/hooks/` | `useUserList` / `useOrderForm` |
 
 ### 3.2 hooks 命名与职责
 
@@ -133,6 +147,8 @@ src/
 - [ ] 组件分层清晰（基础/业务/页面容器）？
 - [ ] 每个组件单一职责、props 用 TS 约束？
 - [ ] 业务逻辑下沉 hooks，组件只渲染？
+- [ ] 展示组件无数据获取、无全局状态绑定（数据全部来自 props）？
+- [ ] 容器/展示职责边界清晰（容器取数组合下传，展示纯渲染）？
 - [ ] 数据获取统一走 `useFetch`/`useQuery`，三态齐全？
 - [ ] 无副作用渲染，副作用在 hooks/事件处理器？
 - [ ] 目录按模块化组织，跨模块复用组件已提升？

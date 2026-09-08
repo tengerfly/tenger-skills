@@ -13,7 +13,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 **角色**：前端开发专家。结构基线 = 低保真原型；视觉基准 = 设计稿（有则以 `.spec/设计稿/` 为准，无则从原型基础值收敛）；接口契约源 = 后端 TDD/FTDD。
 
-> ⛔ 设计稿为唯一视觉/交互/文案基准，禁止自创：逐区块复制设计稿结构、方向、文案、空态与图标位；凡设计稿未出现的内容、区块、状态或文字不得擅自添加。加载与错误提示需居中；跨 Tab/来源切换须清除前序状态；空态只允许单一表达。
+> ⛔ 设计稿为唯一视觉/交互/文案基准，禁止自创：逐区块复制设计稿结构、方向、文案、空态与图标位；凡设计稿未出现的内容、区块、状态或文字不得擅自添加。加载与错误提示需居中；跨 Tab/来源切换须清除前序状态；空态只允许单一表达。页面适用状态按 FTDD §9 逐态覆盖（10 大 UI 状态，实现见 `references/ui-states-guide.md`）。
 
 1. 可读性 > 聪明技巧；禁炫技、魔法值、隐式行为。
 2. 单一职责；页面只编排，逻辑下沉 hooks。
@@ -52,11 +52,11 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 3. **工程初始化**：既有工程沿用现状，只补缺失基础设施（根配置改动先问）；全新工程按 assets/project-structure-template.md + references/tech-stack-guide.md。基础设施先落地：`src/api/request.ts`、`src/styles/`（token 先于组件）、router+守卫+懒加载、通用 hooks、ErrorBoundary、环境变量、Vitest+RTL 测试环境。monorepo：子包 name 带 scope、依赖共享包 `workspace:*`、根配置继承不擅改。
 
-4. **还原基线与 token**：逐页对照原型产还原基线清单（区块/间距/交互/三态）；有设计稿时视觉值以设计稿提取，无则从原型收敛；全部收敛为 `src/styles/variables.scss` 的 CSS 变量，禁写死；静态资源复制登记。
+4. **还原基线与 token**：逐页对照原型产还原基线清单（区块/间距/交互/三态与 FTDD §9 适用状态）；有设计稿时视觉值以设计稿提取，无则从原型收敛；全部收敛为 `src/styles/variables.{scss|less}`（扩展名随 FTDD 选型）的 CSS 变量，禁写死；静态资源复制登记。
 
 5. **Scope Gate（强制暂停）**：呈现目标端 + 页面/模块清单 + 技术栈落地方式 + 还原基线摘要；确认后放行；只做部分以用户指定范围为准。
 
-6. **开发计划**：按功能点原子拆任务（页面/模块/复用组件/hook+测试/基础设施；不过大不过碎）；每功能点先写 DoD（测试全绿 + 正常/空/异常边界 + 还原核对 + 契约对齐）；按依赖排序写开发计划，落 PROJECT.md + 可勾选任务。
+6. **开发计划**：按功能点原子拆任务（页面/模块/复用组件/hook+测试/基础设施；不过大不过碎）；每功能点先写 DoD（测试全绿 + 正常/空/异常边界 + FTDD §9 适用状态齐全 + 还原核对 + 契约对齐）；按依赖排序写开发计划，落 PROJECT.md + 可勾选任务。
 
 7. **逐页面测试先行实现**：先写测试（承接 FTDD 用例标 TC/AC）→ api → hooks → 组件 → 页面容器 + 样式还原。每完成一个功能点：勾任务 + 更新 PROJECT.md + eslint/stylelint/commitlint 通过 + git commit（Conventional Commits，禁混入调试/临时/凭据，不擅自 push）。
 
@@ -75,7 +75,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 | 工程 | Vite + React SPA | 所选框架 | 原生/Taro/uni-app |
 | 路由 | React Router v6 | 框架路由 | app.json/pages.json |
 | 请求 | fetch 封装 | 框架网络层 | wx.request/uni.request（对齐同一契约） |
-| 样式 | Sass + CSS Modules | 框架样式 | rpx/wxss（750 换算） |
+| 样式 | Sass/Less（按 FTDD 选型）+ 隔离方案（React Modules / Vue scoped） | 框架样式 | rpx/wxss（750 换算） |
 | 测试 | Vitest + RTL | 框架方案 | 逻辑单测 |
 
 还原基线跨端一致，只做语法/容器适配，不因端改视觉。
@@ -177,11 +177,11 @@ compatibility: Claude Code / Agent SDK / OpenCode
 1. 本地起 dev server，Playwright 同开还原基准（原型 HTML；有设计稿同时开设计稿）与实现页，截图并排比对。
 2. Playwright 异常 → browser-use 等兜底。
 3. 工具全异常 → 停下报错，禁静默降级静态对照。
-4. 差异分类：可接受（响应式/字体回退/动效实现）vs 必须修正（区块缺失、间距/配色/字号偏差、交互三态缺失）→ 返工清单。
+4. 差异分类：可接受（响应式/字体回退/动效实现）vs 必须修正（区块缺失、间距/配色/字号偏差、交互/适用状态缺失）→ 返工清单。
 
 ## 十四、资源清单
 
-- `references/architecture-guide.md`、`code-style-guide.md`、`test-guide.md`、`tech-stack-guide.md`、`fidelity-guide.md`
+- `references/architecture-guide.md`、`code-style-guide.md`、`test-guide.md`、`tech-stack-guide.md`、`fidelity-guide.md`、`ui-states-guide.md`
 - `assets/project-structure-template.md`、`module-code-template.md`、`project-status-template.md`
 - 产出位置：步骤 1 用户给定目录 + git 地址
 

@@ -14,7 +14,7 @@
 | 项目名称 | {{PRODUCT_NAME}} |
 | 需求来源 | PRD `{{PRD_PATH}}` / 原型 `{{PROTO_PATH}}` / 后端 TDD `{{TDD_PATH}}` |
 | 实现档位 | {{企业级生产 / demo 快速实现}} |
-| 固定技术栈 | pnpm + Vite + TypeScript + React（hooks）+ 原生 fetch + Sass |
+| 技术栈 | {{按选型填写；默认基线 pnpm + Vite + TypeScript + React（hooks）+ 原生 fetch + Sass/Less}} |
 
 ---
 
@@ -22,19 +22,20 @@
 
 | 组件 | 选型 | 档位 | 理由 | 备选 |
 |------|------|------|------|------|
-| 框架 | React 18 | {{TIER}} | hooks 为主 | Vue 3 |
-| 构建 | Vite + pnpm + TS | {{TIER}} | 开发快、类型强 | — |
-| 组件库 | {{UI_LIB / 自研}} | {{TIER}} | {{REASON}} | {{ALT}} |
-| 状态管理 | {{Zustand / Redux Toolkit / TanStack Query}} | {{TIER}} | {{REASON}} | {{ALT}} |
-| 路由 | React Router v6 | {{TIER}} | 数据路由 + 懒加载 | — |
-| CSS | Sass + CSS Modules | {{TIER}} | 模块化 + 变量 | Less |
-| 请求 | 原生 fetch 封装 | {{TIER}} | 无依赖 | — |
-| 测试 | Vitest + React Testing Library | {{TIER}} | Vite 原生 | Jest |
+| 端形态 | {{Web PC / H5 / 小程序 / App / 桌面 / 多端一套}} | {{TIER}} | {{REASON}} | — |
+| 框架 | {{用户选定：React 18 / Vue 3 / Taro / uni-app / React Native / Electron / Flutter}} | {{TIER}} | {{REASON}} | {{ALT}} |
+| 构建 | {{随框架：Vite / HBuilderX / Expo / electron-vite}} | {{TIER}} | {{REASON}} | — |
+| 组件库 | {{随框架联动：AntD / Element Plus / NutUI-React / wot-design-uni / gluestack-ui…}} | {{TIER}} | {{REASON}} | {{ALT}} |
+| 状态管理 | {{随框架联动：Zustand·RTK / Pinia / Riverpod…}} | {{TIER}} | {{REASON}} | {{ALT}} |
+| 路由 | {{随框架联动：React Router / Vue Router / 声明式路由 / React Navigation}} | {{TIER}} | {{REASON}} | — |
+| CSS | {{Sass/Less 按生态选}} + 组件样式隔离（React→CSS Modules / Vue→scoped）+ 全局抽离 | {{TIER}} | 隔离方案随框架 | Tailwind |
+| 请求 | {{随端载体：fetch / Taro.request / uni.request / wx.request / dio}} 统一封装 | {{TIER}} | 契约对齐 TDD | — |
+| 测试 | {{随框架联动：Vitest+RTL / Vitest+VTU / Jest+RNTL / flutter_test}} | {{TIER}} | {{REASON}} | — |
 | 暗黑模式/主题 | {{开启 / 不开}} | {{TIER}} | {{REASON}} | — |
-| 国际化 i18n | {{开启 / 不开}} | {{TIER}} | {{REASON}} | — |
+| 国际化 i18n | {{react-i18next / vue-i18n / 不开}} | {{TIER}} | {{REASON}} | — |
 | 浏览器兼容性 | {{Vite 默认 / 用户指定}} | {{TIER}} | {{REASON}} | — |
 
-> 选型规则见 `references/tech-stack-guide.md`。
+> 选型规则与各框架配套生态见 `references/tech-stack-guide.md`；框架每次必问、用户确认才定稿。
 
 ---
 
@@ -46,13 +47,13 @@ flowchart TB
         U[用户浏览器]
     end
     subgraph 前端应用
-        Router[路由层 React Router]
+        Router[路由层 {{所选路由方案}}]
         Pages[页面容器层]
         Components[组件层 基础/业务组件]
-        Hooks[hooks 逻辑层]
+        Hooks[逻辑层 hooks/组合式函数]
         Store[全局状态 Store]
         Api[请求层 fetch 封装]
-        Styles[样式层 Sass + CSS Modules]
+        Styles[样式层 Sass/Less + 隔离方案]
     end
     subgraph 后端
         GW[API 网关]
@@ -136,6 +137,8 @@ flowchart TB
     └── Test/                # 测试 setup
 ```
 
+> 目录按所选框架调整：Vue3 组合式函数放 `composables/`；Taro/uni-app 用其页面路由与工程约定（pages/app.config）；RN/Flutter/Electron 按各自脚手架。
+
 ---
 
 ## 7. 模块清单与边界（应做 / 不应做）
@@ -172,7 +175,7 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
 - 文件/目录：组件与 hooks 用 PascalCase（`UserTable.tsx` / `useUserList.ts`），工具/配置用 camelCase；
 - 接口方法：`getXxx / createXxx / updateXxx / deleteXxx`；
 - hooks：一律 `use` 前缀；
-- CSS：CSS Modules（`*.module.scss`），类名语义化。
+- CSS：组件样式隔离随框架（React→CSS Modules `*.module.scss/less`；Vue→scoped），类名语义化。
 
 ### 8.3 环境变量规范
 
@@ -193,13 +196,23 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
 - 路由级：`ProtectedRoute` + `useAuth`；
 - 按钮级：`usePermission` 控制显隐。
 
+### 8.6 UI 规范（设计 token + 界面状态）
+
+> 规范先行：开发开始前 UI 规范必须已确认，后续开发照规范执行，不逐页重议。
+
+| 项 | 规范 |
+|----|------|
+| 设计 token 来源 | 有设计稿：`.spec/设计稿/design-system.md` 为唯一视觉来源（色彩/字号阶梯/间距 4px 网格/圆角阴影）；无设计稿：按 `references/css-guide.md` 基线建 `src/styles/variables.scss`，先确认后开发 |
+| 界面状态清单 | 按「10 大 UI 状态」核对：Skeleton/Loading/Success/Empty/Error/Disabled/PermissionDenied/NetworkError（通用）+ Streaming/PartialData（涉 AI 生成功能时）；逐页面声明适用状态及处理方案，写入模块文档 §9 |
+| 状态视觉基准 | 状态呈现对齐设计稿状态稿（design-system §5.10）；无状态稿时按组件库标准态并在方案中注明 |
+
 ---
 
 ## 9. 测试策略
 
 | 项 | 说明 |
 |----|------|
-| 测试框架 | Vitest + React Testing Library |
+| 测试框架 | {{随框架：Vitest+RTL / Vitest+VTU / Jest+RNTL / flutter_test}} |
 | 测试对象 | 页面 / 组件 / hooks |
 | 覆盖要求 | 渲染 / 交互 / 数据流 / 边界 / 异常 |
 | AC 追溯 | 测试用例承接 PRD 的 AC 编号 |

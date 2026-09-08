@@ -7,14 +7,14 @@
 
 - 上游：`.spec/PRD/`（PRD-Design）+ 原型（Prototype-Design）；缺失回退用户指定。
 - 域界：PRD 不写的数据库/接口/选型，这里写；前端方案归 Frontend-Tech-Design。
-- 档位：每次必问，默认企业级生产。
+- 档位：每次必问，默认企业级生产；每个决策点过收敛证明（失败/涨 10 倍/漏项 + 用户认可）才定稿。
 - 语言：按需求推荐（高并发→Go、企业级→Java、AI→Python）。
 - 浏览器：软检测（Playwright → browser-use → 其他），全无跳过不阻塞。
 
 ## 二、核心流程
 
 ```
-解析 PRD+原型（软检测浏览器）→ 选型澄清（一次定全）→ 总技术文档 → ◉ Scope Gate
+解析 PRD+原型（软检测浏览器）→ 选型澄清（逐点拷问后一次定全）→ 总技术文档 → ◉ Scope Gate
 → 逐模块方案（流程图 + TDD 用例）→ 全局一致性 → 归档 .spec/TDD/VN/
 ```
 
@@ -33,7 +33,7 @@ Backend-Tech-Design/
 ├── SKILL.md
 ├── README.md
 ├── CONTEXT.md                 # 术语 + 决策日志
-├── references/                # tdd-structure / tech-stack / module-design / data-model
+├── references/                # tdd-structure / tech-stack / module-design / data-model / socratic-grilling
 ├── assets/                    # overview-template / module-template
 └── .spec/TDD/VN/              # 产出
 ```
@@ -41,7 +41,7 @@ Backend-Tech-Design/
 ## 五、快速上手
 
 1. 用户给出 PRD（±原型）说「写后端技术方案 / 写 TDD / 做技术设计」。
-2. 问档位（默认企业级）→ 按需求推荐语言与组件。
+2. 问档位（默认企业级）→ 按需求推荐语言与组件；每点追问失败/涨 10 倍/漏项与边界，收敛后才算定稿。
 3. 确认选型与模块边界 → 生成总技术文档。
 4. 逐模块生成方案（含流程图、TDD 用例）。
 5. 全局一致性通过后归档 `.spec/TDD/VN/`。

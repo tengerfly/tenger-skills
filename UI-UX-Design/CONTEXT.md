@@ -44,6 +44,8 @@
 | D-12 | 09-05 | 两份执行文档补 PRD 速查表入口 | 防跨位置失同步 | ✅ |
 | D-13 | 09-05 | README 决策编号同步；心法自评无需额外注入 | UI-UX-Review 承担独立评审 | ✅ |
 | D-14 | 09-05 | 风格决策加 register 语境先决（brand vs product） | 防 Slop 关键先决 | ✅ |
+| D-15 | 09-08 | 沉淀「界面状态设计规范（10 大 UI States）」入 design-system 模板 §5.10，规范 Gate 与门禁纳入状态稿检查 | 外部方法论 ui-ux-design.md：企业级前端要求状态稳健，不只 Success 态；规范先行链路 | ✅ |
+| D-16 | 09-08 | 原则 2 规范先行补下游依据表述：design-system.md 是 FTDD 与 Frontend-Dev 的视觉规范依据，随 .spec/设计稿/ 交付 | 用户裁决：设计稿 skill 必须给出设计规范，后续前端方案依据该规范 | ✅ |
 
 ## 四、待决问题
 

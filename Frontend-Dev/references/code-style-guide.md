@@ -184,10 +184,10 @@ export function useCancelOrder(orderId: string) {
 
 ## 六、样式写法约定（SCSS Modules）
 
-- 组件样式用 CSS Modules（`X.module.scss`），**类名 kebab-case（用 `-` 连接）**：
+- 组件样式按框架隔离（React→CSS Modules `X.module.scss/less`；Vue→scoped），**类名 kebab-case（用 `-` 连接）**：
   - `<div className={styles['user-table']}>` + `import styles from './X.module.scss';`
   - 类名带 `-` 时，通过中括号访问：`styles['user-table']`（不可 `styles.userTable` 混用）；
-- **颜色/间距/字号一律引用 `variables.scss` 的 CSS 变量**，禁止写死色值（还原度高 + 主题可切换的前提）：
+- **颜色/间距/字号一律引用 variables（.scss/.less）的 CSS 变量**，禁止写死色值（还原度高 + 主题可切换的前提）：
 
 ```scss
 // ❌ 类名不用驼峰、不写死色值
@@ -223,5 +223,5 @@ export function useCancelOrder(orderId: string) {
 - [ ] 与原型/方案不一致处已注释原因？
 - [ ] 不确定之处已向用户确认（未自己发挥）？
 - [ ] hooks 依赖数组写全、副作用可清理、竞态已取消？
-- [ ] 样式引用 token、CSS Modules 隔离、无写死色值？
+- [ ] 样式引用 token、按框架隔离方案（Modules/scoped）、无写死色值？
 - [ ] 三态齐全、错误不吞、ErrorBoundary 兜底？

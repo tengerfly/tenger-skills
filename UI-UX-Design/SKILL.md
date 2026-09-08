@@ -11,7 +11,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 ## 一、原则
 
 1. **布局零改动**：布局清单 + 低保真原型 = 结构真相源。载体、区块、元素、跳转逐项一致；只改好不好看，不碰有什么/在哪/怎么跳。布局有问题 → 停下回 Prototype-Design。
-2. **规范先行**：任何生成前设计规范必须已确认；每次生成必带规范 + 保真约束语。
+2. **规范先行**：任何生成前设计规范必须已确认；每次生成必带规范 + 保真约束语。design-system.md 是下游前端技术方案（FTDD）与前端开发（Frontend-Dev）的视觉规范依据，随 `.spec/设计稿/` 交付。
 3. **额度即预算**：变体数量、生成轮次、花钱动作永远先问用户。
 
 ## 二、适用范围
@@ -34,7 +34,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
    - 展开设计任务清单（`assets/design-task-list-template.md`）。PRD 文案按速查表锚点取，一字不差。
 3. **风格情报**：Superdesign 灵感库（search-prompts → get-prompts --full，先索引后取全文）；开源规范库（Ant/Aroo/shadcn/Material token，更新由用户手动发起）；真实案例库（同类产品风格基线 + 踩坑清单）。
 4. **风格决策 Gate**：三套真实差异化方案（配色/排版/密度/交互气质，禁止只换主色），默认文字 + 色板小样；出稿对比花额度须用户同意。参考站用 `extract-website --url --design-md` 提取 DNA，用户三选一（完全采用/借鉴融合/更新现有），禁静默混搭。
-5. **设计规范 Gate**：选定风格按 `assets/design-system-template.md` 展开（原则/色彩/字体/间距 4px/圆角阴影/组件规范/动效/CSS token），对齐开源基线；用户确认后落 `.superdesign/design-system.md`，副本进 `.spec/设计稿/`。规范未确认禁任何生成调用。生成必带保真约束语（只使用 design-system 定义的字体/颜色/间距/组件，不得引入规范外视觉）。
+5. **设计规范 Gate**：选定风格按 `assets/design-system-template.md` 展开（原则/色彩/字体/间距 4px/圆角阴影/组件规范/界面状态/动效/CSS token），对齐开源基线；布局清单/原型中出现空、错、加载、禁用等状态的页面，状态稿按模板 §5.10 界面状态规范一并纳入；用户确认后落 `.superdesign/design-system.md`，副本进 `.spec/设计稿/`。规范未确认禁任何生成调用。生成必带保真约束语（只使用 design-system 定义的字体/颜色/间距/组件，不得引入规范外视觉）。
 6. **项目创建**：新项目先做基线复刻（灰调 HTML、结构 100% 正确），`create-project --template <复刻> --device <端> --no-open` 取 projectId；续跑先查 `.superdesign/resume.json`，缺失用 fetch-design-nodes 找回，禁止重复建项目；品牌资产先 `upload-asset --purpose brand` 再以 reference-id 传。
 7. **逐页生成**：首张主流程页 `create-design-draft`（只接受一个 -p）+ `--context-file .superdesign/design-system.md`；出画布 URL 给用户确认后再 `execute-flow-pages` 批量延展（1–10 页/次，JSON 先过目）；变体一律 `iterate --mode branch`（数量用户定，默认 2）；用户原话传 `--user-request`。
 8. **质量门禁（全绿才放行）**：按 `references/design-review-gate.md` 四查——布局零改动（多删改返工）、规范一致性（规范外视觉值返工）、反 AI 味 12 条、文案保真（与 PRD/布局清单逐字一致、无杜撰）。

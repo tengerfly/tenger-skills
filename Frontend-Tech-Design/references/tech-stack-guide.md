@@ -1,6 +1,6 @@
 # 前端技术选型指南
 
-> 用途：为技术选型澄清阶段提供推荐规则。所有选型必须给「选型 + 理由 + 备选」，禁止拍脑袋。
+> 用途：选型澄清阶段的推荐规则。**端形态与技术框架每次必问**（默认 React 但不可自主定死）；框架确认后，组件库/路由/状态/请求/测试按 §三配套清单联动推荐。所有选型必须给「选型 + 理由 + 备选」，禁止拍脑袋。
 
 ---
 
@@ -15,131 +15,159 @@
 
 ---
 
-## 二、框架（固定 React，hooks 为主）
+## 二、端形态与技术框架（每次必问，默认 ≠ 定死）
 
-| 项 | 选型 | 理由 |
-|----|------|------|
-| 框架 | React 18+ | 与「hooks 为主」的模块化开发约束一致，函数组件 + 自定义 hooks |
-| 组件范式 | 函数组件 + hooks | 逻辑复用、可测试性强 |
-| 类型 | TypeScript 严格模式 | 全量类型约束，props/状态/接口契约 |
+### 2.1 端形态 × 框架候选
 
-> 固定技术栈不询问；仅当用户团队明确偏好 Vue 时才切换（Vue 3 组合式 API），并同步调整组件库/状态管理/测试框架的推荐。
+| 端/形态 | 框架候选 | 默认/说明 |
+|---|---|---|
+| Web PC（中后台/官网） | **React 18** / Vue 3 | 默认 React，每次必问用户确认 |
+| H5（移动网页） | 跟随 Web 主栈（React / Vue 3）+ 移动端组件库 | 与主栈同框架，避免双栈维护 |
+| 小程序 | **Taro（React 语法）** / **uni-app（Vue3）** / 原生小程序 | React 栈→Taro；Vue 栈→uni-app；原生仅简单小程序 |
+| App（移动） | **React Native** / Flutter（备选）/ uni-app（App 端） | TS/React 栈→RN 优先 |
+| 桌面端 | **Electron**（渲染层复用 Web 栈）/ Tauri | 复用 Web 生态 |
+| 多端一套（小程序+H5+App） | Taro（React）/ uni-app（Vue3） | 必问：一码多端 vs 分端独立（维护成本差异大） |
 
----
+### 2.2 选型规则
 
-## 三、组件库选型（每次必问，让用户决定）
-
-先探索 PRD/原型得出产品形态（表单密集型 / 数据展示型 / 中后台 / C 端营销），再推荐：
-
-| 形态 | 推荐组件库 | 理由 | 备选 |
-|------|-----------|------|------|
-| 中后台管理系统 | Ant Design | 生态最成熟、组件最全、表单表格强 | Arco Design |
-| 中后台（字节系） | Arco Design | 设计规范清晰、TS 友好 | Ant Design |
-| TS 友好 / 轻量 | Naive UI | 全量 TS、主题定制灵活、体积可控 | — |
-| C 端营销 / 高度定制 | 自研组件 | 视觉与交互完全可控 | — |
-
-**决策要点**：
-- 用户选「不用组件库」→ 走自研路线，总文档 §5 补「基础组件自研清单」（Button/Modal/Table/Form 等逐项列）；
-- 用户选「用组件库」→ 确认该库是否支持主题定制与国际化（与暗黑模式/i18n 决策联动）。
+- **技术框架每次必问**：默认 React 18，用户可选其他框架；未经用户确认不得写入文档（禁止自主定死）。
+- **多端复用**：小程序+H5+App 多端时优先推荐一码多端（React 栈→Taro、Vue 栈→uni-app），并给出与分端独立的成本对比。
+- **Flutter 为备选**：跨出 TS 栈（Dart），与共享类型/前后端契约模式不兼容，仅在用户点名时选择，选前提示团队语言成本。
+- **复杂度门槛**：复杂交互/重业务的小程序与 App 一律用跨端框架（Taro/uni-app）；原生小程序仅适合简单页面型小程序。
 
 ---
 
-## 四、状态管理选型（推荐默认，按复杂度取舍）
+## 三、各框架配套生态清单（框架确认后联动取默认）
 
-| 场景 | 推荐 | 理由 |
-|------|------|------|
-| 轻量全局态（用户态/主题/侧边栏） | Zustand | API 极简、无模板代码、支持中间件 |
-| 复杂全局态（多模块联动/异步编排） | Redux Toolkit | 规范化、DevTools 强、适合大团队 |
-| 服务端数据（接口缓存/请求状态） | TanStack Query | 缓存、重试、请求状态内建，替代手写数据层 |
-| 局部状态 | React 内置 useState/useReducer | 不引入额外依赖 |
+> 每框架给出「UI 库 / 路由 / 状态 / 请求 / CSS / 测试 / 逻辑复用」默认推荐；用户可逐项替换，替换须记录理由。
 
-> 原则：优先局部状态 + hooks；只有跨模块共享的全局态才上状态库。服务端数据优先用 TanStack Query，避免手写重复的 loading/error 逻辑。
+### 3.1 React 18（Web PC / H5）
+
+| 项 | 默认推荐 | 备选 |
+|----|---------|------|
+| 构建 | Vite + pnpm + TS 严格模式 | — |
+| UI 库（PC 中后台） | Ant Design | Arco Design / MUI / shadcn/ui+Tailwind |
+| UI 库（H5） | Ant Design Mobile | arco-design-mobile |
+| 路由 | React Router v6（数据路由+懒加载） | TanStack Router |
+| 状态管理 | Zustand（轻）/ Redux Toolkit（复杂）+ TanStack Query（服务端态） | Jotai / MobX |
+| 请求 | 原生 fetch 统一封装（禁 axios） | — |
+| CSS | Sass/Less（按生态选）+ CSS Modules | Tailwind |
+| 测试 | Vitest + React Testing Library + jest-dom | Jest |
+| 逻辑复用 | 自定义 hooks（useFetch/useForm/useAuth/useTheme） | — |
+| i18n（按需） | react-i18next | — |
+| SSR（按需） | Next.js | Remix |
+
+### 3.2 Vue 3（Web PC / H5）
+
+| 项 | 默认推荐 | 备选 |
+|----|---------|------|
+| 构建 | Vite + pnpm + TS 严格模式 | — |
+| UI 库（PC 中后台） | Element Plus | Ant Design Vue / Naive UI / Arco Design Vue |
+| UI 库（H5） | Vant 4 | NutUI-Vue |
+| 路由 | Vue Router 4 | — |
+| 状态管理 | Pinia（官方默认） | TanStack Query Vue（服务端态，可选） |
+| 请求 | 原生 fetch 统一封装（禁 axios） | — |
+| CSS | Sass + scoped / CSS Modules | Tailwind |
+| 测试 | Vitest + Vue Test Utils + jest-dom | — |
+| 逻辑复用 | 组合式函数 composables（useXxx 同规范） | — |
+| i18n（按需） | vue-i18n | — |
+| SSR（按需） | Nuxt 3 | — |
+
+### 3.3 Taro（React 语法，多端：小程序 + H5 + RN）
+
+| 项 | 默认推荐 | 备选 |
+|----|---------|------|
+| UI 库 | NutUI-React（京东，主流） | Taro UI |
+| 路由 | Taro 声明式页面路由（app.config.ts） | — |
+| 状态管理 | Zustand / Redux Toolkit | — |
+| 请求 | Taro.request / Taro.uploadFile 统一封装（契约对齐 fetch 版） | — |
+| CSS | Sass + rpx 适配 | — |
+| 测试 | Vitest + Taro 测试库 | — |
+| 逻辑复用 | 自定义 hooks | — |
+
+### 3.4 uni-app（Vue3 语法，多端：小程序 + H5 + App）
+
+| 项 | 默认推荐 | 备选 |
+|----|---------|------|
+| UI 库 | wot-design-uni | uView Plus / uni-ui / NutUI-Vue |
+| 路由 | pages.json 声明式路由 | — |
+| 状态管理 | Pinia | — |
+| 请求 | uni.request / uni.uploadFile 统一封装 | — |
+| CSS | Sass + rpx 适配 | — |
+| 测试 | Vitest | — |
+| 逻辑复用 | 组合式函数 composables | — |
+| 工具链 | CLI（Vite）或 HBuilderX | — |
+
+### 3.5 小程序原生（仅简单页面型小程序）
+
+| 项 | 默认推荐 |
+|----|---------|
+| UI | 原生组件 + WeUI / 自研 |
+| 路由 | pages.json |
+| 状态 | 自封装全局态（store 模块/事件） |
+| 请求 | wx.request 统一封装 |
+| CSS | WXSS + rpx |
+| 适用 | 页面少、交互简单的轻量小程序；**复杂场景一律上跨端框架** |
+
+### 3.6 React Native（App）
+
+| 项 | 默认推荐 | 备选 |
+|----|---------|------|
+| 脚手架 | Expo | RN CLI |
+| UI 库 | 官方核心组件 + gluestack-ui | NativeBase / React Native Elements / Ant Design Mobile RN |
+| 导航 | React Navigation | Expo Router |
+| 状态管理 | Zustand / Redux Toolkit | — |
+| 请求 | fetch 统一封装 | — |
+| 测试 | Jest + React Native Testing Library | — |
+| 逻辑复用 | 自定义 hooks | — |
+
+### 3.7 Flutter（App，备选——用户点名才选）
+
+| 项 | 默认推荐 |
+|----|---------|
+| 语言 | Dart（跨出 TS 栈，选前提示团队成本与契约共享限制） |
+| UI | Material / Cupertino 官方 Widget |
+| 导航 | Navigator 2.0 / go_router |
+| 状态管理 | Riverpod / Bloc |
+| 请求 | dio 统一封装 |
+| 测试 | flutter_test |
+
+### 3.8 Electron（桌面）
+
+| 项 | 默认推荐 |
+|----|---------|
+| 架构 | 主进程 Node.js + 渲染进程 React/Vue（Web 栈全套复用 §3.1/§3.2） |
+| 构建 | electron-vite + electron-builder |
+| 通信 | IPC（contextBridge 预加载隔离） |
+| 安全 | 渲染进程基线：contextIsolation: true，禁 nodeIntegration |
 
 ---
 
-## 五、路由（推荐默认 React Router v6）
+## 四、通用决策（跨框架不变项）
 
-| 能力 | 方案 |
-|------|------|
-| 基础路由 | React Router v6（`createBrowserRouter` 数据路由） |
-| 懒加载 | `React.lazy` + `Suspense` 按路由分包 |
-| 权限守卫 | 自定义 `ProtectedRoute` + `useAuth` hook |
-| 布局嵌套 | 嵌套路由 + `Outlet`（侧边栏/顶部导航布局复用） |
-
----
-
-## 六、CSS 方案（固定预编译 + 模块化 + 全局抽离）
-
-| 项 | 选型 | 说明 |
-|----|------|------|
-| 预编译 | Sass（SCSS） | 变量/mixin/嵌套 |
-| 组件样式 | CSS Modules（`*.module.scss`） | 组件级隔离 |
-| 全局样式 | `src/styles/` 抽离 | variables/mixins/global/theme |
-| 设计 token | CSS 变量 | 支持暗黑模式/主题切换 |
-
-> 详见 `css-guide.md`。
-
----
-
-## 七、请求（固定原生 fetch）
-
-| 项 | 选型 | 说明 |
-|----|------|------|
-| 请求库 | 原生 fetch（不引入 axios） | 现代浏览器原生支持 |
-| 封装 | `src/api/request.ts` 统一封装 | baseURL/超时/错误/token/取消 |
-| 业务接口 | `src/api/<模块>.ts` 按域拆分 | 与后端 TDD 接口一一对应 |
-
-> 详见 `fetch-guide.md`。
-
----
-
-## 八、测试框架（固定 Vitest + RTL）
-
-| 项 | 选型 | 说明 |
-|----|------|------|
-| 单测框架 | Vitest | 与 Vite 无缝、快 |
-| 组件测试 | React Testing Library | 以用户视角测试 |
-| hooks 测试 | `renderHook` | 独立测试 hooks 逻辑 |
-| 覆盖率 | `@vitest/coverage-v8` | 企业级档要求 |
-
-> 详见 `test-guide.md`。
-
----
-
-## 九、浏览器兼容性（每次必问）
-
-| 用户意图 | 方案 |
-|---------|------|
-| 指定目标浏览器（如兼容 IE11 / 老安卓） | Vite `build.target` + `@vitejs/plugin-legacy`；CSS 加 `autoprefixer` 前缀 |
-| 不指定 | **以 Vite 默认浏览器目标为准**（现代浏览器：ES2020+），总文档显式声明 |
-
-> 企业级档若需兼容旧浏览器，需额外评估 polyfill 体积与构建产物。
-
----
-
-## 十、工程规范（企业级档）
-
-| 项 | 选型 |
+| 项 | 原则 |
 |----|------|
-| 代码规范 | ESLint + Prettier |
-| 提交规范 | Husky + lint-staged + commitlint |
-| 类型检查 | `tsc --noEmit` 纳入 CI |
-| 环境变量 | Vite `import.meta.env`，`.env.development` / `.env.production` |
+| 请求契约 | 各端载体不同（fetch / Taro.request / uni.request / wx.request / dio），封装原则一致：统一入口、baseURL/超时/取消/错误分类（ApiError）/token 注入；业务接口按域拆分，与后端 TDD 一一对应 |
+| CSS / 设计 token | 全部收敛变量（variables）：语义色、字号阶梯、4px 间距栅格、圆角阴影；颜色禁写死；变量载体按平台（Web 用 CSS 变量） |
+| 测试策略 | 先写用例后写实现；TC ↔ AC 编号可追溯；覆盖渲染/交互/数据流/边界/异常；逻辑层（hooks/composables）独立测试 |
+| 浏览器兼容（每次必问） | 指定→build.target + legacy 插件 + 前缀；未指定→Vite 默认（现代浏览器）并显式声明 |
+| 工程规范（企业级档） | ESLint + Prettier、Husky + lint-staged + commitlint、tsc --noEmit 入 CI、环境变量分环境 |
 
 ---
 
-## 十一、选型决策表模板（总文档用）
+## 五、选型决策表模板（总文档 §2 用）
 
 | 组件 | 选型 | 档位 | 理由 | 备选 |
 |------|------|------|------|------|
-| 框架 | React 18 | 企业级 | hooks 为主 | Vue 3 |
-| 构建 | Vite + pnpm + TS | 企业级 | 开发快、类型强 | — |
-| 组件库 | Ant Design | 企业级 | 中后台生态 | Arco / 自研 |
-| 状态管理 | Zustand + TanStack Query | 企业级 | 轻量 + 服务端缓存 | Redux Toolkit |
-| 路由 | React Router v6 | 企业级 | 数据路由 + 懒加载 | — |
-| CSS | Sass + CSS Modules | 企业级 | 模块化 + 变量 | Less |
-| 请求 | 原生 fetch 封装 | 企业级 | 无依赖 | — |
-| 测试 | Vitest + RTL | 企业级 | Vite 原生 | Jest |
-| 主题 | CSS 变量 + data-theme | 企业级 | 暗黑模式 | — |
-| i18n | react-i18next | 企业级 | 生态成熟 | — |
-| 浏览器兼容 | Vite 默认（现代浏览器） | 企业级 | 用户未指定 | — |
+| 端形态 | {{Web PC / H5 / 小程序 / App / 桌面 / 多端一套}} | {{TIER}} | {{REASON}} | — |
+| 框架 | {{用户选定：React 18 / Vue 3 / Taro / uni-app / RN / Electron / Flutter}} | {{TIER}} | {{REASON}} | {{备选}} |
+| 构建 | {{随框架：Vite / HBuilderX / Expo / electron-vite}} | {{TIER}} | {{REASON}} | — |
+| 组件库 | {{随框架联动，见 §三}} | {{TIER}} | {{REASON}} | {{备选}} |
+| 状态管理 | {{随框架联动}} | {{TIER}} | {{REASON}} | {{备选}} |
+| 路由 | {{随框架联动}} | {{TIER}} | {{REASON}} | — |
+| CSS | {{Sass/Less 按生态选}} + 隔离方案（React→CSS Modules / Vue→scoped）+ 全局抽离 | {{TIER}} | 随框架 | Tailwind |
+| 请求 | {{随端载体}} 统一封装 | {{TIER}} | 契约对齐 TDD | — |
+| 测试 | {{随框架联动}} | {{TIER}} | {{REASON}} | — |
+| 主题 | CSS 变量 + data-theme | {{TIER}} | 暗黑模式 | — |
+| i18n | {{react-i18next / vue-i18n / 不开}} | {{TIER}} | {{REASON}} | — |
+| 浏览器兼容 | {{Vite 默认 / 用户指定}} | {{TIER}} | {{REASON}} | — |

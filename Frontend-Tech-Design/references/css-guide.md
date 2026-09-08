@@ -6,8 +6,8 @@
 
 ## 一、总则（四项铁律）
 
-1. **预编译**：统一 Sass（SCSS），禁止裸 CSS；
-2. **模块化**：组件级样式用 CSS Modules（`*.module.scss`），样式随组件隔离；
+1. **预编译**：Sass（SCSS）/Less 二选一，按组件库与团队生态在 FTDD 选型中确定（本文示例以 SCSS 表述，Less 等价映射），禁止裸 CSS；
+2. **组件样式隔离（随框架动态定）**：React→CSS Modules（`*.module.scss/less`）；Vue→`<style scoped>`（或 CSS Modules）；
 3. **全局样式抽离**：`src/styles/` 集中管理设计 token 与全局基础样式；
 4. **颜色一律引用变量**：禁止在组件内写死色值，主题切换才能生效。
 
@@ -23,9 +23,11 @@ src/styles/
 └── theme.scss       # 暗黑模式 / 主题切换（可选，按需）
 ```
 
+> 扩展名随所选预处理器（.scss / .less）；Vue 项目文件位置与命名约定一致。
+
 ---
 
-## 三、设计 token（variables.scss）
+## 三、设计 token（variables.scss / variables.less）
 
 ```scss
 // src/styles/variables.scss
@@ -41,11 +43,15 @@ src/styles/
   --color-bg: #ffffff;
   --color-bg-container: #f5f6f7;
   --color-border: #e5e6eb;
-  // 字号
+  // 字号（阶梯式层级：以正文 14 为基准逐级拉开，禁全部同级）
   --font-size-sm: 12px;
   --font-size-base: 14px;
   --font-size-lg: 16px;
   --font-size-xl: 20px;
+  // 字重（标题 600~700 / 正文 400，语义化引用禁写魔数）
+  --font-weight-regular: 400;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
   // 间距
   --spacing-xs: 4px;
   --spacing-sm: 8px;
@@ -136,7 +142,7 @@ a {
 
 ---
 
-## 六、组件级样式（CSS Modules）
+## 六、组件级样式（React CSS Modules / Vue scoped）
 
 ```tsx
 // src/components/UserCard.tsx
@@ -172,6 +178,30 @@ export function UserCard({ name, role }: { name: string; role: string }) {
 }
 ```
 
+Vue 3 等价写法（scoped）：
+
+```vue
+<!-- src/components/UserCard.vue -->
+<template>
+  <div class="card">
+    <span class="name">{{ name }}</span>
+    <span class="role">{{ role }}</span>
+  </div>
+</template>
+
+<style scoped lang="scss">
+/* 或 lang="less"，随 FTDD 选型 */
+.card {
+  padding: var(--spacing-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-container);
+}
+.name { font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); }
+.role { color: var(--color-text-secondary); font-size: var(--font-size-sm); }
+</style>
+```
+
 ---
 
 ## 七、暗黑模式 / 主题切换（可选）
@@ -185,8 +215,8 @@ export function UserCard({ name, role }: { name: string; role: string }) {
 
 ## 八、CSS 方案自检清单
 
-- [ ] 全站 Sass，无裸 CSS？
-- [ ] 组件样式用 CSS Modules 隔离？
+- [ ] 预处理器统一（Sass/Less 二选一，与 FTDD 选型一致），无裸 CSS？
+- [ ] 组件样式按框架隔离（React CSS Modules / Vue scoped）？
 - [ ] 全局样式抽离到 `src/styles/`（variables/mixins/global/theme）？
 - [ ] 颜色全部引用 CSS 变量，无写死色值？
 - [ ] 暗黑模式/主题（若开启）用 `data-theme` + CSS 变量覆盖？

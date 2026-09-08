@@ -53,7 +53,7 @@
 | `react-router-dom` | 路由 | ^6.26.0 |
 | `zustand` 或 `@reduxjs/toolkit` | 全局状态 | 按 FTDD |
 | `@tanstack/react-query` | 服务端数据（可选） | ^5.x |
-| `sass` | CSS 预编译 | ^1.77.0 |
+| `sass` | CSS 预编译（Less 生态换 `less`，随 FTDD 选型） | ^1.77.0 |
 | `vitest` / `@testing-library/react` / `@testing-library/user-event` / `@testing-library/jest-dom` | 测试 | ^2.x / ^16.x |
 | `@vitejs/plugin-react` / `typescript` | 构建/类型 | ^4.x / ^5.5.0 |
 | ESLint + Prettier + Husky | 工程规范（企业级档） | 最新稳定 |
@@ -181,7 +181,7 @@ pnpm test:coverage
 
 ## 四、还原要点（跨端通用）
 
-1. **token 先行**：从原型抽取色板/间距/字号/圆角 → `styles/variables.scss`（CSS 变量），全站引用 token，不写死；
+1. **token 先行**：从原型抽取色板/间距/字号/圆角 → `styles/variables.{scss|less}`（扩展名随 FTDD 选型，CSS 变量），全站引用 token，不写死；
 2. **布局基线**：区块顺序、栅格、对齐方式以原型 HTML 结构为准，实现时逐区块核对；
 3. **三态齐全**：加载/空/错误三个状态按原型或 PRD 兜底方案实现，禁止只做成功态；
 4. **交互细节**：hover/点击/禁用/表单校验反馈与原型交互标注一致；

@@ -1,12 +1,12 @@
 # 前端测试用例规范
 
-> 用途：指导 Vitest + React Testing Library 的测试用例编写。先写测试用例，后写实现。
+> 用途：指导测试用例编写。先写测试用例，后写实现。测试栈随框架联动：React→Vitest+RTL / Vue→Vitest+Vue Test Utils / RN→Jest+RNTL / Flutter→flutter_test（下文以 React 示例表述，各框架等价映射）。
 
 ---
 
 ## 一、总则
 
-- **测试框架固定**：Vitest + React Testing Library（RTL）+ `@testing-library/jest-dom`；
+- **测试框架**：Vitest + 框架配套组件测试库（React→RTL / Vue→VTU / RN→RNTL）+ `@testing-library/jest-dom`；
 - **先写测试用例，后写实现方案**——测试用例是开发 TDD 先写测试的直接输入源；
 - 测试对象三类：**页面 / 组件 / hooks**（hooks 用 `renderHook` 单独测）；
 - 测试用例承接 PRD 的 AC 编号（`AC-Mxx-nnn`），覆盖五类：**渲染 / 交互 / 数据流 / 边界 / 异常**。
