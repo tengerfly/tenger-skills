@@ -2,7 +2,7 @@
 
 > 用途：UI-UX-Design 步骤 3 案例匹配。**同类产品的验证过基线**——布局/风格/token 摘要 + 踩坑清单，避免同类产品从零摸索。
 > 沉淀时机：某产品设计稿定稿且用户认可后，由本 skill 主动沉淀一节（风格 DNA、token 摘要、布局模式、踩坑清单）；用户否定过的做法沉淀为「踩坑」。
-> 与 `Prototype-Design/references/real-case-learning-path.md` 的关系：那个案例库管**原型结构层**，本库管**视觉设计层**；同一产品可在两边各沉淀一节，互相引用。
+> 与 Prototype-Design 的关系：其管**原型结构层**（布局清单 + 完整性检查），本库管**视觉设计层**；同一产品可两边各沉淀一节，互相引用。（原 `Prototype-Design/references/real-case-learning-path.md` 案例库已删，见其 CONTEXT D-12）
 
 ## 案例索引
 

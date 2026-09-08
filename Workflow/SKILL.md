@@ -157,3 +157,7 @@ PIPELINE：<路径>
 - 同级子 skill：Competitive-Analysis、PRD-Design、PRD-Review、Prototype-Design、Prototype-Review、UI-UX-Design、UI-UX-Review、Backend-Tech-Design、Frontend-Tech-Design、Tech-Review、Backend-Dev、Frontend-Dev、Code-Review、Testing
 - 链外（不入主链，独立触发）：`Fidelity-Review`（还原验收，⑭ 内嵌）、`Bug-Fix`（修复闭环，承接 ⑭ 发现的可运行性问题）
 - 产物归档：被开发项目 `.spec/`；竞品分析产物 `.spec/<主题>竞品分析/`
+
+## 十、运行问题埋点
+
+收尾自查，将方法论问题、用户否定/认可信号、可复现产物问题（调度/守门/PIPELINE 状态侧）上报 `issue/Workflow/<日期>/<序号>-<标题>.md`，字段/等级/标签遵循 `Skill-Optimizer/references/instrumentation-guide.md`，模板用 `Skill-Optimizer/assets/issue-template.md`。不确定不记，不打断主流程。

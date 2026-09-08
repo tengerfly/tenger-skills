@@ -18,7 +18,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 | 通道 | 来源 | 说明 |
 |---|---|---|
-| A（优先） | `.spec/设计稿/` | 高保真 HTML + design-system.md，可直接渲染并机械比对 token |
+| A（优先） | `.spec/设计稿/` | 设计稿 HTML + design-system.md，可直接渲染并机械比对 token |
 | B（缺失） | 用户指定外部稿 | Figma 导出/PNG/README/静态导出；无 token 只能目测 + 刻度换算 |
 
 通道 B 报告须标注「基准=外部设计稿，按像素目测比对」。存在 A 用 A；A 缺失或用户明确给外部稿用 B 并确认。
