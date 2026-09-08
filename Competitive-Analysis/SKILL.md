@@ -93,7 +93,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ## 资源清单
 
-- `references/dimensions.md` / `frameworks.md`
+- `references/dimensions.md` / `frameworks.md` / `decision-rules.md`
+- `references/case-library/`：扩展框架 + 数据源 + 同行样本（按需加载）
 - `assets/report-template.md` / `matrix-template.md` / `eval-template.md`
 - `.spec/`：被开发项目交付产物根目录（下辖 `<主题>竞品分析/`）
 

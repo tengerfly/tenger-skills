@@ -78,7 +78,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ## 九、资源清单
 
-- `references/visual-checklist.md`、`interaction-checklist.md`、`overflow-guide.md`、`design-source-guide.md`、`browser-guide.md`
+- `references/visual-checklist.md`、`interaction-checklist.md`、`overflow-guide.md`、`design-source-guide.md`、`browser-guide.md`、`decision-rules.md`
+- `references/case-library/`：像素方法学 + 同行样本（按需加载）
 - `assets/review-report-template.md`、`issue-list-template.md`、`mini-issue-template.md`
 - `.spec/页面还原评审/`：归档目录；`CONTEXT.md`：术语 + 决策日志
 

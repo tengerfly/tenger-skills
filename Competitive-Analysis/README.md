@@ -26,7 +26,7 @@
 ```
 Competitive-Analysis/
 ├── SKILL.md
-├── references/（dimensions / frameworks）
+├── references/（dimensions / frameworks / decision-rules / case-library）
 ├── assets/（report / matrix / eval 模板）
 └── .spec/<主题>竞品分析/
 ```

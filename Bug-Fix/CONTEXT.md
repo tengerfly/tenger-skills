@@ -25,6 +25,7 @@
 | 案例卡 | 按 pattern-card-template 记录现象/根因/防复发规则/受益 skill | 不是单点 bug 流水账 |
 | 有预防价值才沉 | 可类别化且会再犯才沉淀，用户确认后落池 | 不制造池噪音 |
 | 沉淀与提炼分离 | Bug-Fix 只写池；池→目标 skill 规则由 Skill-Optimizer 模式③ 提炼 | Bug-Fix 不越界改目标 skill |
+| 案例库 | Case Library | case-library/：debugging-methods + log-locating + 同行样本 | 与证据链三段互补：证据链是输出结构，案例库是思考路径 |
 
 ## 三、决策日志
 
@@ -42,6 +43,7 @@
 | D-10 | 09-07 | 反哺落点逐层升级：目标 skill 常见错误对照表加行 → references 防复发清单 → Gate 预检项 | 用户确认「错误表→references→Gate」 | ✅ |
 | D-11 | 09-07 | 池位置一度误改「随被修项目走」，后经用户澄清推翻 | 用户澄清：集中一处处理而非各项目拉取 | ⚠️ 已被 D-12 取代 |
 | D-12 | 09-07 | 池位置终定：bug-patterns/ 集中池位于 skill 源仓库根（`D:\project\agent-project\tenger-skills\bug-patterns\`）；各被修项目修复时 Bug-Fix 直接写入本池，用户在本仓库一处定期提炼 | 用户最终拍板「直接写入 tenger-skills，我只需在这里定期处理」 | ✅ |
+| D-13 | 09-08 | 新增 case-library（debugging-methods 调试方法学 + log-locating 日志定位 9 项 + agent-skill-samples 同行样本） | 用户提供 Bug修复-日志定位案例库资源清单，要求系统增强；借鉴 franzenzenhofer 9 阶段 + Commit-Then-Instrument | ✅ |
 
 ## 四、待决问题
 

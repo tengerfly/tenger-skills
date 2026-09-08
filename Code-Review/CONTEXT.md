@@ -19,6 +19,8 @@
 | 六大闭环 | Six Closed-Loops | 需求/流程/状态/数据/异常/测试的代码层闭环 | 与 Tech-Review 文档层闭环同名不同义 |
 | 业务逻辑正确性 | Business Logic Correctness | 规则算得对不对 | Out-of-Scope |
 | 字段术语一致性 | Field Term Consistency | 名称/大小写/风格/词义一致，以 TDD+共享类型为权威 | A vs a、驼峰 vs 下划线、userId vs uid 均不一致 |
+| 审查方法学 | Review Methods | case-library/review-methods.md：审查优先级/自动化/轻量/评论约定/反馈文化/反模式/AI 边界 | 不是评审清单（那是 backend/frontend-checklist） |
+| 案例库 | Case Library | case-library/：review-methods + 同行样本 | 借鉴不照搬，本 Skill 双视角+契约专项优先 |
 
 ## 三、决策日志
 
@@ -30,6 +32,7 @@
 | D-04 | 2026-09-03 | 字段术语一致性（大小写/风格/同义词）列 P0 | 用户补充防 A/a 错误 | ✅ 已确认 |
 | D-05 | 2026-09-05 | 防死循环补轮次上限 3；description 输入基线同步 | 体检逻辑闭环 P0 + 术语一致 P1 | ✅ 已确认 |
 | D-06 | 2026-09-05 | 注入 review 独立性：独立上下文、不参考生成过程、可换模型交叉 | Vibe Coding 心法 4；评审类适用 | ✅ 已确认 |
+| D-07 | 2026-09-08 | 新增 case-library（review-methods 审查方法学 + agent-skill-samples 同行样本） | 用户提供代码审核案例库资源清单，要求系统增强 | ✅ 已确认 |
 
 ## 四、待决问题
 

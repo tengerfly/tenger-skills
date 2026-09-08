@@ -117,6 +117,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - `references/backend-checklist.md` / `frontend-checklist.md`：双视角清单
 - `references/contract-checklist.md`：契约一致性清单（核心）
 - `references/static-verification-guide.md`：静态验证规程
+- `references/case-library/`：审查方法学（优先级/评论规范/AI 边界）+ 同行样本（按需加载）
 - `assets/role-review-template.md` / `summary-template.md` / `patch-template.md` / `issue-list-template.md`
 - `.spec/代码评审/`：归档目录
 

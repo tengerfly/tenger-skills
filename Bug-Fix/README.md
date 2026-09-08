@@ -27,7 +27,7 @@
 ```
 Bug-Fix/
 ├── SKILL.md / README.md / CONTEXT.md
-├── references/（log-channels-guide / root-cause-guide）
+├── references/（log-channels-guide / root-cause-guide / case-library）
 ├── assets/（locate-report / fix-task-list / pattern-card 模板）
 └── .spec/bug修复/<日期>-<简述>/
     ├── 问题定位报告.md

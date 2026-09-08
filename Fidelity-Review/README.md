@@ -32,7 +32,7 @@ P0/P1 阻断、P2 用户裁决；复核只验本轮，轮次上限 3。
 ```
 Fidelity-Review/
 ├── SKILL.md / README.md / CONTEXT.md
-├── references/（visual / interaction / overflow / design-source / browser）
+├── references/（visual / interaction / overflow / design-source / browser / decision-rules / case-library）
 ├── assets/（review-report / issue-list / mini-issue 模板）
 └── .spec/页面还原评审/
 ```

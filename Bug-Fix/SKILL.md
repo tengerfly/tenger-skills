@@ -177,6 +177,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 - `references/log-channels-guide.md`：前后端双通道日志识别与截取
 - `references/root-cause-guide.md`：证据链三段定位方法论
+- `references/case-library/`：调试方法学 + 日志定位专项 + 同行样本（按需加载）
 - `assets/locate-report-template.md`：问题定位报告模板
 - `assets/fix-task-list-template.md`：修复任务清单模板（闭环单一事实源）
 - `assets/pattern-card-template.md`：错误模式案例卡模板（步骤 10 沉淀用）
