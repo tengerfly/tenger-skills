@@ -9,7 +9,7 @@
 - **适用**：内容型/工具型 Web 应用。
 - **要点**：brand（icon+slogan）贴左 `mr-auto` → 导航组与头像靠右 → 头像最右；顶栏内容列与限宽页内容主列**同一容器**（响应式 `width:100%;max-width:N;margin:auto`，大屏断点放大，禁 `max-w` 死锁）；导航项宽度按内容自适应（`min-w` + nowrap）。
 - **常见错误**：全宽/限宽两版反复改（先拍板写入 design-system）；改内容区连带改顶栏（全局组件跨页不变量）；下拉菜单与触发器 hover 通路断裂（gap 断链）。
-- **出处**：`../case-library/../style-case-library.md` 学径案例（2026-09-05）。
+- **出处**：`../style-case-library.md` 学径案例（2026-09-05）。
 
 ## 二、表单模式
 

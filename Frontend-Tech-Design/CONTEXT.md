@@ -37,6 +37,7 @@
 | D-06 | 09-08 | 沉淀容器/展示组件黄金法则（框架无关，React/Vue 写法注记）+ overview §8.6 UI 规范（token+界面状态）+ 模块文档 §9 扩为 10 大 UI 状态逐态核对 | 外部方法论 ui-ux-design.md；规范先行：UI 规范确认后开发照规范执行 | ✅ |
 | D-07 | 09-08 | 选型机制重构：废「固定技术栈不询问」→ 默认基线（React）+ 端形态/技术框架每次必问可换（Vue3/Taro/uni-app/RN/Electron，Flutter 备选点名才选）；tech-stack-guide 重构为端形态×框架清单 + 8 框架配套生态 + 通用决策；输入描述 PRD+低保真原型 → PRD+UI 设计稿（缺省回退原型） | 用户裁决：技术方案针对整个前端版图不能定死 React；原生小程序仅简单场景，复杂场景用跨端框架 | ✅ |
 | D-08 | 09-08 | 预处理器与隔离方案动态化：Sass/Less 按项目生态选型、组件样式隔离 React→CSS Modules / Vue→scoped，全链（SKILL/overview/css-guide/README）清写死；css-guide 示例以 SCSS 表述 + Less 等价映射 + 补 Vue scoped 对照；§八补「有设计稿时 token 值以 design-system.md 为唯一来源」强化规范先行链路 | 用户裁决：不写死 SCSS 与 CSS Modules，随框架动态处理 | ✅ |
+| D-09 | 09-08 | 体检修复：术语统一「默认技术基线」→「默认基线」（与 CONTEXT 术语表/README 一致）；module-template §9 补跨 skill 寻址注记（../Frontend-Dev/references/） | Skill-Optimizer 模式④体检（六维机械核验） | ✅ |
 
 ## 四、待决问题
 

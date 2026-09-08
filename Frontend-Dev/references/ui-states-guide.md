@@ -33,7 +33,7 @@
 
 ## 三、落地方式
 
-1. **状态来源**：容器/页面侧 hooks（React）或组合式函数（Vue）产出统一状态 `{data, loading, error, refetch}`；展示组件只按 props 渲染对应状态分支，不自取数据（容器/展示法则见 FTDD `references/component-design-guide.md` §1.1）。
+1. **状态来源**：容器/页面侧 hooks（React）或组合式函数（Vue）产出统一状态 `{data, loading, error, refetch}`；展示组件只按 props 渲染对应状态分支，不自取数据（容器/展示法则见 FTDD `references/component-design-guide.md` §1.1；部署环境两 skill 平级：`../Frontend-Tech-Design/references/`）。
 2. **基线先行**：开发计划阶段把 FTDD §9 适用状态逐页列入还原基线与功能点 DoD；每功能点提交前适用状态齐全。
 3. **测试**：每个适用状态至少一条用例（编号沿用 TC ↔ AC）；流式/增量用 mock SSE / 分片数据驱动。
 4. **全局一致性**：同类状态全站同一组件/样式（空态组件、错误 Banner、Offline 条全局单例），禁止各页面各写一套。

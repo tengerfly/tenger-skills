@@ -109,7 +109,7 @@ flowchart TD
 
 ## 9. 异常与边界处理（按 10 大 UI 状态逐态核对）
 
-> 本模块涉及的状态必须逐态写处理方案，禁止只设计正常主链路。1–8 通用必备；9–10 仅涉 AI 生成/对话功能。实现细节见 Frontend-Dev `references/ui-states-guide.md`。
+> 本模块涉及的状态必须逐态写处理方案，禁止只设计正常主链路。1–8 通用必备；9–10 仅涉 AI 生成/对话功能。实现细节见 Frontend-Dev `references/ui-states-guide.md`（部署环境两 skill 平级：`../Frontend-Dev/references/`）。
 
 | # | 状态 | 是否适用 | 处理方案 |
 |---|------|---------|---------|
