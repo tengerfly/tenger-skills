@@ -46,6 +46,8 @@
 | D-14 | 09-05 | 风格决策加 register 语境先决（brand vs product） | 防 Slop 关键先决 | ✅ |
 | D-15 | 09-08 | 沉淀「界面状态设计规范（10 大 UI States）」入 design-system 模板 §5.10，规范 Gate 与门禁纳入状态稿检查 | 外部方法论 ui-ux-design.md：企业级前端要求状态稳健，不只 Success 态；规范先行链路 | ✅ |
 | D-16 | 09-08 | 原则 2 规范先行补下游依据表述：design-system.md 是 FTDD 与 Frontend-Dev 的视觉规范依据，随 .spec/设计稿/ 交付 | 用户裁决：设计稿 skill 必须给出设计规范，后续前端方案依据该规范 | ✅ |
+| D-17 | 09-08 | 建案例库体系：references/case-library/（00-README 总索引 + design-systems 含 awesome-design-md 54 站 / layouts / components / interactions 含动效 / flows 含状态表达 / a11y-checklist）+ patterns/index.md 高频模式速查；条目统一字段（场景→问题→解法→可借鉴点→出处→截图→代码→a11y）+ 元数据标签；SKILL 步骤 3 写六库检索顺序 | 用户裁决：案例库分视觉/布局/交互类补全 skill；资源来自用户整理清单（9 大类 40+）+ 外部 awesome-design-md；审核后补状态表达/图形资产维度与统一元数据 | ✅ |
+| D-18 | 09-08 | 案例库补实抓纪律：步骤 3 命中资源须 web_fetch/extract-website 实抓提取要点（1~3 个/场景），失败标注跳过禁编造，写死进 SKILL 步骤 3 与 00-README | 用户质询「设计时会不会真去案例网站查」——索引必须配可执行抓取动作才不是死清单 | ✅ |
 
 ## 四、待决问题
 

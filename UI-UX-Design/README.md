@@ -11,9 +11,9 @@
 | 文件 | 说明 |
 |---|---|
 | SKILL.md | 9 步 3 Gate / 分工 / 迭代路由 / 成本红线 / 去 AI 味 12 条 |
-| CONTEXT.md | 术语 + D-01~D-15 |
+| CONTEXT.md | 术语 + D-01~D-18 |
 | assets/ | layout-inventory-contract / design-task-list / style-proposal / design-system / archive-readme |
-| references/ | superdesign-sop / design-review-gate / open-source-design-systems / style-case-library |
+| references/ | superdesign-sop / design-review-gate / open-source-design-systems / style-case-library / case-library/（总索引 + design-systems/layouts/components/interactions/flows/a11y）/ patterns/ |
 
 ## 硬依赖
 

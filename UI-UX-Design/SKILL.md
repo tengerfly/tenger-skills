@@ -32,7 +32,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
    - 双输入校验（`assets/layout-inventory-contract.md`）：布局清单（载体级：宿主/入口/出口齐全、PRD 页面防丢弃）+ 低保真原型 HTML；缺一阻塞，字段缺失就地问，不得脑补。
    - 逐页读原型 HTML，按视觉顺序提取区块行（区块/组件/内容/交互）——只翻译不改动。
    - 展开设计任务清单（`assets/design-task-list-template.md`）。PRD 文案按速查表锚点取，一字不差。
-3. **风格情报**：Superdesign 灵感库（search-prompts → get-prompts --full，先索引后取全文）；开源规范库（Ant/Aroo/shadcn/Material token，更新由用户手动发起）；真实案例库（同类产品风格基线 + 踩坑清单）。
+3. **风格情报**：Superdesign 灵感库（search-prompts → get-prompts --full，先索引后取全文）；**案例库体系**（总索引 `references/case-library/00-README.md`，按序检索）：`patterns/index.md` 高频模式 → `case-library/flows.md` 用户流与状态表达 → `layouts.md`/`components.md`/`interactions.md` 布局/组件/微交互 → `case-library/design-systems.md`（开源体系索引 + awesome-design-md 54 站外部 token 案例）+ `open-source-design-systems.md` 体系基线 → `style-case-library.md` 自有深案例与踩坑；外部资源取用前验证可达与许可；**命中资源须实抓提取**（web_fetch/extract-website，1~3 个/场景；失败标注跳过禁编造）；**参考≠照抄**，提取值仍须过步骤 5 用户确认；更新由用户手动发起。
 4. **风格决策 Gate**：三套真实差异化方案（配色/排版/密度/交互气质，禁止只换主色），默认文字 + 色板小样；出稿对比花额度须用户同意。参考站用 `extract-website --url --design-md` 提取 DNA，用户三选一（完全采用/借鉴融合/更新现有），禁静默混搭。
 5. **设计规范 Gate**：选定风格按 `assets/design-system-template.md` 展开（原则/色彩/字体/间距 4px/圆角阴影/组件规范/界面状态/动效/CSS token），对齐开源基线；布局清单/原型中出现空、错、加载、禁用等状态的页面，状态稿按模板 §5.10 界面状态规范一并纳入；用户确认后落 `.superdesign/design-system.md`，副本进 `.spec/设计稿/`。规范未确认禁任何生成调用。生成必带保真约束语（只使用 design-system 定义的字体/颜色/间距/组件，不得引入规范外视觉）。
 6. **项目创建**：新项目先做基线复刻（灰调 HTML、结构 100% 正确），`create-project --template <复刻> --device <端> --no-open` 取 projectId；续跑先查 `.superdesign/resume.json`，缺失用 fetch-design-nodes 找回，禁止重复建项目；品牌资产先 `upload-asset --purpose brand` 再以 reference-id 传。
@@ -130,7 +130,7 @@ superdesign upload-asset <file> --project-id <id> --purpose brand|content|refere
 
 ## 九、资源清单
 
-- `references/superdesign-sop.md`、`design-review-gate.md`、`open-source-design-systems.md`、`style-case-library.md`
+- `references/superdesign-sop.md`、`design-review-gate.md`、`open-source-design-systems.md`、`style-case-library.md`、`case-library/`（00-README 总索引 + design-systems/layouts/components/interactions/flows/a11y-checklist）、`patterns/index.md`
 - `assets/layout-inventory-contract.md`、`design-task-list-template.md`、`style-proposal-template.md`、`design-system-template.md`、`archive-readme-template.md`
 - `.spec/设计稿/` 交付目录；`.superdesign/` 工作目录
 
