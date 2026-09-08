@@ -114,6 +114,7 @@ stateDiagram-v2
 ## 9. TDD 测试用例【必须】（先写测试，后写代码）
 
 ### 8.1 Gherkin 场景（承接 PRD 的 AC）
+> ⛔ Anti-Happy-Path：每个功能点至少写三条失败场景（竞态 / 数据完整性 / 边界），拒绝只写 Happy Path（见 `decision-rules.md` §九）。
 ```gherkin
 Feature: {{MODULE_NAME}}
   # 承接 AC-M{{MODULE_INDEX}}-001

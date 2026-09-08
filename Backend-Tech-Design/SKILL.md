@@ -17,6 +17,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - TDD 承接 PRD：PRD 只写需求，这里写数据库、接口、缓存、选型等实现内容。
 - 原型图用于理解交互与页面结构，不是约束。
 
+**四重思维**（贯穿全方案）：业务驱动技术（选型回溯到 QPS/数据量/一致性，拒简历驱动）；防御性设计（默认外部依赖会失败、输入不可信、资源有上限）；可观测性前置（监控/日志/Trace 是一等公民，非事后补救）；演进式架构（支持 6–12 个月扩展，避免过度设计，显式登记技术债）。
+
 ## 二、适用范围
 
 - 适用：已有 PRD（±原型），写后端技术方案/设计/架构/TDD；需求定稿后开发前落选型与模块方案。
@@ -50,9 +52,10 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ## 三·附 技术方案结构范式
 
-- 总文档：6 必须（元数据/选型/架构图/模块边界/关联/表结构）+ 8 可选（缓存/队列/检索/规范/部署/监控/性能/安全，按需求与档位开关）。
+- 总文档：6 必须（元数据含**量化业务约束**/选型/架构图/模块边界/关联/表结构）+ 12 可选（缓存/队列/检索/规范/部署/监控/性能/安全/上线回滚/技术债/成本/故障演练，按需求与档位开关）。
 - 模块文档：7 必须（边界/依赖/流程/接口/数据模型/实现细节与决策/测试用例）+ 3 可选（难点/异常/性能）。
-- 开关：需求关键词命中即开；企业级默认开规范/部署/监控，快速档默认关。跳过可选章节在文末留痕。
+- 开关：需求关键词命中即开；企业级默认开规范/部署/监控/上线回滚/成本，快速档默认关。跳过可选章节在文末留痕。
+- Anti-Happy-Path：每功能点至少三条失败场景（竞态/数据完整性/边界），拒绝只写 Happy Path（`decision-rules.md` §九）。
 
 ## 四、技术选型澄清规程
 
@@ -155,7 +158,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ## 十、资源清单
 
-- `references/tdd-structure.md`、`tech-stack-guide.md`、`module-design-guide.md`、`data-model-guide.md`、`socratic-grilling.md`
+- `references/tdd-structure.md`、`tech-stack-guide.md`、`decision-rules.md`、`module-design-guide.md`、`data-model-guide.md`、`socratic-grilling.md`
+- `references/case-library/`：架构模式解剖 + 经典系统设计题 + 可靠性模式 + 大厂案例索引（按需加载）
 - `assets/overview-template.md`、`module-template.md`
 - `.spec/TDD/VN/`：产出目录
 

@@ -33,7 +33,7 @@ Backend-Tech-Design/
 ├── SKILL.md
 ├── README.md
 ├── CONTEXT.md                 # 术语 + 决策日志
-├── references/                # tdd-structure / tech-stack / module-design / data-model / socratic-grilling
+├── references/                # tdd-structure / tech-stack / decision-rules / module-design / data-model / socratic-grilling / case-library/
 ├── assets/                    # overview-template / module-template
 └── .spec/TDD/VN/              # 产出
 ```
