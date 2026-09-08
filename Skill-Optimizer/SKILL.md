@@ -1,6 +1,6 @@
 ---
 name: Skill-Optimizer
-description: Skill 元优化器（长期迭代）。记录 skill 问题、从聊天记录挖掘优化点、按八维优化/精简 skill、对 skill 做六维自洽体检、从 bug-patterns/ 池提炼错误模式反哺方案/开发 skill。触发：记问题/复盘/挖掘聊天/优化/精简/迭代/体检某 skill、检查自洽一致性、错误池提炼/反哺、沉淀 bug 模式到方案开发。
+description: Skill 元优化器（长期迭代）。记录 skill 问题、从聊天记录挖掘优化点、按八维优化/精简 skill、对 skill 做七维自洽体检、从 bug-patterns/ 池提炼错误模式反哺方案/开发 skill。触发：记问题/复盘/挖掘聊天/优化/精简/迭代/体检某 skill、检查自洽一致性、错误池提炼/反哺、沉淀 bug 模式到方案开发。
 compatibility: Claude Code / Agent SDK / OpenCode
 ---
 
@@ -15,7 +15,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 | ① 记录 | 记问题/复盘运行 | 问题写入 issue 池 | `issue/<skill>/<日期>/<序号>.md` |
 | ② 挖掘 | 提供 chats/ 或粘贴聊天 | 提取优化点 | 提取清单 → 确认后落 issue |
 | ③ 优化 | 优化/精简/迭代 XX | 按八维优化并沉淀；含从 bug-patterns/ 提炼防复发规则 | SKILL.md / references / CONTEXT 改动 |
-| ④ 体检 | 体检/检查 XX 自洽 | 六维自洽体检 | 问题清单 → 用户逐条裁决 |
+| ④ 体检 | 体检/检查 XX 自洽 | 七维自洽体检 | 问题清单 → 用户逐条裁决 |
 
 **标准先行**：每模式有固定标准——记录 `assets/issue-template.md`、挖掘 `assets/signal-checklist.md`、优化 `assets/optimize-checklist.md`、体检 `assets/self-audit-checklist.md`，编写规范 `assets/skill-writing-standard.md`。执行严格按标准，不凭感觉。
 
@@ -65,8 +65,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 八维核验（判据：维度二~六 skill-writing-standard、维度八 vibe-principles-mapping）：
 ① 问题修复——读目标 issue 待处理/处理中逐条修；
-② 触发精准——description 覆盖 what + when 与动词/场景/同义表达；
-③ 上下文体积——SKILL.md ≤ 500 行硬红线，长内容下沉 references，可执行代码进 scripts；
+② 触发精准——description 覆盖 what + when 与动词/场景/同义表达；**含量化 eval**：生成触发样本（该触发/不该触发/边界）→ 盲测 → 假阳/假阴分析 → ≤5 轮迭代调优；
+③ 上下文体积——SKILL.md ≤ 500 行硬红线，长内容下沉 references，可执行代码进 scripts；L1~L4 四级加载见编写规范 §二；
 ④ 指令写法——问题引导、禁令清单、铁律/Red Flag；
 ⑤ 流程稳定——BLOCKING/REQUIRED 标记、Gate、交付检查、参数系统；
 ⑥ 简洁不落俗——删 AI 味套话、冗余；
@@ -77,8 +77,9 @@ compatibility: Claude Code / Agent SDK / OpenCode
 1. 读目标 issue 列待修问题；
 2. 按 optimize-checklist 八维核验；
 3. 只动有依据处；
-4. 在目标 skill 的 CONTEXT.md 追加 D-xx（改了什么、依据哪条 issue）；
-5. 回填 issue 状态：解决 → `已沉淀` + 沉淀目标/位置；不处理 → `已忽略` + 理由。
+4. **old-vs-new 能力审计**：改动前记录目标 skill 能力清单，改动后对比——确认无「丢功能 / 引入未声明行为 / 声称支持却没实现」，每项变更可追溯到 issue/核验发现；
+5. 在目标 skill 的 CONTEXT.md 追加 D-xx（改了什么、依据哪条 issue）；
+6. 回填 issue 状态：解决 → `已沉淀` + 沉淀目标/位置；不处理 → `已忽略` + 理由。
 
 ### 模式③-附加：错误模式池提炼（目标 = 方案/开发 skill）
 
@@ -91,17 +92,18 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ## 六、模式④ 体检
 
-按 `assets/self-audit-checklist.md` 六维：
+按 `assets/self-audit-checklist.md` 七维：
 ① 术语/命名一致（同指异名、与 CONTEXT 冲突、旧术语残留）；
 ② 逻辑闭环（悬空引用、断头、Gate 未落地、枚举数量前后不一致）；
 ③ 文句质量（病句、错别字、占位符未替换）；
 ④ 声明-流程一致（声明的依赖/前置有对应检测→阻塞→报错步骤）；
 ⑤ 跨位置同步（关键事实/编号/引用多文件 grep 比对）；
-⑥ 简洁不落俗。
+⑥ 简洁不落俗；
+⑦ 安全审计（危险指令/硬编码凭据/依赖/外联风险，带脚本的 skill 重点查）。
 
 范围（默认）：目标 skill 全套文件 + 全仓交叉引用（根 README/Workflow/其他 skill/issue）。
 
-流程：定位 → 按六维机械 grep + AI 通读 → 问题清单（等级+位置+现象+修复方向+判据）→ **逐条交用户裁决**（当场修→记 D-xx；记 issue→来源填体检；忽略→说明）→ 小结确认。
+流程：定位 → 按七维机械 grep + AI 通读 → 问题清单（等级+位置+现象+修复方向+判据）→ **逐条交用户裁决**（当场修→记 D-xx；记 issue→来源填体检；忽略→说明）→ 小结确认。
 
 ## 七、沉淀约定（全局强约束）
 
@@ -128,7 +130,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 | 挖掘未确认就落盘 | 先列清单确认 |
 | 问题缺三字段 | 必填 |
 | 已沉淀不填目标/位置 | 必须可追溯 |
-| 体检只口头说 | 按六维出清单，每条带位置/方向/判据 |
+| 体检只口头说 | 按七维出清单，每条带位置/方向/判据 |
 | 当场修没记 D-x | 留痕 |
 | 改完不同步检查 | 旧词/编号/术语全仓清零 |
 | 提炼把案例整段贴进 skill | 只提炼可执行防复发规则，案例留 bug-patterns 池 |
