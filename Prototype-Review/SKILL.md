@@ -32,6 +32,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ## 三、严重度分级
 
+> P0/P1/P2 定义与处理口径见仓库根 `shared/anti-deadloop.md` §二；下表为本域典型示例。
+
 | 级别 | 定义 | 处理 | 典型 |
 |---|---|---|---|
 | P0 致命 | 流程断头、核心页面/模态缺失、严重阻碍开发与演示 | 阻塞；修复并通过复核 | 核心审核弹框无入口也无代码；主流程死胡同 |
@@ -43,7 +45,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 1. **只审不改**：严禁改原型 HTML/CSS/JS 与 PRD；唯一产出为 `.spec/原型评审/` 下的报告与清单。
 2. **成因必写**：每条问题结合 PRD 与原型代码给成因（如漏读章节、同名歧义、事件未监听、overflow 遮挡）；无法推导标「成因未明」，禁主观臆造。
 3. **方向明确**：每条给修改方向和建议修改方——原型问题 → `Prototype-Design`；PRD 自相矛盾 → `PRD-Design`；双方口径不一 → `双方协同`。
-4. **浏览器工具硬前置**：开工前检测 Playwright → browser-use → 其他可驱动真实浏览器的工具（凡能用即算）。任一可用即用于截图存证；全部不可用 → 报错并要求安装后重跑，不产出任何评审文档。
+4. **浏览器工具硬前置**：本 skill 为硬依赖——检测顺序、两级行为与报错文案见仓库根 `shared/browser-policy.md`；任一可用即用于截图存证（细则见 `references/browser-inspection-guide.md`）；全部不可用 → 报错停止，不产出任何评审文档。
 5. **单一事实源任务清单**：全量问题去重后只收口到 `.spec/原型评审/任务清单.md`，初始状态均为 `待确认`。
 
 ## 五、评审流程（7 步）
@@ -53,7 +55,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - 按铁律 4 预检浏览器工具并记录走查工具；全不可用即报错停止。
 
 ### 步骤 2：建立映射基准
-从速查表页面/视图索引与各模块 §3.1 提取页面、交互路径、关键文案；读 `布局清单.md`；产出矩阵 `PRD 功能点 ↔ 原型页面/载体（文件/Modal ID）`。
+从速查表页面功能区块索引与各模块 §3.1 提取页面、交互路径、关键文案；读 `布局清单.md`；产出矩阵 `PRD 功能点 ↔ 原型页面/载体（文件/Modal ID）`。
 
 ### 步骤 3：截图走查 + 静态源码审查（双通道互证）
 - **截图走查（硬性）**：逐页打开原型，对异常/缺失/不一致处局部截屏存入 `screenshots/`；
@@ -81,6 +83,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - 轮次上限 3：P0/P1 未收敛即停止循环，向用户汇报阻塞；
 - 交付总结明确剩余待裁决项。
 
+> 防评审死循环三招与任务清单状态机的定义见仓库根 `shared/anti-deadloop.md`，本 skill 只保留上述流程参数，不重复定义。
+
 ## 六、运行问题埋点
 
-收尾自查，将方法论问题、用户否定/认可信号、可复现产物问题上报告 `issue/<skill>/<日期>/<序号>-<标题>.md`，字段/等级/标签遵循 `Skill-Optimizer/references/instrumentation-guide.md`，模板用 `Skill-Optimizer/assets/issue-template.md`。不确定不记，不打断主流程。
+收尾按 `Skill-Optimizer/references/instrumentation-guide.md` 自查上报 `issue/Prototype-Review/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `Skill-Optimizer/assets/issue-template.md`）。不确定不记，不打断主流程。

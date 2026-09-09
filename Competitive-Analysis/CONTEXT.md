@@ -13,13 +13,13 @@
 | 术语 | 定义 |
 |---|---|
 | 五层框架 | 分析视角（市场/竞品/痛点/商业/技术） |
-| Pass Gate | 输出前自检：P0=0 且 P1(Open)=0 |
+| Pass Gate | 输出前自检：PASS=P0=0 且 P1(Open)=0；CONDITIONAL=P0=0 但 P1(Open)≥1（就地补齐再验）；FAIL=命中 P0 |
 | 三段式评估 | 结果是什么/缺什么/优化什么 |
 | 数据红线 | 8 条最高优先级，违反即 P0 |
 | 赛道自适应 | 按赛道自动调整侧重 |
 | 双矩阵交付 | 优缺点横向表 + 功能点矩阵，缺一 P0 |
-| 决策规则 | Decision Rules | decision-rules.md：证据标准补充/反模式/监控节奏/加权评分 | 不重复数据红线 8 条，只补增量 |
-| 案例库 | Case Library | case-library/：frameworks-extended + data-sources + 同行样本 | 借鉴不照搬，五层框架+11模块优先 |
+| 决策规则 | decision-rules.md：证据标准补充/反模式/监控节奏/加权评分（Decision Rules）；不重复数据红线 8 条，只补增量 |
+| 案例库 | case-library/：frameworks-extended + data-sources + 同行样本（Case Library）；借鉴不照搬，五层框架+11模块优先 |
 
 ## 三、决策日志
 
@@ -28,6 +28,7 @@
 | D-01 | 09-05 | Pass 标准与 CONDITIONAL 条件修正；README 状态/字段补齐 | 体检逻辑闭环 P0×2 + 同步 P1×2 | ✅ |
 | D-02 | 09-05 | README 重写 + 派活四件套/苏格拉底三问/Red Flag 注入 | 心法；README 失同步 P0 | ✅ |
 | D-03 | 09-08 | 新增 decision-rules（证据标准/反模式/监控节奏/加权评分）+ case-library（扩展框架/数据源/同行样本） | 用户提供竞品分析案例库资源清单，要求系统增强 | ✅ |
+| D-04 | 09-09 | 体检修复 4 项：Pass Gate 补 P1(Open)≥1 CONDITIONAL 分支（SKILL/README/CONTEXT/eval 四处）；门禁 11 项标注节选 7 项；README 补状态行；CONTEXT 表格列数修正 | 全仓冗余专项体检（用户裁决全量修复 + R9 评审模板参数化） | ✅ |
 
 ## 四、待决问题
 

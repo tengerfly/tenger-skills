@@ -14,7 +14,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
 | 输入 | 角色 | 说明 |
 |---|---|---|
 | PRD（AC） | 需求基线 | 判断代码漏做/凭空 |
-| 原型 HTML | 还原基线 | 前端页面还原度 |
+| 原型 HTML | 还原基线 | 前端页面结构还原度（结构基线 = 低保真原型，见 `shared/baseline-terms.md`） |
+| 设计稿（可选） | 视觉基准 | 有则以 `.spec/设计稿/` 为准；无则视觉值从原型收敛 |
 | TDD | 设计基线 | 后端表结构/接口/模块边界 + 契约源 |
 | FTDD | 设计基线 | 前端页面/组件/fetch + 契约源 |
 | 后端代码 + 前端代码 + `libs/shared` | 被审对象 | 实际落地工程 |
@@ -53,7 +54,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ### 五大正确性
 
-1. 可运行性：install → `tsc --noEmit` → build → test → lint（见 static-verification-guide）。
+1. 可运行性：install → `tsc --noEmit`（或 build）→ test → lint（见 static-verification-guide）。
 2. 架构合规：后端四层单向依赖/微服务边界；前端 pages→components→hooks→api、组件抽离。
 3. 接口契约一致：路径/方法/入参/出参/错误码/分页/枚举/字段术语双向 + 共享类型单一源。
 4. 代码质量：单一职责、无魔法值、注释讲 why + 传参必注、统一响应、配置外置、无密钥硬编码。
@@ -65,7 +66,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 输入 → 解析 → 静态验证 → 双视角并行评审 → 契约专项 → 两份角色文档 → 汇总 → 任务清单 + 用户确认 → 归档
 ```
 
-1. **输入解析**：定位后端/前端代码与 `libs/shared`、四类文档；抽取 AC 清单、TDD 接口清单、FTDD fetch 表、原型页面清单。
+1. **输入解析**：定位后端/前端代码与 `libs/shared`、四类文档；抽取 AC 清单、TDD 接口清单、FTDD fetch 表、原型布局清单。
 2. **静态验证（取证）**：前后端分别 `pnpm install → tsc --noEmit（或 build）→ test → lint`；跑不了 → 降级静态读码并在报告标「未取证（原因）」；只证伪可编译/可测试/可 lint，不做端到端冒烟。
 3. **双视角并行评审**：后端按 `references/backend-checklist.md`、前端按 `references/frontend-checklist.md` 逐条执行；两视角独立产出断点清单，独立上下文（subagent/新会话）互不可见，不参考代码生成过程；条件允许可用不同模型交叉审查。
 4. **契约专项**：按 `references/contract-checklist.md` 做前端 fetch ↔ 后端实现 ↔ 共享类型三方比对，逐接口核对；命中项按第二节归因。
@@ -74,6 +75,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
 7. **任务清单 + 用户确认**：按 `assets/issue-list-template.md` 生成任务清单，状态 `待确认`，按归因填修改方（Backend-Dev / Frontend-Dev / 双方）；每条附修复判据；逐条请用户确认（要改 → `已确认`；不改 → `已忽略` + 理由）；P0/P1 阻断、P2 可留后续；复核只验本轮清单，不无限新增；轮次上限 3，不收敛即停止汇报；确认后交对应 Dev skill 修改并回填状态。
 8. **归档**：角色评审 + 汇总 + 任务清单全部落盘 `.spec/代码评审/`。
 
+> 防评审死循环三招与任务清单状态机的定义见仓库根 `shared/anti-deadloop.md`，本 skill 只保留上述流程参数，不重复定义。
+
 ## 五、静态验证规程（B 档）
 
 - 目标：证伪可编译/可测试/可 lint，不证业务正确性。
@@ -81,6 +84,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - 跑不了 → 降级读码，标注「本项未取证（原因：{{原因}}）」；未取证 ≠ 通过。
 
 ## 六、严重度分级（只标注，不设门禁）
+
+> P0/P1/P2 定义与处理口径见仓库根 `shared/anti-deadloop.md` §二；下表为本域典型示例。
 
 | 级别 | 含义 | 典型 |
 |---|---|---|
@@ -107,7 +112,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 | 漏审一端 | 后端/前端两份都要出 |
 | 漏契约专项 | 步骤 4 逐接口三方比对 |
 | 评业务逻辑 | 归测试流程 |
-| 验证跑不了写“通过” | 标「未取证」 |
+| 验证跑不了写「通过」 | 标「未取证」 |
 | 无出处 | 定位到文件:行/接口/字段 |
 | 越界当缺失 | 区分两类分别标注 |
 | 无成因 | 补成因，可考才写 |
@@ -119,8 +124,9 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - `references/static-verification-guide.md`：静态验证规程
 - `references/case-library/`：审查方法学（优先级/评论规范/AI 边界）+ 同行样本（按需加载）
 - `assets/role-review-template.md` / `summary-template.md` / `patch-template.md` / `issue-list-template.md`
+- `shared/anti-deadloop.md`（仓库根）：三招与分级定义
 - `.spec/代码评审/`：归档目录
 
 ## 十、运行问题埋点
 
-收尾自查，将方法论问题、用户否定/认可信号、可复现产物问题上报告 `issue/<skill>/<日期>/<序号>-<标题>.md`，字段/等级/标签遵循 `Skill-Optimizer/references/instrumentation-guide.md`，模板用 `Skill-Optimizer/assets/issue-template.md`。不确定不记，不打断主流程。
+收尾按 `Skill-Optimizer/references/instrumentation-guide.md` 自查上报 `issue/Code-Review/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `Skill-Optimizer/assets/issue-template.md`）。不确定不记，不打断主流程。

@@ -14,7 +14,7 @@
 |---|---|---|---|
 | 代码评审 | Code Review | 后端/前端代码的结构性评审 | 不是 Tech-Review（审文档）、不是业务逻辑测试 |
 | 接口契约一致性 | Contract Consistency | 路径/方法/入参/出参/错误码/分页/枚举三方一致，共享类型单一源 | 不是接口风格问题 |
-| 静态验证 | Static Verification | install→tsc→build→test→lint 取证 | 不是端到端联调 |
+| 静态验证 | Static Verification | install→tsc（或 build）→test→lint 取证 | 不是端到端联调 |
 | 建议补丁 | Suggested Patch | P0 修复方向以代码块进报告，不落盘 | 不是直接改代码 |
 | 六大闭环 | Six Closed-Loops | 需求/流程/状态/数据/异常/测试的代码层闭环 | 与 Tech-Review 文档层闭环同名不同义 |
 | 业务逻辑正确性 | Business Logic Correctness | 规则算得对不对 | Out-of-Scope |
@@ -33,6 +33,7 @@
 | D-05 | 2026-09-05 | 防死循环补轮次上限 3；description 输入基线同步 | 体检逻辑闭环 P0 + 术语一致 P1 | ✅ 已确认 |
 | D-06 | 2026-09-05 | 注入 review 独立性：独立上下文、不参考生成过程、可换模型交叉 | Vibe Coding 心法 4；评审类适用 | ✅ 已确认 |
 | D-07 | 2026-09-08 | 新增 case-library（review-methods 审查方法学 + agent-skill-samples 同行样本） | 用户提供代码审核案例库资源清单，要求系统增强 | ✅ 已确认 |
+| D-08 | 09-09 | 体检修复 6 项：原型布局清单术语；输入基线补设计稿视觉基准（双基准）；验证跑不了弯引号；role-template 补 F1-xx 前端编号；README 产物目录移出目录树；验证链 tsc/build 二选一（CONTEXT）+三招收口 shared + issue-list 薄壳化（R9） | 全仓冗余专项体检（用户裁决全量修复 + R9 评审模板参数化） | ✅ |
 
 ## 四、待决问题
 

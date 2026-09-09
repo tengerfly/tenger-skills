@@ -73,3 +73,4 @@ PRD-Design → Prototype-Design → Backend-Tech-Design ─┐
 - `Backend-Tech-Design`：施工图；模块边界 = 微服务拆分候选。
 - `Frontend-Tech-Design`：接口契约验收线（fetch 对接）。
 - `Backend-Dev` 是技术方案域界中「后端怎么实现」的承接方。
+- 下游：Code-Review（评审回退修改方，承接 `.spec/代码评审/任务清单.md`）。

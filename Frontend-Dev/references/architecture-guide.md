@@ -69,8 +69,7 @@ src/
 └── Test/                   # 测试 setup（vitest.setup.ts 等）
 ```
 
-> monorepo（前后端同仓库）下：接口请求参数/响应/枚举/DTO/分页结构等**前后端共用类型**放共享包（如 `packages/shared-types`），前端 `import type { Order, PageResult } from '@repo/shared-types'` **只引用不重定义**；前端私有类型才放 `src/types/`（详见 SKILL §五-5.2）。
-```
+> monorepo（前后端同仓库）下：接口请求参数/响应/枚举/DTO/分页结构等**前后端共用类型**放共享包（如 `packages/shared-types`），前端 `import type { Order, PageResult } from '@repo/shared-types'` **只引用不重定义**；前端私有类型才放 `src/types/`（详见 SKILL §五）。
 
 > 具体目录树以 FTDD overview §6 为准；features 下模块命名与 FTDD 模块文件名 `NN_xxx` 语义对应（如 `01_用户模块` → `features/users`）。
 

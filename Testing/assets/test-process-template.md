@@ -14,7 +14,7 @@
 | 测试人 | `{{测试执行者（本 Skill）}}` |
 | 测试日期 | `{{YYYY-MM-DD}}` |
 | 需求文档来源 | `{{PRD 路径 / .spec/PRD/VN/}}` |
-| UI 设计稿来源 | `{{原型路径 / .spec/原型/}}` |
+| UI 视觉基准来源 | `.spec/设计稿/`（缺失回退 `.spec/原型/` 或用户外部稿） |
 | 项目代码位置 | `{{本地目录 + git 地址}}` |
 | 目标端 | `{{web / app / 小程序}}` |
 | 慢接口阈值 | `慢>1000ms / 很慢>3000ms / 严重>5000ms（【设计假设】可调）` |
@@ -23,7 +23,7 @@
 
 ## 二、测试范围清单（Scope）
 
-> 从 PRD「速查表页面/视图索引 / 模块清单」+ 原型页面清单归并，逐页列出。**范围经用户确认后才执行**。
+> 从 PRD「速查表页面功能区块索引 / 模块清单」+ 原型布局清单归并，逐页列出。**范围经用户确认后才执行**。
 
 | 页面/模块 | 入口 | 覆盖状态数 | 可点击元素数 | 测试重点 |
 |---|---|---|---|---|
@@ -57,13 +57,13 @@
 
 ### 阶段 1：输入解析
 - **读需求**：优先读 `.spec/PRD/VN/`（**先读 `PRD速查表.md` 建六大索引**；AC 清单用速查表 §六，断言细节按锚点回模块 §9）；缺失则读用户指定 PRD 路径/粘贴内容；
-- **读设计稿**：优先读 `.spec/原型/`（HTML 原型 + README）；缺失则读用户指定设计稿（Figma 导出图/截图/HTML）；
+- **读视觉基准**：优先读 `.spec/设计稿/`（设计稿 HTML + design-system + README）；缺失回退 `.spec/原型/`；再缺读用户指定外部稿（Figma 导出图/截图/HTML）；
 - **读代码**：确认项目目录与 git 地址（**用户未提供则必问**），读 `README.md` / `package.json` / 路由配置，梳理页面清单与启动命令；
 - **提取测试面**：页面清单 + 每页的业务状态集合 + 可交互元素清单 + 接口清单（从后端 TDD/前端 api 目录提取）。
 
 ### 阶段 2：环境准备
 - **本地启动**：按项目 README 安装依赖（`pnpm/npm install`）、起本地 dev server（`pnpm dev`）或构建后静态服务（`pnpm build` + `serve`）；确认能通过 `http://localhost:{{port}}` 访问；
-- **浏览器工具检测**（见 `references/browser-guide.md`）：检测 Playwright → browser-use → midscenejs，确定功能/样式/截图三条线各用哪个工具；
+- **浏览器工具检测**（见 `references/browser-guide.md`）：检测 Playwright → browser-use → 其他（硬依赖链见 `references/browser-guide.md` 与仓库根 `shared/browser-policy.md`）；midscenejs 为样式视觉断言的可选增强（缺失降级并明示），不在检测链；
 - **样式测试环境（可选）**：若启用 midscenejs，安装 `@midscene/web` + 配置模型环境变量（见 `references/style-test-guide.md`）。
 
 ### 阶段 3：生成测试计划 + 测试用例

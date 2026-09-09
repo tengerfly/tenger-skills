@@ -189,7 +189,7 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
 
 - 请求错误统一由 `ApiError` 承载，UI 按 code 分类提示（HTTP 错误 / 超时 / 网络异常）；
 - 渲染异常由 `ErrorBoundary` 兜底；
-- 401 统一跳登录。
+- 401 先静默刷新重放一次，刷新失败统一跳登录。
 
 ### 8.5 权限规范（企业级档）
 

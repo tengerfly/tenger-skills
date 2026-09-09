@@ -12,8 +12,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 1. **载体与结构零改动**：对照布局清单，独立页面、弹框、抽屉、区块、元素、跳转逐项一致（防漏）；无出处的区块/按钮/提示/装饰一律不得出现（防加戏）。结构不对 = 视觉阶段越权改布局，打回。
 2. **文案与字段一致性**：对照 PRD/布局清单逐字比对标题、CTA、列名、标签、提示语；不得自行添加多余文案。
-3. **视觉规范一致性**：对照 `.spec/设计稿/design-system.md`（权威源 `.superdesign/design-system.md`，缺归档副本时指明），所有视觉值（色值/字号/字重/间距/圆角/阴影/组件/图标）必须有 token 出处，无规范外值。
-4. **视觉呈现与可交付质量**：真实渲染设计稿 HTML——规范是否落地、逐入口做结构级可点击性验证（真实 `<a href>` 或等价触发；像按钮却点不动 = 缺陷）、控制台报错/死链/遮挡/资源加载失败、反 AI 味 12 条目检、关键缺陷截图。
+3. **视觉规范一致性**：对照 `.spec/设计稿/design-system.md`（权威源 `.superdesign/design-system.md`，缺归档副本时指明），所有视觉值（色值/字号/字重/间距/圆角/阴影/组件/图标）必须有 token 出处，无规范外值；反 AI 味 12 条目检（清单见 `references/visual-spec-consistency-checklist.md`）。
+4. **视觉呈现与可交付质量**：真实渲染设计稿 HTML——规范是否落地、逐入口做结构级可点击性验证（真实 `<a href>` 或等价触发；像按钮却点不动 = 缺陷）、控制台报错/死链/遮挡/资源加载失败、关键缺陷截图。
    - 边界：不验真实业务逻辑/数据/弹框开合逻辑；可点击性只到「入口存在且可点、href 去向与站点地图一致」。
 
 ## 二、输入与输出
@@ -22,6 +22,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - **输出** `.spec/设计评审/`：四份维度报告、`设计稿评审汇总报告.md`、`任务清单.md`（待确认→已确认→已修复/已忽略）、`screenshots/`（硬性）。
 
 ## 三、严重度
+
+> P0/P1/P2 定义与处理口径见仓库根 `shared/anti-deadloop.md` §二；下表为本域典型示例。
 
 | 级别 | 定义 | 处理 | 典型 |
 |---|---|---|---|
@@ -34,7 +36,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 1. **只审不改**：禁改设计稿 HTML、design-system、PRD、布局清单；唯一产物为 `.spec/设计评审/` 下文件。
 2. **成因必写**：每条结合对照源与 HTML 剖析成因（漏读区块、token 被绕过、直编改坏 href、弹框只做静态视觉）；无法推导标「成因未明」，禁臆造。
 3. **方向明确**：设计稿问题 → `UI-UX-Design`；布局清单与 PRD 冲突/漏载体 → `Prototype-Design`；PRD 自相矛盾 → `PRD-Design`；口径不一 → `双方协同`。
-4. **浏览器工具硬前置**：检测 Playwright → browser-use → 其他可驱动浏览器工具；任一可用即渲染截图 + 点击验证；全无 → 报错停止，不产出评审文档。
+4. **浏览器工具硬前置**：本 skill 为硬依赖——检测顺序、两级行为与报错文案见仓库根 `shared/browser-policy.md`；任一可用即渲染截图 + 点击验证；全无 → 报错停止，不产出评审文档。
 5. **单一事实源**：全量问题去重后只收口 `任务清单.md`，初始全部 `待确认`。
 6. **第三方独立兜底**：不采信 UI-UX-Design 门禁的「✅ 已通过」；只认对照源 + 真实渲染独立复核。
 
@@ -50,11 +52,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ## 六、防评审死循环
 
-1. **修复判据**：修到什么表现算过，修改方与复核共用一把尺子。
-2. **分级冻结**：P0/P1 未清零不放行；复核只验本轮已确认项；新发现降 P2 或进下一轮单批。
-3. **轮次上限 3**：同批修复-复核超 3 轮不收敛 → 停，交用户裁决（接受/忽略/转人工）。
-4. 反复不收敛且暴露方法论问题 → 按第七节上报 `issue/`，交 Skill-Optimizer。
+三招（修复判据 / 分级冻结 / 轮次上限 3）与任务清单状态机的定义见仓库根 `shared/anti-deadloop.md`。本 skill 差异：轮次超限交用户裁决（接受/忽略/转人工）；反复不收敛且暴露方法论问题 → 按第七节上报 `issue/`，交 Skill-Optimizer。
 
 ## 七、运行问题埋点
 
-收尾自查，将方法论问题、用户否定/认可信号、可复现产物问题（含 Superdesign/UI-UX-Design 侧）上报 `issue/UI-UX-Review/<日期>/<序号>-<标题>.md`，字段/等级/标签遵循 `Skill-Optimizer/references/instrumentation-guide.md`，模板用 `Skill-Optimizer/assets/issue-template.md`。不确定不记，不打断主流程。
+收尾按 `Skill-Optimizer/references/instrumentation-guide.md` 自查上报 `issue/UI-UX-Review/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `Skill-Optimizer/assets/issue-template.md`；含 Superdesign/UI-UX-Design 侧）。不确定不记，不打断主流程。

@@ -1,4 +1,4 @@
-# PRD 交付三段式验收与 Pass Gate 报告（Eval Template v2）
+# PRD 交付三段式验收与 Pass Gate 报告（Eval Template）
 
 > 用户终审前自检；报告数量必须为重新清点实测值。
 

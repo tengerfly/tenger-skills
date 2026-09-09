@@ -16,6 +16,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ## 二、双通道设计稿基准
 
+> 双基准术语（结构基线 = 低保真原型 / 视觉基准 = 设计稿）定义见仓库根 `shared/baseline-terms.md`；本节是本 skill 的基准通道选择规则。
+
 | 通道 | 来源 | 说明 |
 |---|---|---|
 | A（优先） | `.spec/设计稿/` | 设计稿 HTML + design-system.md，可直接渲染并机械比对 token |
@@ -31,6 +33,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ## 四、严重度
 
+> P0/P1/P2 定义与处理口径见仓库根 `shared/anti-deadloop.md` §二；下表为本域典型示例。
+
 | 级别 | 定义 | 处理 | 典型 |
 |---|---|---|---|
 | P0 | 整体结构/布局严重不符、主视觉走样、核心入口点不动或跳错、长文案大面积崩坏 | 阻断交付，修复并通过复核 | 列表页实现成卡片流且主按钮消失；整页配色脱离设计稿；按钮点了无反应 |
@@ -43,7 +47,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 2. **截图必证**：一切样式/视觉/溢出问题必须配浏览器截图（实现页截图，必要时并排设计稿），命名 `<页面>_<问题>_<序号>.png`；交互问题截图表现不了则附操作步骤。
 3. **成因必写**：剖析成因（默认样式未对照稿、色值未走 token、容器未加省略/min-width、flex 溢出、真实文案更长）；推不出标「成因未明」。
 4. **方向明确**：给具体修改建议（改哪个文件/哪类样式/加什么约束）和建议修改方——实现问题 → `Frontend-Dev`；设计稿自身缺陷 → `UI-UX-Design`；源于 PRD 口径变化 → 双方协商。
-5. **浏览器工具硬前置**：检测 Playwright → browser-use → 其他可驱动浏览器工具；任一可用即截图+点击验证；全无 → 报错停止，产出为空，安装后重跑。
+5. **浏览器工具硬前置**：本 skill 为硬依赖——检测顺序、两级行为与报错文案见仓库根 `shared/browser-policy.md`；任一可用即截图+点击验证；全无 → 报错停止，产出为空，安装后重跑。
 6. **只对还原度负责**：不评业务逻辑、接口契约、代码架构；页面起不来即阻塞。
 
 ## 六、评审流程（7 步）
@@ -62,9 +66,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ## 七、防评审死循环
 
-1. 每条问题附**修复判据**：修到什么表现算完成。
-2. **分级冻结**：P0/P1 未清零不放行；复核只验本轮已确认项，不无限新增同级问题。
-3. **轮次上限 3**：同批超 3 轮不收敛 → 停下交用户裁决。
+三招（修复判据 / 分级冻结 / 轮次上限 3）与任务清单状态机的定义见仓库根 `shared/anti-deadloop.md`。本 skill 差异：同批超 3 轮不收敛 → 停下交用户裁决。
 
 ## 八、与上下游关系
 
@@ -81,6 +83,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - `references/visual-checklist.md`、`interaction-checklist.md`、`overflow-guide.md`、`design-source-guide.md`、`browser-guide.md`、`decision-rules.md`
 - `references/case-library/`：像素方法学 + 同行样本（按需加载）
 - `assets/review-report-template.md`、`issue-list-template.md`、`mini-issue-template.md`
+- `shared/anti-deadloop.md`、`shared/baseline-terms.md`（仓库根）：公共约定
 - `.spec/页面还原评审/`：归档目录；`CONTEXT.md`：术语 + 决策日志
 
 ## 十、常见错误对照表
@@ -99,4 +102,4 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ## 十一、运行问题埋点
 
-收尾自查，将方法论问题、用户否定/认可信号、可复现产物问题（含协作侧）上报 `issue/Fidelity-Review/<日期>/<序号>-<标题>.md`，字段/等级/标签遵循 `Skill-Optimizer/references/instrumentation-guide.md`，模板用 `Skill-Optimizer/assets/issue-template.md`。不确定不记，不打断主流程。
+收尾按 `Skill-Optimizer/references/instrumentation-guide.md` 自查上报 `issue/Fidelity-Review/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `Skill-Optimizer/assets/issue-template.md`；含协作侧）。不确定不记，不打断主流程。

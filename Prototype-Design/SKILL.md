@@ -30,8 +30,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
 1. **解析 PRD**：
    - 检查 `.spec/原型评审/任务清单.md`：有 `已确认` 且修改方为 `Prototype-Design` 的任务逐条纳入本次修复；无则按全新绘制。
    - 多文件改动（script/数据/弹框链/交互）落盘前按 `references/iteration-regression-guard.md` 跑 Regression Gate（console 零错误 + 动态内容 DOM 断言 + 关键态截图人工核验）。
-   - 自行提取产品定位、用户画像、核心主流程、页面/功能素材；不逐项问用户。
-   - PRD-Design 产出优先读 `PRD速查表.md` 建索引；页面/视图素材从速查表 + 各模块 §3.1 提取；细节按锚点回 NN_xxx.md。
+   - 自行提取产品定位、用户画像、核心主流程、页面功能区块素材；不逐项问用户。
+   - PRD-Design 产出优先读 `PRD速查表.md` 建索引；页面功能区块素材从速查表 + 各模块 §3.1 提取；细节按锚点回 NN_xxx.md。
    - PRD 的「页面」≠ 原型独立页面：载体划分留给步骤 3，本步只收集素材不拍板。
 
 2. **端类型确认**：问 Web/移动/双端同步，推荐并默认 Web；选双端再问「两套独立原型」还是「一套响应式」，由用户决定。
@@ -110,4 +110,4 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ## 九、运行问题埋点
 
-收尾自查，将方法论问题、用户否定/认可信号、可复现产物问题上报告 `issue/<skill>/<日期>/<序号>-<标题>.md`，字段/等级/标签遵循 `Skill-Optimizer/references/instrumentation-guide.md`，模板用 `Skill-Optimizer/assets/issue-template.md`。不确定不记，不打断主流程。
+收尾按 `Skill-Optimizer/references/instrumentation-guide.md` 自查上报 `issue/Prototype-Design/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `Skill-Optimizer/assets/issue-template.md`）。不确定不记，不打断主流程。

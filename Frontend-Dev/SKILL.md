@@ -11,7 +11,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ## 一、角色与八条铁律
 
-**角色**：前端开发专家。结构基线 = 低保真原型；视觉基准 = 设计稿（有则以 `.spec/设计稿/` 为准，无则从原型基础值收敛）；接口契约源 = 后端 TDD/FTDD。
+**角色**：前端开发专家。结构基线 = 低保真原型；视觉基准 = 设计稿（有则以 `.spec/设计稿/` 为准，无则从原型基础值收敛）；接口契约源 = 后端 TDD/FTDD（双基准术语定义见仓库根 `shared/baseline-terms.md`）。
 
 > ⛔ 设计稿为唯一视觉/交互/文案基准，禁止自创：逐区块复制设计稿结构、方向、文案、空态与图标位；凡设计稿未出现的内容、区块、状态或文字不得擅自添加。加载与错误提示需居中；跨 Tab/来源切换须清除前序状态；空态只允许单一表达。页面适用状态按 FTDD §9 逐态覆盖（10 大 UI 状态，实现见 `references/ui-states-guide.md`）。
 
@@ -43,10 +43,10 @@ compatibility: Claude Code / Agent SDK / OpenCode
    - **产出位置必问**：目标目录（用给定/自定义名，不套约定）+ git 地址（已有 clone/切分支；空仓 init + remote）。缺一暂停。
    - 判 monorepo：看 pnpm-workspace/turbo/nx/apps+packages；同仓时确认前端子包、共享类型包、根配置可否动，不确定就问。
    - 读 `PROJECT.md`（有则恢复进度与规则，从未做/进行中继续）；无则视为新项目。
-   - **既有前端工程盘点**（有代码无 PROJECT.md）：先读目录/技术栈/页面/样式/共享包/lint/git，沉淀「项目现状基线」入 PROJECT.md；严格按现状开发，不套默认模板、不擅自换栈重构。
+   - **既有前端工程盘点**（有代码无 PROJECT.md）：按仓库根 `shared/dev-common.md` §一沉淀「项目现状基线」入 PROJECT.md；严格按现状开发，不套默认模板、不擅自换栈重构。
    - 读 `.spec/FTDD/VN/`（施工图）、`.spec/原型/`（结构基线）、`.spec/设计稿/`（视觉基准）、`.spec/TDD/VN/`（接口）、`.spec/PRD/VN/`（先读速查表）。检查 `.spec/代码评审/任务清单.md` 归本 skill 的 `已确认` 任务纳入计划。
    - 判目标端：web / app / 小程序；多套原型按端排期并确认分端或多端一套。
-   - **浏览器工具硬性预检**：Playwright → browser-use → 其他可驱动浏览器工具；任一可用记作还原校验工具；全无 → 报错停止，不产出。禁跳过、禁降级静态对照。
+   - **浏览器工具硬性预检**：本 skill 为硬依赖——检测顺序、两级行为与报错文案见仓库根 `shared/browser-policy.md`；任一可用记作还原校验工具；全无 → 报错停止，不产出。禁跳过、禁降级静态对照。
 
 2. **技术栈锁定**：FTDD 存在 → 读 overview 选型不重选；FTDD 缺失 → 补选型：档位必问 + 组件库必问 + 端相关必问，一次性确认后定稿入 PROJECT.md；FTDD 覆盖端 ≠ 目标端 → 阻塞，先让 Frontend-Tech-Design 补对应端方案。
 
@@ -89,7 +89,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ## 六、技术栈锁定
 
-- 优先读 FTDD，不重选：框架/组件库/路由/状态/请求载体/测试库以 FTDD 选型为准（FTDD 可选 Vue3/Taro/uni-app/React Native/Electron，非仅 React）。
+- 优先读 FTDD，不重选：框架/组件库/路由/状态/请求载体/测试库以 FTDD 选型为准（FTDD 可选 Vue3/Taro/uni-app/React Native/Electron，Flutter 备选点名才选；完整版图以 FTDD tech-stack-guide §二为准，非仅 React）。
 - 缺失补选型：档位（企业级默认/快速）必问 + 端形态与技术框架必问（清单同 FTDD `tech-stack-guide.md` §二）+ 组件库按所选框架配套推荐。
 - 覆盖端不符：`【阻塞】FTDD 仅覆盖 {{覆盖端}}，目标为 {{目标端}}，请先补方案。`
 - ⛔ **施工框架与 FTDD 选型不一致 → 阻塞对齐**，禁自主切回 React 基线；非 React 框架施工按 `references/framework-equivalence-guide.md` 等价映射执行（React 基线 guide 中的 hooks/RTL/CSS Modules 语境按其 §二替换规则读作所选框架等价物）。
@@ -108,13 +108,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 必问：需求口径不明、原型缺失/互斥、接口契约冲突、技术取舍、组件归属难判、还原差异难断、范围外发现、影响已交付模块、仓库/跨包约定、需改共享类型。
 
-格式：
-```
-【确认】{{一句话问题}}
-影响：{{不确认的后果}}
-选项：A（推荐+理由）/ B / C（或暂不实现标 TODO）
-```
-有选项必给选项；无明确选项也说明建议+理由；可批量问清；结论留痕（注释 why / README 关键决策）；影响 FTDD/PRD 提醒回写。纯实现细节不必问。
+提问方式与统一模板见仓库根 `shared/dev-common.md` §二（给选项+推荐+理由、一次一问、可批量列编号清单逐条确认、结论留痕）。有选项必给选项；无明确选项也说明建议+理由；影响 FTDD/PRD 提醒回写。纯实现细节不必问。
 
 ## 九、代码规范
 
@@ -130,17 +124,17 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ## 十一、测试
 
-- 测试先行：先落 FTDD §9 用例再实现。
+- 测试先行：先落 FTDD §10 用例再实现（FTDD 模块文档 §10 = TDD 测试用例；§9 = 异常与边界/适用状态）。
 - 编号沿用 `TC-Mxx-nnn` ↔ `AC-Mxx-nnn`。
 - 覆盖渲染/交互/数据流/边界/异常；hooks 用 renderHook + mock api。
 - `pnpm test` 可一键跑通。
 
 ## 十二、常见错误对照表
 
+> 公共错误行（现状基线/零选型/拍板/传参注释/提交粒度/门禁/进度更新）见仓库根 `shared/dev-common.md` §三；下表为本 skill 端专属与领域行。
+
 | 错误 | 纠正 |
 |---|---|
-| 既有工程套默认模板/换栈 | 盘点现状为基线 |
-| 开发中换选型 | 选型定稿零决策 |
 | 与 FTDD 不一致 | 读 FTDD |
 | 缺失不问档位/组件库 | 补选型必问 |
 | 施工框架与 FTDD 选型不一致 | 阻塞对齐，按 framework-equivalence-guide 等价映射 |
@@ -156,16 +150,10 @@ compatibility: Claude Code / Agent SDK / OpenCode
 | 后补测试无编号 | 测试先行标 TC/AC |
 | 契约不一致 | 双向核对 |
 | 浏览器不可用硬跑 | 报错等安装 |
-| 不确定自拍板 | 给选项问 |
 | 同仓重复定义类型 | 共享包单一源 |
 | 擅改根配置/后端包 | 先问 |
-| 不跑 lint 门禁 | 三道全过 |
 | 无计划就写/粒度异常 | 步骤 6 |
-| 完成不更新 PROJECT | 同步更新 |
-| 续做不读 PROJECT | 先读恢复 |
-| 传参不注 | @param 逐个写 |
 | TODO 静默跳过 | 问清或登记 |
-| 堆多功能点才提交 | 一功能点一 commit |
 | 提交信息随意 | Conventional Commits |
 | 混入调试/临时/凭据 | 提交前 diff 自检 |
 | 擅自 push | 由用户决定 |
@@ -175,7 +163,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ## 十三、还原度校验
 
-> ⚠️ REQUIRED：每完成一个页面/功能点，必须先浏览器双开截图（设计稿 vs 实现页）核验，**存在整体结构、配色、字号层级或三态偏离即返工**；只跑通功能不算完成。
+> ⚠️ REQUIRED：每完成一个页面/功能点，必须先浏览器双开截图（还原基准 vs 实现页；基准 = 低保真原型，有设计稿时加开设计稿）核验，**存在整体结构、配色、字号层级或适用状态偏离即返工**；只跑通功能不算完成。
 
 1. 本地起 dev server，Playwright 同开还原基准（原型 HTML；有设计稿同时开设计稿）与实现页，截图并排比对。
 2. Playwright 异常 → browser-use 等兜底。
@@ -187,8 +175,9 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - `references/architecture-guide.md`、`code-style-guide.md`、`test-guide.md`、`tech-stack-guide.md`、`fidelity-guide.md`、`ui-states-guide.md`、`framework-equivalence-guide.md`、`decision-rules.md`
 - `references/case-library/`：组件模式 + 框架写法 + 质量规范 + 同行样本（按需加载）
 - `assets/project-structure-template.md`、`module-code-template.md`、`project-status-template.md`
+- `shared/baseline-terms.md`、`shared/browser-policy.md`、`shared/dev-common.md`（仓库根）：公共约定
 - 产出位置：步骤 1 用户给定目录 + git 地址
 
 ## 十五、运行问题埋点
 
-收尾自查，将方法论问题、用户否定/认可信号、可复现产物问题上报告 `issue/<skill>/<日期>/<序号>-<标题>.md`，字段/等级/标签遵循 `Skill-Optimizer/references/instrumentation-guide.md`，模板用 `Skill-Optimizer/assets/issue-template.md`。不确定不记，不打断主流程。
+收尾按 `Skill-Optimizer/references/instrumentation-guide.md` 自查上报 `issue/Frontend-Dev/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `Skill-Optimizer/assets/issue-template.md`）。不确定不记，不打断主流程。

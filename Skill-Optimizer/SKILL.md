@@ -146,4 +146,4 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ## 十一、运行问题埋点
 
-收尾自查，将方法论问题、用户否定/认可信号、可复现产物问题上报告 `issue/Skill-Optimizer/<日期>/<序号>-<标题>.md`，字段/等级/标签遵循 instrumentation-guide，模板用 issue-template。不确定不记，不打断主流程。
+收尾按 `references/instrumentation-guide.md` 自查上报 `issue/Skill-Optimizer/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `assets/issue-template.md`）。不确定不记，不打断主流程。

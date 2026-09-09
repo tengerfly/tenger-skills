@@ -85,6 +85,10 @@ interface RequestOptions {
   signal?: AbortSignal;
 }
 
+// token 载体按 FTDD 安全规范：Access Token 存内存（setAuthToken 注入）、Refresh Token 存 HttpOnly Cookie；禁 localStorage 明文（见 decision-rules.md §七）
+let memoryToken = '';
+export const setAuthToken = (token: string) => { memoryToken = token; };
+
 export async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
   const { method = 'GET', headers = {}, body, timeout = 10000, signal } = options;
   const controller = new AbortController();
@@ -92,7 +96,9 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
   const onAbort = () => controller.abort();
   signal?.addEventListener('abort', onAbort);
 
-  const token = localStorage.getItem('access_token');
+  // token 载体按 FTDD 安全规范：Access Token 存内存、Refresh Token 存 HttpOnly Cookie；
+  // 本封装经 setAuthToken 注入，禁止读写 localStorage 明文 token（见 decision-rules.md §七）。
+  const token = memoryToken;
   const config: RequestInit = {
     method,
     headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}), ...headers },
@@ -175,7 +181,7 @@ pnpm test:coverage
 | 组件 | Component/自定义组件 | 与 React 组件一致 | Vue 组件 |
 
 - **设计稿换算**：小程序 rpx 以 750 设计稿为准——原型上的 `px` 值按「设计稿宽度 / 750」换算 rpx；组件抽离铁律与 hooks（逻辑层）同样适用；
-- 若 FTDD 未覆盖小程序而本次要开发小程序 → 按 SKILL §六-6.3 阻塞，提示先补方案。
+- 若 FTDD 未覆盖小程序而本次要开发小程序 → 按 SKILL §六阻塞，提示先补方案。
 
 ---
 
@@ -222,7 +228,7 @@ pnpm add -D eslint @eslint/js typescript-eslint eslint-plugin-react-hooks eslint
 |------|------|---------|
 | **eslint** | JS/TS/React 代码规范 | 开启 `react-hooks` 规则（依赖数组写全）、禁 `any` 相关规则（配合 TS）、禁未使用变量 |
 | **stylelint** | 样式规范（`.css/.scss`） | `stylelint-config-standard-scss`；禁止写死色值可用自定义规则约束（色值统一走 token 为约定，靠评审/还原核对兜底） |
-| **commitlint** | 提交信息规范 | `@commitlint/config-conventional`：`feat/fix/refactor/Test/chore/docs/style/perf` |
+| **commitlint** | 提交信息规范 | `@commitlint/config-conventional`：`feat/fix/refactor/test/chore/docs/style/perf` |
 
 ```js
 // commitlint.config.js
@@ -343,7 +349,7 @@ export const orderApi = {
 ```
 
 - 前端私有类型（组件 props、UI 状态、表单模型）留在 `apps/web/src/types/`，不进共享包；
-- 共享类型需变更 → **停下问用户**（影响后端），确认后前后端同步改（SKILL §五-5.2）。
+- 共享类型需变更 → **停下问用户**（影响后端），确认后前后端同步改（SKILL §五）。
 
 ### 7.3 配置与脚本
 

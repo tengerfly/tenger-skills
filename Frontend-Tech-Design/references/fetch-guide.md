@@ -40,6 +40,13 @@ export class ApiError extends Error {
   }
 }
 
+// ── token 管理：载体按 FTDD 安全规范 ──
+// Access Token 存内存（不落 localStorage/sessionStorage）；Refresh Token 存 HttpOnly Cookie，由后端 Set-Cookie 管理；
+// 401 时刷新后重放一次。禁止把任何 token 明文写入浏览器存储（安全口径见 decision-rules.md §七）。
+let memoryToken = '';
+export const setAuthToken = (token: string) => { memoryToken = token; };
+export const clearAuthToken = () => { memoryToken = ''; };
+
 export async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
   const { method = 'GET', headers = {}, body, timeout = DEFAULT_TIMEOUT, signal } = options;
 
@@ -62,8 +69,8 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
     config.body = JSON.stringify(body);
   }
 
-  // token 注入
-  const token = localStorage.getItem('access_token');
+  // token 注入（内存态；401 → 静默刷新后重放一次，此处省略刷新实现）
+  const token = memoryToken;
   if (token) {
     (config.headers as Record<string, string>)['Authorization'] = `Bearer ${token}`;
   }
@@ -183,6 +190,6 @@ export function useUserList(initialPageSize = 10) {
 - [ ] 统一入口 `request.ts`，无散落裸 fetch？
 - [ ] baseURL 用环境变量，超时用 AbortController？
 - [ ] 统一错误类型 `ApiError`，业务可区分 HTTP 错误 / 超时 / 网络异常？
-- [ ] token 注入 + 401 统一处理（跳登录）？
+- [ ] token 注入 + 401 先静默刷新重放一次、刷新失败再跳登录？
 - [ ] 业务方法按域拆分，签名与后端 TDD 接口一一对应？
 - [ ] 组件通过 hooks 调用请求，不直接 import 业务 api？

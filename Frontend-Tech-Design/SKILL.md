@@ -15,7 +15,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 **第一原则**：先定选型与边界，再逐模块展开；每模块先有测试用例，后有实现方案。
 
 - FTDD 承接 PRD + 后端 TDD，写页面、组件、逻辑层、路由、状态、请求、样式架构。
-- UI 设计稿/低保真原型是页面结构与交互的直接输入：页面清单、组件拆分必须与之对应（有设计稿以设计稿为准，结构基线仍是低保真原型）。
+- UI 设计稿/低保真原型是页面结构与交互的直接输入：页面清单、组件拆分必须与之对应（设计稿 = 视觉基准，可补结构细节；结构基线仍是低保真原型，术语见仓库根 `shared/baseline-terms.md`）。
 - 后端 TDD 接口清单是请求封装与对接的唯一依据。
 
 ### 默认基线（框架每次必问可换，不可自主定死）
@@ -48,7 +48,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ## 二、适用范围
 
-- 适用：已有 PRD（±原型 + TDD）写前端技术方案/设计/架构/FTDD；接口与需求定稿后、开发前。
+- 适用：已有 PRD（±设计稿/原型 + TDD）写前端技术方案/设计/架构/FTDD；接口与需求定稿后、开发前。
 - 不适用：写/评审需求、原型、后端方案；纯运维/部署。
 
 ## 三、文档维度
@@ -69,8 +69,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
 输入 → 解析 + 浏览器检测 → 选型澄清 → overview.md → ◉ Scope Gate → 逐模块 NN_xxx.md → 全局一致性 → 归档
 ```
 
-1. **输入解析 + 浏览器检测**：优先读 `.spec/PRD/VN/`（先读速查表）、`.spec/设计稿/`（有则以设计稿为视觉与结构细节基准）、`.spec/原型/`（结构基线，缺省回退）、`.spec/TDD/VN/`（取接口清单）；缺失回退用户路径/粘贴。检查 `.spec/技术方案评审/任务清单.md` 中归本 skill 的 `已确认` 任务逐条纳入。检测浏览器工具（Playwright → browser-use → 其他）：任一可用即查所选框架/组件库官方文档与版本兼容；**全无 → 报错要求安装，不跳过**（与 Backend-Tech-Design 不同：前端选型依赖官方版本信息）。
-2. **选型澄清**：一次一问、推荐前置；必问项缺一不放行；每个决策点过 §五 收敛证明（含失败/涨 10 倍/漏项拷问）才定稿并写入总文档；用户只回一两句不视为收敛（协议见 `references/socratic-grilling.md`）。
+1. **输入解析 + 浏览器检测**：优先读 `.spec/PRD/VN/`（先读速查表）、`.spec/设计稿/`（视觉基准，可补结构细节）、`.spec/原型/`（结构基线，缺省回退）、`.spec/TDD/VN/`（取接口清单）；缺失回退用户路径/粘贴。检查 `.spec/技术方案评审/任务清单.md` 中归本 skill 的 `已确认` 任务逐条纳入。检测浏览器工具（硬依赖，顺序与报错文案见仓库根 `shared/browser-policy.md`）：任一可用即查所选框架/组件库官方文档与版本兼容；**全无 → 报错要求安装，不跳过**（与 Backend-Tech-Design 不同：前端选型依赖官方版本信息）。
+2. **选型澄清**：一次一问、推荐前置；必问项缺一不放行；每个决策点过 §五 收敛证明（含失败/涨 10 倍/漏项拷问）才定稿并写入总文档；用户只回一两句不视为收敛（协议见 `references/socratic-grilling.md`，通用核心见仓库根 `shared/socratic-grilling-core.md`）。
 3. **overview.md**：按 `assets/overview-template.md` 写满 10 方面。
 4. **Scope Gate（强制暂停）**：呈现选型 + 模块应做/不应做 + 页面/组件清单；主动点风险（50 页后组件拆分是否成立、状态方案是否冲突）邀挑战；确认后放行，异议回步骤 2。
 5. **逐模块 NN_xxx.md**：按 `assets/module-template.md` 写满 10 方面，fetch 引用后端 TDD。
@@ -79,7 +79,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ## 五、选型澄清规程
 
-> ⛔ BLOCKING：任何选型/组件拆分/数据流决策未过「收敛证明」——结论落到具体页面/组件/状态归属、失败/涨 10 倍/漏项已拷问、用户对定稿复述点头——不得写入 overview 或模块文档。完整协议见 `references/socratic-grilling.md`。
+> ⛔ BLOCKING：任何选型/组件拆分/数据流决策未过「收敛证明」——结论落到具体页面/组件/状态归属、失败/涨 10 倍/漏项已拷问、用户对定稿复述点头——不得写入 overview 或模块文档。完整协议见 `references/socratic-grilling.md`（通用核心见仓库根 `shared/socratic-grilling-core.md`）。
 
 ### 档位
 
@@ -106,8 +106,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ### 引导式澄清与确认清单
 
-- **前置继承**：PRD 已明确规则、TDD 已定契约直接继承，不重复问；本方案新引入的决策（组件拆分、hooks/状态归属、请求封装、边界异常）不得借“继承”跳过拷问。
-- **引导式提问**：用「问题 + 2~3 选项 + 理由」问透实现决策（如上传：选文件、整传/分片、进度、秒传/取消/重试、大文件）；每个决策点至少过「什么情况会失败？涨 10 倍还成立吗？漏掉了什么？」一轮；抽象回答（大概/尽量/按需）先落到具体页面、组件、版本或异常再放行。
+- **前置继承**：PRD 已明确规则、TDD 已定契约直接继承，不重复问；本方案新引入的决策（组件拆分、hooks/状态归属、请求封装、边界异常）不得借「继承」跳过拷问。
+- **引导式提问**：用「问题 + 2~3 选项 + 理由」提问；同一决策点的子维度（如上传：选文件、整传/分片、进度、秒传/取消/重试、大文件）可按清单逐项过，跨决策点一次一问；每个决策点至少过「什么情况会失败？涨 10 倍还成立吗？漏掉了什么？」一轮；抽象回答（大概/尽量/按需）先落到具体页面、组件、版本或异常再放行。
 - **确认点逐条列清单**：需拍板点编号成清单在 Scope Gate 一次性呈现；每条带结论、理由与已拷问记录，确认后逐条写总文档。
 - **数据流/交互节点拷问**：关键链路（取数/提交/上传/权限/弱网/大列表）逐节点问触发、数据来源、loading/空/错误、重复与取消、失败恢复，禁止只设计正常主链路；状态覆盖按「10 大 UI 状态」清单逐态核对（通用 8 态 + 涉 AI 加 Streaming/PartialData），写入模块文档 §9。
 
@@ -162,17 +162,18 @@ compatibility: Claude Code / Agent SDK / OpenCode
 | 模块漏维度 | 10 方面补齐 |
 | 选型一两句即定稿 | 按拷问协议补问至收敛证明齐 |
 | 只问正向，不逼失败/涨 10 倍/漏项 | 每决策点过固定三问 |
-| 只问做什么，不问不做/交界 | 补边界拷问（socratic-grilling §四） |
+| 只问做什么，不问不做/交界 | 补边界拷问（socratic-grilling 领域节） |
 | 关键数据流只设计正常主链路 | 逐节点补异常/弱网/重复/失败恢复 |
 | 状态只写加载/空/错 | 按 10 大 UI 状态清单逐态核对（含禁用/403/断网；涉 AI 加流式/增量） |
 
 ## 十二、资源清单
 
-- `references/doc-structure.md`、`tech-stack-guide.md`、`component-design-guide.md`、`fetch-guide.md`、`css-guide.md`、`module-design-guide.md`、`test-guide.md`、`socratic-grilling.md`、`decision-rules.md`
+- `references/doc-structure.md`、`tech-stack-guide.md`、`component-design-guide.md`、`fetch-guide.md`、`css-guide.md`、`module-design-guide.md`、`test-guide.md`、`socratic-grilling.md`（领域节；通用核心 `shared/socratic-grilling-core.md`）、`decision-rules.md`
 - `references/case-library/`：架构范式 + 状态管理 + 性能安全 + 同行样本（按需加载）
 - `assets/overview-template.md`、`module-template.md`
+- `shared/baseline-terms.md`、`shared/browser-policy.md`、`shared/socratic-grilling-core.md`（仓库根）：公共约定
 - `.spec/FTDD/VN/`：产出目录
 
 ## 十三、运行问题埋点
 
-收尾自查，将方法论问题、用户否定/认可信号、可复现产物问题上报告 `issue/<skill>/<日期>/<序号>-<标题>.md`，字段/等级/标签遵循 `Skill-Optimizer/references/instrumentation-guide.md`，模板用 `Skill-Optimizer/assets/issue-template.md`。不确定不记，不打断主流程。
+收尾按 `Skill-Optimizer/references/instrumentation-guide.md` 自查上报 `issue/Frontend-Tech-Design/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `Skill-Optimizer/assets/issue-template.md`）。不确定不记，不打断主流程。

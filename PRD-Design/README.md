@@ -36,7 +36,7 @@ PRD-Design/
 ├── CONTEXT.md
 ├── references/   # prd-structure / mermaid-patterns / gherkin-guide / tech-feasibility-guide / socratic-grilling / case-library
 ├── assets/       # overview / module / quickref / eval 模板
-└── .spec/PRD/VN/ # overview + 速查表 + NN_xxx + 验收说明
+└── .spec/PRD/VN/ # overview + 速查表 + NN_xxx + 验收结果详细说明
 ```
 
 ## 五、快速上手

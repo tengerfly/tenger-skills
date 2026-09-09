@@ -133,7 +133,7 @@ sequenceDiagram
 
 ---
 
-## 8. 模块间关联关系图【v2 强制】
+## 8. 模块间关联关系图【必须】
 
 ```mermaid
 flowchart LR

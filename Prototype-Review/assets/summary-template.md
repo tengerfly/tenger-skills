@@ -1,5 +1,7 @@
 # 原型评审汇总报告
 
+> 结构基线：仓库根 `shared/templates/review-summary-template.md`（章节结构与字段以公共版为准，本文件为本 skill 实例化参数与领域差异；改结构只改公共版）。
+
 > 项目名称：[项目名称]  
 > 评审基线：PRD（[路径]） vs 原型（[路径]）  
 > 评审时间：[YYYY-MM-DD]  

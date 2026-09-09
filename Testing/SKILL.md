@@ -20,7 +20,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 | 记录慢接口 | 优化接口 |
 | 判断做没做对/好不好看/快不快 | 技术方案设计 |
 
-**基准来源**：PRD AC = 对错基准；设计稿/原型 = 好看基准；后端 TDD/前端 api = 接口基准。产物是 Dev 返工与 Code-Review 复核输入。
+**基准来源**：PRD AC = 对错基准；设计稿/原型 = 好看基准；后端 TDD/前端 api = 接口基准（双基准术语定义见仓库根 `shared/baseline-terms.md`）。产物是 Dev 返工、Code-Review 复核与 Bug-Fix（可运行性问题修复闭环）的输入。
 
 ## 二、适用范围
 
@@ -42,13 +42,13 @@ compatibility: Claude Code / Agent SDK / OpenCode
 ## 四、标准流水线
 
 ```
-输入 → 解析 → 环境准备(+◉浏览器预检) → 测试计划+用例 → ◉ Scope Gate → 功能 → 样式 → 接口性能 → 汇总问题文档 → 归档 .spec/测试/
+输入解析 → 环境准备(+◉浏览器预检) → 测试计划+用例 → ◉ Scope Gate → 功能 → 样式 → 接口性能 → 汇总问题文档 → 归档 .spec/测试/
 ```
 
 **先计划后执行，禁止边测边想。**
 
 1. **输入解析**：确认项目代码位置（未给必问）；读 `.spec/PRD/VN/`（先读速查表建索引，AC 断言回模块 §9）；视觉基准优先 `.spec/设计稿/`，缺失回退 `.spec/原型/`；读 README/package.json/路由/api；提取页面清单 + 状态集合 + 可交互元素 + 接口清单。
-2. **环境准备**：按 acceptance-loop-guide 核查 typecheck/lint/单测/build/e2e 与 hooks；install + 启动 dev server 确认可访问；浏览器工具硬性预检（Playwright → browser-use → 其他）：任一可用即功能遍历 + 网络监听；全无 → 报错停止，不产出。midscenejs 为可选视觉断言增强（需装依赖 + 模型配置），不可用则降级 `toHaveScreenshot`/截图人工比对并在 Scope Gate 说明。
+2. **环境准备**：按 acceptance-loop-guide 核查 typecheck/lint/单测/build/e2e 与 hooks；install + 启动 dev server 确认可访问；浏览器工具硬性预检（硬依赖，检测顺序与报错文案见仓库根 `shared/browser-policy.md`）：任一可用即功能遍历 + 网络监听；全无 → 报错停止，不产出。midscenejs 为可选视觉断言增强（需装依赖 + 模型配置），不可用则降级 `toHaveScreenshot`/截图人工比对并在 Scope Gate 说明。
 3. **测试计划 + 用例**：按 `assets/test-process-template.md` 写测试计划；按 `assets/test-case-template.md` 写功能（全状态+全点击）/样式（三态+视觉）/性能三类用例。
 4. **Scope Gate（强制暂停）**：呈现范围 + 用例总数 + 工具方案 + 慢接口阈值，确认后放行。
 5. **功能测试**：按第五节全状态、第六节全点击执行，回填用例。
@@ -81,7 +81,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 - 监听：Playwright `page.on('response')` + `response.timing()` 或 `performance.getEntriesByType('resource')`。
 - 阈值：>1000ms 慢 / >3000ms 很慢 / >5000ms 严重（可调）。
-- 逐条记录路径 + 方法 + 平均/最大耗时 + 触发场景 + 证据到接口性能清单；慢接口按 P1/P2 进问题文档。
+- 逐条记录路径 + 方法 + 平均/最大耗时 + 触发场景 + 证据到接口性能清单；慢接口按 P1/P2 进问题文档（严重到致功能失败可升 P0，与 `api-perf-guide.md` 口径一致）。
 
 ## 九、问题文档规范
 
@@ -122,9 +122,10 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - `assets/test-process-template.md`、`test-case-template.md`、`bug-report-template.md`
 - `references/test-case-guide.md`、`style-test-guide.md`、`acceptance-loop-guide.md`、`api-perf-guide.md`、`browser-guide.md`、`decision-rules.md`
 - `references/case-library/`：测试方法学 + 框架速查 + 专项 + 同行样本（按需加载）
+- `shared/baseline-terms.md`、`shared/browser-policy.md`（仓库根）：公共约定
 - `CONTEXT.md`；产出位置 `.spec/测试/`
-- 兄弟 skill：`Fidelity-Review`（Testing 场景模式，有设计稿时承接 UI 还原度检查）
+- 兄弟 skill：`Fidelity-Review`（Testing 场景模式，有设计稿时承接 UI 还原度检查）、`Bug-Fix`（发现的可运行性问题转其修复闭环）
 
 ## 十三、运行问题埋点
 
-收尾自查，将方法论问题、用户否定/认可信号、可复现产物问题上报告 `issue/<skill>/<日期>/<序号>-<标题>.md`，字段/等级/标签遵循 `Skill-Optimizer/references/instrumentation-guide.md`，模板用 `Skill-Optimizer/assets/issue-template.md`。不确定不记，不打断主流程。
+收尾按 `Skill-Optimizer/references/instrumentation-guide.md` 自查上报 `issue/Testing/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `Skill-Optimizer/assets/issue-template.md`）。不确定不记，不打断主流程。

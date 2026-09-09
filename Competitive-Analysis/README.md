@@ -1,6 +1,7 @@
 # 竞品分析 Skill（Competitive Analysis）
 
 > 给定产品想法，用全球中英文数据驱动调研，客观呈现五层竞争全貌，输出工业级竞品分析报告。判断交给用户，本 skill 不下可行性结论。
+> 状态：✅ 完成
 
 ## 一、交付
 
@@ -16,7 +17,7 @@
 ## 三、Pass Gate
 
 - PASS：P0=0 且 P1(Open)=0。
-- CONDITIONAL：P0=0 但 P1(Open)>1 → 补齐再验。
+- CONDITIONAL：P0=0 但 P1(Open)≥1 → 就地补齐再验（P1(Open)=1 不属 PASS）。
 - FAIL：命中 P0（编造/混淆/缺核心表）→ 阻断。
 
 数据红线 8 条见 SKILL.md。

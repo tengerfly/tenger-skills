@@ -22,9 +22,9 @@
 | 评审任务回填 | Review Task Write-back | 消费 Tech-Review 清单，修完回填已修复 | 不产任务清单 |
 | AC 追溯 | AC Traceability | 测试用例标 PRD AC 编号 | AC 单源在 PRD-Design |
 | 选型一次定稿 | Selection Finalized at Design | 全部技术决策方案期敲定并经 Scope Gate 确认 | 不把选型留到开发期 |
-| 苏格拉底拷问协议 | TDD 澄清执行规范：决策树单步提问 + 边界/链路节点拷问 + 收敛证明 | 不是泛泛聊天；未过门槛不定稿 |
-| 收敛证明 | 决策可定稿的四条件：结论含组件与量级 + 方案/理由/备选 + 失败/10x/漏项已拷问 + 用户认可 | 缺一即 P0，退回补问 |
-| 节点拷问 | 关键链路逐节点问触发/副作用/回滚/超时/幂等/终态 | 禁止只设计正常主路径 |
+| 苏格拉底拷问协议 | Socratic Grilling | TDD 澄清执行规范：决策树单步提问 + 边界/链路节点拷问 + 收敛证明 | 不是泛泛聊天；未过门槛不定稿 |
+| 收敛证明 | Convergence Proof | 决策可定稿的四条件：结论含组件与量级 + 方案/理由/备选 + 失败/涨 10 倍/漏项已拷问 + 用户认可 | 缺一即 P0，退回补问 |
+| 节点拷问 | Node Interrogation | 关键链路逐节点问触发/副作用/回滚/超时/幂等/终态 | 禁止只设计正常主路径 |
 | 决策规则 | Decision Rules | `When+场景→动作+because/unless+量化阈值`的工程决策库（decision-rules.md） | 不是选型推荐表（那是 tech-stack-guide） |
 | 量化阈值 | Scaling Thresholds | 单机能力/连接数/分片/限流等数字阈值与达到后的动作，方案期默认起点 | 写入前仍需过收敛证明校准量级 |
 | 案例库 | Case Library | references/case-library/：模式解剖/经典题/可靠性/大厂案例，按需加载 | 借鉴决策，不照搬架构 |
@@ -43,6 +43,7 @@
 | D-04 | 2026-09-05 | 模块文档新增「实现细节与决策」必填章；§4.6 前置继承/引导式提问/确认点列清单 | 用户：方案深到可直接编码，并主动打开用户思路 | ✅ 已确认 |
 | D-05 | 2026-09-07 | 恢复 grill-me 式单步拷问并升为强制协议：收敛证明 + 边界/链路节点拷问 | 澄清一两句即定稿，深度未落地（issue Backend-Tech-Design/2026-09-07/01） | ✅ 已确认 |
 | D-06 | 2026-09-08 | 系统增强：新增 decision-rules.md（When…use…+量化阈值+强约束）+ case-library/（4 案例文件+README）；tdd-structure 增上线回滚/技术债/成本/故障演练 4 可选章 + 背景量化；module-design-guide 注入 Anti-Happy-Path；SKILL 注入四重思维 | 用户提供后端技术方案参考手册+案例库清单，要求总结并系统增强；借鉴 peterhdd/xenitV1 两个同类 skill 结构 | ✅ 已确认 |
+| D-07 | 09-09 | 体检修复 9 项：10x→涨 10 倍统一；TS 选型表标注适用范围；一次问透与一次一问口径统一；输入补设计稿可选；CONTEXT 术语表 3 行补 Key 列；real-cases 半截话修正；socratic-grilling 拆领域节+shared 核心（R5/R8）；module-design-guide 6.x→7.x、module-template 8.x→9.x+章节清单对齐；埋点统一 | 全仓冗余专项体检（用户裁决全量修复 + R9 评审模板参数化） | ✅ |
 
 ## 四、待决问题
 

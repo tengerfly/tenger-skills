@@ -4,14 +4,14 @@
 
 - 角色：设计总监 + Superdesign 编排器；视觉稿生成本体由 Superdesign CLI 执行。
 - 上游：Prototype-Design 的布局清单（载体级）+ 低保真原型 HTML（区块结构实物）。
-- 流程：环境检测 Gate → 输入校验 + 任务清单 → 风格情报 → 风格决策 Gate → 设计规范 Gate → 逐页生成 → 质量门禁 → 归档 `.spec/设计稿/`。
+- 流程：环境检测 Gate → 输入校验 + 任务清单 → 风格情报 → 风格决策 Gate → 设计规范 Gate → 项目创建（基线复刻 → create-project）→ 逐页生成 → 质量门禁 → 归档 `.spec/设计稿/`。
 
 ## 目录
 
 | 文件 | 说明 |
 |---|---|
 | SKILL.md | 9 步 3 Gate / 分工 / 迭代路由 / 成本红线 / 去 AI 味 12 条 |
-| CONTEXT.md | 术语 + D-01~D-18 |
+| CONTEXT.md | 术语 + D-01~D-21 |
 | assets/ | layout-inventory-contract / design-task-list / style-proposal / design-system / archive-readme |
 | references/ | superdesign-sop / design-review-gate / open-source-design-systems / style-case-library / case-library/（总索引 + design-systems/layouts/components/interactions/flows/a11y）/ patterns/ |
 

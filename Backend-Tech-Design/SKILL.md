@@ -21,7 +21,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ## 二、适用范围
 
-- 适用：已有 PRD（±原型），写后端技术方案/设计/架构/TDD；需求定稿后开发前落选型与模块方案。
+- 适用：已有 PRD（±原型/设计稿），写后端技术方案/设计/架构/TDD；需求定稿后开发前落选型与模块方案。
 - 不适用：写/评审需求（PRD-Design/PRD-Review）、原型（Prototype-Design）、纯前端或纯运维方案。
 
 ## 三、流水线
@@ -31,11 +31,11 @@ compatibility: Claude Code / Agent SDK / OpenCode
 ```
 
 1. **输入解析 + 浏览器工具检测**：
-   - 优先读 `.spec/PRD/VN/`（先读 `PRD速查表.md` 建索引）与 `.spec/原型/`；缺失回退用户路径/粘贴。
+   - 优先读 `.spec/PRD/VN/`（先读 `PRD速查表.md` 建索引）、`.spec/原型/`（结构基线）与 `.spec/设计稿/`（视觉基准，可选——读页面/资产相关的业务约束）；缺失回退用户路径/粘贴。
    - 检查 `.spec/技术方案评审/任务清单.md`：`已确认` 且修改方含本 skill 的任务逐条纳入（新建融入、改稿作变更）。
-   - 检测浏览器工具（Playwright → browser-use → 其他）：可用则查官方文档与版本兼容；全无则跳过，不阻塞。
+   - 检测浏览器工具（软检测，顺序与行为见仓库根 `shared/browser-policy.md`）：可用则查官方文档与版本兼容；全无则跳过，不阻塞。
 
-2. **选型澄清（一次定全，开发期零决策）**：⛔ 每个决策点过「收敛证明」（方案+理由+备选，失败/涨 10 倍/漏项已拷问，用户认可）才定稿；一两句回答不视为定稿。协议见 `references/socratic-grilling.md`。
+2. **选型澄清（一次定全，开发期零决策）**：⛔ 每个决策点过「收敛证明」（方案+理由+备选，失败/涨 10 倍/漏项已拷问，用户认可）才定稿；一两句回答不视为定稿。协议见 `references/socratic-grilling.md`（通用核心见仓库根 `shared/socratic-grilling-core.md`）。
    - 所有技术决策本步敲定、步骤 4 确认后定稿：语言/框架、服务拆分、通信方式、ORM、包管理与仓库形态、DB、缓存、检索、消息队列、对象存储、测试框架、部署（含开发实施选型）。
    - 档位每次必问：企业级生产（默认）/ 快速实现。
    - 验收标准：Backend-Dev 可直接从 TDD 拿到全部选型，开发期间不再出现技术栈决策。
@@ -53,13 +53,13 @@ compatibility: Claude Code / Agent SDK / OpenCode
 ## 三·附 技术方案结构范式
 
 - 总文档：6 必须（元数据含**量化业务约束**/选型/架构图/模块边界/关联/表结构）+ 12 可选（缓存/队列/检索/规范/部署/监控/性能/安全/上线回滚/技术债/成本/故障演练，按需求与档位开关）。
-- 模块文档：7 必须（边界/依赖/流程/接口/数据模型/实现细节与决策/测试用例）+ 3 可选（难点/异常/性能）。
+- 模块文档：7 必须（边界/依赖/流程/接口/数据模型/实现细节与决策/测试用例）+ 2 可选（难点[含性能与容量]/异常）。
 - 开关：需求关键词命中即开；企业级默认开规范/部署/监控/上线回滚/成本，快速档默认关。跳过可选章节在文末留痕。
 - Anti-Happy-Path：每功能点至少三条失败场景（竞态/数据完整性/边界），拒绝只写 Happy Path（`decision-rules.md` §九）。
 
 ## 四、技术选型澄清规程
 
-> ⛔ BLOCKING：任何选型/服务拆分/数据模型决策未过「收敛证明」——结论含明确组件与量级、失败/涨 10 倍/漏项已拷问、用户对定稿复述点头——不得写入 overview 或模块文档。完整协议见 `references/socratic-grilling.md`。
+> ⛔ BLOCKING：任何选型/服务拆分/数据模型决策未过「收敛证明」——结论含明确组件与量级、失败/涨 10 倍/漏项已拷问、用户对定稿复述点头——不得写入 overview 或模块文档。完整协议见 `references/socratic-grilling.md`（通用核心见仓库根 `shared/socratic-grilling-core.md`）。
 
 ### 档位
 
@@ -97,7 +97,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - 自动化最后一步：先跑通再谈 CI/CD、监控。
 - 每项选型必须能回答「为什么现在就需要」，说不出一律砍。
 
-### 开发实施选型（必须本阶段定稿）
+### 开发实施选型（必须本阶段定稿；TypeScript 生态时适用，Go/Java/Python 按所选语言生态另定，仍须过收敛证明）
 
 | 项 | 企业级 | 快速 |
 |---|---|---|
@@ -112,8 +112,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ### 引导式澄清与确认清单
 
-- **前置继承**：PRD 已明确的业务规则/边界/上限直接继承，不重复问；只问前置未明确且本方案必须定的点；本方案新决策（服务拆分/数据归属/一致性/幂等策略等）不得借“继承”跳过拷问。
-- **引导式提问**：用「问题 + 2~3 个选择项 + 理由」一次问透（如上传：存哪、怎么传、过大、断点、并发/类型/安全）；用户说的可能错，以专家视角纠正；每个决策点至少过「什么情况会失败？涨 10 倍还成立吗？漏掉了什么？」一轮；模糊回答（看情况/尽量/后续优化）先落到具体组件、量级或规则再放行。
+- **前置继承**：PRD 已明确的业务规则/边界/上限直接继承，不重复问；只问前置未明确且本方案必须定的点；本方案新决策（服务拆分/数据归属/一致性/幂等策略等）不得借「继承」跳过拷问。
+- **引导式提问**：用「问题 + 2~3 个选择项 + 理由」提问；同一决策点的子维度（如上传：存储位置/传输方式/大小上限/断点续传/并发与安全）可按清单逐项过，跨决策点一次一问；用户说的可能错，以专家视角纠正；每个决策点至少过「什么情况会失败？涨 10 倍还成立吗？漏掉了什么？」一轮；模糊回答（看情况/尽量/后续优化）先落到具体组件、量级或规则再放行。
 - **确认点逐条列清单**：所有需拍板点编号成清单在 Scope Gate 一次性呈现；每条附结论+理由+已拷问记录，确认后逐条记结论，未确认不推进。
 - **链路节点拷问**：关键链路（写库/缓存/异步/外部调用/幂等重试）逐节点问触发与前置、副作用、失败回滚、超时/重试/并发、终态与补偿，禁止只设计正常主路径。
 
@@ -152,17 +152,18 @@ compatibility: Claude Code / Agent SDK / OpenCode
 | 测试只写正向 | 补边界/异常/幂等/并发 |
 | 测试与 AC 脱节 | 标注 AC 编号 |
 | 选型一两句即定稿 | 补问至收敛证明齐 |
-| 只问正向，不逼失败/10x/漏项 | 每决策点过固定三问 |
-| 只问做什么，不问数据归属/一致性边界 | 补边界拷问（socratic-grilling §四） |
+| 只问正向，不逼失败/涨 10 倍/漏项 | 每决策点过固定三问 |
+| 只问做什么，不问数据归属/一致性边界 | 补边界拷问（socratic-grilling 领域节） |
 | 关键链路只设计正常主路径 | 逐节点补失败/回滚/幂等/补偿 |
 
 ## 十、资源清单
 
-- `references/tdd-structure.md`、`tech-stack-guide.md`、`decision-rules.md`、`module-design-guide.md`、`data-model-guide.md`、`socratic-grilling.md`
+- `references/tdd-structure.md`、`tech-stack-guide.md`、`decision-rules.md`、`module-design-guide.md`、`data-model-guide.md`、`socratic-grilling.md`（领域节；通用核心 `shared/socratic-grilling-core.md`）
 - `references/case-library/`：架构模式解剖 + 经典系统设计题 + 可靠性模式 + 大厂案例索引（按需加载）
 - `assets/overview-template.md`、`module-template.md`
+- `shared/browser-policy.md`、`shared/socratic-grilling-core.md`（仓库根）：公共约定
 - `.spec/TDD/VN/`：产出目录
 
 ## 十一、运行问题埋点
 
-收尾自查，将方法论问题、用户否定/认可信号、可复现产物问题上报告 `issue/<skill>/<日期>/<序号>-<标题>.md`，字段/等级/标签遵循 `Skill-Optimizer/references/instrumentation-guide.md`，模板用 `Skill-Optimizer/assets/issue-template.md`。不确定不记，不打断主流程。
+收尾按 `Skill-Optimizer/references/instrumentation-guide.md` 自查上报 `issue/Backend-Tech-Design/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `Skill-Optimizer/assets/issue-template.md`）。不确定不记，不打断主流程。

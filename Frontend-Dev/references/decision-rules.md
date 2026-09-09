@@ -30,7 +30,7 @@
 
 ## 四、数据与表单
 
-- ⛔ 禁止裸 fetch/axios 散落组件：统一 `*.api.ts` service 文件，配 TanStack Query queryKey/queryFn。
+- ⛔ 禁止裸 fetch/axios 散落组件：统一收敛到 `src/api/`（request.ts 封装 + 按业务域 `<模块>.ts`），配 TanStack Query queryKey/queryFn。
 - 显式处理 loading / error / empty 三态。
 - 校验用 zod/yup/valibot，schema 就近放 `*.schema.ts`，组件内不内联长校验。
 

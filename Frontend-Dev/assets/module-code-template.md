@@ -10,7 +10,7 @@
 - [ ] 目标端已确认（web/app/小程序），技术栈已锁定（读 FTDD 或补选型确认）；
 - [ ] **产出位置已确认**：用户给定的目标目录 + git 地址（代码直接落在该目录）；
 - [ ] 工程骨架 + 全局基础设施已就绪（request/styles/router/hooks/测试环境）；
-- [ ] FTDD 模块文档在侧：页面清单 / 组件清单 / hooks 设计 / fetch 对接 / §9 测试用例 / 对应原型文件；
+- [ ] FTDD 模块文档在侧：页面清单 / 组件清单 / hooks 设计 / fetch 对接 / §10 测试用例 / 对应原型文件；
 - [ ] 原型还原基线已提取（结构/布局/配色/字号/三态）。
 
 ### 〇·二 不确定即问（全程，随时触发）
@@ -46,7 +46,7 @@
 > - 页面：用户列表（/users）、用户详情（/users/:id）
 > - 复用：UserTable（用户模块内两页共用 → features/users/components）；UserSelect（用户+订单跨模块 → src/components）
 > - 数据：GET /api/users、GET /api/users/:id（对齐 TDD/FTDD fetch 对接）
-> - 测试用例：承接 FTDD 模块文档 §9 TC-M01-001~014（标注对应 AC-M01-xxx）
+> - 测试用例：承接 FTDD 模块文档 §10 TC-M01-001~014（标注对应 AC-M01-xxx）
 
 ---
 
@@ -54,7 +54,7 @@
 
 ### Step 1：先写测试（承接 FTDD 用例，可先红）
 
-按 `test-guide.md` 把 FTDD 模块文档 §9 的用例落成可运行测试文件，**测试未落、实现不开工**：
+按 `test-guide.md` 把 FTDD 模块文档 §10 的用例落成可运行测试文件，**测试未落、实现不开工**：
 
 - `features/users/hooks/useUserList.test.ts` —— 数据流/异常（mock `userApi`）
 - `features/users/components/UserTable.test.tsx` —— 渲染/交互/空态

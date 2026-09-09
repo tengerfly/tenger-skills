@@ -160,4 +160,4 @@ PIPELINE：<路径>
 
 ## 十、运行问题埋点
 
-收尾自查，将方法论问题、用户否定/认可信号、可复现产物问题（调度/守门/PIPELINE 状态侧）上报 `issue/Workflow/<日期>/<序号>-<标题>.md`，字段/等级/标签遵循 `Skill-Optimizer/references/instrumentation-guide.md`，模板用 `Skill-Optimizer/assets/issue-template.md`。不确定不记，不打断主流程。
+收尾按 `Skill-Optimizer/references/instrumentation-guide.md` 自查上报 `issue/Workflow/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `Skill-Optimizer/assets/issue-template.md`；调度/守门/PIPELINE 状态侧）。不确定不记，不打断主流程。

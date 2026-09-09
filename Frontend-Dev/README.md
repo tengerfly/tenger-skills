@@ -7,7 +7,7 @@
 
 | 项 | 内容 |
 |---|---|
-| 输入 | `.spec/FTDD/`（施工图）+ PRD/原型/TDD + 用户给定目录与 git |
+| 输入 | `.spec/FTDD/VN/`（施工图）+ PRD/原型/设计稿/TDD + 用户给定目录与 git |
 | 目标端 | web / app / 小程序（步骤 1 判定） |
 | 还原基准 | 结构 = 低保真原型；视觉 = 设计稿（有则以 `.spec/设计稿/` 为准） |
 | 架构 | 页面容器 → 组件 → hooks → api，单向依赖 |
@@ -50,3 +50,4 @@ Frontend-Dev/
 ## 五、上下游
 
 Frontend-Tech-Design（施工图）、Backend-Tech-Design（接口契约源）、Prototype-Design/UI-UX-Design（还原基准）、Backend-Dev（同域另一端）。
+下游：Code-Review（评审回退修改方，承接 `.spec/代码评审/任务清单.md`）、Testing（验收；UI 还原检查内嵌 Fidelity-Review）。

@@ -28,4 +28,4 @@
 | OpenAI Cookbook | 可运行能力配方 |
 | Hugging Face Spaces / Leaderboard | 30 秒试模型 / 开源基准 |
 
-> 注意：AI 产品专项只作「帮用户想全能力边界」参考，涉 AI 需求仍按 `prd-structure.md` §六 五维业务要求落地，不写模型选型/时延数值（红线 4/10）。
+> 注意：AI 产品专项只作「帮用户想全能力边界」参考，涉 AI 需求仍按 `prd-structure.md` §六 五维业务要求落地，不写模型选型/时延数值（红线 1/4）。

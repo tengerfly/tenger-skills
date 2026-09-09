@@ -23,8 +23,8 @@
 | 边界造条件 | 长文案/暗色/窄屏主动触发 | 不只 Happy Path |
 | 读结构驱动交互 | snapshot 元素树驱动点击 | 不替代截图 |
 | 精确判定工具 | axe-core 算对比度等 | 不替代 AI 观感 |
-| 决策规则 | Decision Rules | decision-rules.md：像素容忍度分级/断点/diff阈值/attempts/token绑定/交互量化 | 补「量化」维度，不重复六大铁律 |
-| 案例库 | Case Library | case-library/：pixel-methods + 同行样本 | 借鉴不照搬，双通道+截图存证优先 |
+| 决策规则 | decision-rules.md：像素容忍度分级/断点/diff阈值/attempts/token绑定/交互量化（Decision Rules）；补「量化」维度 | 不重复六大铁律 |
+| 案例库 | case-library/：pixel-methods + 同行样本（Case Library）；借鉴不照搬 | 双通道+截图存证优先 |
 
 ## 三、决策日志
 
@@ -48,6 +48,7 @@
 | D-16 | 09-08 | 体检修复：SKILL §一视觉还原面与 §四 P1 严重度「三态」→「状态（含 10 大 UI 状态）/状态缺失」，与 visual-checklist §六 十态口径统一 | Skill-Optimizer 模式④体检（六维机械核验） | ✅ |
 | D-17 | 09-08 | 全仓体检修复：SKILL §二通道 A「高保真 HTML」→「设计稿 HTML」（全仓废弃术语「高保真」业务残留清零） | Skill-Optimizer 模式④全仓体检 | ✅ |
 | D-18 | 09-08 | 新增 decision-rules（像素容忍度/断点/diff阈值/5-attempts/token绑定/交互量化）+ case-library（像素方法学/同行样本） | 用户提供样式还原度审查案例库资源清单，要求系统增强；借鉴 lobehub visual-pixel-perfect | ✅ |
+| D-19 | 09-09 | 体检修复 5 项：README 三态→10 大 UI 状态（D-16 落地补全）；mini-issue §四、report §四/§七节号修正；overflow Scope Gate 表述修正；decision-rules 六大铁律括号修正；三招/浏览器策略/双基准收口 shared 引用 + issue-list 薄壳化（R9） | 全仓冗余专项体检（用户裁决全量修复 + R9 评审模板参数化） | ✅ |
 
 ## 四、待决问题
 

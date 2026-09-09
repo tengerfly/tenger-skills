@@ -48,7 +48,7 @@ https://raw.githubusercontent.com/hu-uh/awesome-design-md/main/design-md/<站点
 | 5 Layout Principles | 间距系统、网格、留白哲学 | §3 间距 + §5.7 导航 |
 | 6 Depth & Elevation | 阴影系统、表面层级 | §4 圆角与阴影 |
 | 7 Do's and Don'ts | **设计禁区与反模式** | （参考其写法补门禁判定） |
-| 8 Responsive Behavior | 断点策略、折叠、触控目标 | 设计门禁 §六 布局基线 |
+| 8 Responsive Behavior | 断点策略、折叠、触控目标 | 设计门禁 §五 布局基线 |
 | 9 Agent Prompt Guide | **AI 提示词参考（组件级 prompt 示例）** | 生成保真约束语素材 |
 
 ### 站点清单（54，按类检索）

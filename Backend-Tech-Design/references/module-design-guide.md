@@ -99,12 +99,12 @@ flowchart TD
 
 ## 七、TDD 测试用例规范（核心）
 
-### 6.1 总则
+### 7.1 总则
 - **先写测试用例，后写实现方案**——测试用例是开发 TDD 先写测试的直接输入源；
 - 形态 = **Gherkin 场景（承接 PRD 的 AC 编号）+ 代码级用例骨架**；
 - 覆盖：正向 / 边界 / 异常 / 幂等 / 并发五类。
 
-### 6.1·附 Anti-Happy-Path 强约束（⛔ CRITICAL）
+### 7.1·附 Anti-Happy-Path 强约束（⛔ CRITICAL）
 
 > 每个功能点（业务切片）**必须记录并测试至少三条失败场景**，拒绝只覆盖 Happy Path：
 > 1. **竞态条件**：并发写入、超卖、重复提交；
@@ -112,7 +112,7 @@ flowchart TD
 > 3. **边界失败**：空数据、超限、溢出、依赖超时。
 > 缺失败场景的实现方案视为 P0，退回补问（详见 `decision-rules.md` §九）。
 
-### 6.2 Gherkin 场景（业务可读）
+### 7.2 Gherkin 场景（业务可读）
 ```gherkin
 Feature: 创建订单
   # 承接 PRD 的 AC-M03-001
@@ -132,7 +132,7 @@ Feature: 创建订单
     Then 不产生新订单，返回原订单
 ```
 
-### 6.3 代码级用例骨架（可执行）
+### 7.3 代码级用例骨架（可执行）
 ```go
 // CreateOrder 创建订单
 // 用例：TestCreateOrder
@@ -158,7 +158,7 @@ func TestCreateOrder(t *testing.T) {
 
 > 语言随选型：Go 用 table-driven，Java 用 JUnit `@Test` + 断言，Python 用 pytest。
 
-### 6.4 覆盖矩阵
+### 7.4 覆盖矩阵
 
 | 测试用例编号 | 对应 AC | 类型 | 场景描述 |
 |-------------|---------|------|---------|

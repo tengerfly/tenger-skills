@@ -8,7 +8,7 @@
 | 项 | 内容 |
 |---|---|
 | 输入 | 前后端日志（粘贴/文件/线上导出/本地复现）+ 代码位置 + 现象描述 |
-| 输出 | `.spec/bug修复/<日期>-<简述>/`：问题定位报告 + 修复状态清单 + 复现材料/截图 |
+| 输出 | `.spec/bug修复/<日期>-<简述>/`：问题定位报告 + 修复任务清单 + 复现材料/截图 |
 | 委托 | 方案 → Frontend/Backend-Tech-Design（增量 TDD/FTDD）；改码 → Frontend/Backend-Dev；回归 → 开发自测 + 按需 Testing |
 | 边界 | 只诊断与委托——不产 TDD/FTDD、不改码、不做深度测试；需求问题移交 PRD-Design；不做无关重构 |
 
@@ -31,7 +31,7 @@ Bug-Fix/
 ├── assets/（locate-report / fix-task-list / pattern-card 模板）
 └── .spec/bug修复/<日期>-<简述>/
     ├── 问题定位报告.md
-    ├── 修复状态清单.md
+    ├── 修复任务清单.md
     └── 复现材料/截图
 ```
 

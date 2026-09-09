@@ -52,15 +52,19 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - 汇总问题逐条落清单，状态先填 `待确认`；
 - 每条附**修复判据**：修到什么表现算修复完成；
 - 逐条向用户确认：要改 → `已确认`；不改 → `已忽略` + 理由；
-- P0/P1 阻断（未清零不放行）；P2 优化项（不阻塞，可留后续）；
+- P0/P1 阻断（未清零则评审-修复循环不退出，不进入收尾归档；节点放行由编排侧判定）；P2 不阻塞，可留后续；
 - 复核只验本轮已确认清单，不无限新增同级问题；新发现降 P2 或经同意进下一轮；
 - 轮次上限 3：仍有 P0/P1 未修即停止，向用户汇报阻塞；
 - 确认后的任务清单交 `PRD-Design` 修改并回填状态。
+
+> 防评审死循环三招（修复判据 / 分级冻结 / 轮次上限）与任务清单状态机的定义见仓库根 `shared/anti-deadloop.md`，本 skill 只保留上述流程参数，不重复定义。
 
 ### 步骤 6：归档
 角色评审 + 汇总 + 任务清单全部落盘 `.spec/需求评审/` 后交付。
 
 ## 四、严重度分级（只标注，不设门禁）
+
+> P0/P1/P2 定义与处理口径见仓库根 `shared/anti-deadloop.md` §二；下表为本域典型示例。
 
 | 级别 | 含义 | 典型 |
 |---|---|---|
@@ -94,8 +98,9 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - `assets/role-review-template.md`：单角色评审模板
 - `assets/summary-template.md`：汇总报告模板
 - `assets/issue-list-template.md`：评审任务清单模板
+- `shared/anti-deadloop.md`（仓库根）：三招与分级定义
 - `.spec/需求评审/`：归档目录
 
 ## 八、运行问题埋点
 
-收尾自查，将方法论问题、用户否定/认可信号、可复现产物问题上报告 `issue/<skill>/<日期>/<序号>-<标题>.md`，字段/等级/标签遵循 `Skill-Optimizer/references/instrumentation-guide.md`，模板用 `Skill-Optimizer/assets/issue-template.md`。不确定不记，不打断主流程。
+收尾自查，将方法论问题、用户否定/认可信号、可复现产物问题上报至 `issue/<skill>/<日期>/<序号>-<标题>.md`，字段/等级/标签遵循 `Skill-Optimizer/references/instrumentation-guide.md`，模板用 `Skill-Optimizer/assets/issue-template.md`。不确定不记，不打断主流程。

@@ -13,8 +13,8 @@
 | 对标项 | |
 
 ## 2. Pass Gate 裁决
-结论：PASS / CONDITIONAL PASS / FAIL。
-P0=0、P1(Open)=0；P0 命中即阻断。
+结论：PASS / CONDITIONAL / FAIL。
+PASS：P0=0 且 P1(Open)=0；CONDITIONAL：P0=0 但 P1(Open)≥1 → 就地补齐再验；FAIL：命中 P0 即阻断。
 红线自检：无编造 / 假设隔离 / 独立优缺点表 / 口径并列。
 
 ## 3. 三段式详情

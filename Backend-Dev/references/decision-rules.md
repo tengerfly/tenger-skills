@@ -37,9 +37,9 @@
 ## 三、REST API 规范
 
 - 资源命名复数（`/orders`）；HTTP 动词语义化；状态码正确。
-- 统一响应 `{success, data, error:{code,message}}`；错误码分段，禁 `{"msg"}` 与 `{"error"}` 混用。
+- 统一响应 `{code, message, data}`；错误码分段，禁 `{"msg"}` 与 `{"error"}` 混用。
 - 版本化：公共 API URL 前缀 `/v1`；内部 header 版本化。
-- 分页：游标分页，禁深 OFFSET（大表）。
+- 分页：常规场景统一 `{list, total}`（offset 分页）；大表/深翻页用游标分页，禁深 OFFSET——游标场景 total 可为近似值或省略，须在接口文档注明。
 
 ## 四、鉴权实现决策树
 

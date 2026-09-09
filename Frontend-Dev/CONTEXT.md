@@ -15,7 +15,7 @@
 | 还原双基准 | 结构=低保真原型；视觉=设计稿（缺失时原型收敛） | 不是只对原型还原 |
 | 功能点 | 可独立验收/提交的单元 | 不是一行代码 |
 | 组件抽离铁律 | 模块内 ≥2 次 → features/<模块>/components/；跨模块 → src/components/ | 编码当下抽离，禁先复制后重构 |
-| hooks 优先 | 逻辑抽 hooks，组件只渲染；数据返回 `{data,loading,error,refetch}` | 业务组件不直接 import api |
+| hooks 优先 | 逻辑抽 hooks，组件只渲染；数据返回 `{data/list, loading, error, refetch}` | 业务组件不直接 import api |
 | 共享类型单一来源 | 接口/枚举/DTO 放共享包，前端 import type | 不另建一套 |
 | 三道提交门禁 | eslint + stylelint + commitlint | 禁 --no-verify |
 | 浏览器硬性预检 | Playwright → browser-use → 其他；全无报错停 | 不是软检测 |
@@ -41,6 +41,7 @@
 | D-08 | 09-08 | 体检修复：删根目录遗留重复副本 fidelity-guide.md（正主 references/ 版）；fidelity-guide 状态口径与 SKILL 同步（三态/适用状态，挂钩 FTDD §9 + ui-states-guide 指针）；补跨 skill 寻址注记；FTDD 多框架施工缺口记 issue/Frontend-Dev/2026-09-08/01（P1 待处理） | Skill-Optimizer 模式④体检（六维机械核验） | ✅ |
 | D-09 | 09-08 | 多框架施工适配（修 issue 01）：新增 references/framework-equivalence-guide.md（7 框架核心概念等价映射总表 + 6 条施工切换规则 + 切换自查清单）；SKILL §六补「施工框架与 FTDD 选型不一致 → 阻塞对齐」+ 非 React 框架等价映射路由；错误对照表加 2 行 | Skill-Optimizer 模式③优化（issue 01 P1） | ✅ |
 | D-10 | 09-08 | 新增 decision-rules（组件模式/状态/样式/数据表单/测试/工程化规范硬规则）+ case-library（组件模式/框架写法/质量规范/同行样本 4 文件） | 用户提供前端开发案例库资源清单，要求系统增强；借鉴 lobehub/qumge 范本 | ✅ |
+| D-11 | 09-09 | 体检修复 9 项：孤立代码围栏删除；FTDD §9/§10 一词两义 5 处归位；双开对象表述统一；Flutter 补枚举；api 收敛 src/api/ 口径；commitlint Test 小写；tech-stack-guide token 内存化+悬空编号修正；CONTEXT hooks 补 list 别名；README VN/设计稿+下游 Code-Review；现状基线/澄清协议/错误表收口 shared/dev-common.md（R7）+双基准引用（R6）+埋点统一 | 全仓冗余专项体检（用户裁决全量修复 + R9 评审模板参数化） | ✅ |
 
 ## 四、待决问题
 

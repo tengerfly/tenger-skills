@@ -37,7 +37,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 ```
 
 1. **解析 + 开工判定 + 技术栈锁定**：
-   - 判定三路：续做（有 PROJECT.md + PLAN.md → 读后从进行中/待做续）；既有项目盘点（有代码无两文档 → 先读目录/语言/依赖/规范/git，沉淀 PROJECT.md 现状基线，严格按现状落地，不套默认模板、不擅自重构）；全新开发 → 完整流程建 PROJECT.md + PLAN.md。
+   - 判定三路：续做（有 PROJECT.md + PLAN.md → 读后从进行中/待做续）；既有项目盘点（有代码无两文档 → 按仓库根 `shared/dev-common.md` §一沉淀 PROJECT.md 现状基线，严格按现状落地）；全新开发 → 完整流程建 PROJECT.md + PLAN.md。
    - 读 `.spec/`：TDD（选型/表结构/接口/边界/测试）、FTDD（fetch 清单）、PRD（先读速查表）、原型。
    - 检查 `.spec/代码评审/任务清单.md`：归本 skill 的 `已确认` 任务逐条纳入 PLAN。
    - 技术栈只从三个来源：有 TDD → 全读 TDD 不重选；无 TDD 既有项目 → 现状基线；无 TDD 全新 → 启动前一次性敲定（默认 TypeScript + NestJS，通信/ORM/包管理问清即定），记入 PROJECT.md。开发期零选型决策。
@@ -64,16 +64,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 必澄清：服务边界、接口契约冲突（TDD vs FTDD）、全局命名/目录约定、多人协作约定。
 
-方式：给 2~4 选项并标推荐+理由；一次只问一个关键问题；TDD 已写死/默认已明确的直接采用；用户都不对则给自定义方案；非关键细节先用默认并留痕。
-
-模板：
-```
-【需要你确认】{{定什么、为何影响大}}
-A. {{方案 A}}（推荐：理由）
-B. {{方案 B}}
-C. {{方案 C}}
-请选择 A/B/C 或说明你的方案。
-```
+提问方式与统一模板见仓库根 `shared/dev-common.md` §二（给 2~4 选项+推荐+理由、一次只问一个关键问题、可批量列编号清单逐条确认、结论留痕）。TDD 已写死/默认已明确的直接采用；用户都不对则给自定义方案；非关键细节先用默认并留痕。
 
 ## 五、技术栈锁定
 
@@ -123,11 +114,11 @@ repo/
 
 - Entity 与 TDD 表结构逐字段一致；迁移可重复执行、可版本管理。
 - 每表归属唯一服务；实体纯数据不含业务逻辑。
-- 细则沿用 Backend-Tech-Design references/data-model-guide.md。
+- 细则沿用 `Backend-Tech-Design/references/data-model-guide.md`。
 
 ## 九、接口实现
 
-- RESTful 路径语义化；分页统一 `{list,total}`。
+- RESTful 路径语义化；分页统一 `{list,total}`（大表/深翻页游标分页见 decision-rules §三，游标场景 total 为近似值或省略并注明）。
 - 契约单一事实源：libs/shared DTO 或 OpenAPI；服务间消息结构同样在共享包定义。
 
 ## 十、测试
@@ -156,12 +147,11 @@ repo/
 
 ## 十三、常见错误对照表
 
+> 公共错误行（现状基线/零选型/拍板/传参注释/提交粒度/门禁/进度更新）见仓库根 `shared/dev-common.md` §三；下表为本 skill 后端领域行。
+
 | 错误 | 纠正 |
 |---|---|
 | 技术栈与 TDD 不一致 | 读 TDD；缺失才默认 |
-| 实现中再选型 | 选型定稿，开发期零决策 |
-| 既有项目不盘点套默认模板 | 按现状基线 |
-| 擅自拍板 | 澄清协议给选项 |
 | 微服务内放弃分层 | 仍四层 |
 | 跨服务直连库/import | 只走对外接口 |
 | 业务逻辑/SQL 越层 | 逻辑进 Service、SQL 进 Repository |
@@ -173,19 +163,15 @@ repo/
 | 前后端各写类型 | libs/shared/OpenAPI 单一源 |
 | 先实现后测试/只正测 | 测试先行五类 |
 | 配置硬编码 | 外置 |
-| 传参无注释 | 逐个写作用 |
-| 攒一堆才提交 | 功能点粒度提交 |
-| 不校验提交 | eslint + commitlint |
-| 不更新任务 | 完成即更新 |
-| 续做不读进度 | 先读 PROJECT/PLAN |
 
 ## 十四、资源清单
 
 - `references/architecture-guide.md`、`code-style-guide.md`、`test-guide.md`、`tech-stack-guide.md`、`decision-rules.md`
 - `references/case-library/`：语言规范 + API/安全 + 质量工程化 + 同行样本（按需加载）
 - `assets/project-structure-template.md`、`module-code-template.md`、`project-status-template.md`、`plan-template.md`
+- `shared/dev-common.md`（仓库根）：开发类公共约定
 - 项目目录：代码 + PROJECT.md + PLAN.md + README
 
 ## 十五、运行问题埋点
 
-收尾自查，将方法论问题、用户否定/认可信号、可复现产物问题上报告 `issue/<skill>/<日期>/<序号>-<标题>.md`，字段/等级/标签遵循 `Skill-Optimizer/references/instrumentation-guide.md`，模板用 `Skill-Optimizer/assets/issue-template.md`。不确定不记，不打断主流程。
+收尾按 `Skill-Optimizer/references/instrumentation-guide.md` 自查上报 `issue/Backend-Dev/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `Skill-Optimizer/assets/issue-template.md`）。不确定不记，不打断主流程。

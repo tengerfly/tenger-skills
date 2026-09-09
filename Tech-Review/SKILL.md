@@ -1,13 +1,13 @@
 ---
 name: Tech-Review
-description: 技术方案评审。依据 PRD 与原型，分别评审后端技术文档（TDD）与前端技术文档（FTDD），找「没闭环」（需求未承接、流程断头/无头、状态机不闭环、数据流断链）与「关联关系错误」（模块关联、前后端接口不一致、页面与原型不对应）问题。只审不改；按后端/前端分别出评审报告 + 汇总 + 单一事实源任务清单到 `.spec/技术方案评审/`。浏览器工具可用时核验选型与弃用 API，全无则跳过。防死循环：判据 + P0/P1 冻结 + 复核只验本轮 + 轮次上限 3。触发：评审/检测/审查/走查技术方案。
+description: 技术方案评审。依据 PRD 与原型，分别评审后端技术方案文档（TDD）与前端技术方案文档（FTDD），找「没闭环」（需求未承接、流程断头/无头、状态机不闭环、数据流断链）与「关联关系错误」（模块关联、前后端接口不一致、页面与原型不对应）问题。只审不改；按后端/前端分别出评审报告 + 汇总 + 单一事实源任务清单到 `.spec/技术方案评审/`。浏览器工具可用时核验选型与弃用 API，全无则跳过。防死循环：判据 + P0/P1 冻结 + 复核只验本轮 + 轮次上限 3。触发：评审/检测/审查/走查技术方案。
 compatibility: Claude Code / Agent SDK / OpenCode
 ---
 
 # 技术方案评审 Skill
 
 > 只审不改；问题定位到原文，结论可追溯到需求。
-> 术语：TDD = 后端技术文档；FTDD = 前端技术文档。
+> 术语：TDD = 后端技术方案文档；FTDD = 前端技术方案文档。
 
 ## 一、评审对象与输入基线
 
@@ -57,20 +57,25 @@ PRD 与原型是尺子，TDD/FTDD 是被量物。
 ## 五、评审流水线（7 步）
 
 ```
-输入 → 解析 + 浏览器检测 → 双视角并行评审 → 前后端关联专项 → 两份角色文档 → 汇总 → 任务清单 + 确认 → 归档
+输入 → 1 输入解析 → 2 浏览器检测 → 3 双视角并行评审 → 4 前后端关联专项
+→ 5 两份角色文档 → 6 汇总 → 7 任务清单 + 确认 → 归档
 ```
 
 1. **输入解析**：优先读 `.spec/`：PRD（先读速查表）、原型、`.spec/TDD/VN/`、`.spec/FTDD/VN/`；缺失回退用户路径/粘贴。
-2. **浏览器工具检测**：Playwright → browser-use → 其他可驱动浏览器工具；任一可用则核验选型版本、弃用 API、官方最佳实践；全无则跳过，不阻塞评审（核心是文档交叉比对）。
+2. **浏览器工具检测**：本 skill 为软检测——检测顺序与两级行为见仓库根 `shared/browser-policy.md`；任一可用则核验选型版本、弃用 API、官方最佳实践；全无则跳过，不阻塞评审（核心是文档交叉比对）。
 3. **双视角并行评审**：后端按 `references/backend-checklist.md`、前端按 `references/frontend-checklist.md` 逐条执行；独立上下文（subagent/新会话）互不可见、不参考生成过程；条件允许可用不同模型交叉审查。
 4. **前后端关联专项**：按 `references/integration-checklist.md` 核查接口契约、数据模型、状态枚举、数据流、权限/错误处理；命中项归因后端/前端/双方。
 5. **两份角色文档落盘**：按 `assets/role-review-template.md` 写 `后端技术方案评审.md` / `前端技术方案评审.md` 至 `.spec/技术方案评审/`。
 6. **汇总**：按 `assets/summary-template.md` 合并去重，重点标前后端关联错误，按 P0/P1/P2 统计。
 7. **任务清单 + 用户确认**：按 `assets/issue-list-template.md` 生成任务清单（状态 `待确认`）；每条附修复判据；逐条确认（要改 → `已确认`；不改 → `已忽略` + 理由）；P0/P1 阻断、P2 可留后续；复核只验本轮清单，不无限新增；轮次上限 3，不收敛即停止汇报。确认后交 Backend/Frontend-Tech-Design 修改并回填。
 
+> 防评审死循环三招与任务清单状态机的定义见仓库根 `shared/anti-deadloop.md`，本 skill 只保留上述流程参数，不重复定义。
+
 所有文档落盘 `.spec/技术方案评审/` 后交付。
 
 ## 六、严重度分级（只标注，不设门禁）
+
+> P0/P1/P2 定义与处理口径见仓库根 `shared/anti-deadloop.md` §二；下表为本域典型示例。
 
 | 级别 | 含义 | 典型 |
 |---|---|---|
@@ -104,8 +109,9 @@ PRD 与原型是尺子，TDD/FTDD 是被量物。
 
 - `references/backend-checklist.md` / `frontend-checklist.md` / `integration-checklist.md`
 - `assets/role-review-template.md` / `summary-template.md` / `issue-list-template.md`
+- `shared/anti-deadloop.md`（仓库根）：三招与分级定义
 - `.spec/技术方案评审/`：归档目录
 
 ## 十、运行问题埋点
 
-收尾自查，将方法论问题、用户否定/认可信号、可复现产物问题上报告 `issue/<skill>/<日期>/<序号>-<标题>.md`，字段/等级/标签遵循 `Skill-Optimizer/references/instrumentation-guide.md`，模板用 `Skill-Optimizer/assets/issue-template.md`。不确定不记，不打断主流程。
+收尾按 `Skill-Optimizer/references/instrumentation-guide.md` 自查上报 `issue/Tech-Review/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `Skill-Optimizer/assets/issue-template.md`）。不确定不记，不打断主流程。

@@ -36,9 +36,10 @@ Code-Review/
 ├── README.md
 ├── CONTEXT.md
 ├── references/   # backend-checklist / frontend-checklist / contract-checklist / static-verification-guide / case-library
-├── assets/       # role-review / summary / patch / issue-list 模板
-└── .spec/代码评审/
+└── assets/       # role-review / summary / patch / issue-list 模板
 ```
+
+> 产物落**被开发项目** `.spec/代码评审/`（后端/前端评审 + 汇总报告 + 任务清单），不在本 skill 目录内。
 
 ## 五、严重度
 

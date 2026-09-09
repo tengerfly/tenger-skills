@@ -50,6 +50,7 @@
 | D-18 | 09-08 | 案例库补实抓纪律：步骤 3 命中资源须 web_fetch/extract-website 实抓提取要点（1~3 个/场景），失败标注跳过禁编造，写死进 SKILL 步骤 3 与 00-README | 用户质询「设计时会不会真去案例网站查」——索引必须配可执行抓取动作才不是死清单 | ✅ |
 | D-19 | 09-08 | 体检修复：00-README「四库分工」→「五库分工」（表格实为 5 行）；patterns/index.md 学径出处路径去掉绕行 `../case-library/../` | Skill-Optimizer 模式④体检（六维机械核验） | ✅ |
 | D-20 | 09-08 | 全仓体检修复：style-case-library.md 清理悬空引用（Prototype-Design/references/real-case-learning-path.md 已删见其 D-12，改写为职责关系句）；Fidelity-Review SKILL 通道 A「高保真 HTML」→「设计稿 HTML」废弃术语清零 | Skill-Optimizer 模式④全仓体检 | ✅ |
+| D-21 | 09-09 | 体检修复 7 项：质量门禁四查→六查三处口径统一；design-system-template 补 §5.11 页面宽度分层；12 条复选补 9-11；gate 章节重排连续编号；wireframe→低保真原型术语；README 流程补项目创建+D-20；gate 校验补浏览器不可用降级；埋点统一 | 全仓冗余专项体检（用户裁决全量修复 + R9 评审模板参数化） | ✅ |
 
 ## 四、待决问题
 
