@@ -58,7 +58,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 9. **全局一致性**：可编译可运行；分层无越界；服务边界无侵入；命名统一；注释完整；测试可跑且覆盖五类。
 
-10. **归档**：README 运行说明；更新 PROJECT.md/PLAN.md；回填评审清单（`已修复` + 修改说明）。
+10. **归档**：README 运行说明；更新 PROJECT.md/PLAN.md；回填评审任务清单（`已修复` + 修改说明）。
 
 ## 四、澄清协议
 

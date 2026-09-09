@@ -164,7 +164,7 @@ pnpm test:coverage
 | 工程 | `@react-native-community/cli` init | `flutter create` | `vue create -p dcloudio/uni-preset-vue` |
 | 页面路由 | React Navigation（stack/tab） | Navigator 2.0 / go_router | pages.json |
 | 样式 | StyleSheet + 主题 token | ThemeData / TextStyle | uni.scss + rpx |
-| 请求 | fetch/axios → 复用同一契约 | http/dio | uni.request |
+| 请求 | fetch 封装（FTDD 选 axios 时经统一契约层接入） | http/dio | uni.request |
 | 测试 | Jest + RTL | flutter_test | @dcloudio/uni-automator |
 
 - **还原基线跨端一致**：布局/间距/配色/字号按「设计稿刻度」换算（RN 用 dp、Flutter 用逻辑像素、uni-app 用 rpx），与原型对不上的间距一律修实现而非降标准；

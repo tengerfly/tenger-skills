@@ -36,6 +36,7 @@
 | D-22 | 09-07 | 池位置终定：bug-patterns/ 集中池在 skill 源仓库根，各被修项目修复时统一写入本池，用户在本仓库一处定期提炼 | 用户最终拍板「直接写入 tenger-skills，我只需在这里定期处理」 | ✅ |
 | D-23 | 09-08 | 模式③ 触发精准加量化 eval（生成样本→盲测→假阳假阴→≤5轮）+ 流程加 old-vs-new 能力审计；模式④ 体检六维→七维（加安全审计）；skill-writing-standard §二 显式 L1~L4 四级加载 | 用户提供 Skill 优化元技能参考（skill-creator 2026/ima 触发词实战/skills-security-check/daymade fork/浙大论文）；增量补强不推翻四模式/八维框架 | ✅ |
 | D-24 | 09-09 | 体检修复 2 项：CONTEXT Q1 埋点落地关闭；instrumentation-guide 过时括注删除；根 README 六维→七维同步（2 处）+ shared/ 公共约定目录落地（anti-deadloop/browser-policy/socratic-grilling-core/baseline-terms/dev-common/templates×3） | 全仓冗余专项体检（用户裁决全量修复 + R9 评审模板参数化） | ✅ |
+| D-25 | 09-09 | 终检修复 1 项：instrumentation-guide「skill 侧只留一行引用」→「保留统一句式引用节」（与实物一致）；根 README 终检同步（.spec 树补 bug修复/与接口性能清单、原型评审四维注释、TDD/FTDD 补「方案」、技术方案评审补任务清单） | 全仓终检（冗余专项体检修复后复审，用户裁决全修） | ✅ |
 
 ## 四、待决问题
 

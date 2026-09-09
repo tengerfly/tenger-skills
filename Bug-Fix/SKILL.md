@@ -1,6 +1,6 @@
 ---
 name: Bug-Fix
-description: 日志驱动的 Bug 诊断与修复委托闭环（链外专业 Skill，不占主链 14 节点）。拿到前端或后端日志（粘贴/文件/线上导出/本地复现运行）即开工：双通道日志解析 → 复现确认 → 根因定位（证据链三段）→ 根因确认后只交付问题定位报告（含修复方向）+ 维护状态流转清单——具体技术方案交 Frontend/Backend-Tech-Design（增量 TDD/FTDD）、改码交 Frontend/Backend-Dev、回归由开发自测并按需调 Testing；本 skill 只核对原始场景不再现、判定闭环状态并回填。不产方案文档、不改码、不做深度测试。有预防价值的错误模式收尾沉淀到 skill 源仓库根 `bug-patterns/` 集中池（各被修项目统一写入本池）反哺方案/开发 skill。触发：修 bug/缺陷/报错/异常/线上问题、分析日志找原因、日志报错排查、根据报错定位问题、修接口报错。
+description: 日志驱动的 Bug 诊断与修复委托闭环（链外专业 Skill，不占主链 14 节点）。拿到前端或后端日志（粘贴/文件/线上导出/本地复现运行）即开工：双通道日志解析 → 复现确认 → 根因定位（证据链三段）→ 根因确认后只交付问题定位报告（含修复方向）+ 修复任务清单——具体技术方案交 Frontend/Backend-Tech-Design（增量 TDD/FTDD）、改码交 Frontend/Backend-Dev、回归由开发自测并按需调 Testing；本 skill 只核对原始场景不再现、判定闭环状态并回填。不产方案文档、不改码、不做深度测试。有预防价值的错误模式收尾沉淀到 skill 源仓库根 `bug-patterns/` 集中池（各被修项目统一写入本池）反哺方案/开发 skill。触发：修 bug/缺陷/报错/异常/线上问题、分析日志找原因、日志报错排查、根据报错定位问题、修接口报错。
 compatibility: Claude Code / Agent SDK / OpenCode
 ---
 

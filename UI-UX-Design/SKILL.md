@@ -38,7 +38,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 6. **项目创建**：新项目先做基线复刻（灰调 HTML、结构 100% 正确），`create-project --template <复刻> --device <端> --no-open` 取 projectId；续跑先查 `.superdesign/resume.json`，缺失用 fetch-design-nodes 找回，禁止重复建项目；品牌资产先 `upload-asset --purpose brand` 再以 reference-id 传。
 7. **逐页生成**：首张主流程页 `create-design-draft`（只接受一个 -p）+ `--context-file .superdesign/design-system.md`；出画布 URL 给用户确认后再 `execute-flow-pages` 批量延展（1–10 页/次，JSON 先过目）；变体一律 `iterate --mode branch`（数量用户定，默认 2）；用户原话传 `--user-request`。
 8. **质量门禁（全绿才放行）**：按 `references/design-review-gate.md` 六查——一 布局零改动（多删改返工）、二 规范一致性（规范外视觉值返工）、三 反 AI 味 12 条、四 文案保真（与 PRD/布局清单逐字一致、无杜撰）、五 布局基线与全站组件不变量、六 云端稿同步核验。
-9. **落盘归档**：`get-design --draft-id --output .spec/设计稿/<页面>.html`；按 `assets/archive-readme-template.md` 写 README（页面/projectId/draftId/规范出处/端类型）；回填评审清单；埋点收尾。
+9. **落盘归档**：`get-design --draft-id --output .spec/设计稿/<页面>.html`；按 `assets/archive-readme-template.md` 写 README（页面/projectId/draftId/规范出处/端类型）；回填评审任务清单；埋点收尾。
 
 ## 四、生成与迭代路由
 

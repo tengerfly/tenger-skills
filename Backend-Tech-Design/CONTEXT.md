@@ -44,6 +44,7 @@
 | D-05 | 2026-09-07 | 恢复 grill-me 式单步拷问并升为强制协议：收敛证明 + 边界/链路节点拷问 | 澄清一两句即定稿，深度未落地（issue Backend-Tech-Design/2026-09-07/01） | ✅ 已确认 |
 | D-06 | 2026-09-08 | 系统增强：新增 decision-rules.md（When…use…+量化阈值+强约束）+ case-library/（4 案例文件+README）；tdd-structure 增上线回滚/技术债/成本/故障演练 4 可选章 + 背景量化；module-design-guide 注入 Anti-Happy-Path；SKILL 注入四重思维 | 用户提供后端技术方案参考手册+案例库清单，要求总结并系统增强；借鉴 peterhdd/xenitV1 两个同类 skill 结构 | ✅ 已确认 |
 | D-07 | 09-09 | 体检修复 9 项：10x→涨 10 倍统一；TS 选型表标注适用范围；一次问透与一次一问口径统一；输入补设计稿可选；CONTEXT 术语表 3 行补 Key 列；real-cases 半截话修正；socratic-grilling 拆领域节+shared 核心（R5/R8）；module-design-guide 6.x→7.x、module-template 8.x→9.x+章节清单对齐；埋点统一 | 全仓冗余专项体检（用户裁决全量修复 + R9 评审模板参数化） | ✅ |
+| D-08 | 09-09 | 终检修复 3 项：module-template 头部「3 可选」→「2 可选」（对齐 tdd-structure §3.2 与 SKILL）；README 上游/输入口径补设计稿（可选） | 全仓终检（冗余专项体检修复后复审，用户裁决全修） | ✅ |
 
 ## 四、待决问题
 

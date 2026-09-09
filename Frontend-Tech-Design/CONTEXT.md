@@ -42,6 +42,7 @@
 | D-09 | 09-08 | 体检修复：术语统一「默认技术基线」→「默认基线」（与 CONTEXT 术语表/README 一致）；module-template §9 补跨 skill 寻址注记（../Frontend-Dev/references/） | Skill-Optimizer 模式④体检（六维机械核验） | ✅ |
 | D-10 | 09-08 | 新增 decision-rules（架构范式/状态/性能/构建/渲染/安全选型+量化阈值）+ case-library（架构范式/状态管理/性能安全/同行样本 4 文件） | 用户提供前端技术方案案例库资源清单，要求系统增强；借鉴 peterhdd engineering-frontend-developer | ✅ |
 | D-11 | 09-09 | 体检修复 10 项：设计稿=视觉基准/结构基线=原型统一（3 处）；适用输入补设计稿；引导式提问口径统一；CONTEXT 术语表 2 行列数修正；doc-structure §9 十态口径；module-template 9.x→10.x+§4→§5；module-design-guide §四→§五+10.1；socratic-grilling 拆领域节（R5）；fetch-guide token 改内存+HttpOnly Cookie（C1）；埋点统一 | 全仓冗余专项体检（用户裁决全量修复 + R9 评审模板参数化） | ✅ |
+| D-12 | 09-09 | 终检修复 1 项：module-template 头部摘要链补「上下游依赖」（§2） | 全仓终检（冗余专项体检修复后复审，用户裁决全修） | ✅ |
 
 ## 四、待决问题
 

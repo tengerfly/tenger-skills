@@ -106,20 +106,21 @@ flowchart TD
 │   │   ├── V1/             # 第 1 版：overview.md + PRD速查表.md + NN_xxx.md + 验收结果详细说明.md
 │   │   └── V2/             # 迭代版（若有，全量归档并做差异对比）
 │   ├── 原型/                # 低保真原型（Prototype-Design）
-│   ├── 原型评审/            # 原型评审产物（Prototype-Review：页面/文案/交互评审 + 汇总报告 + 任务清单）
+│   ├── 原型评审/            # 原型评审产物（Prototype-Review：页面/文案/交互/实现质量四维评审 + 汇总报告 + 任务清单）
 │   ├── 设计稿/              # UI/UX 设计稿（UI-UX-Design：README + 定稿 HTML + 设计规范副本 + 截图）
 │   ├── 设计评审/            # UI/UX 设计稿评审产物（UI-UX-Review：四维评审 + 汇总报告 + 任务清单）
 │   ├── 页面还原评审/         # 页面还原度评审产物（Fidelity-Review：还原度报告 + 任务清单 + screenshots）
-│   ├── TDD/                # 后端技术文档（Backend-Tech-Design）
+│   ├── TDD/                # 后端技术方案文档（Backend-Tech-Design）
 │   │   ├── V1/             # overview.md + NN_xxx.md
 │   │   └── V2/
-│   ├── FTDD/               # 前端技术文档（Frontend-Tech-Design）
+│   ├── FTDD/               # 前端技术方案文档（Frontend-Tech-Design）
 │   │   ├── V1/
 │   │   └── V2/
 │   ├── 需求评审/            # PRD-Review 产物（前端/后端/测试评审 + 汇总报告 + 任务清单）
-│   ├── 技术方案评审/         # Tech-Review 产物（后端/前端评审 + 汇总报告）
+│   ├── 技术方案评审/         # Tech-Review 产物（后端/前端评审 + 汇总报告 + 任务清单）
 │   ├── 代码评审/            # Code-Review 产物（后端/前端评审 + 汇总报告 + 任务清单）
-│   └── 测试/                # Testing 产物（测试计划/用例/问题文档 + 截图）
+│   ├── 测试/                # Testing 产物（测试计划/用例/问题文档 + 接口性能清单 + 截图）
+│   └── bug修复/             # Bug-Fix 产物（问题定位报告 + 修复任务清单 + 复现材料）
 ├── src/（或 apps/）         # 代码（Backend-Dev / Frontend-Dev 产物）
 └── ...
 ```

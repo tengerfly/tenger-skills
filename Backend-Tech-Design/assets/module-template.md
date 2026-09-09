@@ -2,7 +2,7 @@
 
 > **所属总文档**：{{PRODUCT_NAME}} TDD　|　**模块定位**：{{MODULE_SUMMARY}}
 > **责任架构师**：{{AUTHOR_NAME}}　|　**文档状态**：`[草稿]/[待评审]/[已定稿]`
-> 📐 本文件是技术方案 **L2 模块细节**；章节清单遵循 `references/tdd-structure.md`（7 必须 + 3 可选）。
+> 📐 本文件是技术方案 **L2 模块细节**；章节清单遵循 `references/tdd-structure.md`（7 必须 + 2 可选）。
 
 ---
 

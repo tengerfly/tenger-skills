@@ -1,6 +1,6 @@
 # 页面还原度评审报告 — {{页面/需求名称}}
 
-> 结构基线：仓库根 `shared/templates/review-dimension-template.md`（章节结构与字段以公共版为准，本文件为本 skill 实例化参数与领域差异；改结构只改公共版）。
+> 结构基线：仓库根 `shared/templates/review-dimension-template.md`（闭环要素[成因/修复判据/状态机]与字段口径以公共版为准；章节组织为本 skill 领域实例）。
 
 > 评审日期：{{YYYY-MM-DD}}
 > 评审基准：通道 {{A：.spec/设计稿/ / B：外部设计稿{{来源}}}}（通道 B 标注「按像素目测比对」）

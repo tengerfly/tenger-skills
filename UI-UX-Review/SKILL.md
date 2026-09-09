@@ -52,7 +52,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ## 六、防评审死循环
 
-三招（修复判据 / 分级冻结 / 轮次上限 3）与任务清单状态机的定义见仓库根 `shared/anti-deadloop.md`。本 skill 差异：轮次超限交用户裁决（接受/忽略/转人工）；反复不收敛且暴露方法论问题 → 按第七节上报 `issue/`，交 Skill-Optimizer。
+三招（修复判据 / 分级冻结 / 轮次上限 3）与任务清单状态机的定义见仓库根 `shared/anti-deadloop.md`。反复不收敛且暴露方法论问题 → 按第七节上报 `issue/`，交 Skill-Optimizer。
 
 ## 七、运行问题埋点
 

@@ -1,6 +1,6 @@
 # {{角色}}评审报告 — {{需求名称}}
 
-> 结构基线：仓库根 `shared/templates/review-dimension-template.md`（章节结构与字段以公共版为准，本文件为本 skill 实例化参数与领域差异；改结构只改公共版）。
+> 结构基线：仓库根 `shared/templates/review-dimension-template.md`（闭环要素[成因/修复判据/状态机]与字段口径以公共版为准；章节组织为本 skill 领域实例）。
 
 > 前端/后端/测试三角色共用；按对应 references 清单逐条执行，不通畅点填入下表。
 

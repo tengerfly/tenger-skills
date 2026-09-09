@@ -1,6 +1,6 @@
 # 代码评审汇总报告
 
-> 结构基线：仓库根 `shared/templates/review-summary-template.md`（章节结构与字段以公共版为准，本文件为本 skill 实例化参数与领域差异；改结构只改公共版）。
+> 结构基线：仓库根 `shared/templates/review-summary-template.md`（闭环要素[成因/修复判据/状态机]与字段口径以公共版为准；章节组织为本 skill 领域实例）。
 
 > 合并后端/前端两份清单：去重 + 共性 + 统计。需求：{{}}；日期：{{}}。
 

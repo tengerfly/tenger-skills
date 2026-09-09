@@ -35,13 +35,14 @@
 | D-02 | 09-05 | 注入做减法 | Vibe Coding 心法 2 | ✅ |
 | D-03 | 09-05 | 功能点 DoD 前置 | 学习笔记 3.1 | ✅ |
 | D-04 | 09-05 | 既有工程盘点 + 开发期零选型决策 | 用户要求同后端口径 | ✅ |
-| D-05 | 09-07 | 还原失败模式沉淀：每页功能点提交前必须浏览器双开截图，禁止“先功能后视觉/默认样式顶替/未样式提交” | 学径前端整站还原 P0 复盘（页面还原评审报告 G/H/P/L/K） | ✅ |
+| D-05 | 09-07 | 还原失败模式沉淀：每页功能点提交前必须浏览器双开截图，禁止「先功能后视觉/默认样式顶替/未样式提交」 | 学径前端整站还原 P0 复盘（页面还原评审报告 G/H/P/L/K） | ✅ |
 | D-06 | 09-07 | 设计稿唯一基准与状态自洽：禁自创文案/区块/空态，字号 token 统一、弹框方向照稿、Loading 居中、Tab 切换清状态、文件选择防抖、待确认 icon 位 | 用户逐条反馈（自创稿/竖版弹框/重复空态/加载/错误残留/闪烁） | ✅ |
 | D-07 | 09-08 | 沉淀 10 大 UI 状态实现指南（ui-states-guide.md，框架无关 + React/Vue 注记）；铁律/步骤 4/6/13 与 FTDD §9 适用状态挂钩，状态缺失=功能点未完成 | 外部方法论 ui-ux-design.md：状态稳健不只 Success 态；规范先行链路 | ✅ |
 | D-08 | 09-08 | 体检修复：删根目录遗留重复副本 fidelity-guide.md（正主 references/ 版）；fidelity-guide 状态口径与 SKILL 同步（三态/适用状态，挂钩 FTDD §9 + ui-states-guide 指针）；补跨 skill 寻址注记；FTDD 多框架施工缺口记 issue/Frontend-Dev/2026-09-08/01（P1 待处理） | Skill-Optimizer 模式④体检（六维机械核验） | ✅ |
 | D-09 | 09-08 | 多框架施工适配（修 issue 01）：新增 references/framework-equivalence-guide.md（7 框架核心概念等价映射总表 + 6 条施工切换规则 + 切换自查清单）；SKILL §六补「施工框架与 FTDD 选型不一致 → 阻塞对齐」+ 非 React 框架等价映射路由；错误对照表加 2 行 | Skill-Optimizer 模式③优化（issue 01 P1） | ✅ |
 | D-10 | 09-08 | 新增 decision-rules（组件模式/状态/样式/数据表单/测试/工程化规范硬规则）+ case-library（组件模式/框架写法/质量规范/同行样本 4 文件） | 用户提供前端开发案例库资源清单，要求系统增强；借鉴 lobehub/qumge 范本 | ✅ |
 | D-11 | 09-09 | 体检修复 9 项：孤立代码围栏删除；FTDD §9/§10 一词两义 5 处归位；双开对象表述统一；Flutter 补枚举；api 收敛 src/api/ 口径；commitlint Test 小写；tech-stack-guide token 内存化+悬空编号修正；CONTEXT hooks 补 list 别名；README VN/设计稿+下游 Code-Review；现状基线/澄清协议/错误表收口 shared/dev-common.md（R7）+双基准引用（R6）+埋点统一 | 全仓冗余专项体检（用户裁决全量修复 + R9 评审模板参数化） | ✅ |
+| D-12 | 09-09 | 终检修复 2 项：tech-stack-guide RN 请求列 axios 口径收敛（FTDD 选 axios 时经统一契约层接入）；CONTEXT/fidelity-guide 弯引号统一「」 | 全仓终检（冗余专项体检修复后复审，用户裁决全修） | ✅ |
 
 ## 四、待决问题
 

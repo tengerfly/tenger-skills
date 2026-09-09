@@ -51,6 +51,7 @@
 | D-19 | 09-08 | 体检修复：00-README「四库分工」→「五库分工」（表格实为 5 行）；patterns/index.md 学径出处路径去掉绕行 `../case-library/../` | Skill-Optimizer 模式④体检（六维机械核验） | ✅ |
 | D-20 | 09-08 | 全仓体检修复：style-case-library.md 清理悬空引用（Prototype-Design/references/real-case-learning-path.md 已删见其 D-12，改写为职责关系句）；Fidelity-Review SKILL 通道 A「高保真 HTML」→「设计稿 HTML」废弃术语清零 | Skill-Optimizer 模式④全仓体检 | ✅ |
 | D-21 | 09-09 | 体检修复 7 项：质量门禁四查→六查三处口径统一；design-system-template 补 §5.11 页面宽度分层；12 条复选补 9-11；gate 章节重排连续编号；wireframe→低保真原型术语；README 流程补项目创建+D-20；gate 校验补浏览器不可用降级；埋点统一 | 全仓冗余专项体检（用户裁决全量修复 + R9 评审模板参数化） | ✅ |
+| D-22 | 09-09 | 终检修复 2 项：gate §五步骤归属表述（步骤 4 风格决策 Gate 定方向、步骤 5 设计规范 Gate 落 §5.11）；SKILL 步骤 9「回填评审清单」→「回填评审任务清单」 | 全仓终检（冗余专项体检修复后复审，用户裁决全修） | ✅ |
 
 ## 四、待决问题
 
