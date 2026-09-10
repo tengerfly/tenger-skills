@@ -61,6 +61,7 @@
 - [ ] 8.1 接口请求 / 响应类型定义在 `libs/shared`（或等价共享包），前端 `import type` 引用
 - [ ] 8.2 前后端未各自重复定义同一份 DTO / 类型
 - [ ] 8.3 共享类型被修改后，前后端是否同步更新（类型漂移 = 各写一份的前兆）
+- [ ] 8.4 **红线判据（结构性 P0）**：若 `libs/shared` 实际只装枚举 / 分页、**未承载视图 DTO**，则直接判 P0 结构性风险——前后端已无单一真相源，必漂移。修复：把不稳定视图契约（PlanSummary / KpItem / ModelView / SkillView …）下沉 `libs/shared/dto`，前后端 `import type` 同一份。
 
 ## 9. 鉴权 / 环境契约（P1）
 
@@ -77,3 +78,20 @@
 - [ ] 10.3 **同义异名消除**：同一业务字段只用一词（`userId` vs `uid`、`total` vs `count`、`name` vs `title`，二选一且全链路统一）
 - [ ] 10.4 **术语单一权威源**：字段名以 TDD 接口清单 / 共享类型为准，前后端统一 `import type` 引用，不各自造名
 - [ ] 10.5 **状态 / 枚举词表唯一映射**：`已支付` ↔ `paid` 语义映射唯一，前端渲染与后端枚举一一对应
+
+## 11. 响应包裹形态 / 字段命名漂移专项（运行时断裂盲区，P0 头号温床）
+
+> 实战结论（学径项目 2026-09 真实事故）：联调未对齐的 bug 几乎全部来自**出参包裹形态**与**字段命名**两类漂移，而非路径 / 方法。最危险处：前端 `request<T>` 是把响应**断言**成泛型 `T`（不是运行时校验），所以 `T` 与后端实际出参不一致时 `tsc` 永远绿、联调才红——CI 拦不住，必须靠 review 逐字段核对。
+
+- [ ] 11.1 **列表类出参形态强制统一**：全项目只允许一种列表包裹——`{ items, total }`（或 `{ list, total }`，二选一并写进共享类型），**禁止裸数组直接返回**。`GET /xxx/tags` 之类返回 `TagStats[]` 裸数组 = P0（前端 `result.data?.tags` 取到 `undefined` → 整块 UI 空白）。
+- [ ] 11.2 **字段命名以共享类型为唯一权威**：同一业务字段前后端必须用同一词（`source` vs `isBuiltin`、`nodeId` 是否返回）。后端返回 `source: SkillSource`、前端按 `isBuiltin` 读 = 永远 `undefined` → 功能标签错误（P0）。
+- [ ] 11.3 **枚举上报形态 vs UI 展示形态分离**：后端出参用领域枚举（`source: 1|2`），UI 展示用的派生字段（`isBuiltin: boolean`）由后端在 DTO 内算出给出，**不要在前后端之间靠"约定"各自转换**（转换点分散 = 漂移源）。
+- [ ] 11.4 **`request<T>` 的 `T` 必须是真实共享类型，禁止本地手写猜测**：`request<{tags:[]}>('/graph/tags')` 中 `{tags:[]}` 是前端自己猜的形状，后端实际返回数组——`tsc` 不报错，联调才崩。**判据：凡 `T` 非 `import type` 自 `libs/shared` 或后端 DTO 文件，该调用判 P0 待核。**（详见 Frontend-Tech-Design `fetch-guide.md` §五红线）
+- [ ] 11.5 **逐「消费点」反查取值路径**：不只比对类型声明，要核对前端**实际取值表达式**（`res.data?.tags`、`s.isBuiltin`、`kp.nodeId`）与后端出参字段逐一对得上，空态 / 默认值分支也要覆盖。
+
+### 附录：学径项目真实案例（佐证，非主体）
+
+- **案例 A（P0 联调阻断）**：`GET /graph/tags` 后端返回裸数组 `TagStats[]`，前端 `api/graph.ts` 按 `{tags:[]}` 解包、`GraphPage.tsx` 取 `tags.data?.tags` → 恒 `undefined` → 图谱标签卡空白。修复：后端改返回 `{tags: TagStats[]}`（或前端改读数组），两端对齐。
+- **案例 B（P0 功能错误）**：`SkillView` 后端返回 `{source: SkillSource}` 无 `isBuiltin`，前端 `SettingsModal` 读 `s.isBuiltin ? '内置' : '导入'` → 内置技能（代码讲解 / 架构拆解）一律误标「导入」。根因：字段命名 `source` vs `isBuiltin` 不统一 + 共享 DTO 缺失。
+- **案例 C（P1 潜伏）**：`POST /settle/:planId/generate` 前端期望 `{ok:boolean}`、后端返回 `{stage,...}`；当前仅 `await` 未读 `.ok`，无崩溃但契约不符，后续读 `.ok` 即错。
+- **根因**：`libs/shared` 仅承载枚举 + 分页，视图 DTO（PlanSummary / KpItem / ModelView / SkillView …）后端定义在各 service、前端定义在 `api/*.ts`，互不引用、各自漂移。FTDD / TDD 规定的「DTO 单一来源」**只写在文档、没落进代码** → 见设计侧硬约束（Frontend-Tech-Design `fetch-guide.md` §五 / Backend-Tech-Design `tdd-structure.md` §3.3）。

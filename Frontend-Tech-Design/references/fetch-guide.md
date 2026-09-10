@@ -185,9 +185,23 @@ export function useUserList(initialPageSize = 10) {
 
 ---
 
-## 五、请求层自检清单
+## 五、契约防漂移红线（request<T> 是断言，不是校验）
+
+> 严重教训（学径项目 2026-09）：前端用 `request<MyGuess>(...)` 把后端响应**断言**成手写类型 `MyGuess`。只要 `MyGuess` 与后端实际出参不一致，`res.data.x` 运行时就是 `undefined`，但 **`tsc` 永远不报错**——CI 绿、联调红。这是接口不对齐拖到联调才暴露的头号机制原因。
+
+- **红线 1（DTO 单一来源）**：业务接口的请求 / 响应类型**必须 `import type` 自 `libs/shared`（或后端 DTO 文件）**，**禁止在 `api/*.ts` 内本地手写 `interface` 猜测形状**（如 `request<{tags:[]}>`）。手写类型 = 漂移温床。
+- **红线 2（列表响应统一包裹）**：全项目列表接口只允许一种包裹 `{ items, total }`（或 `{ list, total }`，二选一并写进共享类型），**后端不得返回裸数组**，前端不得按裸数组解包。
+- **红线 3（字段命名唯一）**：同一业务字段前后端用同一词（`source` 就是 `source`，不得前端另起 `isBuiltin`）；UI 展示用的派生布尔（`isBuiltin`）由后端在 DTO 内算出给出，不在前后端间靠"约定"各自转换。
+- **红线 4（取值点反查）**：写完 `api/*.ts` 后，必须到调用它的组件 / hook 核对**实际取值表达式**（`res.data?.tags`、`s.isBuiltin`）与共享类型字段逐一对得上；空态 / 默认值分支同样覆盖。
+- 违规判据：凡 `request<T>` 的 `T` 不是来自共享包或后端 DTO 文件 → 该调用判 P0 待核（见 Code-Review `contract-checklist.md` §11）。
+
+## 六、请求层自检清单
 
 - [ ] 统一入口 `request.ts`，无散落裸 fetch？
+- [ ] **业务类型 `import type` 自 `libs/shared` / 后端 DTO，无本地手写猜测型 interface（红线 1）？**
+- [ ] **列表接口统一 `{items,total}` 包裹，无裸数组（红线 2）？**
+- [ ] **字段命名全链路唯一，无 `source` / `isBuiltin` 类异名（红线 3）？**
+- [ ] **已反查调用点取值表达式与类型字段对齐（红线 4）？**
 - [ ] baseURL 用环境变量，超时用 AbortController？
 - [ ] 统一错误类型 `ApiError`，业务可区分 HTTP 错误 / 超时 / 网络异常？
 - [ ] token 注入 + 401 先静默刷新重放一次、刷新失败再跳登录？

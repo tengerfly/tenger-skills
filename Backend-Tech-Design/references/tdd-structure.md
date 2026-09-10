@@ -74,6 +74,16 @@ TDD/
 | 7 | 关键技术点与难点（含性能与容量） | 有并发 / 事务 / 缓存 / 幂等 / 性能难点 |
 | 8 | 异常与边界处理 | 有复杂异常场景（建议保留） |
 
+### 3.3 接口出参 DTO 硬约束（防前后端漂移 · P0 红线）
+
+> 严重教训（学径项目 2026-09）：TDD / FTDD 均规定 `libs/shared` 为 DTO 单一来源，但实际 `libs/shared` 只装了枚举 + 分页，视图类型（PlanSummary / KpItem / ModelView / SkillView …）后端写在各 service、前端写在 `api/*.ts`，互不引用、各自漂移 → 联调爆发 `GET /graph/tags` 裸数组 vs `{tags}`、`SkillView.isBuiltin` vs `source` 等 P0 错位。
+
+- **硬约束 1（出参 DTO 落共享包）**：每个接口的出参类型（视图 / 列表包裹）**必须定义为 `libs/shared/dto` 下的类型文件**，后端 service `import type` 返回、前端 `import type` 消费，**禁止两端各写一份**。
+- **硬约束 2（列表响应统一包裹）**：列表类接口只允许一种包裹 `{ items, total }`（或 `{ list, total }`，全项目二选一并写进共享类型），**禁止裸数组直接返回**。
+- **硬约束 3（派生 UI 字段由后端给出）**：UI 展示用的派生布尔 / 标签（`isBuiltin` 等）在后端 DTO 内计算后返回，不在前后端靠"约定"各自转换。
+- **硬约束 4（设计文档列 DTO 清单）**：模块技术方案「接口设计」章节必须列出**本模块出参 DTO 的文件路径（位于 `libs/shared/dto`）**，作为开发期前后端 `import` 的单一真相源；未列 = 该章节 P0 不完整。
+- 验收联动：Code-Review `contract-checklist.md` §8.4 将「`libs/shared` 未承载视图 DTO」判为 P0 结构性风险；凡 `request<T>` 的 `T` 非共享类型，前端侧判 P0 待核（见 Frontend-Tech-Design `fetch-guide.md` §五）。
+
 ---
 
 ## 四、开关规则（根据需求文档自己定义）
