@@ -36,7 +36,7 @@
 ```
 Tech-Review/
 ├── SKILL.md / README.md / CONTEXT.md
-├── references/（backend / frontend / integration-checklist）
+├── references/（backend / frontend / integration-checklist + known-issue-patterns 案例库）
 ├── assets/（role-review / summary / issue-list 模板）
 └── .spec/技术方案评审/
 ```

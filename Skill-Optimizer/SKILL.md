@@ -1,12 +1,13 @@
 ---
 name: Skill-Optimizer
-description: Skill 元优化器（长期迭代）。记录 skill 问题、从聊天记录挖掘优化点、按八维优化/精简 skill、对 skill 做七维自洽体检、从 bug-patterns/ 池提炼错误模式反哺方案/开发 skill。触发：记问题/复盘/挖掘聊天/优化/精简/迭代/体检某 skill、检查自洽一致性、错误池提炼/反哺、沉淀 bug 模式到方案开发。
+description: Skill 元优化器（长期迭代）。记录 skill 问题、从聊天记录挖掘优化点、按八维优化/精简 skill、对 skill 做七维自洽体检、从 bug-patterns/ 池与评审闭环沉淀提炼错误模式反哺方案/开发/评审 skill。触发：记问题/复盘/挖掘聊天/优化/精简/迭代/体检某 skill、检查自洽一致性、错误池提炼/反哺、沉淀 bug 模式到方案开发、沉淀评审闭环。
 compatibility: Claude Code / Agent SDK / OpenCode
 ---
 
 # Skill-Optimizer（Skill 元优化器）
 
-> 定位：本仓库各专业 Skill 的运维 + 迭代器。只做四件事——记录、挖掘、优化、体检。评审闭环管「这一次交付物」，本 skill 管「每一次都犯的方法论问题」。
+> IRON LAW：每个改动必须可追溯到一条 issue 或核验发现；沉淀必须写明双向落点。凭感觉大改 = 违规。
+> 定位：本仓库各专业 Skill 的运维 + 迭代器。只做四件事——记录、挖掘、优化、体检。评审门禁闭环管「这一次交付物」，本 skill 管「每一次都犯的方法论问题」。
 
 ## 一、模型：双问题池 + 四个模式
 
@@ -14,7 +15,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 |---|---|---|---|
 | ① 记录 | 记问题/复盘运行 | 问题写入 issue 池 | `issue/<skill>/<日期>/<序号>.md` |
 | ② 挖掘 | 提供 chats/ 或粘贴聊天 | 提取优化点 | 提取清单 → 确认后落 issue |
-| ③ 优化 | 优化/精简/迭代 XX | 按八维优化并沉淀；含从 bug-patterns/ 提炼防复发规则 | SKILL.md / references / CONTEXT 改动 |
+| ③ 优化 | 优化/精简/迭代 XX | 按八维优化并沉淀；含从 bug-patterns/ 与**评审闭环沉淀项**提炼 | SKILL.md / references / CONTEXT 改动 |
 | ④ 体检 | 体检/检查 XX 自洽 | 七维自洽体检 | 问题清单 → 用户逐条裁决 |
 
 **标准先行**：每模式有固定标准——记录 `assets/issue-template.md`、挖掘 `assets/signal-checklist.md`、优化 `assets/optimize-checklist.md`、体检 `assets/self-audit-checklist.md`，编写规范 `assets/skill-writing-standard.md`。执行严格按标准，不凭感觉。
@@ -26,7 +27,9 @@ compatibility: Claude Code / Agent SDK / OpenCode
 **问题池（skill 自身方法论问题，`issue/`）**——记录 skill 怎么干活的问题，消费方 = 本 skill 模式③ 优化 skill 自身：
 
 - 路径 `issue/`，结构 `issue/<skill>/<日期目录>/<序号>-<标题>.md`，序号当日从 01 递增。
-- 每文件字段：标题、归属 skill、来源（埋点/挖掘/体检/用户）、等级（P0/P1/P2）、标签（10 枚举）、现象、期望 vs 实际、修复方向、状态（待处理/处理中/已沉淀/已忽略）、沉淀目标/位置（已沉淀必填）。
+- 每文件字段：标题、归属 skill、来源（埋点/挖掘/体检/用户/**评审闭环**）、等级（P0/P1/P2）、标签（10 枚举）、现象、期望 vs 实际、修复方向、**双向落点**（来源=评审闭环时必填：A 产出方 skill / B 评审方 skill）、状态（待处理/处理中/已沉淀/已忽略）、沉淀目标/位置（已沉淀必填）。
+
+> 来源「评审闭环」= 门禁闭环放行后沉淀判定中「当场改不了」的项（成因不明/影响面大/不确定普遍性）；规则见仓库根 `shared/anti-deadloop.md` §五。
 
 | 等级 | 含义 |
 |---|---|
@@ -47,7 +50,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 ## 三、模式① 记录
 
 1. 定位目标 skill（未点名先确认）。
-2. 提炼：现象、期望 vs 实际、等级、标签、修复方向。
+2. 提炼：现象、期望 vs 实际、等级、标签、修复方向（来源=评审闭环时补双向落点）。
 3. 写 issue 文件。
 4. 向用户确认等级/标签/归属。
 
@@ -81,14 +84,32 @@ compatibility: Claude Code / Agent SDK / OpenCode
 5. 在目标 skill 的 CONTEXT.md 追加 D-xx（改了什么、依据哪条 issue）；
 6. 回填 issue 状态：解决 → `已沉淀` + 沉淀目标/位置；不处理 → `已忽略` + 理由。
 
-### 模式③-附加：错误模式池提炼（目标 = 方案/开发 skill）
+### 改进思路（避免「为几个样例打补丁」）
 
-优化对象为方案/开发 skill，或用户点名「提炼 bug-patterns」时，读本仓库集中池 `bug-patterns/` 中 `待提炼` 案例，翻译成目标 skill 的防复发规则：
+1. **泛化，不过拟合**：技能要服务成千上万次调用，而你手里只有几个样例。别为样例做微调式改动或堆僵硬 MUST；某个问题反复治不好，换表述 / 换工作方式，往往比继续加字有效。
+2. **读 transcript，不只看产出**：产出对不代表过程对——若技能让模型把时间花在无产出的事上，删掉造成那段行为的文字再看结果；删与改一样要复测。
+3. **发现重复劳动就固化成脚本**：若多个用例下模型都各自写了同一个辅助脚本（如 `build_chart.py`），说明该把它放进 `scripts/` 并在技能里写明「用它」——一次固化，此后每次调用都省。
+
+### 模式③-附加：错误模式池 + 评审闭环沉淀提炼
+
+优化对象为方案/开发/评审 skill，或用户点名「提炼 bug-patterns / 评审闭环沉淀」时，把待提炼项翻译成目标 skill 的**可执行规则**。两个来源：
+
+**来源一 · `bug-patterns/` 集中池**（真实 bug 错误模式）：
 
 1. 读 `bug-patterns/` 待提炼案例（本仓库根，一处即可），按受益 skill 归类，清单交用户确认（提炼哪几条、落哪层）。
 2. 按**层级升级**落点：目标 skill「常见错误对照表」加行 → 高频/跨案例模式沉淀 references 防复发清单（如 `frontend-error-patterns-guide.md`，命名对齐该 skill 惯例）→ 重大模式进方案 skill 的 Gate/预检项。
 3. 提炼=给目标 skill 加「可执行的防复发检查项」，不是贴案例（案例卡仍在池里可溯源）；粒度=一类问题。
 4. 改后在目标 skill CONTEXT.md 记 D-xx；回填案例卡状态 `已提炼`（落点 + 位置）；不提炼 → `已忽略` + 理由。
+
+**来源二 · `issue/` 池中来源=评审闭环的待处理项**（门禁闭环沉淀，**双向**）：
+
+1. 读待处理项，按其「双向落点」落到两端：
+   - 方向 A → 产出方 skill 的防复发规则（错误表加行 / references 清单 / Gate 预检项）；
+   - 方向 B → 发现问题的那一个评审 skill 的 `references/known-issue-patterns.md` 加一条（模式 / 典型现象 / **检出方法** / 来源）——下次评审对照检查，同类再现即判为问题。
+2. 两端各自记 CONTEXT D-xx；回填 issue 状态 `已沉淀` + 沉淀目标/位置（A、B 都要填）。
+3. 判定「无普遍性」→ `已忽略` + 理由。
+
+> 为什么双向：只改产出方 → 下次不做错但评审查不出；只改评审方 → 查得出但产出方照犯。两端齐备才形成正向循环（定义见 `shared/anti-deadloop.md` §五）。
 
 ## 六、模式④ 体检
 
@@ -103,12 +124,17 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 范围（默认）：目标 skill 全套文件 + 全仓交叉引用（根 README/Workflow/其他 skill/issue）。
 
-流程：定位 → 按七维机械 grep + AI 通读 → 问题清单（等级+位置+现象+修复方向+判据）→ **逐条交用户裁决**（当场修→记 D-xx；记 issue→来源填体检；忽略→说明）→ 小结确认。
+流程：定位（显式路径 / 当前目录 / 名称匹配三方式）→ 按七维机械 grep + AI 通读 → **先列 ≥2 条「做得好」（引用具体位置，禁填充式恭维）** → 问题清单（等级+位置+现象+修复方向+判据）→ **逐条交用户裁决**（当场修→记 D-xx；记 issue→来源填体检；忽略→说明）→ 小结确认。
+
+> 先列优点不是客套：写清「哪条做法在起作用」，才能保证后续修改不把它改坏。体检者自身的元反模式（不给含糊赞美 / 不给过度工程建议 / 不把有意省略当缺失）见 `assets/self-audit-checklist.md`。
 
 ## 七、沉淀约定（全局强约束）
 
 1. **粒度 = 一类问题**：沉淀类别级通用判据/检查项/防复发规则，不是单点案例；单点只作附注。自问能否防「这一类」再犯。
-2. **落点 = 先 tenger-skills 源仓库，再同步 CodeBuddy 副本**：任何沉淀先写 `D:\project\agent-project\tenger-skills`；同步到 `C:\Users\15136\.codebuddy\skills\` 同名文件，用哈希校验。`issue/` 与 `bug-patterns/` 双池都在源仓库根（集中池），不外发部署（部署副本只含 skill 文件，不含数据池）。
+2. **双向 = 一个问题的两端**：门禁闭环沉淀必须同时给 **A 产出方 skill**（防复发）与 **B 评审 skill**（检出力 · `references/known-issue-patterns.md`）；只沉一端算未完成。P0 双向必沉。
+3. **落点 = 先 tenger-skills 源仓库，再同步 CodeBuddy 副本**：任何沉淀先写 `D:\project\agent-project\tenger-skills`；同步到 `C:\Users\15136\.codebuddy\skills\` 同名文件，用哈希校验。`issue/` 与 `bug-patterns/` 双池都在源仓库根（集中池），不外发部署（部署副本只含 skill 文件，不含数据池）。
+4. **模板**：评审方案例库结构用 `shared/templates/known-issue-patterns-template.md`；issue 字段用 `assets/issue-template.md`。
+5. **外部参考吸收留痕**：吸收外部 skill 仓库（如 sanyuan-skills）时，**采纳与不采纳**的做法都记入 `assets/skill-writing-standard.md` §七（含理由），防后续重复讨论；吸收点按「标准层 → 元技能层 → 具体 skill 层」逐层落地，逐层记 D-xx。
 
 ## 八、铁律
 
@@ -116,9 +142,10 @@ compatibility: Claude Code / Agent SDK / OpenCode
 2. **改动有依据**：每个改动可追溯一条 issue 或核验发现，不凭空重构。
 3. **先己后人**：先优化 Skill-Optimizer 自己（含标准）。
 4. **沉淀留痕**：每次改动在目标 skill CONTEXT.md 记 D-xx。
-5. **字段必填**：等级、标签、状态三字段。
+5. **字段必填**：等级、标签、状态三字段；来源=评审闭环时另必填双向落点。
 6. **确认后落盘**：挖掘清单未经用户确认不落盘。
 7. **零加戏**：只处理确认过的问题与发现，不擅自重写风格/增删功能。
+8. **沉淀双向**：门禁闭环问题先查两端（A 防复发 + B 检出力），单端沉淀不算完成。
 
 ## 九、常见错误对照表
 
@@ -137,12 +164,15 @@ compatibility: Claude Code / Agent SDK / OpenCode
 | 提炼无用户确认 | 先列清单（哪几条、落哪层）确认 |
 | 提炼后不回填案例卡 | 状态 `已提炼` + 落点/位置 |
 | 错把 bug-patterns 当 issue | 归 skill 自身问题走 issue/；归代码坑走 bug-patterns/ |
+| 评审闭环沉淀只改一端 | 双向：A 产出方防复发 + B 评审方案例库（known-issue-patterns.md） |
+| 案例库只贴案例不给检出方法 | 每条必写「检出方法」可执行判据 |
 
 ## 十、资源清单
 
 - `assets/issue-template.md`、`signal-checklist.md`、`skill-writing-standard.md`、`vibe-principles-mapping.md`、`optimize-checklist.md`、`self-audit-checklist.md`
 - `references/instrumentation-guide.md`
-- `issue/`：skill 自身问题池（源仓库根）；`bug-patterns/`：错误模式集中池（源仓库根，池规则 `bug-patterns/README.md`、案例卡模板 `Bug-Fix/assets/pattern-card-template.md`）；`chats/`：待挖掘目录
+- `shared/templates/known-issue-patterns-template.md`（仓库根）：评审方案例库模板
+- `issue/`：skill 自身问题池（源仓库根，含来源=评审闭环项）；`bug-patterns/`：错误模式集中池（源仓库根，池规则 `bug-patterns/README.md`、案例卡模板 `Bug-Fix/assets/pattern-card-template.md`）；`chats/`：待挖掘目录
 
 ## 十一、运行问题埋点
 

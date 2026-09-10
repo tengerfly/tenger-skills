@@ -35,7 +35,7 @@ Code-Review/
 ├── SKILL.md
 ├── README.md
 ├── CONTEXT.md
-├── references/   # backend-checklist / frontend-checklist / contract-checklist / static-verification-guide / case-library
+├── references/   # backend-checklist / frontend-checklist / contract-checklist / static-verification-guide / removal-plan-template / case-library / known-issue-patterns（案例库）
 └── assets/       # role-review / summary / patch / issue-list 模板
 ```
 

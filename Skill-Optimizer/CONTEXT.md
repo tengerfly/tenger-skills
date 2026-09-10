@@ -11,6 +11,7 @@
 ## 二、术语表（节选）
 
 - 问题池：`issue/` 唯一事实源；问题=优化点（非交付物缺陷）；埋点=主通道，兜底记录=补记。
+- 评审闭环沉淀：门禁闭环放行后的沉淀判定产出；issue 来源字段可填「评审闭环」，必填**双向落点**——A 产出方 skill（防复发）/ B 评审 skill（检出力，`references/known-issue-patterns.md` 案例库）。
 - 错误模式池：`bug-patterns/`（09-07 新增，位置经 D-11/D-12 两轮修正后**终定源仓库根集中池**）记录各项目真实 bug 的可类别化错误模式 + 防复发规则，区别于 issue/；写入方 Bug-Fix（任意被修项目直接写入本池），提炼方模式③-附加（本仓库一处读取）。
 - 挖掘/信号：从聊天提取四类信号聚合为问题。
 - 沉淀：issue/案例卡状态已沉淀/已提炼，强制填目标+位置；标准=六份强约束；全方位优化=八维；编写规范=skill-writing-standard。
@@ -37,6 +38,11 @@
 | D-23 | 09-08 | 模式③ 触发精准加量化 eval（生成样本→盲测→假阳假阴→≤5轮）+ 流程加 old-vs-new 能力审计；模式④ 体检六维→七维（加安全审计）；skill-writing-standard §二 显式 L1~L4 四级加载 | 用户提供 Skill 优化元技能参考（skill-creator 2026/ima 触发词实战/skills-security-check/daymade fork/浙大论文）；增量补强不推翻四模式/八维框架 | ✅ |
 | D-24 | 09-09 | 体检修复 2 项：CONTEXT Q1 埋点落地关闭；instrumentation-guide 过时括注删除；根 README 六维→七维同步（2 处）+ shared/ 公共约定目录落地（anti-deadloop/browser-policy/socratic-grilling-core/baseline-terms/dev-common/templates×3） | 全仓冗余专项体检（用户裁决全量修复 + R9 评审模板参数化） | ✅ |
 | D-25 | 09-09 | 终检修复 1 项：instrumentation-guide「skill 侧只留一行引用」→「保留统一句式引用节」（与实物一致）；根 README 终检同步（.spec 树补 bug修复/与接口性能清单、原型评审四维注释、TDD/FTDD 补「方案」、技术方案评审补任务清单） | 全仓终检（冗余专项体检修复后复审，用户裁决全修） | ✅ |
+| D-26 | 09-10 | 评审闭环沉淀接入：issue 来源新增「评审闭环」（门禁闭环当场改不了的项）；模板加「双向落点」段（A 产出方 / B 评审方）；模式③-附加扩为双来源（bug-patterns/ + 评审闭环沉淀项），来源二按双向落点分别落 A 产出方防复发规则与 B 评审方案例库 `known-issue-patterns.md`；沉淀约定加「双向」；错误表加 2 行；资源清单加 `shared/templates/known-issue-patterns-template.md` | Workflow 门禁闭环改造配套（用户要求评审问题沉淀反哺 skill） | ✅ |
+| D-27 | 09-10 | 模式③ 优化「门禁闭环改造」涉及的 15 个 skill（八维核验）：核出并全修 6 条——P1：UI-UX-Review 步骤 7 单条约 400 字混装（拆为「任务清单 + 归档」与「双向沉淀判定」两步，流程 7→8 步）；P2：7 个产物 skill 复核句措辞不统一（统一为「回填后须触发 X-Review 复核，不得自判通过（规则见 shared §一/§二）」）、3 个评审 skill description 缺「超限清 P0 后放行」表述（补齐）、6 个评审 skill 沉淀段字段表述不一（统一薄壳 + 指向案例库模板）、Workflow description「循环门禁」改「门禁闭环」、Workflow 节点速查表补「按执行顺序」说明。issue 池无待处理项；全部 SKILL ≤127 行（红线 500）| 用户要求用优化 skill 优化刚落地的门禁闭环改造 | ✅ |
+| D-28 | 09-10 | 吸收外部精华（用户指定 sanyuan-skills，MIT）：①标准层——`assets/skill-writing-standard.md` 加目录 + 关键词轰炸四维（§一）+ references 组织四条（按领域/一层/标注何时加载/>100 行加 TOC）+ 信息单一归属（§二）+ Iron Law 置顶写法（§3.1，附 5 领域示例）+ Red Flags 撤退机制（§3.2）+ 懒惰默认值挖掘法（§3.4）+ 自由度匹配脆弱度（§3.5）+ 确认门四类触发 + Pre-Delivery 可验证判据（§四）+ 新增 §七「外部做法的采纳与不采纳」；②元技能层——`optimize-checklist` 维度二~六按新判据补全，`self-audit-checklist` 加输入三方式 + 输出「先列 ≥2 条优点」+ 新增「元反模式」5 条，SKILL.md 模式④流程同步 + §七 加「外部参考吸收留痕」+ 顶部加 IRON LAW；③具体 skill 层——Code-Review 见其 D-10。不采纳项记入 §七（禁 README / 加 P3 级 / 强制参数体系），防重复讨论 | 用户提供 sanyuan-skills 要求吸收精华反哺本仓库 | ✅ |
+| D-29 | 09-10 | **防凌乱机制「归位原则」**（用户要求把结构凌乱的根因计入优化 skill）：根因 = 每轮吸收都把新内容**追加到最近的地方**（末尾补一节 / 加「附」/ 塞进某步末行）而非归位。① `assets/skill-writing-standard.md` **新增 §八**——四条规则（先问归属再落笔：主流程某步 / 规范 §4.x / 铁律 / references，找不到归属 = 结构缺一类先补结构；禁止 `三·附`、`-附加` 等补丁式章节名；三份清单分工（铁律 = 红线 ≤8 / 错误表 = 易犯错 + 纠正 / §4.x = 判据）；被连续追加 ≥3 次的小节要拆分或下沉）+ **归位自查三问**；② `optimize-checklist` 维度六加「归位检查」判据 | 用户：skill 是吸收各方优点汇总易凌乱，需防后续沉淀再凌乱 | ✅ |
+| D-30 | 09-10 | **全仓 16 个 skill 结构重构收口 + 体检**（用户裁决：全量铺开 + 接受重排 + 铁律瘦身 ≤8）：统一 7 章骨架，总行数 **2419 → 1528（-37%）**，每个 skill 均做 old-vs-new 能力审计（无功能丢失）；过程中补上 `Prototype-Review` / `UI-UX-Review` 原本缺失的「错误表」「资源清单」。**体检发现并修复 4 处跨位置失同步**：① `PRD-Design/README.md` 决策编号 D-24→D-30；② `Prototype-Design/README.md` D-16→D-18；③ `UI-UX-Design/README.md` D-21→D-25 且「9 步 3 Gate」→「9 步 4 Gate」；④ 根 README 的 `shared/` 清单补 `evidence-before-claims` / `receiving-review`。核验：各 SKILL.md 内部 §X 交叉引用全部指向存在章节、铁律条号引用 8 处全对、`shared/` 11 文件齐全（`references/assets` 报告的 missing 均为跨 skill 引用的正则截断误报） | 用户要求：体检 → 无问题则提交并同步 CodeBuddy / Codex | ✅ |
 
 ## 四、待决问题
 

@@ -43,6 +43,9 @@
 | D-10 | 09-08 | 新增 decision-rules（组件模式/状态/样式/数据表单/测试/工程化规范硬规则）+ case-library（组件模式/框架写法/质量规范/同行样本 4 文件） | 用户提供前端开发案例库资源清单，要求系统增强；借鉴 lobehub/qumge 范本 | ✅ |
 | D-11 | 09-09 | 体检修复 9 项：孤立代码围栏删除；FTDD §9/§10 一词两义 5 处归位；双开对象表述统一；Flutter 补枚举；api 收敛 src/api/ 口径；commitlint Test 小写；tech-stack-guide token 内存化+悬空编号修正；CONTEXT hooks 补 list 别名；README VN/设计稿+下游 Code-Review；现状基线/澄清协议/错误表收口 shared/dev-common.md（R7）+双基准引用（R6）+埋点统一 | 全仓冗余专项体检（用户裁决全量修复 + R9 评审模板参数化） | ✅ |
 | D-12 | 09-09 | 终检修复 2 项：tech-stack-guide RN 请求列 axios 口径收敛（FTDD 选 axios 时经统一契约层接入）；CONTEXT/fidelity-guide 弯引号统一「」 | 全仓终检（冗余专项体检修复后复审，用户裁决全修） | ✅ |
+| D-13 | 09-10 | 门禁闭环配套：步骤 11 交付补「回填 `.spec/代码评审/任务清单.md` 归本 skill 的已确认项 → 重跑 `Code-Review` 复核（含 Fidelity-Review 还原度项），不得自判通过」；满 3 轮按仓库根 `shared/anti-deadloop.md` §二 处理 | Workflow 门禁闭环改造配套（用户要求前端代码评审固定带还原度 + 循环到清零） | ✅ |
+| D-14 | 09-10 | 吸收外部精华：步骤 10「全局一致性」扩为「**全局一致性 + 质量验收**」——①**性能验收对预算**（构建产物分析 + Lighthouse/性能面板核对 Core Web Vitals 与首屏包体，大列表/图片/字体/按需加载逐项确认，**结论要有实测数据**）；②**无障碍验收**（axe-core 无严重问题、键盘可完成主流程含 Tab 顺序与焦点可见、语义化与表单 label、对比度 AA）；③两项结果写进 PROJECT.md 留痕（对接 `shared/evidence-before-claims.md`）。另同日早前已落计划规范与接收评审（步骤 6/1） | 来源：`inskillflow/claude-code-skills` 的 `frontend-developer`（Core Web Vitals / WCAG AA / axe-core / 审计驱动验证） | ✅ |
+| D-15 | 09-10 | **结构重构（统一骨架）**：章节 15 → 7——§一 定位与铁律（Iron Law「设计稿是唯一基准，禁止自创」+ 铁律瘦身 8 条）；§二 输入与前置（表格化，含产出位置必问 / 评审清单与接收评审纪律 / 浏览器硬依赖）；§三 主流程 10 步（**组件抽离落地检查并入 S7 编码当下**；S9 = 一致性 + 性能验收 + 无障碍验收）；§四 关键规范 4.1~4.8（端差异适配 / monorepo 与共享类型 / 模块化与组件抽离 / 代码规范 / 接口实现 / 测试 / 还原度校验 / 不确定即问）；§五 错误表 / §六 资源 / §七 埋点。old-vs-new 审计：原 15 章内容全部有归属，无功能丢失 | 用户要求：整理成顺畅流程（Skill-Optimizer 全量体检） | ✅ |
 
 ## 四、待决问题
 

@@ -57,7 +57,7 @@
 ## 4. review 独立性（独立 review 中间层）
 
 - **出处**：心法 2（错误率指数衰减靠独立 review）+ 第一章② + 第四章⑪（critique 双隔离评估）。
-- **适用**：5 个评审类（`PRD-Review` / `Prototype-Review` / `UI-UX-Review` / `Tech-Review` / `Code-Review`）+ `Fidelity-Review`。
+- **适用**：6 个评审类（`PRD-Review` / `Prototype-Review` / `UI-UX-Review` / `Tech-Review` / `Code-Review` / `Fidelity-Review`）。
 - **落地写法**：评审用独立中间层，独立性两个来源——
   - **干净上下文**：用 subagent / 新会话，让检查者看不到生成过程（不被锚定）；
   - **换模型交叉审查**：或换一个模型复查；

@@ -33,7 +33,7 @@ Prototype-Review/
 ├── SKILL.md
 ├── README.md
 ├── CONTEXT.md
-├── references/   # 四份清单 + browser-inspection-guide
+├── references/   # 四份清单 + browser-inspection-guide + known-issue-patterns（案例库）
 ├── assets/       # dimension-review / summary / issue-list 模板
 └── .spec/原型评审/ # 四维报告 + 汇总 + 任务清单 + screenshots
 ```

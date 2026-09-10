@@ -36,7 +36,7 @@ P0/P1 阻断、P2 可留；问题逐条直接列出，每条附出处/成因/**�
 ```
 PRD-Review/
 ├── SKILL.md / README.md / CONTEXT.md
-├── references/（frontend / backend / test / product-checklist）
+├── references/（frontend / backend / test / product-checklist + known-issue-patterns 案例库）
 ├── assets/（role-review / summary / issue-list 模板）
 └── .spec/需求评审/（四份评审 + 汇总 + 任务清单）
 ```
