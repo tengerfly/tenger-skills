@@ -24,6 +24,8 @@
 | AI / 数据处理 / 快速原型 | Python（FastAPI） | 开发快、AI 生态好 | Node.js |
 | 实时 / IO 密集 | Node.js（NestJS） | 事件驱动、异步 IO | Go |
 
+> 用 Node.js（NestJS）写 LLM / Agent 后端：以 `case-library/agent-templates.md` 的 NestJS + Vercel AI SDK 模板为起点。
+
 ---
 
 ## 三、数据库选型

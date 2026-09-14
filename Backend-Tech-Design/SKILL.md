@@ -114,7 +114,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 ## 六、资源清单
 
 - `references/tdd-structure.md`、`tech-stack-guide.md`、`decision-rules.md`、`module-design-guide.md`、`data-model-guide.md`、`socratic-grilling.md`（领域节；通用核心 `shared/socratic-grilling-core.md`）
-- `references/case-library/`：架构模式解剖 + 经典系统设计题 + 可靠性模式 + 大厂案例索引（按需加载）
+- `references/case-library/`：架构模式解剖 + 经典系统设计题 + 可靠性模式 + 大厂案例索引 + Agent 项目模板（NestJS + AI SDK，按需加载）
 - `assets/overview-template.md`、`module-template.md`
 - `shared/browser-policy.md`、`shared/socratic-grilling-core.md`、`shared/anti-deadloop.md`（仓库根）：公共约定
 - `.spec/TDD/VN/`：产出目录

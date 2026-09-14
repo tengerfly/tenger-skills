@@ -11,6 +11,7 @@
 | `system-design-cases.md` | 经典系统设计题（短链 / 秒杀 / 消息推送） | 做高并发/容量规划时 |
 | `reliability-patterns.md` | 限流 / 熔断 / 降级 / Outbox / 幂等 / 分布式锁 | 写非功能设计、可靠性章节时 |
 | `real-cases.md` | 大厂真实架构案例索引（Netflix / Uber / 阿里 / 美团等） | 找同类业务架构参考时 |
+| `agent-templates.md` | Agent/LLM 后端项目模板（NestJS + Vercel AI SDK 等）+ 套用必补清单 | 用 Node.js 写 AI/Agent 后端、定 LLM 接入选型时 |
 
 ## 二、统一案例字段（每条案例遵循）
 
