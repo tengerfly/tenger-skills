@@ -23,3 +23,5 @@
 评审执行时在步骤 3（视角清单 `backend-checklist.md` / `frontend-checklist.md`）与步骤 4（契约专项 `contract-checklist.md`）之后，逐条对照本清单过一遍；命中即按本 skill 域界判级入任务清单（接口契约/可运行性/架构/质量/安全，不评业务逻辑）。
 
 <!-- 待补模式（占位）：无 -->
+| 3 | 桩注入冒充行为覆盖（迁移/改造批只接线不断言） | handler spec 仅仅在构造器里多了 2 个 stub 参数、断言零新增；TDD 用例矩阵承诺的 TC 无对应 it | 对照 TDD §9 覆盖矩阵，在 spec 目录逐 TC 编号 grep（it 描述与断言体），缺一即报；核对 spec 净增行数与测试承诺是否成比例 | P1 | ⑬-后 AgentV2 CR-01 | 2026-09-15 |
+| 4 | 确定性 mock 锚点文本与业务提示词漂移 | mock seed 的 matcher 在业务提示词改版后不再命中 → mock 驱动下该链路必失败（且只在灰度/演示时暴露） | 提取全部 registerStream/script/registerJson matcher，到对应业务 system prompt 实文（当前提交版）逐个 grep 命中验证；特别注意历史改版过的提示词 | P1 | ⑬-后 AgentV2 CR-02 | 2026-09-15 |

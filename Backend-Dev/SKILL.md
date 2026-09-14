@@ -128,6 +128,12 @@ compatibility: Claude Code / Agent SDK / OpenCode
 | 配置硬编码 | 外置 |
 | 计划含占位符 | 按 S3「禁占位符」清零 |
 | 没跑就报「完成」 | 铁律 7，出本次证据 |
+| 灰度/迁移改造只给 handler 注桩、不补行为断言 | 注入 stub 只是接线不是测试；对照 TDD §9 覆盖矩阵逐 TC 编号 grep spec 断言，缺一即欠账（AgentV2 评审 CR-01 教训）
+| 改业务提示词不同步 mock seed matcher | 提示词常量改动后，把全部 registerStream/script/registerJson 的 matcher 拿到新提示词实文里 grep 验证命中（CR-02 教训：讲解链路 mock 必失败）|
+| 脚本批量改码遇混合换行（CRLF/LF）锚点错位 | 逐文件探测换行类型；多处插入原串定位倒序应用；优先 Edit 工具改单文件，脚本批改即改即编译（bug-patterns/2026-09-15/01） |
+| heredoc / re.sub 转义吞噬生成坏源码 | 反斜杠字面量用 chr(92) 拼接；re.sub 替换串含反斜杠改用 lambda；生成后立即编译（bug-patterns/2026-09-15/02） |
+| Nest provider 构造参数用投影类型/接口/type-only 导入 → 运行时 DI 解析失败（tsc 全绿） | 非类类型参数显式 @Inject(token)；DI 参数禁 import type；forFeature 实体清单与 token 对应；回归必含全 AppModule 启动冒烟（bug-patterns/2026-09-15/03） |
+| 构造器加参后 spec 位置参数错位（as never 掩盖）→ 批量假失败 | grep 全部 new 调用点逐一补参；批量同症状假失败先查槽位错位；提交前 eslint --fix + commitlint 预检（bug-patterns/2026-09-15/04、05） |
 
 ## 六、资源清单
 
