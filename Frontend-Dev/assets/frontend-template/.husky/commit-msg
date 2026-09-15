@@ -1,0 +1,2 @@
+# 提交信息 conventional 校验（feat/fix/docs/...）
+pnpm commitlint --edit "$1"

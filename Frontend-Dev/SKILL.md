@@ -47,11 +47,11 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 > 每步做完再进下一步；◉ = 强制暂停等用户确认。
 
-**S1 输入解析与预检**：确认产出位置（目标目录 + git 地址，缺一暂停）；判 monorepo（看 pnpm-workspace / turbo / nx / apps+packages；同仓时确认前端子包、共享类型包、根配置可否动，不确定就问）；读 PROJECT.md 与 `.spec/` 各文档；纳入评审任务清单；**批判性审视** FTDD 与计划（有疑虑先提，不闷头执行）；判目标端（web / app / 小程序，多套原型按端排期并确认分端或多端一套）；**浏览器工具预检**（任一可用记作还原校验工具）。
+**S1 输入解析与预检**：确认产出位置（目标目录 + git 地址，缺一暂停）；判 monorepo（看 pnpm-workspace / turbo / nx / apps+packages；同仓时确认前端子包、共享类型包、根配置可否动，不确定就问）；读 PROJECT.md 与 `.spec/` 各文档；**输入瘦身（续做页 REQUIRED）**：逐页开发只读本页设计稿 + FTDD 模块 §3~§5 + 本页 shared 契约段，design-system/全局组件/惯例不重读（工程已对账进 variables 与口径表，见 `case-library/static-page-trial-playbook.md` §1）；口径冲突**先查 PROJECT 口径表**（§4.9），表内直接套；纳入评审任务清单；**批判性审视** FTDD 与计划（有疑虑先提，不闷头执行）；判目标端（web / app / 小程序，多套原型按端排期并确认分端或多端一套）；**浏览器工具预检**（任一可用记作还原校验工具）。
 
 **S2 技术栈锁定**：FTDD 存在 → 读 overview 选型**不重选**；缺失 → 补选型（档位必问 + 组件库必问 + 端相关必问，一次性确认后定稿入 PROJECT.md）；`覆盖端 ≠ 目标端` → **⛔ 阻塞**，先让 Frontend-Tech-Design 补对应端方案；**施工框架与 FTDD 选型不一致 → 阻塞对齐**，禁自主切回 React 基线（非 React 框架按 `references/framework-equivalence-guide.md` 等价映射执行）。
 
-**S3 工程初始化**：既有工程沿用现状，只补缺失基础设施（根配置改动先问）；全新工程按 `assets/project-structure-template.md` + `references/tech-stack-guide.md`。基础设施先落地：`src/api/request.ts`、`src/styles/`（token 先于组件）、router + 守卫 + 懒加载、通用 hooks、ErrorBoundary、环境变量、Vitest + RTL 测试环境。monorepo 约定见 §4.2。
+**S3 工程初始化**：既有工程沿用现状，只补缺失基础设施（根配置改动先问）；全新工程——**React SPA web 端直接复制可运行模板** `assets/frontend-template/`（Vite + React 18 + AntD 5 + TS strict 起手：请求层统一解包 / SSE 封装 / 路由守卫 / 错误边界 / 懒加载 + vendor 分包 / 设计 token / ui 组件库隔离出口 / 覆盖率门禁 / CI·Docker 全内置，lint·test·coverage·build 全绿基线），照模板 README「5 分钟改造清单」改品牌 / 主题色 / 代理端口等槽位；组件库或框架与 FTDD 选型不符时按模板 README「换组件库操作指南」在 `components/ui` 出口改造；**非 React / 非 web 端**仍按 `references/tech-stack-guide.md` + `assets/project-structure-template.md` 起手。monorepo 约定见 §4.2。
 
 **S4 还原基线与 token**：逐页产**还原基线清单**——**结构行对照低保真原型**（区块 / 布局 / 交互 / 流转），**视觉行对照设计稿**（色值 / 字号字重 / 间距 / 圆角阴影 / 图标 / 状态视觉，落 `design-system.md` §7 token）；三态与 FTDD §9 适用状态一并纳入。全部收敛为 `src/styles/variables.{scss|less}`（扩展名随 FTDD 选型）的 CSS 变量，**禁写死**。
 - **token 搬运对账（⚠️ REQUIRED，有设计稿时）**：设计稿是 HTML + Tailwind 类、实现是 CSS 变量，**载体不同必须逐条对账**——把 `design-system.md` §7 Token 汇总的 color / typography / spacing / radius / shadow 逐条与实现侧 `variables` 比对**条数 / 值 / 命名**，缺项或值不符即修；对账记录（条数 N↔N + 差异处置）写进 PROJECT.md。**跳过此步 = 允许视觉基线静默降级**。
@@ -66,7 +66,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - **禁占位符**：不得出现 TBD / TODO /「稍后实现」/「加适当校验」/「同功能点 N」。
 - **计划自审三查**：① 需求覆盖——每条 AC / 页面能指到具体功能点；② 占位符扫描——按上条清零；③ **命名与类型一致性**——同一组件 / hook / 字段在各处叫法与签名一致。
 
-**S7 逐页面测试先行实现**：先写测试（承接 FTDD 用例标 TC/AC）→ api → hooks → 组件 → 页面容器 + 样式还原。**组件抽离在编码当下判定**（模块内 ≥2 处 → `features/<模块>/components/`；跨模块 → `src/components/`，更新全部引用并删旧；禁先复制后重构；props 用 interface 禁 `any`）。每完成一个功能点：勾任务 + 更新 PROJECT.md + eslint/stylelint/commitlint 通过 + git commit（Conventional Commits，禁混入调试/临时/凭据，不擅自 push）。
+**S7 逐页面测试先行实现**：`features/<模块>/types.ts` 视图模型先行——契约缺口一律 `XxxExt` 视图扩展补位 + ⚠️ 留痕注释（缺口内容/出处/对接时裁决），**禁静默造字段**；然后先写测试（承接 FTDD 用例标 TC/AC）→ constants/mocks（mock 文案逐字对齐设计稿）→ api → hooks → 组件 → 页面容器 + 样式还原（套路详见 `case-library/static-page-trial-playbook.md` §3）。**组件抽离在编码当下判定**（模块内 ≥2 处 → `features/<模块>/components/`；跨模块 → `src/components/`，更新全部引用并删旧；禁先复制后重构；props 用 interface 禁 `any`）。每完成一个功能点：勾任务 + 更新 PROJECT.md + eslint/stylelint/commitlint 通过 + git commit（Conventional Commits，禁混入调试/临时/凭据，不擅自 push）。
 
 **S8 契约对齐**：前端 fetch ↔ FTDD ↔ 后端 TDD 双向核对；共享类型只引用不重定义；冲突以 TDD 为准并提醒。
 
@@ -108,8 +108,11 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - **基准取用（有设计稿时）**：**视觉比对基准 = 设计稿**（`.spec/设计稿/<页面>.html`）——必须先开「设计稿 ↔ 实现页」并排比对；**原型只作结构/存在性对照**，不与实现页做视觉比对、不得以「与原型一致」充当还原结论。无设计稿才回退「原型 ↔ 实现页」并在结论中标注基准降级。
 - 逐项对照还原基线维度：结构（原型）/ 布局 / 配色 / 字号字重 / 圆角阴影 / 图标 / 文案 / 三态与适用状态 / 交互细节；**视觉值一致性以 `design-system.md` token 为准判定**（实现页 computed style 与 token 值相符）。
 - 1. 本地起 dev server，Playwright 同开**设计稿 + 实现页**（有设计稿时；无设计稿则开原型 + 实现页）并排截图比对；2. Playwright 异常 → browser-use 等兜底；3. 工具全异常 → 停下报错，**禁静默降级静态对照**；4. 差异分类见 S9。
+- **脚本化执行（项目配置了验收脚本时 REQUIRED，2026-09-16 定稿）**：先跑项目验收脚本（如 `tools/verify-page.mjs`：设计稿↔实现多档宽度双开整页截图 + 关键交互状态截图 + 顶栏列↔内容列逐像素断言，断言失败=返工）取全部产物，人工只做截图还原度判断与脚本未覆盖状态补验——**禁无头工具手动逐状态交互替代脚本**；无脚本项目按上述手动双开流程并建议参照 playbook §5 建脚本。无头浏览器操作 React 页的可靠路径（受控输入直调 React onChange、文本定位 evaluate 点击等）见 playbook §5。
 
 **4.8 不确定即问**：必问——需求口径不明、原型缺失/互斥、接口契约冲突、技术取舍、组件归属难判、还原差异难断、范围外发现、影响已交付模块、仓库/跨包约定、需改共享类型。提问方式与统一模板见仓库根 `shared/dev-common.md` §二（给选项 + 推荐 + 理由、一次一问、可批量列编号清单逐条确认、结论留痕）；有选项必给选项，无明确选项也说明建议 + 理由；影响 FTDD/PRD 时提醒回写；**纯实现细节不必问**。
+
+**4.9 口径冲突与口径表（2026-09-16 定稿）**：设计稿↔契约↔全局组件冲突（稿面尺寸 vs §5.5 档位、单页状态稿特例 vs 全局组件一致性、不一致稿面文案 vs 契约硬口径等）按 PROJECT.md「口径表」裁定——**表内已有的直接套，不算「不确定即问」；首次裁定的新口径当场落表再继续**（表结构：冲突场景 / 口径 / 首次裁定）。同类冲突二次出现仍现场考证或凭感觉裁 = 违规。
 
 ## 五、常见错误对照表
 
@@ -144,11 +147,15 @@ compatibility: Claude Code / Agent SDK / OpenCode
 | 组件名小写 / class 驼峰 / 方法大写 | 按 §4.4 命名规范 |
 | 只跑通功能就算完成 | 铁律 6 截图比对 |
 | 没实测就报性能达标 | S9 出实测数据 |
+| 口径冲突逐次现场考证 / 同类反复裁 | 查 PROJECT 口径表直接套；首见新口径裁定后落表（§4.9） |
+| 有验收脚本仍手动逐状态截图 / 坐标点击硬怼 | 先跑验收脚本（§4.7）；受控输入等可靠路径见 playbook §5 |
+| 契约缺口静默造字段 | `XxxExt` 视图扩展 + 留痕注释（S7） |
 
 ## 六、资源清单
 
 - `references/architecture-guide.md`、`code-style-guide.md`、`test-guide.md`、`tech-stack-guide.md`、`fidelity-guide.md`、`ui-states-guide.md`、`framework-equivalence-guide.md`、`decision-rules.md`
-- `references/case-library/`：组件模式 + 框架写法 + 质量规范 + 同行样本（按需加载）
+- `references/case-library/`：组件模式 + 框架写法 + 质量规范 + 同行样本 + **static-page-trial-playbook（静态页试做 SOP，主流程 S1/S7/§4.7/§4.9 引用）**（按需加载）
+- `assets/frontend-template/`：**React SPA web 端可运行模板**（S3 全新工程起手复制；改造清单 / 换库指南 / 部署配置见其 README）
 - `assets/project-structure-template.md`、`module-code-template.md`、`project-status-template.md`
 - `shared/baseline-terms.md`、`shared/browser-policy.md`、`shared/dev-common.md`、`shared/receiving-review.md`、`shared/evidence-before-claims.md`、`shared/anti-deadloop.md`（仓库根）：公共约定
 - 产出位置：S1 用户给定目录 + git 地址

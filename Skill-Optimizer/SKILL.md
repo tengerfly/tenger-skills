@@ -135,6 +135,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 3. **落点 = 先 tenger-skills 源仓库，再同步生效客户端副本**：任何沉淀先写 `D:\project\agent-project\tenger-skills`；再同步到**当前生效客户端**的 skills 目录（ZCode：`C:\Users\15136\.zcode\skills\`，经 junction 指向 `C:\Users\15136\.codebuddy\skills\`）同名文件，用哈希校验。`issue/` 与 `bug-patterns/` 双池都在源仓库根（集中池），不外发部署（部署副本只含 skill 文件，不含数据池）。
 4. **模板**：评审方案例库结构用 `shared/templates/known-issue-patterns-template.md`；issue 字段用 `assets/issue-template.md`。
 5. **外部参考吸收留痕**：吸收外部 skill 仓库（如 sanyuan-skills）时，**采纳与不采纳**的做法都记入 `assets/skill-writing-standard.md` §七（含理由），防后续重复讨论；吸收点按「标准层 → 元技能层 → 具体 skill 层」逐层落地，逐层记 D-xx。
+6. **落点分层（2026-09-16）**：用户要求「沉淀成标准流程 / 后续都按此执行 / 提高质量」时，改动必须落到目标 skill **主流程强制位**（SKILL.md 步骤内 REQUIRED/Gate/错误表行），案例库/references 只作承载正文的附件并在主流程标注引用点；仅落案例库 = 未完成。用户只要「记录下来」时才允许纯案例库落点。判据：问一句「下次不读这篇参考是否就会照旧做错」——是则必须进主流程。
 
 ## 八、铁律
 

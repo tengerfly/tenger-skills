@@ -7,7 +7,7 @@
 
 | 文件 | 内容 | 何时读 |
 |---|---|---|
-| `static-page-trial-playbook.md` | 静态页试做流程：输入瘦身/复用清单/编码套路/口径决策模式/验收脚本化/节奏纪律 | 设计稿定稿后逐页产出静态页时 |
+| `static-page-trial-playbook.md` | **标准 SOP（SKILL 主流程 S1/S7/§4.7/§4.9 引用）**：输入瘦身/复用清单/编码套路/口径决策模式/验收脚本化/节奏纪律 | 逐页产出静态页时**必按此执行** |
 | `component-patterns.md` | 复合/受控/容器展示/Render Props/HOC 模式 | 写组件时 |
 | `framework-patterns.md` | React/Vue/Next/Angular/Svelte 框架写法 | 按框架落地时 |
 | `quality-conventions.md` | 测试 + 工程化规范（cnblogs 大厂规范） | 搭工程质量时 |

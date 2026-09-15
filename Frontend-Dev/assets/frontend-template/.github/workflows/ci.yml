@@ -1,0 +1,25 @@
+# CI 门禁：lint + 覆盖率测试 + 构建（GitHub Actions 参考实现，其他平台按步骤等价迁移）
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4 # 版本读 package.json 的 packageManager 字段
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm test:coverage # 含覆盖率门禁（vitest.config.ts thresholds）
+      - run: pnpm build
