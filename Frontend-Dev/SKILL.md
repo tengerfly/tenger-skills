@@ -66,7 +66,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - **禁占位符**：不得出现 TBD / TODO /「稍后实现」/「加适当校验」/「同功能点 N」。
 - **计划自审三查**：① 需求覆盖——每条 AC / 页面能指到具体功能点；② 占位符扫描——按上条清零；③ **命名与类型一致性**——同一组件 / hook / 字段在各处叫法与签名一致。
 
-**S7 逐页面测试先行实现**：`features/<模块>/types.ts` 视图模型先行——契约缺口一律 `XxxExt` 视图扩展补位 + ⚠️ 留痕注释（缺口内容/出处/对接时裁决），**禁静默造字段**；然后先写测试（承接 FTDD 用例标 TC/AC）→ constants/mocks（mock 文案逐字对齐设计稿）→ api → hooks → 组件 → 页面容器 + 样式还原（套路详见 `case-library/static-page-trial-playbook.md` §3）。**组件抽离在编码当下判定**（模块内 ≥2 处 → `features/<模块>/components/`；跨模块 → `src/components/`，更新全部引用并删旧；禁先复制后重构；props 用 interface 禁 `any`）。每完成一个功能点：勾任务 + 更新 PROJECT.md + eslint/stylelint/commitlint 通过 + git commit（Conventional Commits，禁混入调试/临时/凭据，不擅自 push）。
+**S7 逐页面测试先行实现**：`features/<模块>/types.ts` 视图模型先行——契约缺口一律 `XxxExt` 视图扩展补位 + ⚠️ 留痕注释（缺口内容/出处/对接时裁决），**禁静默造字段**；然后先写测试（承接 FTDD 用例标 TC/AC）→ constants/mocks（mock 文案逐字对齐设计稿）→ api → hooks → 组件 → 页面容器 + 样式还原（套路与节奏纪律详见 `case-library/static-page-trial-playbook.md` §3/§6）。**组件抽离在编码当下判定**（模块内 ≥2 处 → `features/<模块>/components/`；跨模块 → `src/components/`，更新全部引用并删旧；禁先复制后重构；props 用 interface 禁 `any`）。每完成一个功能点：勾任务 + 更新 PROJECT.md + eslint/stylelint/commitlint 通过 + git commit（Conventional Commits，禁混入调试/临时/凭据，不擅自 push）。
 
 **S8 契约对齐**：前端 fetch ↔ FTDD ↔ 后端 TDD 双向核对；共享类型只引用不重定义；冲突以 TDD 为准并提醒。
 
@@ -112,7 +112,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 **4.8 不确定即问**：必问——需求口径不明、原型缺失/互斥、接口契约冲突、技术取舍、组件归属难判、还原差异难断、范围外发现、影响已交付模块、仓库/跨包约定、需改共享类型。提问方式与统一模板见仓库根 `shared/dev-common.md` §二（给选项 + 推荐 + 理由、一次一问、可批量列编号清单逐条确认、结论留痕）；有选项必给选项，无明确选项也说明建议 + 理由；影响 FTDD/PRD 时提醒回写；**纯实现细节不必问**。
 
-**4.9 口径冲突与口径表（2026-09-16 定稿）**：设计稿↔契约↔全局组件冲突（稿面尺寸 vs §5.5 档位、单页状态稿特例 vs 全局组件一致性、不一致稿面文案 vs 契约硬口径等）按 PROJECT.md「口径表」裁定——**表内已有的直接套，不算「不确定即问」；首次裁定的新口径当场落表再继续**（表结构：冲突场景 / 口径 / 首次裁定）。同类冲突二次出现仍现场考证或凭感觉裁 = 违规。
+**4.9 口径冲突与口径表（2026-09-16 定稿）**：设计稿↔契约↔全局组件冲突（稿面尺寸 vs design-system §5.5 档位、单页状态稿特例 vs 全局组件一致性、不一致稿面文案 vs 契约硬口径等）按 PROJECT.md「口径表」裁定——**表内已有的直接套，不算「不确定即问」；首次裁定的新口径当场落表再继续**（表结构：冲突场景 / 口径 / 首次裁定）；决策模式细则见 `case-library/static-page-trial-playbook.md` §4。同类冲突二次出现仍现场考证或凭感觉裁 = 违规。
 
 ## 五、常见错误对照表
 

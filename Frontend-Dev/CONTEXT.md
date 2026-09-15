@@ -26,6 +26,9 @@
 | 项目现状基线 | 既有工程先盘点沉淀 PROJECT.md，按现状开发 | 现状优先于模板 |
 | 编码层决策规则 | Decision Rules | decision-rules.md：组件模式/状态管理/样式/数据表单/测试/工程化规范的量化硬规则 | 与 FTDD 分工：那份管方案层，本份管编码层 |
 | 案例库 | Case Library | case-library/：component-patterns + framework-patterns + quality-conventions + 同行样本 | 借鉴不照搬，FTDD 选型与多框架等价映射优先 |
+| 口径表 | PROJECT.md 内冲突裁定表（冲突场景 / 口径 / 首次裁定）：表内直接套、首见落表、同类二次现场考证 = 违规（§4.9） | 不是每次冲突都现场考证 |
+| 输入瘦身 | 续做页只读本页设计稿 + FTDD 模块 §3~§5 + 本页 shared 契约段（S1 REQUIRED） | 不是每页重读全局文档 |
+| 视图扩展 `XxxExt` | 契约缺口在 `features/<模块>/types.ts` 以 `XxxExt` 补位 + ⚠️ 留痕注释（S7） | 禁静默造字段 |
 
 ## 三、决策日志
 
@@ -48,7 +51,8 @@
 | D-15 | 09-10 | **结构重构（统一骨架）**：章节 15 → 7——§一 定位与铁律（Iron Law「设计稿是唯一基准，禁止自创」+ 铁律瘦身 8 条）；§二 输入与前置（表格化，含产出位置必问 / 评审清单与接收评审纪律 / 浏览器硬依赖）；§三 主流程 10 步（**组件抽离落地检查并入 S7 编码当下**；S9 = 一致性 + 性能验收 + 无障碍验收）；§四 关键规范 4.1~4.8（端差异适配 / monorepo 与共享类型 / 模块化与组件抽离 / 代码规范 / 接口实现 / 测试 / 还原度校验 / 不确定即问）；§五 错误表 / §六 资源 / §七 埋点。old-vs-new 审计：原 15 章内容全部有归属，无功能丢失 | 用户要求：整理成顺畅流程（Skill-Optimizer 全量体检） | ✅ |
 | D-16 | 09-15 | **视觉基准口径纠偏（P0）**：①铁律 6、§一角色、§二输入表、S4、§4.7 全部改为「**设计稿是视觉唯一应然**，原型只作结构对照」，删除「基准=原型，有设计稿时加开」的降级语气；②§4.7 明确必须并排「设计稿 ↔ 实现页」，只对原型比对不算还原完成；③S4 新增 **token 搬运对账（REQUIRED）**——design-system §7 ↔ `styles/variables` 逐条核对条数/值/命名，记录进 PROJECT.md；④S6 DoD 与 S5 Scope Gate 补还原证据与基准标注；⑤错误表加「有设计稿却按原型做视觉」「跳过 token 对账」两行；⑥`references/fidelity-guide.md` 重写（基准口径表按维度标注对照基准、脚本模板加 `DESIGN_BASE`、结论表加视觉基准行、失败模式加第 6/7 条）；⑦templates/skills 同步（module-code / project-status / project-structure / tech-stack-guide / code-style-guide / README） | 用户反馈：设计稿 OK 但前端画出来差别大；根因 = `fidelity-guide` 与 §4.7 主述以低保真原型为视觉基准（原型仅中性色+单一主色+基础字号），比对必过而视觉必然走样；中央口径 `shared/baseline-terms.md` 同批补「还原度定义 + 下游执行口径 + token 对账」 | ✅ |
 | D-17 | 09-16 | 正面案例沉淀：新增 `case-library/static-page-trial-playbook.md`（静态页试做六节流程：输入瘦身/复用清单/编码套路/口径决策模式/验收脚本化/节奏纪律）+ 案例库索引行；配套验收脚本与口径表落消费方项目仓库 | 用户点名首页/资产库两页为正面案例要求沉淀；节奏复盘 41min/页拆解显示验收手动截图与口径现场考证为可固化成本（issue/Frontend-Dev/2026-09-16/01，标签=正面参考） | ✅ |
-| D-18 | 09-16 | **案例升级为主流程标准 SOP**：S1 输入瘦身（REQUIRED）+ 口径表查表；S7 视图模型先行（XxxExt 扩展+留痕，禁静默造字段）；§4.7 新增脚本化执行（项目有验收脚本则 REQUIRED 先跑，禁手动逐状态替代）；新增 §4.9 口径冲突与口径表（表内直接套、首见落表、二次考证=违规）；错误表 +3 行；§六标注 playbook=SOP；playbook 头部标注 SOP 状态 | 用户澄清「本意是沉淀成标准 SOP，后续开发都按这个流程来，能提高质量」——案例库被动落点无法保证执行，必须进主流程 Gate（issue/Frontend-Dev/2026-09-16/02；元教训落 Skill-Optimizer §七-8） | ✅ |
+| D-18 | 09-16 | **案例升级为主流程标准 SOP**：S1 输入瘦身（REQUIRED）+ 口径表查表；S7 视图模型先行（XxxExt 扩展+留痕，禁静默造字段）；§4.7 新增脚本化执行（项目有验收脚本则 REQUIRED 先跑，禁手动逐状态替代）；新增 §4.9 口径冲突与口径表（表内直接套、首见落表、二次考证=违规）；错误表 +3 行；§六标注 playbook=SOP；playbook 头部标注 SOP 状态 | 用户澄清「本意是沉淀成标准 SOP，后续开发都按这个流程来，能提高质量」——案例库被动落点无法保证执行，必须进主流程 Gate（issue/Frontend-Dev/2026-09-16/02；元教训落 Skill-Optimizer §七-6） | ✅ |
+| D-19 | 09-16 | 体检修复 5 项：①S7 引用扩为「套路与节奏纪律详见 playbook §3/§6」，承接 playbook 头部 §6 硬性纪律声明；②§4.9 补「决策模式细则见 playbook §4」+「§5.5」注明 design-system；③playbook 头部引用点标注对应节号（S1§1 / S7§3·§6 / §4.7§5 / §4.9§4）；④playbook hooks 契约字段对齐术语表 `{data/list, loading, error, refetch}`；⑤术语表 +3 行（口径表 / 输入瘦身 / 视图扩展 XxxExt）。另 D-18 引用编号 §七-8 纠偏为 §七-6（纠错记录归 Skill-Optimizer D-33） | Skill-Optimizer 模式④体检，用户裁决全修 | ✅ |
 
 ## 四、待决问题
 
