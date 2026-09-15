@@ -29,6 +29,7 @@
 | D-02 | 09-05 | README 重写 + 派活四件套/苏格拉底三问/Red Flag 注入 | 心法；README 失同步 P0 | ✅ |
 | D-03 | 09-08 | 新增 decision-rules（证据标准/反模式/监控节奏/加权评分）+ case-library（扩展框架/数据源/同行样本） | 用户提供竞品分析案例库资源清单，要求系统增强 | ✅ |
 | D-04 | 09-09 | 体检修复 4 项：Pass Gate 补 P1(Open)≥1 CONDITIONAL 分支（SKILL/README/CONTEXT/eval 四处）；门禁 11 项标注节选 7 项；README 补状态行；CONTEXT 表格列数修正 | 全仓冗余专项体检（用户裁决全量修复 + R9 评审模板参数化） | ✅ |
+| D-05 | 09-15 | 全仓一致性纠偏：门禁措辞「FAIL 阻断重构」半截话改「FAIL → 阻断输出并回炉重构」，与 README/eval-template 口径统一 | 四代理并行七维体检 | ✅ |
 
 ## 四、待决问题
 

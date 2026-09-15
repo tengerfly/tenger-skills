@@ -28,3 +28,12 @@
 
 ## 5. 统计
 P0/P1/P2 数量及阻塞说明。本 skill 不裁决，供用户决策。
+
+## 6. 沉淀判定（双向，放行后回填）
+
+| 方向 | 目标 skill | 落点 | 状态 |
+|---|---|---|---|
+| A · 防复发 | `PRD-Design` | 错误表加行 / references 清单 / Gate 预检项 | 待处理 / 已沉淀 / 入池 |
+| B · 检出力 | `PRD-Review` | `references/known-issue-patterns.md` 加模式（含检出方法） | 待处理 / 已沉淀 / 入池 |
+
+> P0 双向必沉；当场改则记目标 skill `CONTEXT.md` D-xx，改不了落 `issue/PRD-Design/<日期>/`（来源=评审闭环）。

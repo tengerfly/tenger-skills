@@ -58,7 +58,7 @@
 
 | Token | 值 | 用途 |
 |---|---|---|
-| `--space-1` ~ `--space-8` | `4/8/12/16/24/32/48px` | 元素内距 / 列表项 / 卡片 / 区块 / 大分区 |
+| `--space-1` ~ `--space-8` | `4/8/12/16/24/32/40/48px` | 元素内距 / 列表项 / 卡片 / 区块 / 大分区 |
 
 > 触控目标：移动端最小 44px，Web 常规 32~40px。
 
@@ -68,9 +68,10 @@
 
 | Token | 值 | 用途 |
 |---|---|---|
-| `--radius-sm/md/lg/full` | `{{4/8/12px / 999px}}` | 输入框 / 卡片按钮 / 弹层 / 胶囊 |
-| `--shadow-sm/md/lg` | `{{…}}` | 卡片 / 悬浮下拉 / 弹层模态（克制，防 AI 味） |
-| `--border` | `1px solid --color-border` | 常规描边 |
+| `--radius-sm` / `-md` / `-lg` / `-full` | `4 / 8 / 12px / 999px` | 输入框 / 卡片按钮 / 弹层 / 胶囊 |
+| `--shadow-sm` / `-md` / `-lg` | `{{…}}` | 卡片 / 悬浮下拉 / 弹层模态（克制，防 AI 味） |
+
+> 常规描边不单设变量，直接用 `1px solid var(--color-border)`（§1.1 的 `--color-border` 即描边色）。
 
 ---
 
@@ -193,9 +194,11 @@
 
 ## 7. CSS 变量 Token 汇总（生成 HTML 直接落 `:root`）
 
+> **一条一行**（便于下游机械对账：本表条数 = 下游 `styles/variables` 应落条数）；本表与 §1~§4 声明必须一致，不得缺项。
+
 ```css
 :root {
-  /* 色彩 */
+  /* 色彩 · 基础（§1.1） */
   --color-primary: {{#hex}};
   --color-primary-hover: {{#hex}};
   --color-primary-active: {{#hex}};
@@ -207,17 +210,39 @@
   --color-text-secondary: {{#hex}};
   --color-text-tertiary: {{#hex}};
   --color-border: {{#hex}};
-  --color-success: {{#hex}}; --color-warning: {{#hex}};
-  --color-danger: {{#hex}};  --color-info: {{#hex}};
-  /* 字体 */
-  --font-h1: {{28px}}; --font-h2: {{20px}}; --font-h3: {{16px}};
-  --font-body: {{14px}}; --font-caption: {{12px}}; --font-number: {{…}};
-  /* 间距 */
-  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
-  --space-5: 24px; --space-6: 32px; --space-8: 48px;
-  /* 圆角 / 阴影 */
-  --radius-sm: {{4px}}; --radius-md: {{8px}}; --radius-lg: {{12px}}; --radius-full: 999px;
-  --shadow-sm: {{…}}; --shadow-md: {{…}}; --shadow-lg: {{…}};
+  /* 色彩 · 语义（§1.2，各含浅底对 -subtle） */
+  --color-success: {{#hex}};
+  --color-success-subtle: {{#hex}};
+  --color-warning: {{#hex}};
+  --color-warning-subtle: {{#hex}};
+  --color-danger: {{#hex}};
+  --color-danger-subtle: {{#hex}};
+  --color-info: {{#hex}};
+  --color-info-subtle: {{#hex}};
+  /* 字体（§2） */
+  --font-h1: {{28px}};
+  --font-h2: {{20px}};
+  --font-h3: {{16px}};
+  --font-body: {{14px}};
+  --font-caption: {{12px}};
+  --font-number: {{…}};
+  /* 间距（§3，4px 网格，连续无跳号） */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 40px;
+  --space-8: 48px;
+  /* 圆角 / 阴影（§4） */
+  --radius-sm: {{4px}};
+  --radius-md: {{8px}};
+  --radius-lg: {{12px}};
+  --radius-full: 999px;
+  --shadow-sm: {{…}};
+  --shadow-md: {{…}};
+  --shadow-lg: {{…}};
 }
 ```
 

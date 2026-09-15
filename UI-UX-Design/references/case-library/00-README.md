@@ -25,7 +25,7 @@
 2. flows.md                   → 同类产品的流程/状态怎么处理
 3. layouts.md / components.md → 页面骨架与组件范式
 4. interactions.md            → 微交互与动效表达
-5. design-systems.md          → 体系基线选型 + 外部产品 token 案例（awesome-design-md 54 站）
+5. design-systems.md          → 体系基线选型（体系库见 ../open-source-design-systems.md）+ 外部产品 token 案例（awesome-design-md 54 站）
 6. style-case-library.md      → 自家已验证案例与踩坑
 → extract-website --design-md / 抓取摘录 → 步骤 4 风格决策 → 步骤 5 规范化（用户确认）
 ```

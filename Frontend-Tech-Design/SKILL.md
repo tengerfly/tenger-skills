@@ -17,7 +17,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 1. 选型写「待定」即违规；澄清即定稿，开发期零选型决策。
 2. **端形态与技术框架每次必问**，用户确认才定稿——禁自主写死 React 或固定栈。
-3. 页面清单、组件拆分必须与设计稿/原型对应（布局零改动）。
+3. 页面清单、组件拆分必须与设计稿/原型对应（结构对原型、视觉对设计稿；布局零改动）。
 4. fetch 与后端 TDD 接口清单一一对应，不自造契约。
 5. 先写测试用例，后写实现方案。
 6. **无障碍与性能是设计输入，不是事后优化**。
@@ -42,7 +42,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 | 输入 | 作用 | 缺失处理 |
 |---|---|---|
 | `.spec/PRD/VN/`（先读 `PRD速查表.md` 建索引） | 需求基线 | ⛔ 阻塞，先要 |
-| `.spec/设计稿/`（**视觉基准**）、`.spec/原型/`（**结构基线**，缺省回退） | 页面结构与视觉的输入；页面清单/组件拆分必须与之对应 | 设计稿缺 → 回退原型并明示（术语见 `shared/baseline-terms.md`） |
+| `.spec/设计稿/`（**视觉主基准**，含 `design-system.md` token 源）、`.spec/原型/`（**结构基线**） | 页面结构与视觉的输入；页面清单/组件拆分必须与之对应（结构对原型、视觉对设计稿） | 设计稿缺 → 回退原型并**明示视觉基准降级**（术语见 `shared/baseline-terms.md`） |
 | `.spec/TDD/VN/` | 请求封装与对接的**唯一依据** | ⛔ 阻塞，先要 |
 | `.spec/技术方案评审/任务清单.md` | 归本 skill 的 `已确认` 任务逐条纳入 | 无则跳过 |
 | 浏览器工具（**硬依赖**） | 查所选框架/组件库官方文档与版本兼容 | **全无 → 报错要求安装，不跳过**（前端选型依赖官方版本信息；策略见仓库根 `shared/browser-policy.md`） |
@@ -89,13 +89,13 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 > 正文只留判据；细则按需加载对应 references。
 
-**4.1 页面与组件**：页面 = 路由，语义化命名；页面清单来自 PRD 速查表 + 模块 §3.1 + 设计稿/原型，标注路由/职责/模块/原型文件。页面只编排，逻辑下沉逻辑层。组件分层：基础组件（无业务语义）/ 业务组件（模块内复用）/ 页面容器；**容器/展示黄金法则**——展示组件只接 props + 回调、不发请求、不绑全局状态库，数据由容器组合下传（见 `references/component-design-guide.md` §1.1）。
+**4.1 页面与组件**：页面 = 路由，语义化命名；页面清单来自 PRD 速查表 + 模块 §3.1 + 设计稿/原型，标注路由/职责/模块/**对应原型文件（结构基线）+ 对应设计稿（视觉基准，有设计稿时）**。页面只编排，逻辑下沉逻辑层。组件分层：基础组件（无业务语义）/ 业务组件（模块内复用）/ 页面容器；**容器/展示黄金法则**——展示组件只接 props + 回调、不发请求、不绑全局状态库，数据由容器组合下传（见 `references/component-design-guide.md` §1.1）。
 
 **4.2 逻辑层优先**：逻辑一律抽独立单元（React hooks `useXxx` / Vue 组合式函数；取数 useFetch·useQuery、表单 useForm、权限 useAuth、主题 useTheme）；通用 `src/hooks/`（Vue 可 `src/composables/`），模块私有 `src/features/<模块>/hooks/`。
 
 **4.3 请求**：Web/RN 统一原生 fetch，**禁 axios**；各端载体随框架（React/Vue→fetch、Taro→Taro.request、uni-app→uni.request、小程序→wx.request、Flutter→dio）；统一入口 `src/api/request.ts`（各端按约定命名），封装原则一致：baseURL、超时（AbortController）、ApiError、token 注入、拦截、取消；接口按业务域拆 `src/api/<模块>.ts` 并与 TDD 一一对应。实例见 `references/fetch-guide.md`。
 
-**4.4 CSS 架构**：预处理器 Sass/Less 二选一（随组件库与团队生态在选型中确定，禁裸 CSS）；组件样式隔离随框架（React→CSS Modules `*.module.scss`；Vue→`scoped` 或 CSS Modules），**全局抽离两种框架都必须**；`src/styles/` 放 variables（token）/ mixins / global（reset）/ theme（可选），扩展名随预处理器；有设计稿时 token 以 `.spec/设计稿/design-system.md` 为唯一来源，无则按 `references/css-guide.md` 基线；命名 BEM 或语义化，颜色只引用变量。
+**4.4 CSS 架构**：预处理器 Sass/Less 二选一（随组件库与团队生态在选型中确定，禁裸 CSS）；组件样式隔离随框架（React→CSS Modules `*.module.scss`；Vue→`scoped` 或 CSS Modules），**全局抽离两种框架都必须**；`src/styles/` 放 variables（token）/ mixins / global（reset）/ theme（可选），扩展名随预处理器；**有设计稿时 token 以 `.spec/设计稿/design-system.md` §7 为唯一来源且登记条数**（开发期 `variables` 须与其逐条对账：条数/值/命名，见 `shared/baseline-terms.md` 下游执行口径），无则按 `references/css-guide.md` 基线；命名 BEM 或语义化，颜色只引用变量。
 
 **4.5 无障碍（a11y）**：语义化标签优先于 ARIA 堆砌；键盘可完成主流程（Tab 顺序合理、焦点可见、Esc 可关弹层）；表单控件有 label 与错误提示关联；对比度达 AA；按需尊重 `prefers-reduced-motion`。**落到模块文档「实现细节与决策」的具体页面**。
 
@@ -121,7 +121,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 | 用 axios | 统一 fetch |
 | 组件堆逻辑 | 下沉 hooks |
 | CSS 混放 | 全局抽离 + 按框架隔离 |
-| 页面清单与原型对不上 | 逐页标原型 |
+| 页面清单与原型对不上 | 逐页标原型（结构）+ 设计稿（视觉） |
 | fetch 与 TDD 脱节 | 一一对应 |
 | 只测正向渲染 | 补交互/数据流/边界/异常 |
 | 测试无 AC | 标 AC 编号 |
@@ -137,7 +137,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - `references/doc-structure.md`、`tech-stack-guide.md`、`component-design-guide.md`、`fetch-guide.md`、`css-guide.md`、`module-design-guide.md`、`test-guide.md`、`socratic-grilling.md`（领域节；通用核心 `shared/socratic-grilling-core.md`）、`decision-rules.md`
 - `references/case-library/`：架构范式 + 状态管理 + 性能安全 + 同行样本（按需加载）
 - `assets/overview-template.md`、`module-template.md`
-- `shared/baseline-terms.md`、`shared/browser-policy.md`、`shared/socratic-grilling-core.md`、`shared/anti-deadloop.md`（仓库根）：公共约定
+- `shared/baseline-terms.md`、`shared/browser-policy.md`、`shared/socratic-grilling-core.md`、`shared/anti-deadloop.md`、`shared/receiving-review.md`（仓库根）：公共约定（末项含接收评审纪律）
 - `.spec/FTDD/VN/`：产出目录
 
 ## 七、运行问题埋点

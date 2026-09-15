@@ -34,8 +34,16 @@
 | 暗黑模式/主题 | {{开启 / 不开}} | {{TIER}} | {{REASON}} | — |
 | 国际化 i18n | {{react-i18next / vue-i18n / 不开}} | {{TIER}} | {{REASON}} | — |
 | 浏览器兼容性 | {{Vite 默认 / 用户指定}} | {{TIER}} | {{REASON}} | — |
+| 无障碍目标 | {{默认 WCAG 2.1 AA}} | {{TIER}} | 语义化 / 键盘可达 / 对比度 / 表单 label | — |
+| 性能预算 | {{Core Web Vitals 目标 + 首屏包体上限}} | {{TIER}} | 设计输入，非事后优化 | — |
 
 > 选型规则与各框架配套生态见 `references/tech-stack-guide.md`；框架每次必问、用户确认才定稿。
+
+### 2.1 关键决策记录（只记真有取舍的）
+
+| 决策 | 备选项 | 选定理由 | 影响与代价 |
+|------|--------|---------|-----------|
+| {{如：状态管理选 Zustand}} | {{RTK / Context}} | {{轻量、无 Provider 嵌套}} | {{生态小于 RTK，复杂中间件需自研}} |
 
 ---
 
@@ -78,10 +86,10 @@ flowchart TB
 
 ## 4. 页面清单（页面 = 路由）
 
-| 序号 | 路由 | 页面名称 | 所属模块 | 职责 | 对应原型文件 |
-|------|------|---------|---------|------|-------------|
-| 01 | {{/path}} | {{PAGE_A}} | {{MODULE_A}} | {{DUTY}} | {{proto.html}} |
-| 02 | {{/path/:id}} | {{PAGE_B}} | {{MODULE_B}} | {{DUTY}} | {{proto.html}} |
+| 序号 | 路由 | 页面名称 | 所属模块 | 职责 | 对应原型文件（结构基线） | 对应设计稿（视觉基准） |
+|------|------|---------|---------|------|------------------------|----------------------|
+| 01 | {{/path}} | {{PAGE_A}} | {{MODULE_A}} | {{DUTY}} | {{proto.html}} | {{设计稿/xxx.html；无设计稿写「回退原型（降级）」}} |
+| 02 | {{/path/:id}} | {{PAGE_B}} | {{MODULE_B}} | {{DUTY}} | {{proto.html}} | {{设计稿/xxx.html}} |
 
 ---
 
@@ -202,9 +210,31 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
 
 | 项 | 规范 |
 |----|------|
-| 设计 token 来源 | 有设计稿：`.spec/设计稿/design-system.md` 为唯一视觉来源（色彩/字号阶梯/间距 4px 网格/圆角阴影）；无设计稿：按 `references/css-guide.md` 基线建 `src/styles/variables.scss`，先确认后开发 |
+| 设计 token 来源 | 有设计稿：`.spec/设计稿/design-system.md` 为**视觉唯一来源**（色彩/字号阶梯/间距 4px 网格/圆角阴影）；无设计稿：按 `references/css-guide.md` 基线建 `src/styles/variables.scss`，先确认后开发 |
+| **token 搬运对账（方案必含）** | 设计稿是 HTML + Tailwind 类、实现是 CSS 变量，**载体不同必须对账**：开发期须把 `design-system.md` §7 Token 汇总逐条落 `src/styles/variables` 并核对**条数/值/命名**；本方案登记 §7 的 token 条数作为对账基线（如「§7 共 N 条」） |
+| 还原基准分工 | **结构对低保真原型、视觉对设计稿**（双基准定义见仓库根 `shared/baseline-terms.md`）；低保真原型**不承载视觉基准** |
 | 界面状态清单 | 按「10 大 UI 状态」核对：Skeleton/Loading/Success/Empty/Error/Disabled/PermissionDenied/NetworkError（通用）+ Streaming/PartialData（涉 AI 生成功能时）；逐页面声明适用状态及处理方案，写入模块文档 §9 |
 | 状态视觉基准 | 状态呈现对齐设计稿状态稿（design-system §5.10）；无状态稿时按组件库标准态并在方案中注明 |
+
+### 8.7 无障碍规范（a11y 是设计输入，非事后优化）
+
+| 项 | 目标 |
+|----|------|
+| 达标标准 | {{默认 WCAG 2.1 AA}}；对比度正文 ≥ 4.5:1（大字号 ≥ 3:1） |
+| 语义化 | 优先语义标签而非 ARIA 堆砌；表单控件有 label 且错误提示关联 |
+| 键盘可达 | 键盘可完成主流程；Tab 顺序合理、焦点可见、Esc 可关弹层 |
+| 动效 | 尊重 `prefers-reduced-motion` |
+| 验收 | Frontend-Dev 阶段 axe-core 扫描无严重问题（对账本节） |
+
+### 8.8 性能预算（验收对账目标）
+
+| 项 | 预算 |
+|----|------|
+| Core Web Vitals | {{LCP / INP / CLS 目标}} |
+| 首屏包体 | {{上限 KB（gzip）}} |
+| 策略 | 路由级懒加载 + 大依赖按需引入；图片尺寸/格式/懒加载；字体子集化 + `font-display`；大列表虚拟化或分页 |
+
+> 预算值在 Frontend-Dev S9 以构建产物分析 + Lighthouse/性能面板**实测对账**，不靠感觉。
 
 ---
 

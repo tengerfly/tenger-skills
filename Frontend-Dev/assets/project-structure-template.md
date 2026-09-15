@@ -59,7 +59,7 @@
     │   └── routes.ts           # 路由枚举/常量（与页面一一对应）
     ├── store/                  # 全局状态（按 FTDD：zustand / RTK）
     ├── styles/
-    │   ├── variables.scss      # 设计 token（色板/间距/字号/圆角/阴影——原型抽取）
+    │   ├── variables.scss      # 设计 token（色板/间距/字号/圆角/阴影——设计稿 design-system §7 抽取；无设计稿才取原型）
     │   ├── mixins.scss         # 断点/文本溢出等 mixin
     │   ├── global.scss         # reset + 全局样式
     │   └── theme.scss          # 主题覆盖（按需）
@@ -117,7 +117,7 @@
 | 基础设施 | 落地物 | 说明 |
 |---------|--------|------|
 | 请求封装 | `src/api/request.ts` | fetch + ApiError + token + 超时 + AbortController 取消 |
-| 样式 token | `src/styles/variables.scss` 等 | 从原型抽取的设计 token 先落地 |
+| 样式 token | `src/styles/variables.scss` 等 | 从设计稿 `design-system.md` §7 抽取的设计 token 先落地并与实现逐条对账；无设计稿才取原型 |
 | 路由 | `src/router/`（路由表 + 守卫 + 懒加载） | 页面 = 路由，与 FTDD 页面清单一一对应 |
 | 通用 hooks | `src/hooks/useFetch/useDebounce/useAuth` | 供各模块 hooks 复用 |
 | 错误兜底 | `src/App.tsx` 挂 ErrorBoundary | 渲染异常兜底 |

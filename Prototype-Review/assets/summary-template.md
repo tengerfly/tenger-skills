@@ -45,8 +45,10 @@
 
 | 问题编号 | 严重度 | 涉及页面/组件 | 问题摘要 | 根因分类 | 建议修改方 |
 |---|---|---|---|---|---|
-| ISSUE-001 | P0 | [页面/组件] | [简述] | [缺失/文案/闭环/质量/PRD矛盾] | Prototype-Design / PRD-Design |
-| ISSUE-002 | P1 | [页面/组件] | [简述] | [缺失/文案/闭环/质量/PRD矛盾] | Prototype-Design |
+| SUM-001 | P0 | [页面/组件] | [简述] | [缺失/文案/闭环/质量/PRD矛盾] | Prototype-Design / PRD-Design |
+| SUM-002 | P1 | [页面/组件] | [简述] | [缺失/文案/闭环/质量/PRD矛盾] | Prototype-Design |
+
+> 每条须附**建议方向**与**修复判据**（修到什么表现算过，供修改方与复核共用）；判据缺失的条目不得进任务清单。汇总编号 `SUM-xx`（按本表行序编）；任务清单沿用或重编 `ISSUE-xx`（维度报告编号 → `SUM-xx` → `ISSUE-xx` 映射在清单内标注）。
 
 ---
 
@@ -57,3 +59,14 @@
    - 确认无需修改或作为后续迭代的项标注为 `已忽略` 并注明理由；
 2. 用户确认后，任务清单交回对应 Skill（`Prototype-Design` 或 `PRD-Design`）执行定向修复；
 3. 修改方修复完毕后回填任务清单为 `已修复`，并触发复核。
+
+---
+
+## 五、沉淀判定（双向，放行后回填）
+
+| 方向 | 目标 skill | 落点 | 状态 |
+|---|---|---|---|
+| A · 防复发 | `Prototype-Design`（原型问题）/ `PRD-Design`（PRD 口径问题） | 错误表加行 / references 清单 / Gate 预检项 | 待处理 / 已沉淀 / 入池 |
+| B · 检出力 | `Prototype-Review` | `references/known-issue-patterns.md` 加模式（含检出方法） | 待处理 / 已沉淀 / 入池 |
+
+> P0 双向必沉；当场改则记目标 skill `CONTEXT.md` D-xx，改不了落 `issue/<目标 skill>/<日期>/`（来源=评审闭环）。

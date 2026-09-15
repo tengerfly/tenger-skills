@@ -1,6 +1,6 @@
 ---
 name: UI-UX-Design
-description: UI/UX 设计稿生成（Superdesign 底座）。依据 PRD + Prototype-Design 的布局清单与低保真原型，先推荐三套差异化风格方案，沉淀并确认设计规范（.superdesign/design-system.md）后，逐页生成布局零改动、去 AI 味、风格统一的设计稿 HTML，过质量门禁后归档 `.spec/设计稿/`。额度即预算，花钱动作先问。触发：生成设计稿/UI 设计/视觉稿/把原型变成设计稿。
+description: UI/UX 设计稿生成（Superdesign 底座）。依据 PRD + Prototype-Design 的布局清单与低保真原型，先推荐三套差异化风格方案，沉淀并确认设计规范（.superdesign/design-system.md）后，逐页生成布局零改动、反 AI 味、风格统一的设计稿 HTML，过质量门禁后归档 `.spec/设计稿/`。额度即预算，花钱动作先问。触发：生成设计稿/UI 设计/视觉稿/把原型变成设计稿。
 compatibility: Claude Code / Agent SDK / OpenCode
 ---
 
@@ -25,9 +25,10 @@ compatibility: Claude Code / Agent SDK / OpenCode
 |---|---|---|
 | **环境三件套（硬依赖）** | CLI 已装（`superdesign --version`）、账号已授权（`auth status`）、SOP 可读（`references/superdesign-sop.md`） | 任一不过 → 给安装指引并**阻塞**（环境问题不耗额度） |
 | 布局清单（载体级：宿主 / 入口 / 出口齐全、PRD 页面防丢弃） | 结构契约 | ⛔ 缺一阻塞；字段缺失就地问，**不得脑补** |
-| 低保真原型 HTML | 区块结构实物 | ⛔ 缺一阻塞 |
+| 低保真原型 HTML（+ `原型/README.md` 佐证端类型/跳转） | 区块结构实物 | ⛔ 缺一阻塞 |
 | PRD（有速查表先建索引） | 文案来源（按锚点取，**一字不差**） | 缺则按布局清单推进并标注 |
 | `.spec/设计评审/任务清单.md` | `已确认` 且修改方为本 skill 的任务逐条纳入 | 无则跳过 |
+| 浏览器工具（**不涉及**，仅截图增强） | 截图存 `screenshots/` | 不可用则降级并在归档 README 注明（策略见 `shared/browser-policy.md`） |
 
 **双输入校验**按 `assets/layout-inventory-contract.md` 执行。
 
@@ -46,7 +47,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 **3. 风格情报**：Superdesign 灵感库（`search-prompts` → `get-prompts --full`，先索引后取全文）；**案例库体系**按序检索（总索引 `references/case-library/00-README.md`）：`patterns/index.md` 高频模式 → `case-library/flows.md` 用户流与状态表达 → `layouts.md` / `components.md` / `interactions.md` → `case-library/design-systems.md` + `open-source-design-systems.md` 体系基线 → `style-case-library.md` 自有深案例与踩坑。外部资源取用前**验证可达与许可**；命中资源须**实抓提取**（`web_fetch` / `extract-website`，1~3 个/场景；失败标注跳过禁编造）；**参考 ≠ 照抄**，提取值仍须过步骤 5 用户确认；案例库更新由用户手动发起。
 
-**4. ◉ 风格决策 Gate**：三套**真实差异化**方案（配色 / 排版 / 密度 / 交互气质，禁止只换主色），默认文字 + 色板小样；**出稿对比花额度须用户同意**。参考站用 `extract-website --url --design-md` 提取 DNA，用户三选一（完全采用 / 借鉴融合 / 更新现有），**禁静默混搭**。
+**4. ◉ 风格决策 Gate**：三套**真实差异化**方案（配色 / 排版 / 密度 / 交互气质，禁止只换主色），默认文字 + 色板小样，按 `assets/style-proposal-template.md` 出；**出稿对比花额度须用户同意**（该通道在步骤 6 基线复刻出稿后执行，属本 Gate 的补充确认，完成后回填该模板 §六/§七）。参考站用 `extract-website --url --design-md` 提取 DNA，用户三选一（完全采用 / 借鉴融合 / 更新现有），**禁静默混搭**。
 
 **5. ◉ 设计规范 Gate**：选定风格按 `assets/design-system-template.md` 展开（原则 / 色彩 / 字体 / 间距 4px / 圆角阴影 / 组件规范 / 界面状态 / 页面宽度分层 / 动效 / CSS token），对齐开源基线；布局清单 / 原型中出现空、错、加载、禁用等状态的页面，状态稿按模板 §5.10 一并纳入；用户确认后落 `.superdesign/design-system.md`，副本进 `.spec/设计稿/`。**规范未确认禁任何生成调用**；生成必带保真约束语（只使用 design-system 定义的字体 / 颜色 / 间距 / 组件，不得引入规范外视觉）。
 
@@ -56,7 +57,9 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 **8. ◉ 质量门禁（全绿才放行）**：按 `references/design-review-gate.md` 六查——① 布局零改动（多删改返工）② 规范一致性（规范外视觉值返工）③ 反 AI 味 12 条（§4.3）④ 文案保真（与 PRD / 布局清单逐字一致、无杜撰）⑤ 布局基线与全站组件不变量 ⑥ 云端稿同步核验。
 
-**9. 落盘归档**：`get-design --draft-id --output .spec/设计稿/<页面>.html`；按 `assets/archive-readme-template.md` 写 README（页面 / projectId / draftId / 规范出处 / 端类型）；回填评审任务清单（`已确认` → `已修复` + 修改说明）；**回填后须触发 `UI-UX-Review` 复核，不得自判通过**（闭环与上限规则见 `shared/anti-deadloop.md` §一/§二）；埋点收尾。
+**9. 落盘归档**：`get-design --draft-id --output .spec/设计稿/<页面>.html`；按 `assets/archive-readme-template.md` 写 README（页面 / projectId / draftId / 规范出处 / 端类型 / **§7 token 条数对账基线**）；回填评审任务清单（`已确认` → `已修复` + 修改说明）；**回填后须触发 `UI-UX-Review` 复核，不得自判通过**（闭环与上限规则见 `shared/anti-deadloop.md` §一/§二）；埋点收尾。
+
+> **下游交接口径**：`design-system.md` §7「CSS 变量 Token 汇总」是下游 Frontend-Tech-Design（§8.6 登记条数）与 Frontend-Dev（`styles/variables` 逐条对账）的**视觉唯一来源**；低保真原型不承载视觉基准（见 `shared/baseline-terms.md`）。
 
 ## 四、关键规范
 
@@ -78,7 +81,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - **契约**：完整 HTML 文档（`DOCTYPE` → `/html`）；Tailwind 类样式；图标用 `<iconify-icon>` 自带 CDN script；`body` 无 class、布局在一个根 div；每个 `<a>` 有唯一描述性 id 且不嵌套；链接用完整 `https` 或 `#hash`，**禁相对路径**。违规被拒或 `warnings[]` 必须处理。
 - **闭环**：本地改完 → 本地渲染请用户确认 → **同一轮内 `import-design-draft` 回传云端** → `get-design` 核 version 递增并同步 README。**云端（宿主入口指向的 draft URL）是评审单一事实源**；只改本地 = 用户看到旧稿，「待回传」不跨会话。
 
-**4.3 去 AI 味（12 条 + 官方聚类参照）**：
+**4.3 反 AI 味（12 条 + 官方聚类参照）**：
 
 > **官方聚类参照（Anthropic frontend-design）**：以下五组特征**成组出现**时是 AI 生成的最强破绽——① 暖奶油底（≈`#F4F1EA`）+ 高对比衬线标题 + 赤陶点缀（≈`#D97757`，容易被读成「破绽色」）；② 近黑底 + 单一高饱和酸绿 / 朱红点缀；③ 大报式版式（发丝细线、零圆角、密集分栏）；④ SaaS 卡片套件（内容切成完全相同的圆角卡片、统一 blur 阴影、渐变洗色）；⑤ 模板化五金件（每个标题上方全大写 eyebrow、中点连接元信息「A · B · C」、`WORD — fragment` 标签、带色调近黑、等宽字体做小号数据标签、链接后追加 `→`）。
 > **判据**：这些特征对某些 brief 是**合法选择**，但它们是**默认值而非选择**，且**无论主题都会出现**。**brief 已明确视觉方向的地方严格照做（brief 原话优先）；brief 留白的地方，不要把自由度花在这些默认值上。**
@@ -143,7 +146,7 @@ superdesign upload-asset <file> --project-id <id> --purpose brand|content|refere
 | 小修花额度重生成 | 走直编 |
 | branch 未选就 replace | 先让用户选 |
 | 方案只换主色 | 真实差异 |
-| 出现无出处按钮 / 区块 | 零加戏 + 布局冻结 |
+| 出现无出处按钮 / 区块 | 零加戏 + 布局零改动 |
 | 视觉值出规范 | 门禁返工 |
 | 重复建项目 | `resume.json` / fetch 找回 |
 | import 用相对路径 | 只 `https` / `data:`，先 `upload-asset` |
@@ -153,7 +156,7 @@ superdesign upload-asset <file> --project-id <id> --purpose brand|content|refere
 
 - `references/superdesign-sop.md`、`design-review-gate.md`、`open-source-design-systems.md`、`style-case-library.md`、`case-library/`（00-README 总索引 + design-systems / layouts / components / interactions / flows / a11y-checklist）、`patterns/index.md`
 - `assets/layout-inventory-contract.md`、`design-task-list-template.md`、`style-proposal-template.md`、`design-system-template.md`、`archive-readme-template.md`
-- `shared/anti-deadloop.md`、`shared/baseline-terms.md`（仓库根）：公共约定
+- `shared/anti-deadloop.md`、`shared/baseline-terms.md`、`shared/receiving-review.md`（仓库根）：公共约定（含接收评审纪律）
 - `.spec/设计稿/` 交付目录；`.superdesign/` 工作目录
 
 ## 七、运行问题埋点

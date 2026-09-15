@@ -27,7 +27,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 1. **输入**：解析赛道类型（红海/内容/灰区/出海/数据稀缺）、目标市场与对标项；派活四件套（目标/边界/历史包袱/验收标准）缺一先问，不脑补。
 2. **调研与草稿**：全球双语检索；按五层框架推演；执行数据红线，产出 11 模块候选草稿。
-3. **测试验收（强制）**：按 `assets/eval-template.md` 三段式评估；门禁：`PASS` = P0=0 且 P1(Open)=0；`CONDITIONAL` = P0=0 但 P1(Open)≥1 → 就地补齐再验（P1(Open)=1 不属 PASS，同样补齐）；命中 P0 即 `FAIL` 阻断重构，禁止输出。
+3. **测试验收（强制）**：按 `assets/eval-template.md` 三段式评估；门禁：`PASS` = P0=0 且 P1(Open)=0；`CONDITIONAL` = P0=0 但 P1(Open)≥1 → 就地补齐再验（P1(Open)=1 不属 PASS，同样补齐）；命中 P0 即 `FAIL` → **阻断输出并回炉重构**。
 4. **交付**：双文档落盘上述目录；控制台同步呈现核心提炼与 Gate 裁决摘要。
 
 ## 数据红线（最高优先级）

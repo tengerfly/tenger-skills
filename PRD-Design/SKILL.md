@@ -172,7 +172,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - `references/`：`prd-structure`、`mermaid-patterns`、`gherkin-guide`、`tech-feasibility-guide`、`socratic-grilling`
 - `references/case-library/`：方法论框架库（frameworks / prd-templates / zh-cases，按需加载）
 - `assets/`：`overview-template`、`module-template`、`quickref-template`、`eval-template`
-- `shared/anti-deadloop.md`（仓库根）：门禁闭环与上限规则
+- `shared/anti-deadloop.md`、`shared/receiving-review.md`（仓库根）：门禁闭环与上限规则、接收评审纪律（先验证再实施、逐项测、禁感谢式回应）
 - `.spec/PRD/VN/`：产出目录
 
 ## 七、运行问题埋点

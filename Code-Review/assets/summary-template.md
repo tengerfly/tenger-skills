@@ -25,3 +25,12 @@
 
 ## 六、备注
 只审不改；P0 补丁见角色文档第四节。
+
+## 七、沉淀判定（双向，放行后回填）
+
+| 方向 | 目标 skill | 落点 | 状态 |
+|---|---|---|---|
+| A · 防复发 | `Backend-Dev` / `Frontend-Dev` | 错误表加行 / references 清单 / Gate 预检项 | 待处理 / 已沉淀 / 入池 |
+| B · 检出力 | `Code-Review` | `references/known-issue-patterns.md` 加模式（含检出方法） | 待处理 / 已沉淀 / 入池 |
+
+> P0 双向必沉；当场改则记目标 skill `CONTEXT.md` D-xx，改不了落 `issue/<目标 skill>/<日期>/`（来源=评审闭环）。⑬-前 还原度问题由 `Fidelity-Review` 出、交本 skill 统一执行沉淀判定（含其 `known-issue-patterns.md`）。

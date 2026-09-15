@@ -65,7 +65,7 @@ flowchart TD
 
 ## 全流程编排
 
-[`Workflow`](./Workflow) 是**可选的编排 Skill**：把 14 个专业 Skill 串成一条链，并支持**从任意节点起跑**。
+[`Workflow`](./Workflow) 是**可选的编排 Skill**：把 14 个链上专业 Skill 串成一条链，并支持**从任意节点起跑**。
 
 **核心原则**：一条链，任意起点，逐步推进，产物 ⇄ 评审成环，收敛才下行，随时可停。
 
@@ -154,7 +154,7 @@ flowchart TD
 
 | Skill | 目录 | 说明 | 状态 |
 |-------|------|------|------|
-| **全流程编排（总控）** | [**Workflow**](./Workflow) | 把 14 个专业 Skill 串成流水线：调度 + 状态（`.spec/PIPELINE.md`）+ **门禁闭环**（产物 ⇄ 评审成环、P0/P1 清零放行、上限 3 强制放行）+ **双向沉淀** | ✅ 完成 |
+| **全流程编排（总控）** | [**Workflow**](./Workflow) | 把 14 个链上专业 Skill 串成流水线：调度 + 状态（`.spec/PIPELINE.md`）+ **门禁闭环**（产物 ⇄ 评审成环、P0/P1 清零放行、上限 3 强制放行）+ **双向沉淀** | ✅ 完成 |
 | **Skill 元优化（链外）** | [**Skill-Optimizer**](./Skill-Optimizer) | 记录 / 挖掘 / 体检 / 优化各 Skill + 从集中池 `bug-patterns/` 与**评审闭环沉淀**提炼规则反哺方案/开发/评审 skill：问题入 `issue/` 池（埋点 + 兜底 + 聊天挖掘 + 模式④体检 + 评审闭环），模式④七维自洽体检（术语 / 逻辑闭环 / 文句 / 声明-流程 / 跨位置同步 / 简洁不落俗 / 安全审计）出问题清单逐条裁决，全方位优化沉淀，标准先行、长期迭代 | ✅ 完成 |
 | 竞品分析 | [Competitive-Analysis](./Competitive-Analysis) | 竞品调研、对比与分析 | ✅ 完成 |
 | 产品需求文档（PRD） | [PRD-Design](./PRD-Design) | PRD 编写 | ✅ 完成 |
@@ -163,12 +163,12 @@ flowchart TD
 | 原型评审 | [Prototype-Review](./Prototype-Review) | 原型与 PRD 一致性、页面完整性、交互闭环及原型缺陷评审（浏览器截图核验硬依赖） | ✅ 完成 |
 | UI/UX 设计稿 | [UI-UX-Design](./UI-UX-Design) | 以 Superdesign 为底座生成设计稿：风格决策 Gate（三套方案）→ 生成前沉淀设计规范 → 逐页生成（布局零改动 + 去 AI 味）→ 质量门禁 → 归档 `.spec/设计稿/` | ✅ 完成 |
 | UI/UX 设计稿评审 | [UI-UX-Review](./UI-UX-Review) | 设计稿四维独立复审（结构零改动 / 文案一致 / 规范一致 / 渲染质量 + 可点击性），浏览器渲染硬依赖，作为 UI-UX-Design 内部门禁的第三方兜底；防评审死循环三招内建 | ✅ 完成 |
-| 页面还原度评审 | [Fidelity-Review](./Fidelity-Review) | 前端实现页 vs UI 设计稿的还原度评审（视觉还原 + 交互还原 + 超长文案专项；只审不改、截图必证、每条附修改建议；双通道基准 `.spec/设计稿/` 优先）；三模式：独立出 `.spec/页面还原评审/` 报告+任务清单 / 被 Testing 内嵌出轻量清单 / 在 `Code-Review` 前端批次（⑬-前）**并行**参审、问题合并进 `.spec/代码评审/任务清单.md` | ✅ 完成 |
+| 页面还原度评审 | [Fidelity-Review](./Fidelity-Review) | 前端实现页 vs UI 设计稿的还原度评审（视觉还原 + 交互还原 + 超长文案专项；只审不改、截图必证、每条附修改建议；**设计稿=视觉唯一应然**，三通道基准：A `.spec/设计稿/` 优先 / B 外部稿 / C 无设计稿回退原型【降级】）；三模式：独立出 `.spec/页面还原评审/` 报告+任务清单 / 被 Testing 内嵌出轻量清单 / 在 `Code-Review` 前端批次（⑬-前）**并行**参审、问题合并进 `.spec/代码评审/任务清单.md` | ✅ 完成 |
 | 后端技术方案 | [Backend-Tech-Design](./Backend-Tech-Design) | 后端技术方案文档（TDD）编写 | ✅ 完成 |
 | 前端技术方案 | [Frontend-Tech-Design](./Frontend-Tech-Design) | 前端技术方案文档（FTDD）编写 | ✅ 完成 |
 | 技术方案评审 | [Tech-Review](./Tech-Review) | 后端/前端技术方案评审（闭环 + 关联关系）；支持分端单批（⑩-后 / ⑩-前） | ✅ 完成 |
 | 后端开发 | [Backend-Dev](./Backend-Dev) | 后端代码开发（微服务 + NestJS 优先 + Monorepo，维护性优先） | ✅ 完成 |
-| 前端开发 | [Frontend-Dev](./Frontend-Dev) | 前端代码开发（依据 PRD + 原型 + TDD + FTDD，还原度高 + 模块化 + 测试先行 + 不确定即问 + 功能点提交 + monorepo 共享类型 + lint 门禁 + 浏览器硬预检 + 进度文档） | ✅ 完成 |
+| 前端开发 | [Frontend-Dev](./Frontend-Dev) | 前端代码开发（依据 PRD + 原型【结构基线】+ 设计稿【视觉基准】+ TDD + FTDD；还原度优先：视觉对设计稿、结构对原型，含 token 搬运对账 + 每页设计稿并排截图；模块化 + 测试先行 + 不确定即问 + 功能点提交 + monorepo 共享类型 + lint 门禁 + 浏览器硬预检 + 进度文档） | ✅ 完成 |
 | 代码评审 | [Code-Review](./Code-Review) | 后端/前端代码评审（接口契约一致性 + 可运行性 + 架构合规，P0 附建议补丁）；支持分端单批，前端批次固定并行 Fidelity-Review 做还原度审查 | ✅ 完成 |
 | 项目测试 | [Testing](./Testing) | 依据 PRD + UI 设计稿本地跑真实项目做全流程测试（功能全状态 + 全点击 / 样式 midscenejs 视觉断言 + UI 还原度检查·内嵌 Fidelity-Review / 慢接口识别），输出分级测试问题文档 | ✅ 完成 |
 | Bug 诊断与修复 | [Bug-Fix](./Bug-Fix) | 日志驱动的 Bug 诊断与修复委托闭环（链外）：前后端日志入手 → 复现确认 → 根因定位（证据链三段）→ 根因 Gate → 只交付定位报告+修复任务清单，逐环委托方案/开发/回归；不产方案、不改码、不做深度测试；承接报障/Testing/Code-Review 可运行性问题 | ✅ 初版定稿 |

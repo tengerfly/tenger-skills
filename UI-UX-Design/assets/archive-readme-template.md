@@ -9,6 +9,7 @@
 | 端类型 | {{Web / 移动 / 双端}} |
 | 风格方案 | {{方案名（三选一记录 + 一句气质描述）}} |
 | 设计规范 | `.superdesign/design-system.md`（本目录 `design-system.md` 为同步副本） |
+| **token 对账基线** | design-system §7 共 **{{N}}** 条 CSS 变量（下游 Frontend-Dev 的 `styles/variables` 须逐条对账：条数/值/命名） |
 | Superdesign 项目 | projectId `{{…}}` · 画布 URL `{{…}}` |
 | 输入来源 | PRD：`{{路径}}` · 布局清单：`{{路径}}` |
 | 生成日期 / 版本 | {{V1 / V2…}} |

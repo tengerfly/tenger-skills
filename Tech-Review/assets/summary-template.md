@@ -57,3 +57,14 @@
 | **P2 建议** | {{N2}} | 表达优化 / 术语不统一 / 越界内容 / 非关键细节 |
 
 > 本 Skill 不做通过 / 不通过裁决，以上清单供用户决策后续修改。
+
+---
+
+## 6. 沉淀判定（双向，放行后回填）
+
+| 方向 | 目标 skill | 落点 | 状态 |
+|---|---|---|---|
+| A · 防复发 | `Backend-Tech-Design` / `Frontend-Tech-Design` | 错误表加行 / references 清单 / Gate 预检项 | 待处理 / 已沉淀 / 入池 |
+| B · 检出力 | `Tech-Review` | `references/known-issue-patterns.md` 加模式（含检出方法） | 待处理 / 已沉淀 / 入池 |
+
+> P0 双向必沉；当场改则记目标 skill `CONTEXT.md` D-xx，改不了落 `issue/<目标 skill>/<日期>/`（来源=评审闭环）。

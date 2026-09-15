@@ -1,12 +1,12 @@
 ---
 name: Workflow
-description: 全流程开发编排。把 14 个专业 Skill 串成链（竞品→PRD→评审→原型→UI→方案→开发→代码评审→测试），每个节点都可作起点；默认从 ① 跑 0-1 全流程，已有 PRD 则从 ④ 起跑，只点名某节点则只跑该节点并停下。每个「产物 ⇄ 评审」节点内成门禁闭环：P0/P1 清零才进下一节点（满 3 轮清 P0 后放行）；闭环问题双向沉淀反哺 skill。每完成一节点停下等用户决定（继续/跳过/重做/停）。触发：从零开发、按流程开发、根据 PRD 生成原型/走后续、按方案写代码、评审代码、测试项目、继续、接着做。
+description: 全流程开发编排。把 14 个链上专业 Skill 串成链（竞品→PRD→评审→原型→UI→方案→开发→代码评审→测试），每个节点都可作起点；默认从 ① 跑 0-1 全流程，已有 PRD 则从 ④ 起跑，只点名某节点则只跑该节点并停下。每个「产物 ⇄ 评审」节点内成门禁闭环：P0/P1 清零才进下一节点（满 3 轮清 P0 后放行）；闭环问题双向沉淀反哺 skill。每完成一节点停下等用户决定（继续/跳过/重做/停）。触发：从零开发、按流程开发、根据 PRD 生成原型/走后续、按方案写代码、评审代码、测试项目、继续、接着做。
 compatibility: Claude Code / Agent SDK / OpenCode
 ---
 
 # 全流程开发编排 Skill
 
-> 只做三件事：记账（PIPELINE.md）、调度（按序启用子 skill）、守门（前置检查 + 门禁闭环判定 + 沉淀记账）。干活的是 14 个子 skill。
+> 只做三件事：记账（PIPELINE.md）、调度（按序启用子 skill）、守门（前置检查 + 门禁闭环判定 + 沉淀记账）。干活的是 14 个**链上**子 skill（链外 `Fidelity-Review` / `Bug-Fix` 按需协同，见 §八）。
 > 原则：一条链，任意起点，逐步推进，产物 ⇄ 评审成环，收敛才下行，随时可停。
 > 链外修复闭环：`Bug-Fix`（bug 诊断 + 修复委托）不入主链、独立触发；⑭ 测试发现的可运行性问题可转 `Bug-Fix` 走「定位→方案→开发→回归」修复闭环。
 
@@ -40,7 +40,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ## 二、节点速查
 
-前置缺失即阻塞。环境依赖：浏览器工具（Playwright → browser-use → 其他）——⑤⑦⑨⑫⑭ 与 ⑬-前（还原度审查）**硬依赖**（全无报错停），⑧⑩ **软检测**；⑥ UI/UX 设计 = Superdesign 底座**硬依赖**（CLI + 授权 + SOP 可读，缺一阻塞，浏览器仅为截图可选增强）。
+前置缺失即阻塞。环境依赖（级别与动作）：⑤⑦⑨⑫⑭ 与 ⑬-前（还原度审查）**硬依赖**（全无报错停），⑧⑩ **软检测**；检测顺序、两级行为与报错文案见仓库根 `shared/browser-policy.md`，此处不重复定义。⑥ UI/UX 设计 = Superdesign 底座**硬依赖**（CLI + 授权 + SOP 可读，缺一阻塞，浏览器仅为截图可选增强）。
 
 | # | 节点 | 调用 | 前置（缺失阻塞） | 产出 |
 |---|---|---|---|---|
@@ -57,8 +57,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
 | ⑩-前 | 技术方案评审（前端） | Tech-Review（前端视角）⇄ ⑨（闭环） | FTDD + PRD | `.spec/技术方案评审/` |
 | ⑪ | 后端开发 | Backend-Dev | TDD + ⑩ 已放行 | 代码 + PROJECT.md + PLAN.md |
 | ⑬-后 | 代码评审（后端） | Code-Review（后端视角）⇄ ⑪（闭环） | 后端代码 | `.spec/代码评审/` |
-| ⑫ | 前端开发 | Frontend-Dev | FTDD + ⑬-后已放行 | 代码 + PROJECT.md |
-| ⑬-前 | 代码评审（前端 ∥ 还原度） | Code-Review（前端视角）∥ Fidelity-Review ⇄ ⑫（闭环） | 前端代码 + 设计稿 | `.spec/代码评审/` |
+| ⑫ | 前端开发 | Frontend-Dev | FTDD + ⑬-后已放行（另需输入：设计稿=**视觉基准**、原型=**结构基线**；设计稿缺少不阻塞，但须明示视觉基准降级） | 代码 + PROJECT.md |
+| ⑬-前 | 代码评审（前端 ∥ 还原度） | Code-Review（前端视角）∥ Fidelity-Review ⇄ ⑫（闭环） | 前端代码 + 设计稿（视觉唯一应然；缺失则降级回退原型并明示） | `.spec/代码评审/` |
 | ⑭ | 测试 | Testing | 可运行代码 + PRD + ⑬ 已放行 | `.spec/测试/`（发现可运行性问题 → 转 `Bug-Fix`） |
 
 下表按**执行顺序**排列（⑩/⑬ 分端两批后编号不单调，一律以本表顺序为准）。
@@ -145,7 +145,7 @@ PIPELINE：<路径>
 **分端与并行**：
 
 - ⑩-后 放行 → 才起 ⑨；⑩-前 放行 → 才起 ⑪；⑬-后 放行 → 才起 ⑫；⑬-前 放行 → 才起 ⑭。
-- ⑬-前 内：Code-Review（前端视角）与 Fidelity-Review **并行**，两侧问题合并进**同一份** `.spec/代码评审/任务清单.md`（还原度问题标「来源=Fidelity-Review」），共用轮次计数与放行判定；回退方统一为 Frontend-Dev。
+- ⑬-前 内：Code-Review（前端视角）与 Fidelity-Review **并行**，两侧问题合并进**同一份** `.spec/代码评审/任务清单.md`（还原度问题标「来源=Fidelity-Review」），共用轮次计数与放行判定；回退方统一为 Frontend-Dev。**还原度判定基准：视觉以设计稿为唯一应然、结构对原型**（双基准见 `shared/baseline-terms.md`）；有设计稿却只与原型比对视觉 = 无效还原结论。
 - **并行派发四要素**（同一响应内发多个调用 = 并行）：① 具体范围 ② 明确目标 ③ 约束（不得改范围外） ④ 期望产出。范围过宽、无上下文、无约束、产出含糊 = 派发无效。
 - **并行结果必须收口验证**：读每份产出 → 查**冲突**（是否改了同一处 / 结论互斥）→ 跑一次**全量**复核 → **抽查**（并行评审者会犯系统性错误，不能全量采信；结论须主线独立复核，见 `shared/evidence-before-claims.md`）。
 
@@ -172,6 +172,7 @@ PIPELINE：<路径>
 | TDD/FTDD 或前后端并行 | 写一个审一个：⑧ 清零起 ⑨、⑪ 清零起 ⑫ |
 | ⑩⑬ 合并一次性审 | 分端两批：⑩-后/⑩-前、⑬-后/⑬-前 |
 | 前端代码评审漏还原度 | ⑬-前 = Code-Review（前端）∥ Fidelity-Review |
+| 有设计稿却按原型判视觉还原 | 视觉唯一应然 = 设计稿；原型只判结构（`shared/baseline-terms.md`） |
 | 并行结果直接采信 | 收口验证：查冲突 + 跑全量 + 抽查 |
 | 闭环问题不沉淀 | 每闭环做沉淀判定，P0 双向必沉 |
 | 沉淀改结构 / 改被审产物 | 只做增量防复发规则；结构性问题入池 |
@@ -184,7 +185,7 @@ PIPELINE：<路径>
 - `assets/pipeline-template.md`
 - 同级子 skill：Competitive-Analysis、PRD-Design、PRD-Review、Prototype-Design、Prototype-Review、UI-UX-Design、UI-UX-Review、Backend-Tech-Design、Frontend-Tech-Design、Tech-Review、Backend-Dev、Frontend-Dev、Code-Review、Testing
 - 链外（不入主链，独立触发）：`Fidelity-Review`（还原验收；⑭ 内嵌 + ⑬-前 并行）、`Bug-Fix`（修复闭环，承接 ⑭ 发现的可运行性问题）
-- 公共约定：`shared/anti-deadloop.md`（门禁闭环 / 上限 3 / 分级 / 沉淀）、`shared/evidence-before-claims.md`（取证口径）
+- 公共约定：`shared/anti-deadloop.md`（门禁闭环 / 上限 3 / 分级 / 沉淀）、`shared/browser-policy.md`（浏览器两级策略 / 检测顺序 / 报错文案）、`shared/baseline-terms.md`（双基准术语）、`shared/evidence-before-claims.md`（取证口径）
 - 产物归档：被开发项目 `.spec/`；竞品分析产物 `.spec/<主题>竞品分析/`
 
 ## 九、运行问题埋点

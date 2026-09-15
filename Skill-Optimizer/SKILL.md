@@ -132,7 +132,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 1. **粒度 = 一类问题**：沉淀类别级通用判据/检查项/防复发规则，不是单点案例；单点只作附注。自问能否防「这一类」再犯。
 2. **双向 = 一个问题的两端**：门禁闭环沉淀必须同时给 **A 产出方 skill**（防复发）与 **B 评审 skill**（检出力 · `references/known-issue-patterns.md`）；只沉一端算未完成。P0 双向必沉。
-3. **落点 = 先 tenger-skills 源仓库，再同步 CodeBuddy 副本**：任何沉淀先写 `D:\project\agent-project\tenger-skills`；同步到 `C:\Users\15136\.codebuddy\skills\` 同名文件，用哈希校验。`issue/` 与 `bug-patterns/` 双池都在源仓库根（集中池），不外发部署（部署副本只含 skill 文件，不含数据池）。
+3. **落点 = 先 tenger-skills 源仓库，再同步生效客户端副本**：任何沉淀先写 `D:\project\agent-project\tenger-skills`；再同步到**当前生效客户端**的 skills 目录（ZCode：`C:\Users\15136\.zcode\skills\`，经 junction 指向 `C:\Users\15136\.codebuddy\skills\`）同名文件，用哈希校验。`issue/` 与 `bug-patterns/` 双池都在源仓库根（集中池），不外发部署（部署副本只含 skill 文件，不含数据池）。
 4. **模板**：评审方案例库结构用 `shared/templates/known-issue-patterns-template.md`；issue 字段用 `assets/issue-template.md`。
 5. **外部参考吸收留痕**：吸收外部 skill 仓库（如 sanyuan-skills）时，**采纳与不采纳**的做法都记入 `assets/skill-writing-standard.md` §七（含理由），防后续重复讨论；吸收点按「标准层 → 元技能层 → 具体 skill 层」逐层落地，逐层记 D-xx。
 

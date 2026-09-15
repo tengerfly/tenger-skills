@@ -12,7 +12,7 @@
 
 | 术语 | 定义 | 排除 |
 |---|---|---|
-| 还原双基准 | 结构=低保真原型；视觉=设计稿（缺失时原型收敛） | 不是只对原型还原 |
+| 还原双基准 | 结构=低保真原型；视觉=设计稿（**设计稿为视觉唯一应然，含 token 搬运对账**；无设计稿才回退原型并明示降级） | 不是只对原型还原；**有设计稿却按原型做视觉 = 违规** |
 | 功能点 | 可独立验收/提交的单元 | 不是一行代码 |
 | 组件抽离铁律 | 模块内 ≥2 次 → features/<模块>/components/；跨模块 → src/components/ | 编码当下抽离，禁先复制后重构 |
 | hooks 优先 | 逻辑抽 hooks，组件只渲染；数据返回 `{data/list, loading, error, refetch}` | 业务组件不直接 import api |
@@ -46,6 +46,7 @@
 | D-13 | 09-10 | 门禁闭环配套：步骤 11 交付补「回填 `.spec/代码评审/任务清单.md` 归本 skill 的已确认项 → 重跑 `Code-Review` 复核（含 Fidelity-Review 还原度项），不得自判通过」；满 3 轮按仓库根 `shared/anti-deadloop.md` §二 处理 | Workflow 门禁闭环改造配套（用户要求前端代码评审固定带还原度 + 循环到清零） | ✅ |
 | D-14 | 09-10 | 吸收外部精华：步骤 10「全局一致性」扩为「**全局一致性 + 质量验收**」——①**性能验收对预算**（构建产物分析 + Lighthouse/性能面板核对 Core Web Vitals 与首屏包体，大列表/图片/字体/按需加载逐项确认，**结论要有实测数据**）；②**无障碍验收**（axe-core 无严重问题、键盘可完成主流程含 Tab 顺序与焦点可见、语义化与表单 label、对比度 AA）；③两项结果写进 PROJECT.md 留痕（对接 `shared/evidence-before-claims.md`）。另同日早前已落计划规范与接收评审（步骤 6/1） | 来源：`inskillflow/claude-code-skills` 的 `frontend-developer`（Core Web Vitals / WCAG AA / axe-core / 审计驱动验证） | ✅ |
 | D-15 | 09-10 | **结构重构（统一骨架）**：章节 15 → 7——§一 定位与铁律（Iron Law「设计稿是唯一基准，禁止自创」+ 铁律瘦身 8 条）；§二 输入与前置（表格化，含产出位置必问 / 评审清单与接收评审纪律 / 浏览器硬依赖）；§三 主流程 10 步（**组件抽离落地检查并入 S7 编码当下**；S9 = 一致性 + 性能验收 + 无障碍验收）；§四 关键规范 4.1~4.8（端差异适配 / monorepo 与共享类型 / 模块化与组件抽离 / 代码规范 / 接口实现 / 测试 / 还原度校验 / 不确定即问）；§五 错误表 / §六 资源 / §七 埋点。old-vs-new 审计：原 15 章内容全部有归属，无功能丢失 | 用户要求：整理成顺畅流程（Skill-Optimizer 全量体检） | ✅ |
+| D-16 | 09-15 | **视觉基准口径纠偏（P0）**：①铁律 6、§一角色、§二输入表、S4、§4.7 全部改为「**设计稿是视觉唯一应然**，原型只作结构对照」，删除「基准=原型，有设计稿时加开」的降级语气；②§4.7 明确必须并排「设计稿 ↔ 实现页」，只对原型比对不算还原完成；③S4 新增 **token 搬运对账（REQUIRED）**——design-system §7 ↔ `styles/variables` 逐条核对条数/值/命名，记录进 PROJECT.md；④S6 DoD 与 S5 Scope Gate 补还原证据与基准标注；⑤错误表加「有设计稿却按原型做视觉」「跳过 token 对账」两行；⑥`references/fidelity-guide.md` 重写（基准口径表按维度标注对照基准、脚本模板加 `DESIGN_BASE`、结论表加视觉基准行、失败模式加第 6/7 条）；⑦templates/skills 同步（module-code / project-status / project-structure / tech-stack-guide / code-style-guide / README） | 用户反馈：设计稿 OK 但前端画出来差别大；根因 = `fidelity-guide` 与 §4.7 主述以低保真原型为视觉基准（原型仅中性色+单一主色+基础字号），比对必过而视觉必然走样；中央口径 `shared/baseline-terms.md` 同批补「还原度定义 + 下游执行口径 + token 对账」 | ✅ |
 
 ## 四、待决问题
 

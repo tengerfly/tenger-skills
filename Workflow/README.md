@@ -28,7 +28,7 @@
 
 ## 二、节点速查（要点）
 
-每节点前置缺失即阻塞；⑩/⑬ 分端两批执行；浏览器硬依赖 ⑤⑦⑨⑫⑭ 与 ⑬-前，软检测 ⑧⑩；⑥ Superdesign 三件套硬依赖、⑥⑦ 可选。⑭ 发现可运行性问题 → 转 `Bug-Fix`。详见 SKILL.md 与仓库根 `shared/anti-deadloop.md`。
+每节点前置缺失即阻塞；⑩/⑬ 分端两批执行；浏览器硬依赖 ⑤⑦⑨⑫⑭ 与 ⑬-前，软检测 ⑧⑩（检测顺序与两级行为见仓库根 `shared/browser-policy.md`）；⑥ Superdesign 三件套硬依赖、⑥⑦ 可选。⑭ 发现可运行性问题 → 转 `Bug-Fix`。详见 SKILL.md 与仓库根 `shared/anti-deadloop.md`。
 
 ## 三、目录
 

@@ -104,7 +104,7 @@ export function UserTable({ users, loading = false, onDelete, onRowClick }: User
   - 复杂业务规则 / 非显而易见逻辑：why；
   - 关键技术点（竞态取消 / 缓存失效 / 权限）：说明方案与依据；
   - 状态/枚举：注释每个值的业务含义；
-  - 与原型/方案不一致处：说明原因（便于还原核对时追溯）。
+  - 与设计稿/原型/方案不一致处：说明原因（便于还原核对时追溯）。
 - **传参必注（硬性要求）**：**方法/函数/hooks/组件只要有参数，就必须写明每个参数的作用**——用 JSDoc `@param` 逐条说明「是什么、取值含义、边界/默认值」；返回非显而易见时用 `@returns`；组件 props 在 interface 字段上逐条注释：
   ```tsx
   /**
@@ -198,7 +198,7 @@ export function useCancelOrder(orderId: string) {
 ```
 
 - 布局优先用 flex/grid，避免负 margin / 绝对定位硬凑；响应式用 `mixins.scss` 断点 mixin；
-- 还原度：间距/字号与原型不一致 = 未还原——按 fidelity-guide 逐项核对。
+- 还原度：间距/字号与**设计稿**不一致 = 未还原（有设计稿时）——按 fidelity-guide 逐项核对。
 
 ---
 

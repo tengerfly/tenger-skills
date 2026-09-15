@@ -111,14 +111,14 @@ compatibility: Claude Code / Agent SDK / OpenCode
 | 只问做什么，不问数据归属/一致性边界 | 补边界拷问（socratic-grilling 领域节） |
 | 关键链路只设计正常主路径 | 逐节点补失败/回滚/幂等/补偿 |
 | 增量修订只改模块文档、总文档同口径句漏同步 | 修订后对被改关键词全文档 grep 一遍核对各处口径（TDD V2 复核 R-01 教训） |
-| 新增内层预算（超时/步数）与既有外层预算叠床架架 | 预算分层清单化：数值内<外 + 外层击穿时内层终态回填责任方写明（BE-07/R-02 教训） |
+| 新增内层预算（超时/步数）与既有外层预算叠床架屋 | 预算分层清单化：数值内<外 + 外层击穿时内层终态回填责任方写明（BE-07/R-02 教训） |
 
 ## 六、资源清单
 
 - `references/tdd-structure.md`、`tech-stack-guide.md`、`decision-rules.md`、`module-design-guide.md`、`data-model-guide.md`、`socratic-grilling.md`（领域节；通用核心 `shared/socratic-grilling-core.md`）
 - `references/case-library/`：架构模式解剖 + 经典系统设计题 + 可靠性模式 + 大厂案例索引 + Agent 项目模板（NestJS + AI SDK，按需加载）
 - `assets/overview-template.md`、`module-template.md`
-- `shared/browser-policy.md`、`shared/socratic-grilling-core.md`、`shared/anti-deadloop.md`（仓库根）：公共约定
+- `shared/browser-policy.md`、`shared/socratic-grilling-core.md`、`shared/anti-deadloop.md`、`shared/receiving-review.md`（仓库根）：公共约定（末项含接收评审纪律）
 - `.spec/TDD/VN/`：产出目录
 
 ## 七、运行问题埋点

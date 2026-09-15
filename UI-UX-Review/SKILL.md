@@ -15,7 +15,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 1. **载体与结构零改动**：对照布局清单，独立页面、弹框、抽屉、区块、元素、跳转逐项一致（防漏）；无出处的区块 / 按钮 / 提示 / 装饰一律不得出现（防加戏）。结构不对 = 视觉阶段越权改布局，打回。
 2. **文案与字段一致性**：对照 PRD / 布局清单逐字比对标题、CTA、列名、标签、提示语；不得自行添加多余文案。
-3. **视觉规范一致性**：对照 `.spec/设计稿/design-system.md`（权威源 `.superdesign/design-system.md`，缺归档副本时指明）——所有视觉值（色值 / 字号 / 字重 / 间距 / 圆角 / 阴影 / 组件 / 图标）必须有 token 出处，无规范外值；反 AI 味 12 条目检（清单见 `references/visual-spec-consistency-checklist.md`）。
+3. **视觉规范一致性**：对照 `.spec/设计稿/design-system.md`（**归档副本即交付基准**；`.superdesign/design-system.md` 为 CLI 工作源，仅需追溯原文时对照）——所有视觉值（色值 / 字号 / 字重 / 间距 / 圆角 / 阴影 / 组件 / 图标）必须有 token 出处，无规范外值；反 AI 味 12 条目检（清单见 `references/visual-spec-consistency-checklist.md`）。
 4. **视觉呈现与可交付质量**：真实渲染设计稿 HTML——规范是否落地、逐入口做**结构级可点击性**验证（真实 `<a href>` 或等价触发；像按钮却点不动 = 缺陷）、控制台报错 / 死链 / 遮挡 / 资源加载失败、关键缺陷截图。
    - 边界：不验真实业务逻辑 / 数据 / 弹框开合逻辑；可点击性只到「入口存在且可点、href 去向与站点地图一致」。
 
@@ -35,8 +35,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
 | 项 | 说明 | 缺失处理 |
 |---|---|---|
 | PRD（有速查表先建索引） | 需求基准 | ⛔ 停下提示 |
-| 布局清单 / 设计任务清单 | 结构基准（载体级） | ⛔ 停下提示 |
-| `design-system` 归档副本 | 视觉规范基准 | ⛔ 停下提示 |
+| 布局清单（载体级） + **低保真原型 HTML（区块级）** | **结构基准**：布局清单定载体、原型定区块实物（结构真相源见 `shared/baseline-terms.md`） | ⛔ 停下提示 |
+| `.spec/设计稿/design-system.md`（**归档副本即交付基准**） | 视觉规范基准（`.superdesign/design-system.md` 为 CLI 工作源，仅追溯时对照） | ⛔ 停下提示 |
 | 设计稿工程（HTML + README） | 被审对象 | ⛔ 停下提示 |
 | 浏览器工具（**硬依赖**） | 渲染截图 + 点击验证 | 全无 → 报错停止 |
 
@@ -85,6 +85,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 ## 六、资源清单
 
 - `references/layout-freeze-checklist.md` / `copywriting-consistency-checklist.md` / `visual-spec-consistency-checklist.md` / `rendered-quality-checklist.md`：四维清单
+- `references/browser-inspection-guide.md`：浏览器渲染走查与点击验证细则（步骤 3/4 用）
 - `references/known-issue-patterns.md`：评审方案例库（闭环沉淀的已知问题模式 + 检出方法）
 - `assets/dimension-review-template.md` / `summary-template.md` / `issue-list-template.md`
 - `shared/anti-deadloop.md`、`shared/browser-policy.md`、`shared/baseline-terms.md`（仓库根）：公共约定

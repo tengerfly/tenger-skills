@@ -26,7 +26,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 7. **修 3 次不过即质疑根因**：同一问题修 3 次仍未解决 → 停下质疑根因 / 方案，不再试第 4 次（反复修不好通常是根因判断或方案选错，不是「再调一点」）。
 8. **有预防价值才沉池**：收尾判断是否暴露「会再犯的一类错」——是则沉淀到集中池、用户确认后落池；不沉一次性 / 环境特殊问题。
 
-**分级与防死循环**：问题 P0/P1/P2 分级；复核只验本轮清单、轮次上限 3（超限交用户裁决，见 §4.1）。**不确定即问**：日志不全 / 代码位置不明 / 根因无法收敛 / 跨端责任不清 → 停下问，给选项与推荐，不自己发挥。
+**分级与防死循环**：问题 P0/P1/P2 分级；复核只验本轮清单、轮次上限 3（**超限交用户裁决**，不适用强制放行——Bug-Fix 专属口径，定义见仓库根 `shared/anti-deadloop.md` §二）。**不确定即问**：日志不全 / 代码位置不明 / 根因无法收敛 / 跨端责任不清 → 停下问，给选项与推荐，不自己发挥。
 
 **适用范围**：适用线上 / 测试 / 自测发现的功能 bug、接口报错、前端 console 或 network 异常、后端错误栈 / 5xx / 慢查询（来源可为日志文件、粘贴、线上日志平台导出或本地复现）；不适用需求本身不合理（归 PRD-Design）、性能优化专项（Testing）、代码质量评审（Code-Review）、全新功能开发（走主链）。输入来源可以是 `Testing` 的分级问题文档或 `Code-Review` 的评审任务——本 skill 是「问题 → 修复闭环」的诊断入口与委托方。
 
@@ -160,7 +160,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - `assets/locate-report-template.md`：问题定位报告模板
 - `assets/fix-task-list-template.md`：修复任务清单模板（闭环单一事实源）
 - `assets/pattern-card-template.md`：错误模式案例卡模板（步骤 10 沉淀用）
-- `shared/evidence-before-claims.md`（仓库根）：取证口径
+- `shared/evidence-before-claims.md`、`shared/anti-deadloop.md`（仓库根）：取证口径、分级与防死循环（Bug-Fix 适用「超限交用户裁决」口径）
 - `CONTEXT.md`：术语 + 决策日志；产出位置 `.spec/bug修复/`（被修项目内）、集中沉淀池 `bug-patterns/`（源仓库根）
 
 ## 七、运行问题埋点

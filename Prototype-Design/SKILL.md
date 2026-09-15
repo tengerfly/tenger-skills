@@ -4,7 +4,7 @@ description: 低保真可交互原型生成。依据已写好的 PRD，先经用
 compatibility: Claude Code / Agent SDK / OpenCode
 ---
 
-# 低保真原型设计稿生成 Skill
+# 低保真原型生成 Skill
 
 > IRON LAW：**零加戏**——只画 PRD 明确的元素与文案；确需补充必须标 `【设计假设】` 并经用户确认。
 > 把 PRD 快速可视化为可点击的低保真 HTML 原型，验证需求是否闭环。不写需求、不评审需求、不做视觉精修。
@@ -109,7 +109,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - `references/html-spec.md` / `completeness-check.md` / `iteration-regression-guard.md`
 - `references/case-library/`：方法学（保真度分级 / 反模式 / 可用性 / AI 边界 / 生命周期状态）+ 工具 + 动作型范本（按需加载）
 - `assets/layout-inventory-template.md` / `prototype-readme-template.md`
-- `shared/anti-deadloop.md`（仓库根）：门禁闭环与上限规则
+- `shared/anti-deadloop.md`、`shared/receiving-review.md`（仓库根）：门禁闭环与上限规则、接收评审纪律（先验证再实施、逐项测、禁感谢式回应）
 - `.spec/原型/`：产出目录
 
 ## 七、运行问题埋点

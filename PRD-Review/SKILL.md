@@ -62,7 +62,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 **5. 汇总**：按 `assets/summary-template.md` 生成 `评审汇总报告.md`——以 `产品评审.md` 的调度结果为准合并四份清单（已归并不重复计入，定级以校准后为准）；标共性问题（多角色同时发现 = 系统性缺陷）与冲突项（以产品专家裁决为准）；按 P0/P1/P2 统计。
 
-**6. 任务清单 + 用户确认**：按 `assets/issue-list-template.md` 生成 `.spec/需求评审/任务清单.md`——逐条落清单（状态 `待确认`）、每条附**修复判据**、逐条向用户确认（要改 → `已确认`；不改 → `已忽略` + 理由）；P0/P1 阻断（未清零不进入收尾归档；节点放行由编排侧判定），P2 不阻塞；复核只验本轮已确认清单，新发现降 P2 或经同意进下一轮；编号链 `FE/BE/TE/PM-xx` → `SUM-xx` → `REQ-xx`（见模板参数卡）。确认后交 `PRD-Design` 修改并回填状态。
+**6. 任务清单 + 用户确认**：按 `assets/issue-list-template.md` 生成 `.spec/需求评审/任务清单.md`——逐条落清单（状态 `待确认`）、每条附**修复判据**、逐条向用户确认（要改 → `已确认`；不改 → `已忽略` + 理由）；P0/P1 阻断（未清零不进入收尾归档；节点放行由编排侧判定），P2 不阻塞；复核只验本轮已确认清单，新发现降 P2 或经同意进下一轮；编号链 `FE/BE/TE/PM-xx` → `SUM-xx` → `REQ-xx`（见 `assets/issue-list-template.md` 实例化参数）。确认后交 `PRD-Design` 修改并回填状态。
 
 **7. 双向沉淀判定**：放行后按 `shared/anti-deadloop.md` §五 判定（P0 双向必沉）——**A 防复发**：改产出方 skill `PRD-Design` 的防复发规则（记其 CONTEXT D-xx）；**B 检出力**：本 skill `references/known-issue-patterns.md` 按模板加一条（含「检出方法」）。改不了的落 `issue/PRD-Design/<日期>/`（来源=评审闭环，写明双向落点）。判定结果记入汇总报告「沉淀判定」节。
 
