@@ -1,8 +1,8 @@
 {
-  "name": "frontend-template",
+  "name": "frontend-template-react",
   "version": "0.1.0",
   "private": true,
-  "description": "通用前端模板（Vite + React 18 + AntD 5 + TS strict，源自学径项目沉淀）",
+  "description": "React 前端工程模板（Vite + React 18 + AntD 5 + TS strict，源自学径项目沉淀）",
   "type": "module",
   "packageManager": "pnpm@11.3.0",
   "scripts": {

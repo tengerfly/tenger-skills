@@ -1,4 +1,4 @@
-# frontend-template 通用前端模板
+# frontend-template-react React 前端工程模板
 
 从「学径 LearnPath」项目沉淀的可复用前端工程模板：技术栈、目录骨架、请求层、页面三态、SSE 流式、设计 token、测试与提交规范开箱即用。业务代码已全部剥离，`src/api/demo.ts` + 首页是可运行的活示例。
 
@@ -18,7 +18,7 @@
 ## 目录结构
 
 ```
-frontend-template/
+frontend-template-react/
 ├── index.html               # 入口 HTML（新项目改 title）
 ├── pnpm-workspace.yaml      # pnpm 11+ 依赖构建脚本白名单（allowBuilds）
 ├── vite.config.ts           # dev 代理 + 分包/缓存/去 console 等工程优化（新项目改代理端口）
