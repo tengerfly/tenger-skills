@@ -1,0 +1,18 @@
+// SCSS 工具层：经 vite.config 的 additionalData 全量注入所有 scss 文件，直接使用，无需逐文件 @use/@import。
+// 约定：本文件只放编译期工具（@mixin / $var），放 CSS 规则会被每个文件重复输出；
+// 页面色值/字号/间距一律走 var(--token)（运行时级联全局可用），禁在此定义视觉值。
+
+// 绝对定位居中
+@mixin absolute-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+// 单行溢出省略
+@mixin ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

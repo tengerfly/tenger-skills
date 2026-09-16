@@ -1,0 +1,145 @@
+/* 全局基础样式：只放全站通用规则，页面私有样式就近写在页面（BEM 命名），不做 CSS Modules */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--color-text);
+  background: var(--color-bg);
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+  font-size: var(--font-body);
+  line-height: 1.6;
+}
+
+/* ===== 标题层级（基础样式前置，页面级覆盖声明在其后） ===== */
+h1,
+h2,
+h3,
+h4,
+h5 {
+  color: var(--color-text);
+}
+
+h1 {
+  font-size: var(--font-h1);
+  line-height: 1.4;
+}
+
+h2 {
+  font-size: var(--font-h2);
+  line-height: 1.4;
+}
+
+h3 {
+  font-size: var(--font-h3);
+  line-height: 1.4;
+}
+
+/* 居中内容列（顶栏与页面共用） */
+.page-col {
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: 24px;
+}
+
+/* ===== 顶栏 ===== */
+.app-header {
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+
+.app-header__inner {
+  display: flex;
+  align-items: center;
+  height: 58px;
+  gap: var(--space-5);
+}
+
+.app-header__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-right: auto;
+  color: var(--color-primary);
+  font-weight: 600;
+
+  span {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-caption);
+    font-weight: 400;
+  }
+}
+
+.app-header__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 38px;
+    padding: 0 12px;
+    color: var(--color-text);
+    border-radius: var(--radius-md);
+    white-space: nowrap;
+    text-decoration: none;
+
+    &:hover {
+      background: var(--color-primary-subtle);
+    }
+
+    /* RouterLink 完全匹配才高亮（与 React 版 NavLink end 等价） */
+    &.router-link-exact-active {
+      background: var(--color-accent-subtle);
+      color: var(--color-accent);
+    }
+  }
+}
+
+/* ===== 通用段落 ===== */
+.home-hero {
+  padding: var(--space-8) 0 var(--space-6);
+  text-align: center;
+
+  h1 {
+    margin: 0 0 var(--space-3);
+    font-size: var(--font-h1);
+  }
+
+  p {
+    color: var(--color-text-secondary);
+  }
+}
+
+/* 居中加载占位 */
+.spin-center {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-6) 0;
+}
+
+/* ===== 首页活示例（新项目整页替换 HomePage 后可随之删除） ===== */
+.home-demo-card {
+  max-width: 640px;
+}
+
+.home-demo-data {
+  display: inline-block;
+  padding: var(--space-1) var(--space-2);
+  background: var(--color-primary-subtle);
+  border-radius: var(--radius-md);
+}

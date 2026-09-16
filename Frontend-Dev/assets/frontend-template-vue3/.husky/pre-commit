@@ -1,0 +1,2 @@
+# 提交前：只对暂存文件跑 lint（全量门禁走 CI），秒级反馈
+pnpm lint-staged

@@ -1,0 +1,6 @@
+# pnpm 11+ 依赖构建脚本白名单（install 时自动生成的 allowBuilds，已批准）。
+# 后续新增原生依赖被拦截时：在此追加或运行 pnpm approve-builds。
+allowBuilds:
+  '@parcel/watcher': true
+  esbuild: true
+  vue-demi: true
