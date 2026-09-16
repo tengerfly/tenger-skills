@@ -114,6 +114,14 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 **4.9 口径冲突与口径表（2026-09-16 定稿）**：设计稿↔契约↔全局组件冲突（稿面尺寸 vs design-system §5.5 档位、单页状态稿特例 vs 全局组件一致性、不一致稿面文案 vs 契约硬口径等）按 PROJECT.md「口径表」裁定——**表内已有的直接套，不算「不确定即问」；首次裁定的新口径当场落表再继续**（表结构：冲突场景 / 口径 / 首次裁定）；决策模式细则见 `case-library/static-page-trial-playbook.md` §4。同类冲突二次出现仍现场考证或凭感觉裁 = 违规。
 
+**4.10 布局还原高危坑（2026-09-17 用户走查复盘沉淀，六连坑）**：
+1. **禁用「父级>标签」通配选择器做样式出口**：会命中同层所有同类元素且 specificity (0,1,1) 压过单类 (0,1,0)——案例：`.app-header__brand > span` 的 slogan 灰色规则把 logo 的 span 也盖成灰色。语义元素一律独立 BEM 类。
+2. **稿面 `@media` 断点随 token 一起搬**：token 对账只对色值/字号/间距，稿面里的响应式断点（如 `.page-col` ≥1536px 放宽 1440px）漏搬 = 宽屏下内容列/导航系统性偏窄。
+3. **组件库派生视觉值必须显式压回稿面**：AntD Avatar 按 size 派生字号（34px→17px，稿面 12px）、Button 两字中文插空格等——组件自算的视觉值逐个与稿面核对（computed style）。
+4. **弹框内通栏条禁用负 margin 贴边**：AntD Modal 无 header 下插槽——垂直负 margin 顶进标题行造成遮挡；body 一旦 overflow 限高滚动，水平负 margin 也被裁字。通栏诉求一律改 body 内正常流圆角条。
+5. **多面板弹框固定高度**：面板内容高矮不一会让弹框随 tab 切换跳变——Modal content 定高 + header/body flex 分配 + 面板内部滚动（`.ant-modal-body` flex:1 min-height:0 overflow:hidden，Tabs content-holder overflow-y:auto）。
+6. **滚动 containment**：应用外壳 `height:100%` flex-col + `main` flex-1 min-height:0 overflow-y:auto——滚动只发生在内容区、顶栏常驻（用户拍板体验口径）；固定工作台页（三栏/画布）在 main 内 `flex:1; min-height:0` 自管滚动，**禁 `calc(100vh - header)` 硬算**（外壳一改全崩）。
+
 ## 五、常见错误对照表
 
 > 公共错误行（现状基线 / 零选型 / 拍板 / 传参注释 / 提交粒度 / 门禁 / 进度更新）见仓库根 `shared/dev-common.md` §三；下表为本 skill 端专属与领域行。
@@ -150,6 +158,12 @@ compatibility: Claude Code / Agent SDK / OpenCode
 | 口径冲突逐次现场考证 / 同类反复裁 | 查 PROJECT 口径表直接套；首见新口径裁定后落表（§4.9） |
 | 有验收脚本仍手动逐状态截图 / 坐标点击硬怼 | 先跑验收脚本（§4.7）；受控输入等可靠路径见 playbook §5 |
 | 契约缺口静默造字段 | `XxxExt` 视图扩展 + 留痕注释（S7） |
+| 父级>标签通配选择器当样式出口 | 语义元素独立 BEM 类（§4.10-1） |
+| 稿面 @media 断点不搬 | 断点随 token 对账一起过，双视口比对（§4.10-2） |
+| 组件派生视觉值（Avatar 字号等）不核对 | computed style 对稿面，显式覆盖（§4.10-3） |
+| 弹框内负 margin 通栏条 | 正常流圆角条（§4.10-4） |
+| 多面板弹框高度随 tab 跳变 | Modal 定高 + 面板内滚动（§4.10-5） |
+| 整页滚动 / calc(100vh-header) 硬算 | 外壳 flex + 内容区滚动（§4.10-6） |
 
 ## 六、资源清单
 
