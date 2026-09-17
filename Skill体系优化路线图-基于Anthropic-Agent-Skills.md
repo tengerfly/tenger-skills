@@ -1,4 +1,4 @@
-﻿# Skill 体系优化路线图——基于 Anthropic Agent Skills 规范
+# Skill 体系优化路线图——基于 Anthropic Agent Skills 规范
 
 > 文档目的：把前一轮讨论形成的体系化优化路线，与当前仓库对 Anthropic Agent Skills 开发规范的差距分析合并，形成一份可执行、可验收、可逐步迁移的路线图。
 >
