@@ -97,7 +97,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 **4.4 CSS 架构**：预处理器 Sass/Less 二选一（随组件库与团队生态在选型中确定，禁裸 CSS）；组件样式隔离随框架（React→CSS Modules `*.module.scss`；Vue→`scoped` 或 CSS Modules），**全局抽离两种框架都必须**；`src/styles/` 放 variables（token）/ mixins / global（reset）/ theme（可选），扩展名随预处理器；**有设计稿时 token 以 `.spec/设计稿/design-system.md` §7 为唯一来源且登记条数**（开发期 `variables` 须与其逐条对账：条数/值/命名，见 `shared/baseline-terms.md` 下游执行口径），无则按 `references/css-guide.md` 基线；命名 BEM 或语义化，颜色只引用变量。
 
-**4.5 无障碍（a11y）**：语义化标签优先于 ARIA 堆砌；键盘可完成主流程（Tab 顺序合理、焦点可见、Esc 可关弹层）；表单控件有 label 与错误提示关联；对比度达 AA；按需尊重 `prefers-reduced-motion`。**落到模块文档「实现细节与决策」的具体页面**。
+**4.5 无障碍（a11y）**：语义化标签优先于 ARIA 堆砌；键盘可完成主流程（Tab 顺序合理、焦点可见、Esc 可关弹层）；表单控件有 label 与错误提示关联；对比度达 AA。**动效策略**：动效强度档与时长 / 缓动 token 自 `design-system.md` §6/§7 继承，开发期不自造动效值；一切动效尊重 `prefers-reduced-motion`（实现细则见 Frontend-Dev `references/motion-guide.md`）。**落到模块文档「实现细节与决策」的具体页面**。
 
 **4.6 性能预算**：首屏按路由懒加载 + 大依赖按需引入；图片尺寸/格式/懒加载；字体子集化与 `font-display`；大列表虚拟化或分页。**目标值写进总文档全局规范，验收在 Frontend-Dev 阶段对账**。
 

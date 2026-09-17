@@ -64,7 +64,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 1. **输入解析与预检**：读 `.spec/设计稿/` 或向用户要外部稿并记录通道（无设计稿才落通道 C 原型并标注降级）；确认实现页目录 / 启动命令 / 逐页 URL（未提供必问，不猜测）；按铁律 5 预检浏览器工具；**确认运行模式**（独立 / Testing / 代码评审并行）。
 2. **页面清单 × 基准对齐**：按 `references/design-source-guide.md` 建逐页映射 `实现页 URL ↔ 设计稿页面`，记录响应式断点；通道 A 摘 token 速查，通道 B 记录目测基准，通道 C 标注「视觉基准=低保真原型（降级）」；生成比对范围清单交用户确认后再继续。
 3. **双开截图 + 点击验证**：**基准侧截图 = 设计稿**（有设计稿时；原型只作结构对照，不与实现页做视觉并排结论），相同视口并排截图；逐元素点击记录有反应 / 无反应 / 反应对不对。**独立走查纪律**：只认渲染产物与基准，不参考实现者说明或自查结论；任务重可开独立会话 / 换模型交叉复查。
-4. **视觉 + 交互 + 逐区块断言走查**：视觉按 `references/visual-checklist.md`（含设计稿有而实现没有、实现多出的**双向比对**）；交互按 `references/interaction-checklist.md`（可点性 / 反馈 / 方式一致 / 跳转链路）；逐区块断言见 §4.2；另对照 `references/known-issue-patterns.md`（评审方案例库）过一遍，命中即入问题清单。
+4. **视觉 + 交互 + 逐区块断言走查**：视觉按 `references/visual-checklist.md`（含设计稿有而实现没有、实现多出的**双向比对**）；交互按 `references/interaction-checklist.md`（可点性 / 反馈 / 方式一致 / 跳转链路 / 动效还原 / 界面质量可见项）；逐区块断言见 §4.2；另对照 `references/known-issue-patterns.md`（评审方案例库）过一遍，命中即入问题清单。
 5. **超长文案专项**：按 `references/overflow-guide.md`，识别动态文本位，用真实业务文案 + 更极端长文案替换后截图判定；给出 min-width / ellipsis / flex 收缩等修改方向。
 6. **分级输出报告**：按 `assets/review-report-template.md` 生成报告；每条含编号 / 页面 / 基准出处 / 现象+截图 / 期望 vs 实际 / 成因 / 严重度 / 建议 / 修改方；分组统计 P0/P1/P2。
 7. **三模式收尾**：

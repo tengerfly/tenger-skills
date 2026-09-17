@@ -66,7 +66,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - **禁占位符**：不得出现 TBD / TODO /「稍后实现」/「加适当校验」/「同功能点 N」。
 - **计划自审三查**：① 需求覆盖——每条 AC / 页面能指到具体功能点；② 占位符扫描——按上条清零；③ **命名与类型一致性**——同一组件 / hook / 字段在各处叫法与签名一致。
 
-**S7 逐页面测试先行实现**：`features/<模块>/types.ts` 视图模型先行——契约缺口一律 `XxxExt` 视图扩展补位 + ⚠️ 留痕注释（缺口内容/出处/对接时裁决），**禁静默造字段**；然后先写测试（承接 FTDD 用例标 TC/AC）→ constants/mocks（mock 文案逐字对齐设计稿）→ api → hooks → 组件 → 页面容器 + 样式还原（套路与节奏纪律详见 `case-library/static-page-trial-playbook.md` §3/§6）。**组件抽离在编码当下判定**（模块内 ≥2 处 → `features/<模块>/components/`；跨模块 → `src/components/`，更新全部引用并删旧；禁先复制后重构；props 用 interface 禁 `any`）。每完成一个功能点：勾任务 + 更新 PROJECT.md + eslint/stylelint/commitlint 通过 + git commit（Conventional Commits，禁混入调试/临时/凭据，不擅自 push）。
+**S7 逐页面测试先行实现**：`features/<模块>/types.ts` 视图模型先行——契约缺口一律 `XxxExt` 视图扩展补位 + ⚠️ 留痕注释（缺口内容/出处/对接时裁决），**禁静默造字段**；然后先写测试（承接 FTDD 用例标 TC/AC）→ constants/mocks（mock 文案逐字对齐设计稿）→ api → hooks → 组件 → 页面容器 + 样式还原（套路与节奏纪律详见 `case-library/static-page-trial-playbook.md` §3/§6）。**动效实现**：动效值取自 design-system §6/§7 token，不自造；页面含过渡 / 弹层动效时 REQUIRED 加载 `references/motion-guide.md`——无 design-system 降级项目按其默认档收敛并在 PROJECT.md 明示（组件手感 / 性能 / reduced-motion 落地）。**组件抽离在编码当下判定**（模块内 ≥2 处 → `features/<模块>/components/`；跨模块 → `src/components/`，更新全部引用并删旧；禁先复制后重构；props 用 interface 禁 `any`）。每完成一个功能点：勾任务 + 更新 PROJECT.md + eslint/stylelint/commitlint 通过 + git commit（Conventional Commits，禁混入调试/临时/凭据，不擅自 push）。
 
 **S8 契约对齐**：前端 fetch ↔ FTDD ↔ 后端 TDD 双向核对；共享类型只引用不重定义；冲突以 TDD 为准并提醒。
 
@@ -74,7 +74,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - 一致性：可运行可测试；模块化合规（无越层、无复制、api 经 hooks）；截图还原比对（**有设计稿时以设计稿为视觉基准**；差异分「可接受（响应式/字体回退/动效实现）」与「必须修正（区块缺失、间距/配色/字号偏差、交互/状态缺失）」→ 必须修正入返工）。
 - **性能验收（对预算）**：跑构建产物分析 + Lighthouse / 性能面板，核对 FTDD 的性能预算（Core Web Vitals / 首屏包体）；大列表、图片、字体、按需加载逐项确认——**结论要有实测数据，不是「感觉挺快」**。
 - **无障碍验收**：axe-core 扫描无严重问题；键盘可完成主流程（Tab 顺序、焦点可见、Esc 可关弹层）；语义化标签与表单 label 到位；对比度达标（AA）。
-- 两项结果写进 PROJECT.md 留痕（取证口径见 `shared/evidence-before-claims.md`）。
+- **界面质量与动效验收**：按 `references/web-interface-quality-guide.md`「反模式速查」逐条扫描（表单可访问性 / 图片尺寸 / 焦点与语义 / i18n 格式 / 水合安全）；动效按 `references/motion-guide.md` 自查表核对（transition 属性明确、只动 transform/opacity、reduced-motion 与 hover 门控）。
+- 三项结果写进 PROJECT.md 留痕（取证口径见 `shared/evidence-before-claims.md`）。
 
 **S10 交付 + 回填**：更新 PROJECT.md 进度 + 收尾提交 + README 运行说明；回填 `.spec/代码评审/任务清单.md` 归本 skill 的 `已确认` 任务为 `已修复` + 修改说明；回填后须触发 `Code-Review` 复核（含 `Fidelity-Review` 还原度项），不得自判通过（闭环与上限规则见 `shared/anti-deadloop.md` §一/§二）；是否 push 由用户决定。
 
@@ -164,10 +165,18 @@ compatibility: Claude Code / Agent SDK / OpenCode
 | 弹框内负 margin 通栏条 | 正常流圆角条（§4.10-4） |
 | 多面板弹框高度随 tab 跳变 | Modal 定高 + 面板内滚动（§4.10-5） |
 | 整页滚动 / calc(100vh-header) 硬算 | 外壳 flex + 内容区滚动（§4.10-6） |
+| `transition: all` / ease-in / `scale(0)` 入场 | 列明属性、确保 ease-out 自定义曲线、从 0.95+opacity 起步（motion-guide §一/§六） |
+| 自造动效时长 / 曲线 / 常规 UI 动效超档 | 取 design-system §6/§7 token；按时长档收敛（motion-guide） |
+| reduced-motion / hover 门控缺失 | 补 `@media` 分支（motion-guide §三） |
+| 图标按钮无 aria-label / 表单无 label | 补可访问名（web-interface-quality-guide §一/§三） |
+| `outline: none` 无 focus-visible 替代 | 补可见焦点样式（§二） |
+| `<div onClick>` 当按钮 / 链接 | 换 `<button>` / `<a>`（§一） |
+| 图片无宽高 / 大列表未虚拟化 | 显式尺寸防 CLS；>50 项虚拟化（§六/§七） |
+| 硬编码日期 / 数字格式 / 阻止粘贴 | `Intl.*` 格式化；放开粘贴（§十二/§三） |
 
 ## 六、资源清单
 
-- `references/architecture-guide.md`、`code-style-guide.md`、`test-guide.md`、`tech-stack-guide.md`、`fidelity-guide.md`、`ui-states-guide.md`、`framework-equivalence-guide.md`、`decision-rules.md`
+- `references/architecture-guide.md`、`code-style-guide.md`、`test-guide.md`、`tech-stack-guide.md`、`fidelity-guide.md`、`ui-states-guide.md`、`motion-guide.md`（动效实现；S7/S9 用）、`web-interface-quality-guide.md`（界面质量规则集；S9 与评审检出子集引用）、`framework-equivalence-guide.md`、`decision-rules.md`
 - `references/case-library/`：组件模式 + 框架写法 + 质量规范 + 同行样本 + **static-page-trial-playbook（静态页试做 SOP，主流程 S1/S7/§4.7/§4.9 引用）**（按需加载）
 - `assets/frontend-template-react/`：**React SPA web 端可运行模板**（S3 全新工程起手复制；改造清单 / 换库指南 / 部署配置见其 README）
 - `assets/frontend-template-vue3/`：**Vue3 SPA web 端可运行模板**（与 React 版功能点一一对应，新增 Pinia 状态层；S3 起手复制，用法同上）

@@ -53,6 +53,8 @@
 | D-17 | 09-16 | 正面案例沉淀：新增 `case-library/static-page-trial-playbook.md`（静态页试做六节流程：输入瘦身/复用清单/编码套路/口径决策模式/验收脚本化/节奏纪律）+ 案例库索引行；配套验收脚本与口径表落消费方项目仓库 | 用户点名首页/资产库两页为正面案例要求沉淀；节奏复盘 41min/页拆解显示验收手动截图与口径现场考证为可固化成本（issue/Frontend-Dev/2026-09-16/01，标签=正面参考） | ✅ |
 | D-18 | 09-16 | **案例升级为主流程标准 SOP**：S1 输入瘦身（REQUIRED）+ 口径表查表；S7 视图模型先行（XxxExt 扩展+留痕，禁静默造字段）；§4.7 新增脚本化执行（项目有验收脚本则 REQUIRED 先跑，禁手动逐状态替代）；新增 §4.9 口径冲突与口径表（表内直接套、首见落表、二次考证=违规）；错误表 +3 行；§六标注 playbook=SOP；playbook 头部标注 SOP 状态 | 用户澄清「本意是沉淀成标准 SOP，后续开发都按这个流程来，能提高质量」——案例库被动落点无法保证执行，必须进主流程 Gate（issue/Frontend-Dev/2026-09-16/02；元教训落 Skill-Optimizer §七-6） | ✅ |
 | D-19 | 09-16 | 体检修复 5 项：①S7 引用扩为「套路与节奏纪律详见 playbook §3/§6」，承接 playbook 头部 §6 硬性纪律声明；②§4.9 补「决策模式细则见 playbook §4」+「§5.5」注明 design-system；③playbook 头部引用点标注对应节号（S1§1 / S7§3·§6 / §4.7§5 / §4.9§4）；④playbook hooks 契约字段对齐术语表 `{data/list, loading, error, refetch}`；⑤术语表 +3 行（口径表 / 输入瘦身 / 视图扩展 XxxExt）。另 D-18 引用编号 §七-8 纠偏为 §七-6（纠错记录归 Skill-Optimizer D-33） | Skill-Optimizer 模式④体检，用户裁决全修 | ✅ |
+| D-20 | 09-17 | 吸收外部精华（用户确认全量执行）：①新增 `references/motion-guide.md`（组件手感 / 性能 / reduced-motion / 手势 / 交错 / 自查表；动效值取 design-system §6/§7 token）与 `references/web-interface-quality-guide.md`（16 域 Web 界面质量规则集 + 反模式速查；Fidelity-Review / Code-Review 取检出子集）；②S7 挂动效实现引用（有动效时 REQUIRED 加载）；③S9 验收扩为三项——新增「界面质量与动效验收」；④错误表 +8 行；⑤资源清单 +2 | 用户要求吸收 7 个外部前端设计 skill 精华（emil-design-eng 动效工程 / vercel web-design-guidelines 为主）；采纳点与不采纳项记 skill-writing-standard §七（2026-09-17 第二批） | ✅ |
+| D-21 | 09-17 | 体检修复（本次吸收后自检，用户裁决全量修）5 项：①motion-guide 头部补无 design-system 降级路径（按默认档收敛并 PROJECT.md 明示）；②S7「有动效时」改「页面含过渡 / 弹层动效时」并补降级口径；③motion-guide 自查表时长口径统一（常规 <300ms；弹层 / 抽屉类据档）；④§二.3 Framer Motion 条目加「使用动效库时」条件前缀；⑤错误表动效行同步 | Skill-Optimizer 模式④体检 | ✅ |
 
 ## 四、待决问题
 

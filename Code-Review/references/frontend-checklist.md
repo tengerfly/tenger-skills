@@ -19,6 +19,7 @@
 - [K. 性能与渲染](#k-性能与渲染)
 - [L. 边界与长内容](#l-边界与长内容)
 - [M. 删除候选与清理](#m-删除候选与清理)
+- [N. 界面质量（a11y / 表单 / i18n / 水合 / 动效）](#n-界面质量a11y--表单--i18n--水合--动效)
 
 ## A. 接口契约（前端侧 fetch）
 
@@ -141,3 +142,18 @@
 - [ ] M5 清理计划：区分「**现在可安全删**」与「**需延后**」（有活跃页面使用 / 需迁移）——后者按 `removal-plan-template.md` 出计划
 
 > Ask：这个组件 / 样式删掉会影响哪个页面？有页面还在用吗？
+
+## N. 界面质量（a11y / 表单 / i18n / 水合 / 动效）
+
+> 可静态检出面向（grep / 读码即可判定）；实现规则全集与判据见 Frontend-Dev `references/web-interface-quality-guide.md`。
+
+- [ ] N1 图标按钮有 `aria-label`；交互元素有键盘处理；动作 / 导航语义正确（`<button>` / `<a>`，无 `<div onClick>`）
+- [ ] N2 表单控件有 label；输入有 `autocomplete` 与正确 `type` / `inputmode`；未阻止粘贴
+- [ ] N3 焦点样式用 `:focus-visible`，无 `outline: none` 且无替代；吸顶元素不遮聚焦目标
+- [ ] N4 图片有显式宽高；首屏外图片 `loading="lazy"`
+- [ ] N5 无 `transition: all`；动效只动 transform / opacity；有 `prefers-reduced-motion` 与 hover 门控分支
+- [ ] N6 i18n：日期 / 数字用 `Intl.*` 格式化，无硬编码格式串
+- [ ] N7 水合：受控 input 有 `onChange`（或非受控 `defaultValue`）；日期渲染防水合错配
+- [ ] N8 反模式扫描：`user-scalable=no` / `maximum-scale=1`；无理由 `autoFocus`；可用视频处用 GIF
+
+> Ask：键盘 Tab 走一遍能看到焦点环吗？这个图标按钮屏幕阅读器读得出用途吗？

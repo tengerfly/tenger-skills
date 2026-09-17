@@ -47,9 +47,9 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 **3. 风格情报**：Superdesign 灵感库（`search-prompts` → `get-prompts --full`，先索引后取全文）；**案例库体系**按序检索（总索引 `references/case-library/00-README.md`）：`patterns/index.md` 高频模式 → `case-library/flows.md` 用户流与状态表达 → `layouts.md` / `components.md` / `interactions.md` → `case-library/design-systems.md` + `open-source-design-systems.md` 体系基线 → `style-case-library.md` 自有深案例与踩坑。外部资源取用前**验证可达与许可**；命中资源须**实抓提取**（`web_fetch` / `extract-website`，1~3 个/场景；失败标注跳过禁编造）；**参考 ≠ 照抄**，提取值仍须过步骤 5 用户确认；案例库更新由用户手动发起。
 
-**4. ◉ 风格决策 Gate**：三套**真实差异化**方案（配色 / 排版 / 密度 / 交互气质，禁止只换主色），默认文字 + 色板小样，按 `assets/style-proposal-template.md` 出；**出稿对比花额度须用户同意**（该通道在步骤 6 基线复刻出稿后执行，属本 Gate 的补充确认，完成后回填该模板 §六/§七）。参考站用 `extract-website --url --design-md` 提取 DNA，用户三选一（完全采用 / 借鉴融合 / 更新现有），**禁静默混搭**。
+**4. ◉ 风格决策 Gate**：**先出一行「设计读」**（读作：〈产品类型〉给〈受众〉，走〈气质〉语言；受众与气质取自 PRD，见 `assets/style-proposal-template.md` §〇）——读错则三套方案全废，用户可先纠偏；再出三套**真实差异化**方案（配色 / 排版 / 密度 / 交互气质含动效强度档，禁止只换主色），默认文字 + 色板小样，按 `assets/style-proposal-template.md` 出；**出稿对比花额度须用户同意**（该通道在步骤 6 基线复刻出稿后执行，属本 Gate 的补充确认，完成后回填该模板 §六/§七）。参考站用 `extract-website --url --design-md` 提取 DNA，用户三选一（完全采用 / 借鉴融合 / 更新现有），**禁静默混搭**。
 
-**5. ◉ 设计规范 Gate**：选定风格按 `assets/design-system-template.md` 展开（原则 / 色彩 / 字体 / 间距 4px / 圆角阴影 / 组件规范 / 界面状态 / 页面宽度分层 / 动效 / CSS token），对齐开源基线；布局清单 / 原型中出现空、错、加载、禁用等状态的页面，状态稿按模板 §5.10 一并纳入；用户确认后落 `.superdesign/design-system.md`，副本进 `.spec/设计稿/`。**规范未确认禁任何生成调用**；生成必带保真约束语（只使用 design-system 定义的字体 / 颜色 / 间距 / 组件，不得引入规范外视觉）。
+**5. ◉ 设计规范 Gate**：选定风格按 `assets/design-system-template.md` 展开（原则 / 色彩 / 字体 / 间距 4px / 圆角阴影 / 组件规范 / 界面状态 / 页面宽度分层 / 动效——按 `references/motion-design-guide.md` 定强度档与曲线 / 时长 token / CSS token），对齐开源基线；布局清单 / 原型中出现空、错、加载、禁用等状态的页面，状态稿按模板 §5.10 一并纳入；用户确认后落 `.superdesign/design-system.md`，副本进 `.spec/设计稿/`。**规范未确认禁任何生成调用**；生成必带保真约束语（只使用 design-system 定义的字体 / 颜色 / 间距 / 组件，不得引入规范外视觉）。
 
 **6. 项目创建**：新项目先做基线复刻（灰调 HTML、结构 100% 正确），`create-project --template <复刻> --device <端> --no-open` 取 projectId；续跑先查 `.superdesign/resume.json`，缺失用 `fetch-design-nodes` 找回，**禁止重复建项目**；品牌资产先 `upload-asset --purpose brand` 再以 reference-id 传。
 
@@ -88,6 +88,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 > **三处最常见的排版破绽**：只在标题里强调某一个词（斜体 / 加粗 / 换色）、用全大写做标签、在内容上方加多余的 eyebrow。
 > **两条自我约束**：① **大胆只花在一个地方**——让一个元素成为记忆点，其余保持安静，砍掉不服务 brief 的装饰；② **动效克制**——一个编排好的瞬间胜过每个 section 都 fade-and-slide-up + 每张卡都加 hover。
 > **自查法**：把方案代入一个相似的 prompt 走一遍；若会落到同一处 = 通用默认，改掉并说明改了什么、为什么。
+> **AI Slop Test（放行自问）**：把稿子给人看并说「这是 AI 做的」，他会立刻相信吗？会 → 落入了机器默认审美，回到「大胆只花在一个地方」重审。
 
 1. 禁 emoji 当图标；
 2. 禁紫蓝渐变默认背景；
@@ -148,13 +149,15 @@ superdesign upload-asset <file> --project-id <id> --purpose brand|content|refere
 | 方案只换主色 | 真实差异 |
 | 出现无出处按钮 / 区块 | 零加戏 + 布局零改动 |
 | 视觉值出规范 | 门禁返工 |
+| 设计读未写 / 与受众错位 | 步骤 4 先出设计读，用户纠偏后再出方案 |
+| 动效无目的 / 强度档与规范不一致 | 按 motion-design-guide 决策四问；门禁 §二 动效合规 |
 | 重复建项目 | `resume.json` / fetch 找回 |
 | import 用相对路径 | 只 `https` / `data:`，先 `upload-asset` |
 | 只改本地宣布完成 | 同一轮回传云端并核 version + 宿主链 + README |
 
 ## 六、资源清单
 
-- `references/superdesign-sop.md`、`design-review-gate.md`、`open-source-design-systems.md`、`style-case-library.md`、`case-library/`（00-README 总索引 + design-systems / layouts / components / interactions / flows / a11y-checklist）、`patterns/index.md`
+- `references/superdesign-sop.md`、`design-review-gate.md`、`motion-design-guide.md`（动效设计决策；步骤 5/8 用）、`open-source-design-systems.md`、`style-case-library.md`、`case-library/`（00-README 总索引 + design-systems / layouts / components / interactions / flows / a11y-checklist）、`patterns/index.md`
 - `assets/layout-inventory-contract.md`、`design-task-list-template.md`、`style-proposal-template.md`、`design-system-template.md`、`archive-readme-template.md`
 - `shared/anti-deadloop.md`、`shared/baseline-terms.md`、`shared/receiving-review.md`（仓库根）：公共约定（含接收评审纪律）
 - `.spec/设计稿/` 交付目录；`.superdesign/` 工作目录

@@ -13,7 +13,7 @@
 | SKILL.md | 9 步 4 Gate / 分工 / 迭代路由 / 额度红线 / 反 AI 味 12 条 |
 | CONTEXT.md | 术语 + 决策日志 D-xx |
 | assets/ | layout-inventory-contract / design-task-list / style-proposal / design-system / archive-readme |
-| references/ | superdesign-sop / design-review-gate / open-source-design-systems / style-case-library / case-library/（总索引 + design-systems/layouts/components/interactions/flows/a11y）/ patterns/ |
+| references/ | superdesign-sop / design-review-gate / motion-design-guide / open-source-design-systems / style-case-library / case-library/（总索引 + design-systems/layouts/components/interactions/flows/a11y）/ patterns/ |
 
 ## 硬依赖
 

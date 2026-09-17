@@ -213,9 +213,12 @@ AI 写的 skill 天然臃肿，做完只做减法。
 
 ## 七、外部做法的采纳与不采纳（差异说明）
 
-> 来源：`sanyuan-skills`（skill-forge / skill-review，MIT）、`obra/superpowers`（MIT）、`anthropics/skills`（MIT），2026-09-10 吸收。记录「看过但故意不采纳」，防后续重复讨论。
+> 来源一：`sanyuan-skills`（skill-forge / skill-review，MIT）、`obra/superpowers`（MIT）、`anthropics/skills`（MIT），2026-09-10 吸收。
+> 来源二（前端设计类 7 个）：`anthropics/skills` frontend-design、`pbakaus/impeccable`、`Leonxlnx/taste-skill`（design-taste-frontend）、`emilkowalski/skills`（emil-design-eng）、`vercel-labs/agent-skills`（web-design-guidelines）、`ui-ux-pro-max`、`VoltAgent/awesome-design-md`，2026-09-17 吸收。
+> 记录「看过但故意不采纳」，防后续重复讨论。
 
 **已采纳**：Iron Law 置顶、Red Flags 撤退机制、问题式指令、懒惰默认值挖掘法、自由度匹配脆弱度、确认门四类触发、可验证交付清单、大 reference 加 TOC、按领域组织 references、信息不重复、审阅先列优点（见模式④）、**形式匹配失败类型**、**描述禁止剧透流程**、**交叉引用强度标记**、**流程图使用判据**、**证据先于声明**（`shared/evidence-before-claims.md`）、**接收评审纪律**（`shared/receiving-review.md`）。
+**已采纳（第二批 · 前端设计类）**：动效设计工程（决策四问 / 强度档 / 曲线时长 token → UI-UX-Design `references/motion-design-guide.md`，design-system 模板 §6/§7 承接）、动效实现技法（组件手感 / 性能 / reduced-motion → Frontend-Dev `references/motion-guide.md`）、Web 界面质量规则集（→ Frontend-Dev `references/web-interface-quality-guide.md`，Fidelity-Review / Code-Review 取检出子集）、设计读声明（风格提案 §〇，先声明「读作什么」再出方案）、AI Slop Test 放行自问、动效强度档入风格决策（交互气质显式化）。
 
 **不采纳（本仓库有明确理由）**：
 
@@ -225,6 +228,12 @@ AI 写的 skill 天然臃肿，做完只做减法。
 | 严重度加 P3 级 | 本仓库评审统一 P0/P1/P2（`shared/anti-deadloop.md` §三），风格项已由 P2 承载；加 P3 会稀释判级、拖慢放行。 |
 | 强制斜杠命令参数体系（`--quick` / `--only` 等） | 本仓库由 Workflow 编排 + 自然语言驱动（「跳过 X / 只跑 X」），参数体系收益低于认知成本。仅确有场景时局部引入。 |
 | 用 eval 工作台（浏览器 viewer + 基准分）驱动技能迭代 | 需要亚 agent 与可视化前端的持续投入；本仓库以「issue 池 + 门禁闭环沉淀 + 体检」为迭代回路，机制更轻。技能有效性验证按需用压力场景，不常态跑基准。 |
+| taste-skill 布局重排类规则（hero 范式 / bento / 不对称 / eyebrow 配额 / split-header 禁 等） | 本仓库流程由「布局清单 + 低保真原型」锁结构、设计稿只做视觉（布局零改动铁律），版式重排类规则无落点；其 AI Tells 中「假数据 / 无出处装饰」等已被本仓文案保真与门禁覆盖。 |
+| taste-skill 三 Dials 整搬（DESIGN_VARIANCE / MOTION_INTENSITY / VISUAL_DENSITY） | 布局维度与布局零改动冲突；动效维度已以「动效强度档」落地（风格提案 + motion-design-guide + design-system §6）。 |
+| ui-ux-pro-max 的 Python 脚本 + CSV 数据库模式（67 风格 / 96 配色检索） | UI-UX-Design 已有 Superdesign 灵感库 + 案例库体系承载同类知识；脚本检索模式与本仓「苏格拉底 + 用户确认」流程不合。其通用 UI 规则（图标统一 / hover 稳定 / 对比度）经比对已由现有模板覆盖或并入 Web 界面质量集。 |
+| impeccable 30 个场景 references 整搬（bolder / quieter / typeset / audit…） | 场景多为「从现有页面反向改造」，本仓为「PRD → 设计稿」正向链；整搬会膨胀 references。只吸收「设计上下文三要素 + AI Slop Test」两点思想。 |
+| awesome-design-md 54 品牌 DESIGN.md 入库 | 版权归属未明 + 品牌模板与本仓「产品定制流程（布局清单驱动）」不符；需要品牌参考时走既有「外部资源验证可达与许可后实抓」（UI-UX-Design 步骤 3），不落仓。 |
+| emil-design-eng 的 GSAP / 手势进阶技法整搬（sticky-stack 骨架 / clip-path 花式 / Sonner 库设计哲学） | 本仓面向企业后台为主，滚动 hijack 类属装饰性技法（与「动效克制」冲突）；手势动量 / 阻尼等基础项已摘入 motion-guide，进阶项按需再论。 |
 
 ## 八、归位原则（防凌乱）
 

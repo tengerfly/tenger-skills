@@ -39,6 +39,8 @@
 | D-11 | 09-10 | **结构重构（统一骨架）**：章节 10 → 7——§一 定位与铁律（IRON LAW + 铁律瘦身 8 条 + **两条强制收尾口径**：零问题也要说明覆盖边界 / 未运行验证不得声明通过）；§二 输入与前置（输入表 + 批次裁剪 + 大批量分批 + **视角分工表**）；§三 主流程 9 步；§四 评审规范 4.1~4.4（六大闭环 / 六项正确性 / 严重度分级 / 静态验证规程，把原先分散在 §二·§三·§五·§六 的规范归并）；§五 错误表 / §六 资源 / §七 埋点。old-vs-new 审计：原 10 章内容全部有归属，无功能丢失 | 用户要求：整理成顺畅流程（Skill-Optimizer 全量体检） | ✅ |
 | D-12 | 09-15 | 视觉基准口径纠偏：§二输入表「原型 HTML」由「还原基线」改「**结构基线**（不作视觉基准）」、「设计稿（可选）」改「**视觉主基准**（含 token 对账；缺失则明示降级）」；`frontend-checklist.md` D 节标题「原型还原」→「**还原（结构对原型 / 视觉对设计稿）**」、D2 改对设计稿、D3 补 token 对账、新增 D5（证据须为设计稿并排截图）；`role-review-template.md` 评审基线与维度分组同步 | 用户反馈设计稿 OK 但实现页差别大；Code-Review 前端批次固定并行 Fidelity-Review，自身检查项须同口径（配合 Frontend-Dev D-16 / Fidelity-Review D-22） | ✅ |
 | D-13 | 09-15 | 全仓一致性纠偏：README 流程改分端单批 9 步并补删除候选/闭环复核与沉淀判定；summary-template 补沉淀判定节（SKILL 承诺未落地）+ ⑬-前 沉淀归口说明；role-review-template 补修复判据列 + 覆盖 A~M（原漏 K/L/M）；known-issue-patterns 补表头、编号归位 1/2、步骤号纠正、去占位注释 | 四代理并行七维体检 | ✅ |
+| D-14 | 09-17 | 吸收外部精华：`frontend-checklist.md` 新增「N. 界面质量（a11y / 表单 / i18n / 水合 / 动效）」8 项可静态检出项（aria-label / label / focus-visible / 图片宽高 / transition:all / Intl / 水合 / 反模式扫描）+ 目录行 + Ask 提问，覆盖 A~M 之外的界面质量域 | 用户要求吸收外部前端设计 skill 精华（vercel web-design-guidelines 等）；规则全集见 Frontend-Dev `references/web-interface-quality-guide.md`，本组只取可静态检出面 | ✅ |
+| D-15 | 09-17 | 体检修复（本次吸收后自检）：SKILL 两处「A~M 组」→「A~N 组」（步骤 3 / 资源清单），与 frontend-checklist 新增 N 节同步 | Skill-Optimizer 模式④体检（判据=全文件「A~M」清零） | ✅ |
 
 ## 四、待决问题
 

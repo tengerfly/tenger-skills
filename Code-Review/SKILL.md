@@ -65,7 +65,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 1. **输入解析**：定位本批次代码与 `libs/shared`、四类文档；抽取 AC 清单、TDD 接口清单、FTDD fetch 表、原型布局清单；代码量大按「大批量分批」先汇总范围。
 2. **静态验证（取证）**：本批次代码 `pnpm install → tsc --noEmit（或 build）→ test → lint`；跑不了 → 降级静态读码并在报告标「未取证（原因）」。只证伪可编译 / 可测试 / 可 lint，不做端到端冒烟（规程见 §4.4）。
-3. **视角评审**：后端批次按 `references/backend-checklist.md`、前端批次按 `references/frontend-checklist.md`（A~M 组）逐条执行；独立产出断点清单，独立上下文（subagent / 新会话）互不可见，不参考代码生成过程；条件允许可用不同模型交叉审查。另对照 `references/known-issue-patterns.md`（评审方案例库）逐条过一遍，命中即入本批次清单。
+3. **视角评审**：后端批次按 `references/backend-checklist.md`、前端批次按 `references/frontend-checklist.md`（A~N 组）逐条执行；独立产出断点清单，独立上下文（subagent / 新会话）互不可见，不参考代码生成过程；条件允许可用不同模型交叉审查。另对照 `references/known-issue-patterns.md`（评审方案例库）逐条过一遍，命中即入本批次清单。
    **⑬-前 并行还原度**：同时启用 `Fidelity-Review`（代码评审场景模式）做页面还原度审查，两侧并行、互不可见；Fidelity-Review 按自身清单出问题（含截图），**问题合并进本批次清单**（标「来源=Fidelity-Review」）。
 4. **删除候选与清理计划**：按两清单 M 组扫描死代码 / 未用依赖 / 重复实现 / 调试残留，按 `references/removal-plan-template.md` 分列「现在可安全删」与「需延后（前置条件 / 迁移 / 验证 / 回滚）」，落 `.spec/代码评审/删除候选与清理计划.md`；**只给计划不代删**。
 5. **契约专项**：按 `references/contract-checklist.md` 做前端 fetch ↔ 后端实现 ↔ 共享类型三方比对，逐接口核对；命中项按 §二 归因。
@@ -132,7 +132,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ## 六、资源清单
 
-- `references/backend-checklist.md` / `frontend-checklist.md`：双视角清单（A~M 组，每组附提问式引导）
+- `references/backend-checklist.md` / `frontend-checklist.md`：双视角清单（A~N 组，每组附提问式引导）
 - `references/contract-checklist.md`：契约一致性清单（核心）
 - `references/static-verification-guide.md`：静态验证规程
 - `references/removal-plan-template.md`：删除候选与清理计划模板（安全删 vs 延后删）
