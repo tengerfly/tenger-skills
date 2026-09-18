@@ -173,6 +173,7 @@ flowchart TD
 | 项目测试 | [Testing](./Testing) | 依据 PRD + UI 设计稿本地跑真实项目做全流程测试（功能全状态 + 全点击 / 样式 midscenejs 视觉断言 + UI 还原度检查·内嵌 Fidelity-Review / 慢接口识别），输出分级测试问题文档 | ✅ 完成 |
 | Bug 诊断与修复 | [Bug-Fix](./Bug-Fix) | 日志驱动的 Bug 诊断与修复委托闭环（链外）：前后端日志入手 → 复现确认 → 根因定位（证据链三段）→ 根因 Gate → 只交付定位报告+修复任务清单，逐环委托方案/开发/回归；不产方案、不改码、不做深度测试；承接报障/Testing/Code-Review 可运行性问题 | ✅ 初版定稿 |
 | 开源情报雷达 | [OSS-Radar](./OSS-Radar) | GitHub 开源情报采集→提炼→反哺（链外）：采集优秀开源 skill 与同域工程项目，按三元组（出处/优秀点/建议落点）提炼优秀实践，产出轮次报告+情报库+反哺任务清单（skill 类经 Skill-Optimizer 落地）；双泳道 + 增量采集 + watchlist 台账，支持无人值守定时巡逻 | ✅ 初版定稿 |
+| 源码导读 | [Source-Reading](./Source-Reading) | GitHub 仓库源码学习导读（链外）：流程图给全局感 + 关键点大白话讲透（干什么+为什么，带文件:行号 锚点），逻辑动线唯一（章节=阅读顺序、每章一条主线）；大仓（react/vue3 级）自动拆章节、先规划确认再逐章生成；前置知识先铺垫（简介+核实过的权威链接，宁缺毋错） | ✅ 初版定稿 |
 
 ## 目录结构
 
@@ -191,6 +192,7 @@ tenger-skills/
 ├── Fidelity-Review/           # 页面还原度评审 Skill（实现页 vs 设计稿）
 ├── Bug-Fix/                   # Bug 定位与修复闭环 Skill（日志→根因→方案→修复→回归）
 ├── OSS-Radar/                 # 开源情报雷达 Skill（链外，GitHub 采集→提炼→反哺，支持定时巡逻）
+├── Source-Reading/            # 源码导读 Skill（链外，GitHub 仓库→流程图+关键点大白话讲解，大仓拆章节）
 ├── Backend-Tech-Design/       # 后端技术方案（TDD）Skill
 ├── Frontend-Tech-Design/      # 前端技术方案（FTDD）Skill
 ├── Tech-Review/               # 技术方案评审 Skill
