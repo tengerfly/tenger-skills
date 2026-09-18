@@ -7,7 +7,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 # Skill-Optimizer（Skill 元优化器）
 
 > IRON LAW：每个改动必须可追溯到一条 issue 或核验发现；沉淀必须写明双向落点。凭感觉大改 = 违规。
-> 定位：本仓库各专业 Skill 的运维 + 迭代器。只做四件事——记录、挖掘、优化、体检。评审门禁闭环管「这一次交付物」，本 skill 管「每一次都犯的方法论问题」。
+> 定位：本仓库各专业 Skill 的运维 + 迭代器。只做四件事——记录、挖掘、优化、体检。评审门禁闭环管「这一次交付物」，本 skill 管「每一次都犯的方法论问题」。进化引擎为 **Skill-Evolver**（采集用户偏好/行为习惯 → 偏好库 → 触发进化）：模式②遇偏好类信号、模式③执行优化时**内部调用**它，本 skill 保留标准与调度。
 
 ## 一、模型：双问题池 + 四个模式
 
@@ -59,8 +59,9 @@ compatibility: Claude Code / Agent SDK / OpenCode
 1. 输入：读 `chats/`（.md/.txt/.json/.html）或用户粘贴。
 2. 扫信号：负面（不对/重来/怎么又/别乱发挥/反复返工/纠正/质疑）、正面（好/就这样/思路对/以后都这样）、返工循环、触发痕迹（哪个 skill 被调起、产出、断在哪步）。
 3. 提炼：信号聚合 → 现象 + 期望 vs 实际 + 归属 + 等级 + 标签 + 修复方向。
-4. **确认后才落盘**。
-5. 写入 `issue/<skill>/<日期>/`。
+4. **分流（2026-09-18）**：用户偏好/行为习惯类信号（稳定偏好的表达与反复修正，判据见 Skill-Evolver §三①）→ **REQUIRED SUB-SKILL**：交 Skill-Evolver ①采集②建模落 `evolution/` 池（含「沉淀内容完整展示」硬约束）；方法论问题 → 本池 `issue/`。界限不清问「这是用户的稳定偏好吗」。
+5. **确认后才落盘**。
+6. 写入 `issue/<skill>/<日期>/`。
 
 ## 五、模式③ 优化
 
@@ -83,6 +84,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
 4. **old-vs-new 能力审计**：改动前记录目标 skill 能力清单，改动后对比——确认无「丢功能 / 引入未声明行为 / 声称支持却没实现」，每项变更可追溯到 issue/核验发现；
 5. 在目标 skill 的 CONTEXT.md 追加 D-xx（改了什么、依据哪条 issue）；
 6. 回填 issue 状态：解决 → `已沉淀` + 沉淀目标/位置；不处理 → `已忽略` + 理由。
+
+> **进化管线接入（2026-09-18）**：改动依据含「用户偏好/行为习惯」（`evolution/` 池信号）或需要读运行轨迹定因时，执行环节走 Skill-Evolver ④诊断⑤方案⑥执行（读轨迹原文、进化建议单、五护栏、确认后改、台账留痕）；本 skill 出八维标准与最终核验，两处留痕都要（CONTEXT D-xx + 进化台账）。
 
 ### 改进思路（避免「为几个样例打补丁」）
 
@@ -173,7 +176,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - `assets/issue-template.md`、`signal-checklist.md`、`skill-writing-standard.md`、`vibe-principles-mapping.md`、`optimize-checklist.md`、`self-audit-checklist.md`
 - `references/instrumentation-guide.md`
 - `shared/templates/known-issue-patterns-template.md`（仓库根）：评审方案例库模板
-- `issue/`：skill 自身问题池（源仓库根，含来源=评审闭环项）；`bug-patterns/`：错误模式集中池（源仓库根，池规则 `bug-patterns/README.md`、案例卡模板 `Bug-Fix/assets/pattern-card-template.md`）；`chats/`：待挖掘目录
+- `issue/`：skill 自身问题池（源仓库根，含来源=评审闭环项）；`bug-patterns/`：错误模式集中池（源仓库根，池规则 `bug-patterns/README.md`、案例卡模板 `Bug-Fix/assets/pattern-card-template.md`）；`evolution/`：用户偏好与进化信号池（源仓库根，Skill-Evolver 维护）；`chats/`：待挖掘目录
+- 关联：`Skill-Evolver`（进化引擎——模式②偏好信号采集、模式③进化管线执行时内部调用）；`OSS-Radar`（外部情报输出口，反哺经本 skill 模式③）
 
 ## 十一、运行问题埋点
 
