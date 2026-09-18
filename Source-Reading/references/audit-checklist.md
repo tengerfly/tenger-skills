@@ -38,3 +38,42 @@
 | LLM 错误降级 | dsh：重试=注册期数据+独立插件+事件先行；openclaw：预解析 fallback 模型候选链+attempt 重试预算；hermes：错误分类器（FailoverReason）+凭据池；OpenHands：FallbackStrategy（6 类异常触发换 LLM）+tenacity RetryMixin；opencode：Effect retry 组合子+免费额度升级提示；pi：错误即数据，上层 retryAssistantCall |
 | 记忆 | OpenHands：两层 MEMORY.md 加载器（用户层+项目层，日志按需读）；hermes：SQLite FTS5 会话检索（CJK 双字分词）；openclaw：memory/ 目录+root-memory-files；pi：SessionSearchService 会话检索；dsh：session-reference 跨会话快照引用；opencode：无（已核实） |
 | Multi-Agent | dsh：subagent 域 11 包（含把 claude-code/codex 当子代理）；OpenHands：subagent registry（用户/项目目录加载定义）+parallel_executor；openclaw：swarm+claws 多实例+CLI 后端外包；hermes：MoA 顾问团（/moa 回合，参考模型上下文收集）；opencode：subtask 任务队列；pi：无（已核实，单 agent 工具箱） |
+
+## 业务项目命题清单（后端业务仓用，2026-09-19 新增）
+
+agent-harness 九命题只适用于 AI agent 仓库。读后端业务项目（RuoYi / mall / gin-vue-admin / NestJS 脚手架类）时改过下面十命题，同样三选一：A 有机制→关键点；B 确认不存在→结论+检索证据；C 显式「本次未覆盖」。
+
+| # | 命题 | 追什么 |
+|---|---|---|
+| 1 | 全局架构 | 模块/服务划分、分层、依赖方向、通用能力下沉、请求动线 |
+| 2 | 数据库表设计 | 表清单、命名规范、域前缀、核心表、状态机字段、逻辑删除、字典/树形、主键策略 |
+| 3 | 认证 | 登录流程、token 形态（JWT/Session）、刷新与失效、密码存储 |
+| 4 | 鉴权/权限 | RBAC 模型、接口级鉴权、按钮权限、数据权限（行级） |
+| 5 | 消息队列 | MQ 选型、解决什么问题（削峰/解耦/延迟）、可靠性（确认/重试/幂等/死信） |
+| 6 | 缓存 | 缓存/token/锁/延迟队列、缓存一致性 |
+| 7 | 事务与一致性 | 本地事务边界、分布式事务/最终一致性手段 |
+| 8 | 异步与定时 | 线程池/异步任务/定时任务 |
+| 9 | 工程化横切 | 统一返回、全局异常、参数校验、日志审计、代码生成、配置管理、限流、多数据源 |
+| 10 | 架构演进 | 单体→模块化→微服务的取舍证据（同源单/微两仓直接对照最香） |
+
+### 业务仓实测参考（新仓读完续补在此）
+
+- **RuoYi-Vue**（2026-09-19，master@13db1fc）：无 MQ（pom 无 rabbit/kafka/rocketmq/amqp，已核实）；权限三层齐活——`@PreAuthorize("@ss.hasPermi")` 接口层（`@Service("ss")` bean）/ `v-hasPermi` 前端删 DOM / `@DataScope` AOP 拼 SQL 行级数据权限（五种范围，params.dataScope 占位，先清后拼防注入）；JWT+Redis 双层会话（JWT 只存 uuid，LoginUser 在 Redis，可踢人+滑动续期 30/20min）；AsyncManager（10ms 延迟 ScheduledExecutorService）+@Log 切面旁路日志；@RateLimiter Redis+Lua 限流；@DataSource 多数据源；表规范五件套+del_flag+字典表对+gen_table 代码生成器。
+
+## 框架/库仓命题映射（react/vue3 类前端框架通用，2026-09-19 新增）
+
+九命题按 agent-harness 设计，读前端框架/库仓库时**不做十命题替换，做逐条映射**：能映射出领域等价物的按 A 出关键点，映射不出且检索为空的按 B 给证据。映射表（react 轮 + vue3 轮两次实测沉淀）：
+
+| # | harness 命题 | 框架/库领域等价物 | 两轮实测 |
+|---|---|---|---|
+| 1 | 主循环 | 调度/渲染主循环：react=WorkLoop 双循环；vue=flushJobs 微任务冲刷 | A |
+| 2 | 工具系统 | 插件/扩展注册表：react=事件插件（SimpleEventPlugin）；vue=app.use + 自定义指令 withDirectives | A（变体） |
+| 3 | 工具规模治理 | 无等价物（UI 库无工具面）——除非该库本身是插件平台 | B |
+| 4 | 上下文处理流程 | Context 机制：react=readContext/lane 惰性传播；vue=provide/inject 逐层查找 | A（变体） |
+| 5 | LLM 接入 | 无等价物 | B |
+| 6 | LLM 错误降级 | 错误边界/恢复：react=ErrorBoundary+onRecoverableError；vue=handleError+errorCaptured 逐层捕获 | A（变体） |
+| 7 | 会话持久化 | 无等价物（框架不持久化；hydration 不算） | B |
+| 8 | 记忆机制 | 无等价物 | B |
+| 9 | Multi-Agent | 无等价物（多宿主/多渲染器 ≠ 多代理，别误判） | B |
+
+B 类检索证据模板（两轮通用）：`grep -rli "<关键词>" <核心包 src>`（LLM 组：openai/anthropic/language model；持久化组：localStorage/indexedDB；多代理组：subagent/multi-agent）→ 零命中即证。**注意子串误命中**：`llm` 会命中 willMount、`spawn` 会命中 react 的 spawnedLane——命中后必须逐条打开核实再下结论。
