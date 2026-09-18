@@ -28,7 +28,7 @@
 | 案例库 | Case Library | case-library/：component-patterns + framework-patterns + quality-conventions + 同行样本 | 借鉴不照搬，FTDD 选型与多框架等价映射优先 |
 | 口径表 | PROJECT.md 内冲突裁定表（冲突场景 / 口径 / 首次裁定）：表内直接套、首见落表、同类二次现场考证 = 违规（§4.9） | 不是每次冲突都现场考证 |
 | 输入瘦身 | 续做页只读本页设计稿 + FTDD 模块 §3~§5 + 本页 shared 契约段（S1 REQUIRED） | 不是每页重读全局文档 |
-| 视图扩展 `XxxExt` | 契约缺口在 `features/<模块>/types.ts` 以 `XxxExt` 补位 + ⚠️ 留痕注释（S7） | 禁静默造字段 |
+| 视图扩展 `XxxExt` | 契约缺口在 `features/<模块>/types.ts` 以 `XxxExt` 补位 + ⚠️ 留痕注释（S7）；**临时态，联调前必须清零转正（S7/S8）** | 禁静默造字段；禁存活到联调后 |
 
 ## 三、决策日志
 
@@ -55,6 +55,7 @@
 | D-19 | 09-16 | 体检修复 5 项：①S7 引用扩为「套路与节奏纪律详见 playbook §3/§6」，承接 playbook 头部 §6 硬性纪律声明；②§4.9 补「决策模式细则见 playbook §4」+「§5.5」注明 design-system；③playbook 头部引用点标注对应节号（S1§1 / S7§3·§6 / §4.7§5 / §4.9§4）；④playbook hooks 契约字段对齐术语表 `{data/list, loading, error, refetch}`；⑤术语表 +3 行（口径表 / 输入瘦身 / 视图扩展 XxxExt）。另 D-18 引用编号 §七-8 纠偏为 §七-6（纠错记录归 Skill-Optimizer D-33） | Skill-Optimizer 模式④体检，用户裁决全修 | ✅ |
 | D-20 | 09-17 | 吸收外部精华（用户确认全量执行）：①新增 `references/motion-guide.md`（组件手感 / 性能 / reduced-motion / 手势 / 交错 / 自查表；动效值取 design-system §6/§7 token）与 `references/web-interface-quality-guide.md`（16 域 Web 界面质量规则集 + 反模式速查；Fidelity-Review / Code-Review 取检出子集）；②S7 挂动效实现引用（有动效时 REQUIRED 加载）；③S9 验收扩为三项——新增「界面质量与动效验收」；④错误表 +8 行；⑤资源清单 +2 | 用户要求吸收 7 个外部前端设计 skill 精华（emil-design-eng 动效工程 / vercel web-design-guidelines 为主）；采纳点与不采纳项记 skill-writing-standard §七（2026-09-17 第二批） | ✅ |
 | D-21 | 09-17 | 体检修复（本次吸收后自检，用户裁决全量修）5 项：①motion-guide 头部补无 design-system 降级路径（按默认档收敛并 PROJECT.md 明示）；②S7「有动效时」改「页面含过渡 / 弹层动效时」并补降级口径；③motion-guide 自查表时长口径统一（常规 <300ms；弹层 / 抽屉类据档）；④§二.3 Framer Motion 条目加「使用动效库时」条件前缀；⑤错误表动效行同步 | Skill-Optimizer 模式④体检 | ✅ |
+| D-22 | 09-17 | `XxxExt` 补位加出口闭环：S7 定性「临时态非终态」+ PROJECT.md 逐条登记（缺口/出处/处置状态）+ **联调前清零**（后端补字段转正式契约并回写 TDD/FTDD，或 §4.8 裁决前端本地算后删 Ext）；S8 补核对补位清单；错误表 +1 行；术语表同步 | 用户痛点：契约缺口补位不能无限期存活（issue/Frontend-Dev/2026-09-17/01；联动 Frontend-Tech-Design D-20 / Tech-Review D-09） | ✅ |
 
 ## 四、待决问题
 

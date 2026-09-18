@@ -66,9 +66,9 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - **禁占位符**：不得出现 TBD / TODO /「稍后实现」/「加适当校验」/「同功能点 N」。
 - **计划自审三查**：① 需求覆盖——每条 AC / 页面能指到具体功能点；② 占位符扫描——按上条清零；③ **命名与类型一致性**——同一组件 / hook / 字段在各处叫法与签名一致。
 
-**S7 逐页面测试先行实现**：`features/<模块>/types.ts` 视图模型先行——契约缺口一律 `XxxExt` 视图扩展补位 + ⚠️ 留痕注释（缺口内容/出处/对接时裁决），**禁静默造字段**；然后先写测试（承接 FTDD 用例标 TC/AC）→ constants/mocks（mock 文案逐字对齐设计稿）→ api → hooks → 组件 → 页面容器 + 样式还原（套路与节奏纪律详见 `case-library/static-page-trial-playbook.md` §3/§6）。**动效实现**：动效值取自 design-system §6/§7 token，不自造；页面含过渡 / 弹层动效时 REQUIRED 加载 `references/motion-guide.md`——无 design-system 降级项目按其默认档收敛并在 PROJECT.md 明示（组件手感 / 性能 / reduced-motion 落地）。**组件抽离在编码当下判定**（模块内 ≥2 处 → `features/<模块>/components/`；跨模块 → `src/components/`，更新全部引用并删旧；禁先复制后重构；props 用 interface 禁 `any`）。每完成一个功能点：勾任务 + 更新 PROJECT.md + eslint/stylelint/commitlint 通过 + git commit（Conventional Commits，禁混入调试/临时/凭据，不擅自 push）。
+**S7 逐页面测试先行实现**：`features/<模块>/types.ts` 视图模型先行——契约缺口一律 `XxxExt` 视图扩展补位 + ⚠️ 留痕注释（缺口内容/出处/对接时裁决），**禁静默造字段**；`XxxExt` 是**临时态非终态**——逐条登记 PROJECT.md（缺口/出处/处置状态），**联调前清零**：后端补字段 → 转正式契约并回写 TDD/FTDD，或经 §4.8 裁决前端本地计算 → 删 Ext 改本地推导；Ext 存活到联调后 = 违规；然后先写测试（承接 FTDD 用例标 TC/AC）→ constants/mocks（mock 文案逐字对齐设计稿）→ api → hooks → 组件 → 页面容器 + 样式还原（套路与节奏纪律详见 `case-library/static-page-trial-playbook.md` §3/§6）。**动效实现**：动效值取自 design-system §6/§7 token，不自造；页面含过渡 / 弹层动效时 REQUIRED 加载 `references/motion-guide.md`——无 design-system 降级项目按其默认档收敛并在 PROJECT.md 明示（组件手感 / 性能 / reduced-motion 落地）。**组件抽离在编码当下判定**（模块内 ≥2 处 → `features/<模块>/components/`；跨模块 → `src/components/`，更新全部引用并删旧；禁先复制后重构；props 用 interface 禁 `any`）。每完成一个功能点：勾任务 + 更新 PROJECT.md + eslint/stylelint/commitlint 通过 + git commit（Conventional Commits，禁混入调试/临时/凭据，不擅自 push）。
 
-**S8 契约对齐**：前端 fetch ↔ FTDD ↔ 后端 TDD 双向核对；共享类型只引用不重定义；冲突以 TDD 为准并提醒。
+**S8 契约对齐**：前端 fetch ↔ FTDD ↔ 后端 TDD 双向核对；共享类型只引用不重定义；冲突以 TDD 为准并提醒；核对 `XxxExt` 补位清单——联调前清零或转正式契约（S7），残留即升级 §4.8 提问。
 
 **S9 全局一致性 + 质量验收**：
 - 一致性：可运行可测试；模块化合规（无越层、无复制、api 经 hooks）；截图还原比对（**有设计稿时以设计稿为视觉基准**；差异分「可接受（响应式/字体回退/动效实现）」与「必须修正（区块缺失、间距/配色/字号偏差、交互/状态缺失）」→ 必须修正入返工）。
@@ -159,6 +159,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 | 口径冲突逐次现场考证 / 同类反复裁 | 查 PROJECT 口径表直接套；首见新口径裁定后落表（§4.9） |
 | 有验收脚本仍手动逐状态截图 / 坐标点击硬怼 | 先跑验收脚本（§4.7）；受控输入等可靠路径见 playbook §5 |
 | 契约缺口静默造字段 | `XxxExt` 视图扩展 + 留痕注释（S7） |
+| Ext 补位存活到联调后 | 联调前清零：补字段转正式契约或裁决本地算并回写 TDD/FTDD（S7/S8） |
 | 父级>标签通配选择器当样式出口 | 语义元素独立 BEM 类（§4.10-1） |
 | 稿面 @media 断点不搬 | 断点随 token 对账一起过，双视口比对（§4.10-2） |
 | 组件派生视觉值（Avatar 字号等）不核对 | computed style 对稿面，显式覆盖（§4.10-3） |
