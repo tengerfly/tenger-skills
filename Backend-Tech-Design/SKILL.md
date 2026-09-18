@@ -40,6 +40,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 **S1 解析输入**：读上表输入，抽取模块清单、PRD AC、业务约束。
 
+**S1.5 资产检索与选择（M6 资产门禁）**：检索 AI 组件库 `D:\project\agent-project\skills-knowledge\asset-library\`——先判项目类型命中 `blueprints/`（可叠加取严）收敛范围，再按 capabilities → patterns/composites → adapters 检索；命中 → 记录 selected/rejected/unresolved 并锁版本（pattern@x + adapter@x）；未命中 → 记录缺口，交 Dev 走封装七步法。产物落 `.spec/<feature>/` 的 `asset-needs.yaml`、`asset-selection.yaml`、`composition.yaml`（模板在组件库 `templates/project-side/`）；组合图须满足「下游 requires ⊆ 前置 provides」，Tech-Review 据此检查组合契约。
+
 **S2 非功能需求（设计输入，先于选型）**：问清并写进元数据——① 规模预期（数据量/并发/QPS）② 延迟要求（p95）③ 一致性需求（强一致 vs 最终一致）④ 安全与合规约束 ⑤ 可用性/容灾要求。**每个关键选型都要能回答「它满足哪条非功能需求」。**
 
 **S3 选型澄清（一次定全）**：⛔ 每个决策点过「收敛证明」——结论含明确组件与量级 + 失败/涨 10 倍/漏项已拷问 + 用户对定稿复述点头；一两句回答不算定稿。
