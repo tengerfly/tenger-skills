@@ -51,6 +51,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 **S2 技术栈锁定**：FTDD 存在 → 读 overview 选型**不重选**；缺失 → 补选型（档位必问 + 组件库必问 + 端相关必问，一次性确认后定稿入 PROJECT.md）；`覆盖端 ≠ 目标端` → **⛔ 阻塞**，先让 Frontend-Tech-Design 补对应端方案；**施工框架与 FTDD 选型不一致 → 阻塞对齐**，禁自主切回 React 基线（非 React 框架按 `references/framework-equivalence-guide.md` 等价映射执行）。
 
+> **组件决策链（调度组件库，涉新组件/通用 hooks/基建 REQUIRED）**：① 盘点本仓已有基建（已有必须用）→ ② 检索 AI 组件库 `D:\project\agent-project\skills-knowledge\asset-library\`（capabilities → patterns/composites → adapters）→ ③ 命中 → 锁版本并记录 selected / rejected / unresolved；未命中 → 走封装七步法（`asset-library/shared/component-authoring.md`，造前写 asset-gap；新组件七步全走，小改动轻量通道①+⑥）→ ④ 交付时做沉淀判断（四出口：Case / Candidate / 更新既有 / 反模式）。
+
 **S3 工程初始化**：既有工程沿用现状，只补缺失基础设施（根配置改动先问）；全新工程——**web 端 SPA 直接复制可运行模板**（React / Vue3 功能点一一对应）：React → `assets/frontend-template-react/`（Vite + React 18 + AntD 5），Vue3 → `assets/frontend-template-vue3/`（Vite + Vue 3.5 + Element Plus + Pinia）；两版同款底座：TS strict 起手 + 请求层统一解包 / SSE 封装 / 路由守卫 / 错误边界 / 懒加载 + vendor 分包 / 设计 token / ui 组件库隔离出口 / 覆盖率门禁 / CI·Docker 全内置，lint·test·coverage·build 全绿基线，照模板 README「5 分钟改造清单」改品牌 / 主题色 / 代理端口等槽位；组件库或框架与 FTDD 选型不符时按模板 README「换组件库操作指南」在 `components/ui` 出口改造；**非 React/Vue / 非 web 端**仍按 `references/tech-stack-guide.md` + `assets/project-structure-template.md` 起手。monorepo 约定见 §4.2。
 
 **S4 还原基线与 token**：逐页产**还原基线清单**——**结构行对照低保真原型**（区块 / 布局 / 交互 / 流转），**视觉行对照设计稿**（色值 / 字号字重 / 间距 / 圆角阴影 / 图标 / 状态视觉，落 `design-system.md` §7 token）；三态与 FTDD §9 适用状态一并纳入。全部收敛为 `src/styles/variables.{scss|less}`（扩展名随 FTDD 选型）的 CSS 变量，**禁写死**。
