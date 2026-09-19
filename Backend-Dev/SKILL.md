@@ -1,6 +1,6 @@
 ---
 name: Backend-Dev
-description: 后端代码开发（TypeScript + NestJS + Monorepo 默认）。依据 PRD、原型、TDD、FTDD 把技术方案落地为可运行、可维护的微服务后端工程：测试先行逐功能点实现，四层分层 + 服务边界 + libs 共享；开发前出 PROJECT.md + PLAN.md，功能点完成即 eslint/commitlint 校验并提交。维护性第一；不确定就给选择项，一次只问一个关键问题。触发：编写/实现/开发后端代码、按技术方案写后端。
+description: 后端代码开发（TypeScript + NestJS + Monorepo 默认）。依据 PRD、原型、TDD、FTDD 把技术方案落地为可运行、可维护的微服务后端工程：测试先行逐功能点实现，四层分层 + 服务边界 + libs 共享；开发前出 PROJECT.md + PLAN.md，功能点完成即 eslint/commitlint 校验并提交；业务组件资产沉淀复用（skill-knowledge）。维护性第一；不确定就给选择项，一次只问一个关键问题。触发：编写/实现/开发后端代码、按技术方案写后端。
 compatibility: Claude Code / Agent SDK / OpenCode
 ---
 
@@ -49,6 +49,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 **S1 开工判定与解析**：
 - **三路判定**：续做（有 PROJECT.md + PLAN.md → 读后从进行中/待做续）；既有项目盘点（有代码无两文档 → 按仓库根 `shared/dev-common.md` §一沉淀「项目现状基线」，严格按现状落地，不套默认模板）；全新开发 → 完整流程建两文档。
 - 读 `.spec/`：TDD（选型/表结构/接口/边界/测试）、FTDD（fetch 清单）、PRD（先读速查表）、原型；检查评审任务清单并纳入 PLAN。
+- **业务组件检索**：检索仓库根 `skill-knowledge/业务组件/backend/` 下已有组件，命中即复用或适配复用，禁重复手写同类业务能力模块。
 - **技术栈锁定**：有 TDD → 逐项采用 TDD「技术选型总览」，不重选不追问；无 TDD + 既有代码 → 盘点现状为基线；无 TDD + 全新 → 开工前一次敲定（默认 TypeScript + NestJS / `@nestjs/microservices` / Prisma（备选 TypeORM）/ pnpm workspace / Jest+Supertest / `@nestjs/config`），记入 PROJECT.md 关键决策。
 - **批判性审视**：对 TDD 或计划本身有疑虑先向用户提出，不闷头执行。
 
@@ -72,7 +73,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 **S9 全局一致性 + 生产就绪**：一致性（可编译可运行、分层无越界、服务边界无侵入、命名统一、注释完整、测试可跑且覆盖五类、覆盖率企业级 ≥80%）；生产就绪按 **§4.9 清单**逐项打勾，缺项不算完成；性能按 **§4.9** 口径核对。
 
-**S10 归档 + 回填**：README 运行说明；更新 PROJECT.md / PLAN.md；回填评审任务清单（`已修复` + 修改说明）。回填后须触发 `Code-Review` 复核，不得自判通过（闭环与上限规则见仓库根 `shared/anti-deadloop.md` §一/§二）。
+**S10 归档 + 回填**：README 运行说明；**业务组件沉淀判定（⚠️ REQUIRED）**：本项目开发的业务能力模块——项目内真实使用且跨项目有复用潜力（可剥离项目特有依赖参数化）→ 按「职责边界 / 窄接口 / 最小示例 / 自测证据」四件套沉淀到仓库根 `skill-knowledge/业务组件/backend/<组件名>/`（规格见其 README），判定结果留痕 PROJECT.md；强绑定本项目领域模型 / 数据结构的项目特有组件**不沉**（防为沉而沉）；更新 PROJECT.md / PLAN.md；回填评审任务清单（`已修复` + 修改说明）。回填后须触发 `Code-Review` 复核，不得自判通过（闭环与上限规则见仓库根 `shared/anti-deadloop.md` §一/§二）。
 
 ## 四、关键规范
 
@@ -134,12 +135,15 @@ compatibility: Claude Code / Agent SDK / OpenCode
 | heredoc / re.sub 转义吞噬生成坏源码 | 反斜杠字面量用 chr(92) 拼接；re.sub 替换串含反斜杠改用 lambda；生成后立即编译（bug-patterns/2026-09-15/02） |
 | Nest provider 构造参数用投影类型/接口/type-only 导入 → 运行时 DI 解析失败（tsc 全绿） | 非类类型参数显式 @Inject(token)；DI 参数禁 import type；forFeature 实体清单与 token 对应；回归必含全 AppModule 启动冒烟（bug-patterns/2026-09-15/03） |
 | 构造器加参后 spec 位置参数错位（as never 掩盖）→ 批量假失败 | grep 全部 new 调用点逐一补参；批量同症状假失败先查槽位错位；提交前 eslint --fix + commitlint 预检（bug-patterns/2026-09-15/04、05） |
+| 同类业务能力模块不检索直接重写 | S1 先查 skill-knowledge 资产池，命中复用 |
+| 可复用业务组件交付即丢不沉淀 | S10 沉淀判定（⚠️ REQUIRED）：四件套入 skill-knowledge，项目特有不沉 |
 
 ## 六、资源清单
 
 - `references/architecture-guide.md`、`code-style-guide.md`、`test-guide.md`、`tech-stack-guide.md`、`decision-rules.md`
 - `references/case-library/`：语言规范 + API/安全 + 质量工程化 + 同行样本（按需加载）
 - `assets/project-structure-template.md`、`module-code-template.md`、`project-status-template.md`、`plan-template.md`
+- 仓库根 `skill-knowledge/`：跨项目业务组件资产池（S1 检索 / S10 沉淀；目录与四件套规格见其 README）
 - `shared/dev-common.md`、`shared/receiving-review.md`、`shared/evidence-before-claims.md`、`shared/anti-deadloop.md`（仓库根）：公共约定
 - 项目目录：代码 + `PROJECT.md` + `PLAN.md` + `README`
 

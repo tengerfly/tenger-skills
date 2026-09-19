@@ -12,6 +12,7 @@
 | 还原基准 | **结构 = 低保真原型；视觉 = 设计稿**（有则以 `.spec/设计稿/` + `design-system.md` 为唯一视觉应然，须 token 对账；无设计稿才回退原型并明示降级） |
 | 架构 | 页面容器 → 组件 → hooks → api，单向依赖 |
 | 组件归属 | 模块内 ≥2 次 → features/<模块>/components/；跨模块 → src/components/ |
+| 业务组件资产 | S1 检索 skill-knowledge 复用；S10 交付沉淀判定（四件套入池，项目特有不沉） |
 | 测试 | 先行，TC-Mxx ↔ AC-Mxx，渲染/交互/数据流/边界/异常 |
 | 共享类型 | monorepo 下单一来源，前端只 import 不重定义 |
 | 浏览器 | 硬预检，全无报错停 |

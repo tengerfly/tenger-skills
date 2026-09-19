@@ -208,6 +208,7 @@ tenger-skills/
 ├── issue/                     # 问题池（skill 自身问题 + 评审闭环沉淀，Skill-Optimizer 唯一事实源）
 ├── bug-patterns/              # 错误模式集中池（各被修项目 bug 统一沉淀此处，Bug-Fix 写 / Optimizer 提炼）
 ├── evolution/                 # 用户偏好与进化信号池（Skill-Evolver 维护：偏好库/信号月志/进化台账）
+├── skill-knowledge/           # 业务组件资产池（Frontend/Backend-Dev 开发中检索/沉淀的跨项目复用组件，规格见其 README）
 └── chats/                     # 待挖掘的聊天记录
 ```
 
