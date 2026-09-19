@@ -80,6 +80,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 > 正文只留判据；细则按需加载对应 references。
 
+**4.1.0 资产与契约检查（M6，后端/前端通用）**：① 组合契约——组合图（composition.yaml）的 requires/provides/ordering 与实现一致，无绕过统一契约的写法；② Pattern 不变量——命中资产的 Invariants/禁止事项逐条成立；③ 零复制分叉——无 `xxx-full-copy` 式整体复制；④ 零静默发明——未命中资产的关键规则不得擅自发明（须走封装七步法或标注待确认）；⑤ 使用与版本——asset-usage 记录的实际版本与 asset-selection 锁定一致。违反任一记 P1；绕过统一契约、复制分叉记 P0。组件库位置：`D:\project\agent-project\skills-knowledge\asset-library\`。
+
 **4.1 六大闭环（代码层）**：
 
 | 闭环 | 含义 | 典型断点 |

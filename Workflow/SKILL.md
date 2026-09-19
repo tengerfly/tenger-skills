@@ -142,6 +142,8 @@ PIPELINE：<路径>
 
 修改方 skill 内含清单检测与回填，编排器只指定入口。门禁点可跳过（用户指令直接跳，PIPELINE 标 `已跳过` + 原因）。
 
+**资产五门禁（对接 asset-library，M6）**：涉及功能实现的任务，在既有门禁外加验五项——① **检索门禁**：候选分析完成（asset-needs/候选记录存在）；② **选择门禁**：selected/rejected/unresolved 三类齐备；③ **实现门禁**：asset-usage 记录实际使用版本（与锁定版本有偏差须有 deviation 说明）；④ **验证门禁**：证据可定位（命令/结果/截图）；⑤ **沉淀门禁**：Case / Pattern Candidate / 更新既有 / 反模式 四出口判断完成。项目侧状态记 `.spec/<feature>/pipeline-state.yaml`（模板在组件库 `templates/project-side/`）；双状态机分开推进：项目任务态（REQUIREMENT→…→USAGE_RECORDED）与资产变更态（DRAFT→…→RETIRED）。组件库位置：`D:\project\agent-project\skills-knowledge\asset-library\`。
+
 **分端与并行**：
 
 - ⑩-后 放行 → 才起 ⑨；⑩-前 放行 → 才起 ⑪；⑬-后 放行 → 才起 ⑫；⑬-前 放行 → 才起 ⑭。

@@ -53,6 +53,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 **S1 解析输入 + 浏览器检测**：读上表输入；抽取页面清单、组件线索、接口清单（来自 TDD）、AC。
 
+**S1.5 资产检索与选择（M6 资产门禁）**：检索 AI 组件库 `D:\project\agent-project\skills-knowledge\asset-library\`——先判项目类型命中 `blueprints/`（可叠加取严）收敛范围，再按 capabilities → patterns/composites → adapters 检索；命中 → 记录 selected/rejected/unresolved 并锁版本；未命中 → 记录缺口，交 Dev 走封装七步法。产物落 `.spec/<feature>/` 的 `asset-needs.yaml`、`asset-selection.yaml`、`composition.yaml`（模板在组件库 `templates/project-side/`）。
+
 **S2 选型澄清（一次定全）**：⛔ 每个决策点过「收敛证明」——结论落到具体页面 / 组件 / 状态归属 + 失败 / 涨 10 倍 / 漏项已拷问 + 用户对定稿复述点头；一两句回答不算定稿（协议见 `references/socratic-grilling.md`，通用核心 `shared/socratic-grilling-core.md`）。
 
 - **必问清单（缺一不放行）**：

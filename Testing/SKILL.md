@@ -54,15 +54,15 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 > 先计划后执行，禁止边测边想；◉ = 强制暂停等用户确认。
 
-1. **输入解析**：确认项目代码位置（未给必问）；读上表输入，提取页面清单 + 状态集合 + 可交互元素 + 接口清单。
+1. **输入解析**：确认项目代码位置（未给必问）；读上表输入，提取页面清单 + 状态集合 + 可交互元素 + 接口清单；**组件决策链（调度组件库）**：盘点项目已有测试基建（已有必须用）→ 检索 AI 组件库 `D:\project\agent-project\skills-knowledge\asset-library\`（capabilities → patterns → adapters），命中锁版本，未命中走封装七步法（`asset-library/shared/component-authoring.md`，造前写 asset-gap），交付时做沉淀判断。
 2. **环境准备 + ◉ 浏览器预检**：按 `acceptance-loop-guide` 核查 typecheck / lint / 单测 / build / e2e 与 hooks；install + 启动 dev server 确认可访问；浏览器工具硬性预检（任一可用即功能遍历 + 网络监听）。
-3. **测试计划 + 用例**：按 `assets/test-process-template.md` 写计划；按 `assets/test-case-template.md` 写功能（全状态 + 全点击）/ 样式（三态 + 视觉）/ 性能三类用例。
+3. **测试计划 + 用例**：按 `assets/test-process-template.md` 写计划；按 `assets/test-case-template.md` 写功能（全状态 + 全点击）/ 样式（三态 + 视觉）/ 性能三类用例；**矩阵来源**：命中的 pattern/adapter 带 `verification.required` 时，测试矩阵由其驱动生成，不自造。
 4. **◉ Scope Gate（强制暂停）**：呈现范围 + 用例总数 + 工具方案 + 慢接口阈值，确认后放行。
 5. **功能测试**：按 §4.1 全状态、§4.2 全点击执行，回填用例。
 6. **样式测试**：按 §4.3 执行。
 7. **接口性能测试**：按 §4.4 执行。
 8. **汇总**：按 `assets/bug-report-template.md` 汇总三类缺陷（P0/P1/P2 + 复现 + 证据），规范见 §4.5。
-9. **归档**：`.spec/测试/` 下测试计划、用例、问题文档、接口性能清单、`screenshots/`。
+9. **归档**：`.spec/测试/` 下测试计划、用例、问题文档、接口性能清单、`screenshots/`；命中资产的失败模式回写组件库 `asset-library/anti-patterns/` 与 `cases/failure/`（沉淀门禁：走查/测试证据随 asset-usage 回写）。
 
 ## 四、关键规范
 
