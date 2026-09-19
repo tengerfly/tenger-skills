@@ -66,7 +66,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 **7. 双向沉淀判定**：放行后按 `shared/anti-deadloop.md` §五 判定（P0 双向必沉）——**A 防复发**：改产出方 skill `PRD-Design` 的防复发规则（记其 CONTEXT D-xx）；**B 检出力**：本 skill `references/known-issue-patterns.md` 按模板加一条（含「检出方法」）。改不了的落 `issue/PRD-Design/<日期>/`（来源=评审闭环，写明双向落点）。判定结果记入汇总报告「沉淀判定」节。
 
-**8. 归档**：四份评审 + 汇总 + 任务清单全部落盘 `.spec/需求评审/` 后交付。
+**8. 归档**：四份评审 + 汇总 + 任务清单全部落盘 `.spec/需求评审/` 后交付。**问题日志**：归档同时在项目 `.spec/问题日志.md` 台账追加一行索引（日期｜来源｜问题产物｜轮次｜状态｜反哺出口；格式见 skill 源仓库 `shared/templates/problem-log-template.md`）。
 
 > 门禁闭环、防评审死循环三招（含轮次上限 3：满 3 轮未收敛 → 强制清 P0 后放行、残留 P1 记遗留）、分级与沉淀的定义见仓库根 `shared/anti-deadloop.md`，本 skill 只保留流程参数，不重复定义。
 

@@ -50,7 +50,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 4. **四维对照评审**：按 `references/layout-freeze-checklist.md`、`copywriting-consistency-checklist.md`、`visual-spec-consistency-checklist.md`、`rendered-quality-checklist.md` 逐条过筛（每份含**查漏 + 查多**）；另对照 `references/known-issue-patterns.md`（评审方案例库）过一遍，命中即入相应维度清单。
 5. **四份维度报告**：按 `assets/dimension-review-template.md` 落盘四份报告。
 6. **汇总**：按 `assets/summary-template.md` 合并去重、归纳跨页面共性问题（如整批 token 偏差）、统计 P0/P1/P2。
-7. **任务清单 + 归档**：按 `assets/issue-list-template.md` 生成任务清单——每条自足可读（出处 + 现象 + 成因 + 方向）、附修复判据、状态 `待确认`、标注修改方；P0/P1 阻断、P2 由用户裁决；逐条确认（要改 → `已确认`；不改 → `已忽略` + 理由）；复核只验本轮清单，不无限新增。
+7. **任务清单 + 归档**：按 `assets/issue-list-template.md` 生成任务清单——每条自足可读（出处 + 现象 + 成因 + 方向）、附修复判据、状态 `待确认`、标注修改方；P0/P1 阻断、P2 由用户裁决；逐条确认（要改 → `已确认`；不改 → `已忽略` + 理由）；复核只验本轮清单，不无限新增。**问题日志**：归档同时在项目 `.spec/问题日志.md` 台账追加一行索引（日期｜来源｜问题产物｜轮次｜状态｜反哺出口；格式见 skill 源仓库 `shared/templates/problem-log-template.md`）。
 8. **双向沉淀判定**：放行后按 `shared/anti-deadloop.md` §五 执行——**A 防复发**：设计稿问题改 `UI-UX-Design`、布局 / 载体问题改 `Prototype-Design`、PRD 口径问题改 `PRD-Design`（记其 CONTEXT D-xx）；**B 检出力**：本 skill `references/known-issue-patterns.md` 按模板加一条（含「检出方法」）。改不了的落 `issue/<目标 skill>/<日期>/`（来源=评审闭环，写明双向落点）。判定结果记入汇总报告「沉淀判定」节。
 
 > 门禁闭环、防评审死循环三招（含轮次上限 3：满 3 轮未收敛 → 强制清 P0 后放行、残留 P1 记遗留）、分级与沉淀的定义见仓库根 `shared/anti-deadloop.md`，本 skill 只保留流程参数，不重复定义。反复不收敛且暴露方法论问题 → 上报 `issue/`，交 Skill-Optimizer。

@@ -133,6 +133,7 @@ flowchart TD
 │   ├── 技术方案评审/         # Tech-Review 产物（后端/前端评审 + 汇总报告 + 任务清单）
 │   ├── 代码评审/            # Code-Review 产物（后端/前端评审 + 汇总报告 + 任务清单；⑬-前 含 Fidelity-Review 还原度报告）
 │   ├── auto-test/           # auto-test 产物（用例库 / 分层报告 / 修复任务卡 + evidence；⑭ 分层验收）
+│   ├── 问题日志.md           # 项目问题台账索引（各评审/测试/Bug-Fix 归档时追加一行；格式见 skill 源仓库 shared/templates/problem-log-template.md，流向见 issue/README.md §问题数据流总览）
 │   ├── 测试/                # Testing 产物（链外人工走查备用：测试计划/用例/问题文档 + 接口性能清单 + 截图）
 │   └── bug修复/             # Bug-Fix 产物（问题定位报告 + 修复任务清单 + 复现材料）
 ├── src/（或 apps/）         # 代码（Backend-Dev / Frontend-Dev 产物）
@@ -190,6 +191,7 @@ flowchart TD
 ```
 tenger-skills/
 ├── README.md                  # 仓库说明（本文件）
+├── docs/                      # 计划/研究/学习笔记归档（人读，不参与 skill 运行时；索引见 docs/README.md）
 ├── Workflow/                  # 全流程编排 Skill（总控）
 ├── Skill-Optimizer/           # Skill 元优化 Skill（链外，长期迭代）
 ├── Competitive-Analysis/      # 竞品分析 Skill

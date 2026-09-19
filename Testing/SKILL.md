@@ -62,7 +62,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 6. **样式测试**：按 §4.3 执行。
 7. **接口性能测试**：按 §4.4 执行。
 8. **汇总**：按 `assets/bug-report-template.md` 汇总三类缺陷（P0/P1/P2 + 复现 + 证据），规范见 §4.5。
-9. **归档**：`.spec/测试/` 下测试计划、用例、问题文档、接口性能清单、`screenshots/`；命中资产的失败模式回写组件库 `asset-library/anti-patterns/` 与 `cases/failure/`（沉淀门禁：走查/测试证据随 asset-usage 回写）。
+9. **归档**：`.spec/测试/` 下测试计划、用例、问题文档、接口性能清单、`screenshots/`；命中资产的失败模式回写组件库 `asset-library/anti-patterns/` 与 `cases/failure/`（沉淀门禁：走查/测试证据随 asset-usage 回写）。**问题日志**：归档同时在项目 `.spec/问题日志.md` 台账追加一行索引（日期｜来源｜问题产物｜轮次｜状态｜反哺出口；格式见 skill 源仓库 `shared/templates/problem-log-template.md`）。
 
 ## 四、关键规范
 

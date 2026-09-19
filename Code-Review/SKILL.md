@@ -72,7 +72,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 6. **角色文档落盘**：按 `assets/role-review-template.md` 写本批次角色文档至 `.spec/代码评审/`；P0 按 `assets/patch-template.md` 附建议补丁（仅代码块，不落盘源码）。
 7. **汇总**：按 `assets/summary-template.md` 合并去重（⑬-前 含 Fidelity-Review 并行结果），重点标「前后端契约错误」，按 P0/P1/P2 统计；**零问题也要写清覆盖边界**（见 §一）。
 8. **任务清单 + 用户确认**：按 `assets/issue-list-template.md` 生成任务清单，状态 `待确认`，按归因填修改方（Backend-Dev / Frontend-Dev / 双方）；每条附**修复判据**；逐条请用户确认（要改 → `已确认`；不改 → `已忽略` + 理由）；P0/P1 阻断、P2 可留后续；确认后交对应 Dev skill 修改并回填状态。
-9. **闭环复核 + 双向沉淀判定**：修改方回填 `已修复` 后只验本轮 `已确认` 项；新发现降 P2；同批满 3 轮不收敛 → 清 P0 后放行，残留 P1 记遗留。放行后按 `shared/anti-deadloop.md` §五 判定（P0 双向必沉）——**A 防复发**：改产出方 skill（Backend-Dev / Frontend-Dev）的防复发规则，记其 CONTEXT D-xx；**B 检出力**：本 skill `references/known-issue-patterns.md` 按模板加一条（含「检出方法」）。改不了的落 `issue/`（来源=评审闭环，写明双向落点）交 Skill-Optimizer 提炼。判定结果记入汇总报告「沉淀判定」节。
+9. **闭环复核 + 双向沉淀判定**：修改方回填 `已修复` 后只验本轮 `已确认` 项；新发现降 P2；同批满 3 轮不收敛 → 清 P0 后放行，残留 P1 记遗留。放行后按 `shared/anti-deadloop.md` §五 判定（P0 双向必沉）——**A 防复发**：改产出方 skill（Backend-Dev / Frontend-Dev）的防复发规则，记其 CONTEXT D-xx；**B 检出力**：本 skill `references/known-issue-patterns.md` 按模板加一条（含「检出方法」）。改不了的落 `issue/`（来源=评审闭环，写明双向落点）交 Skill-Optimizer 提炼。判定结果记入汇总报告「沉淀判定」节。**问题日志**：归档同时在项目 `.spec/问题日志.md` 台账追加一行索引（日期｜来源｜问题产物｜轮次｜状态｜反哺出口；格式见 skill 源仓库 `shared/templates/problem-log-template.md`）。
 
 > 防评审死循环三招、门禁闭环放行判据与任务清单状态机的定义见仓库根 `shared/anti-deadloop.md`，本 skill 只保留流程参数，不重复定义。
 
