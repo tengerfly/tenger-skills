@@ -24,6 +24,7 @@
 |---|---|---|---|---|---|---|
 | 1 | 桩注入冒充行为覆盖（迁移/改造批只接线不断言） | handler spec 仅仅在构造器里多了 2 个 stub 参数、断言零新增；TDD 用例矩阵承诺的 TC 无对应 it | 对照 TDD §9 覆盖矩阵，在 spec 目录逐 TC 编号 grep（it 描述与断言体），缺一即报；核对 spec 净增行数与测试承诺是否成比例 | P1 | ⑬-后 AgentV2 CR-01 | 2026-09-15 |
 | 2 | 确定性 mock 锚点文本与业务提示词漂移 | mock seed 的 matcher 在业务提示词改版后不再命中 → mock 驱动下该链路必失败（且只在灰度/演示时暴露） | 提取全部 registerStream/script/registerJson matcher，到对应业务 system prompt 实文（当前提交版）逐个 grep 命中验证；特别注意历史改版过的提示词 | P1 | ⑬-后 AgentV2 CR-02 | 2026-09-15 |
+| 3 | 流式/SSE 响应被全局拦截器二次包装 | @Sse 端点帧被全局 ResponseInterceptor 再包一层 {code,data}，顶层 event 类型丢失，客户端 addEventListener(具名事件) 永不触发 | 存在全局响应包装拦截器时，逐个流式端点核对：拦截器是否跳过（元数据/类型检测）、帧对象是否含包装器判断字段、客户端具名事件与服务端帧 type 是否对得上；可写「拦截器透传断言」单测兜底 | P0 | ⑬-后 web-monitor 实时大屏（CR-B-01） | 2026-09-18 |
 
 ## 使用方式
 
