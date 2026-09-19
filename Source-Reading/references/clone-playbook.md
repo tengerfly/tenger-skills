@@ -66,22 +66,9 @@ git clone --depth 1 --branch <tag_or_branch> <url>
 1. `--depth 1` 断流（early EOF）→ 加 `--filter=blob:none --no-checkout` 重试（传输量骤减，通常一次过）。
 2. `Failed to connect` 超时 → 原命令重试最多 3 次，间隔 10~15s。**重试循环判断产物目录（`[ -d repo/.git ]`）而非命令退出码**——管道（`git clone | tail`）会让退出码失真，失败也被当成成功。
 3. blobless 克隆成功但 checkout 报 `could not fetch ... from promisor remote`（拉 blob 断流）→ **直接重跑 `git checkout`** 即可续传，最多 5 次；不需要重新 clone。
-4. git 协议持续失败 → 兜底 codeload tarball：`curl -L https://github.com/<owner>/<repo>/archive/refs/heads/<分支>.tar.gz` 解包即用；commit hash 从 `api.github.com/repos/<owner>/<repo>` 取，锚点体系不受影响（代价：无 git 元数据，sparse-checkout 不可用，靠 tar 解包后手动删无关目录）。
+4. git 协议持续失败 → 兜底 codeload tarball：`curl -sL "https://codeload.github.com/<owner>/<repo>/tar.gz/refs/heads/<分支>" -o r.tar.gz` 解包即用（`tar -xzf r.tar.gz && mv <repo>-<分支> <repo> && rm r.tar.gz`；等价 URL `github.com/<owner>/<repo>/archive/refs/heads/<分支>.tar.gz`）；commit hash 从 `api.github.com/repos/<owner>/<repo>/commits/<分支>` 取 `sha` 写进总览版本行，锚点体系不受影响（代价：无 git 元数据，sparse-checkout 不可用，靠 tar 解包后手动删无关目录）。
 5. 以上全败 → 才是「网络不通告知用户并停」的唯一停机条件。
 
 ## 5. GitHub 限流应对（与 OSS-Radar playbook 同源）
 
 `gh api` → 免认证 `api.github.com` → WebSearch 兜底。摸底只需 1~2 次调用，一般碰不到限流。
-
-## 6. 克隆通道兜底（2026-09-19 实测新增）
-
-git clone 直连 github.com 可能 `Connection was reset`（而 api.github.com / codeload 仍通，常见于国内网络）。通道按优先级：
-
-1. 默认 `git clone --depth 1 https://github.com/<owner>/<repo>.git`
-2. 失败 → **codeload tarball**：
-   ```bash
-   curl -sL "https://codeload.github.com/<owner>/<repo>/tar.gz/refs/heads/<branch>" -o r.tar.gz
-   tar -xzf r.tar.gz && mv <repo>-<branch> <repo> && rm r.tar.gz
-   ```
-   tarball 无 `.git`：commit 号用 API 补记——`curl -s https://api.github.com/repos/<owner>/<repo>/commits/<branch>` 取 `sha`，写进总览版本行（锚点以该快照为准）
-3. 全不通 → 告知用户并停（唯一停机条件）
