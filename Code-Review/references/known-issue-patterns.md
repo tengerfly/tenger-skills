@@ -25,6 +25,8 @@
 | 1 | 桩注入冒充行为覆盖（迁移/改造批只接线不断言） | handler spec 仅仅在构造器里多了 2 个 stub 参数、断言零新增；TDD 用例矩阵承诺的 TC 无对应 it | 对照 TDD §9 覆盖矩阵，在 spec 目录逐 TC 编号 grep（it 描述与断言体），缺一即报；核对 spec 净增行数与测试承诺是否成比例 | P1 | ⑬-后 AgentV2 CR-01 | 2026-09-15 |
 | 2 | 确定性 mock 锚点文本与业务提示词漂移 | mock seed 的 matcher 在业务提示词改版后不再命中 → mock 驱动下该链路必失败（且只在灰度/演示时暴露） | 提取全部 registerStream/script/registerJson matcher，到对应业务 system prompt 实文（当前提交版）逐个 grep 命中验证；特别注意历史改版过的提示词 | P1 | ⑬-后 AgentV2 CR-02 | 2026-09-15 |
 | 3 | 流式/SSE 响应被全局拦截器二次包装 | @Sse 端点帧被全局 ResponseInterceptor 再包一层 {code,data}，顶层 event 类型丢失，客户端 addEventListener(具名事件) 永不触发 | 存在全局响应包装拦截器时，逐个流式端点核对：拦截器是否跳过（元数据/类型检测）、帧对象是否含包装器判断字段、客户端具名事件与服务端帧 type 是否对得上；可写「拦截器透传断言」单测兜底 | P0 | ⑬-后 web-monitor 实时大屏（CR-B-01） | 2026-09-18 |
+| 4 | 会话恢复/401 处理构成重定向循环 | 未登录直开任意页（含 /login）无限整页重载；过期 token 用户卡死。根因：restoreSession 无 token 仍调 /me + request 401 无条件跳登录 + 守卫再触发恢复 | 静态走查三环链路：①恢复函数入口是否判空 token 提前返回 ②401 处理是否排除当前已在登录页 ③登录页自身是否触发恢复；补「无 token 不发请求」单测 | P0 | ⑬-前 server-monitor（F1-01） | 2026-09-19 |
+| 5 | 前端手写 `request<T>` 断言出参形状（无共享 DTO 单一源时） | 后端 `{items,nextCursor}` 被断言为裸数组 → `rows.map is not a function` 整页崩；字段名按 Prisma 列名而非 DTO 名（createdAt vs at）→ `undefined.slice` 崩。tsc 全绿，联调/浏览器才爆 | 逐个 request 调用点取泛型 T 与后端 service 返回字面量逐字段比对（大小写敏感）；列表类先查后端是否统一分页信封；无 libs/shared 的项目按域抽样重点核（platform/审计等低频页面高发） | P0 | ⑬-前 server-monitor（C-01/02/03，platform 域三连崩） | 2026-09-19 |
 
 ## 使用方式
 
