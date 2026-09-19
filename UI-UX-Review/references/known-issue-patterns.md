@@ -21,4 +21,9 @@
 
 评审执行时在步骤 4（四维对照清单 `layout-freeze-checklist.md` / `copywriting-consistency-checklist.md` / `visual-spec-consistency-checklist.md` / `rendered-quality-checklist.md`）之后，逐条对照本清单过一遍；命中即按本 skill 域界判级入任务清单（结构零改动 / 文案一致 / 规范一致 / 渲染质量与可点击性）。
 
-<!-- 待补模式（占位）：无 -->
+## 已收录模式
+
+| # | 模式 | 典型现象 | 检出方法 | 严重度 | 来源 | 日期 |
+|---|---|---|---|---|---|---|
+| 1 | 穿衣静态化丢交互结构 | 设计稿把原型的可跳转行/条目/按钮做成纯样式 hover（无 <a>/触发），像可点实则无反应，主流程出口结构级不可点 | 对照原型的每个真实 <a>/按钮，在设计稿 DOM 里找等价触发（<a href>/button/角色化元素）；hover/pointer 样式存在但无锚点即命中 | P0 | ⑦ web-monitor 实时大屏第 1 轮（LZ-01：错误流与告警条目静态化） | 2026-09-18 |
+| 2 | 批量生成漏页 | execute-flow-pages 分批延展后，产物页数少于布局清单页数（某 PRD 页面整体缺失，访问 404） | 三方对账：布局清单独立页数 vs 设计稿目录 HTML 数 vs `fetch-design-nodes` 节点数（排除基线复刻稿），三数不等即逐个定位缺失页 | P0 | ⑦ server-monitor 设计稿评审第 1 轮（LF-01：16 页清单只出 15 页，公开状态页 404） | 2026-09-19 |

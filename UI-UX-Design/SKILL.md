@@ -154,6 +154,9 @@ superdesign upload-asset <file> --project-id <id> --purpose brand|content|refere
 | 重复建项目 | `resume.json` / fetch 找回 |
 | import 用相对路径 | 只 `https` / `data:`，先 `upload-asset` |
 | 只改本地宣布完成 | 同一轮回传云端并核 version + 宿主链 + README |
+| 穿衣静态化：把原型可跳转/可展开结构降级为纯样式 hover（死按钮、无锚点行） | 交互结构随布局零改动一并冻结：原型中真实 <a>/按钮在设计稿用 <a href="#锚点"> 或等价触发保留 |
+| Tailwind 默认尺度直用（rounded-sm/shadow-md/0.5 步长间距/中间字重），未映射设计 token | 生成提示词与自检都按 token 对照表逐值映射；门禁 ② 用「规范外值全文扫描」兜底 |
+| 风格提案的动效档带入已收敛的归档规范（提案最低限编排 ≠ 规范无编排） | 步骤 5 规范落定后，生成约束语只引规范 §动效，不再引提案 |
 
 ## 六、资源清单
 
