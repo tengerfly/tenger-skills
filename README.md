@@ -4,26 +4,26 @@
 
 ## 简介
 
-本仓库沉淀了 16 个专业「技能（Skill）」+ 1 个编排总控 Skill + 1 个元优化 Skill，覆盖从产品想法到上线测试的完整软件开发链路，并支持对 Skill 本身的长期记录与优化：
+本仓库沉淀了 17 个专业「技能（Skill）」+ 1 个编排总控 Skill + 1 个元优化 Skill，覆盖从产品想法到上线测试的完整软件开发链路，并支持对 Skill 本身的长期记录与优化：
 
-**竞品分析 → 需求（PRD）→ 需求评审 → 原型 → 原型评审 → UI/UX 设计稿 → UI/UX 设计稿评审 → 技术方案 → 技术方案评审 → 开发 → 代码评审 → 测试**
+**竞品分析 → 需求（PRD）→ 需求评审 → 原型 → 原型评审 → UI/UX 设计稿 → UI/UX 设计稿评审 → 开源调研（OSS-Radar）→ 技术方案 → 技术方案评审 → 开发 → 代码评审 → 测试（auto-test）**
 
-> 第 15 个专业 Skill = [`Fidelity-Review`](./Fidelity-Review)（**页面还原度评审**）：对照 UI 设计稿评审前端实现页的视觉/交互还原 + 超长文案健壮性，只审不改、截图必证。**不占主链节点**——可独立触发（有设计稿 + 页面即可做还原验收），在 `Testing`（⑭ 测试）内嵌做 UI 还原度检查，并在 `Code-Review` 前端批次（⑬-前）**并行**参审。
+> 第 15 个专业 Skill = [`Fidelity-Review`](./Fidelity-Review)（**页面还原度评审**）：对照 UI 设计稿评审前端实现页的视觉/交互还原 + 超长文案健壮性，只审不改、截图必证。**不占主链节点**——可独立触发（有设计稿 + 页面即可做还原验收），在 `auto-test`（⑭ 测试）L2 视觉 E2E 内嵌做 UI 还原度检查，并在 `Code-Review` 前端批次（⑬-前）**并行**参审。
 >
-> 第 16 个专业 Skill = [`Bug-Fix`](./Bug-Fix)（**日志驱动的 Bug 诊断与修复委托闭环**）：前后端日志入手，证据链定位根因，根因 Gate 后只交付问题定位报告（含修复方向）+ 修复任务清单——技术方案交 Frontend/Backend-Tech-Design、改码交 Frontend/Backend-Dev、回归由开发自测 + 按需 Testing，本 skill 只核对原始场景不再现并迭代判定闭环；不产方案、不改码、不做深度测试。**不占主链节点**——报障/日志/线上问题可独立触发，也承接 `Testing` / `Code-Review` 发现的可运行性问题。
+> 第 16 个专业 Skill = [`Bug-Fix`](./Bug-Fix)（**日志驱动的 Bug 诊断与修复委托闭环**）：前后端日志入手，证据链定位根因，根因 Gate 后只交付问题定位报告（含修复方向）+ 修复任务清单——技术方案交 Frontend/Backend-Tech-Design、改码交 Frontend/Backend-Dev、回归由开发自测 + 按需 auto-test，本 skill 只核对原始场景不再现并迭代判定闭环；不产方案、不改码、不做深度测试。**不占主链节点**——报障/日志/线上问题可独立触发，也承接 `auto-test` / `Code-Review` 发现的可运行性问题与运行期日志/监控记录（server-log / server-monitor / web-monitor，正向循环第二入口）。
 
-每个 Skill 是一份结构化的指导文档，帮助 Claude 在对应场景下采用经过验证的方法与流程完成任务；各 Skill 之间通过「产出物」衔接，形成端到端的交付流水线。其中 [`Workflow`](./Workflow) 是**编排总控**，负责把 14 个链上专业 Skill 按流水线串起来自动调度（详见「全流程编排」章节）；[`Skill-Optimizer`](./Skill-Optimizer) 是**元优化器**（链外），负责各 Skill 的问题记录、聊天挖掘、自洽体检与全方位优化沉淀（详见「Skill 元优化」章节）。
+每个 Skill 是一份结构化的指导文档，帮助 Claude 在对应场景下采用经过验证的方法与流程完成任务；各 Skill 之间通过「产出物」衔接，形成端到端的交付流水线。其中 [`Workflow`](./Workflow) 是**编排总控**，负责把 15 个链上专业 Skill（14 个编号节点 + 技术方案前的 OSS-Radar 同域开源调研步）按流水线串起来自动调度（详见「全流程编排」章节）；[`Skill-Optimizer`](./Skill-Optimizer) 是**元优化器**（链外），负责各 Skill 的问题记录、聊天挖掘、自洽体检与全方位优化沉淀（详见「Skill 元优化」章节）。
 
 ## 标准开发流程
 
-14 个链上专业 Skill 按软件开发生命周期串成一条流水线，分四个阶段（`Fidelity-Review` 与 `Bug-Fix` 不入链：前者为开发后/测试期的独立验收能力，后者为问题修复闭环入口，均见文末 Skill 清单）：
+15 个链上专业 Skill（14 个编号节点 + ⑧⑨ 技术方案前的 OSS-Radar 同域开源调研步）按软件开发生命周期串成一条流水线，分四个阶段（`Fidelity-Review` / `Bug-Fix` / `Testing`（备用）不入链：Fidelity 为独立验收能力、Bug-Fix 为问题修复闭环入口、Testing 为人工走查备用，均见文末 Skill 清单）：
 
 | 阶段 | Skill 链路 | 产出物 | 交付对象 |
 |------|-----------|--------|---------|
 | ① 需求 | 竞品分析 → PRD 编写 ⇄ 需求评审 | 竞品分析报告 / PRD | 原型设计 |
-| ② 设计 | 原型设计 ⇄ 原型评审 → UI/UX 设计稿 ⇄ UI/UX 设计稿评审 → 后端技术方案 ⇄ 技术方案评审（后端）→ 前端技术方案 ⇄ 技术方案评审（前端） | 布局清单 / 设计稿 / TDD / FTDD | 开发 |
+| ② 设计 | 原型设计 ⇄ 原型评审 → UI/UX 设计稿 ⇄ UI/UX 设计稿评审 → 开源调研（OSS-Radar，写方案前先看同类项目怎么做）→ 后端技术方案 ⇄ 技术方案评审（后端）→ 前端技术方案 ⇄ 技术方案评审（前端） | 布局清单 / 设计稿 / 开源调研报告 / TDD / FTDD | 开发 |
 | ③ 开发 | 后端开发 ⇄ 代码评审（后端）→ 前端开发 ⇄ 代码评审（前端 ∥ 页面还原度） | 可运行代码工程 | 测试 |
-| ④ 测试 | 项目测试（样式还原环节内嵌 Fidelity-Review UI 还原度检查） | 分级测试问题文档 | 上线 |
+| ④ 测试 | auto-test 分层验收 L0-L4（L2 内嵌 Fidelity-Review UI 还原度检查）+ 修复闭环 | 带证据测试报告 / 覆盖率 / 修复任务卡 | 上线 |
 
 ```mermaid
 flowchart TD
@@ -40,7 +40,8 @@ flowchart TD
     UIR -. 设计稿缺陷回退 .-> UID
     UIR -. 布局冲突回退 .-> PT
     UIR -. 需求冲突回退 .-> PRD
-    UIR --> BTD[后端技术方案<br/>Backend-Tech-Design]
+    UIR --> RAD[开源调研<br/>OSS-Radar 项目泳道]
+    RAD --> BTD[后端技术方案<br/>Backend-Tech-Design]
     BTD --> TRB[技术方案评审（后端）<br/>Tech-Review]
     TRB -. 意见回退 .-> BTD
     TRB --> FTD[前端技术方案<br/>Frontend-Tech-Design]
@@ -53,7 +54,7 @@ flowchart TD
     CRB --> FD[前端开发<br/>Frontend-Dev]
     FD --> CRF[代码评审（前端）<br/>Code-Review ∥ Fidelity-Review]
     CRF -. 意见回退 .-> FD
-    CRF --> T[项目测试<br/>Testing + Fidelity-Review]
+    CRF --> T[项目测试<br/>auto-test + Fidelity-Review]
     T --> DONE[上线]
 ```
 
@@ -61,11 +62,15 @@ flowchart TD
 >
 > **闭环沉淀（双向）**：每次闭环放行后做沉淀判定（**P0 双向必沉**）——方向 A 改产出方 skill 的防复发规则；方向 B 改**发现问题的那一个评审 skill** 的 `references/known-issue-patterns.md`（评审方案例库，每条含可执行的「检出方法」）——形成「产出方越少犯错 + 评审方越查越准」的正向循环。
 >
-> [`Fidelity-Review`](./Fidelity-Review)（页面还原度评审）同为「只审不改 · 截图必证 · 每条附修改建议」的独立验收能力：既在 `Testing`（⑭）内嵌做 UI 还原检查，也在 `Code-Review` 前端批次（⑬-前）**并行**参审（问题合并进 `.spec/代码评审/任务清单.md`）；独立调用时产出 `.spec/页面还原评审/` 报告 + 任务清单。
+> [`Fidelity-Review`](./Fidelity-Review)（页面还原度评审）同为「只审不改 · 截图必证 · 每条附修改建议」的独立验收能力：既在 `auto-test`（⑭）L2 视觉 E2E 内嵌做 UI 还原检查，也在 `Code-Review` 前端批次（⑬-前）**并行**参审（问题合并进 `.spec/代码评审/任务清单.md`）；独立调用时产出 `.spec/页面还原评审/` 报告 + 任务清单。
+>
+> **运行期正向循环**：已接入日志/监控的项目（server-log 统一日志 / server-monitor 后端监控 / web-monitor 前端监控）在开发与运行中记录的问题，经 `Bug-Fix` 诊断修复后，有预防价值的错误模式沉淀进 `bug-patterns/`、skill 方法论问题入 `issue/`，再由 `Skill-Optimizer` 提炼反哺——与门禁评审闭环并列的第二问题入口，构成「开发 → 记录 → 修复 → 沉淀 → skill 进化 → 下一项目受益」的正向循环。
+>
+> **AI 知识库（组件资产）**：组件本体统一沉淀在外部仓 `skills-knowledge`（asset-library），本仓 `skill-knowledge/` 为引用层（使用入口 / 映射表 / 防冗余硬规则 / 双仓同步协议）——设计方案与写代码先检索复用，命中但不适用优先兼容性适配，**禁止新建并列冗余组件（硬性条件）**。
 
 ## 全流程编排
 
-[`Workflow`](./Workflow) 是**可选的编排 Skill**：把 14 个链上专业 Skill 串成一条链，并支持**从任意节点起跑**。
+[`Workflow`](./Workflow) 是**可选的编排 Skill**：把 15 个链上专业 Skill（14 个编号节点 + ⑧⑨ 前的 OSS-Radar 同域开源调研步）串成一条链，并支持**从任意节点起跑**。
 
 **核心原则**：一条链，任意起点，逐步推进，产物 ⇄ 评审成环，收敛才下行，随时可停。
 
@@ -95,7 +100,7 @@ flowchart TD
 | 「评审这份代码」 | 代码评审 | 只跑这一个 |
 | 「测试这个项目」 | 测试 | 只跑这一个 |
 
-> `Workflow` 只做调度、记账与守门，**不产出任何业务文档**；14 个链上专业 Skill 永远可独立调用，行为不受影响。`Fidelity-Review`（第 15 个专业 Skill）与 `Bug-Fix`（第 16 个专业 Skill）均不入主链：前者作为独立验收能力随时可触发、在 `Testing`（⑭ 节点）内被自动调用做 UI 还原检查、并在 `Code-Review` 前端批次（⑬-前）并行参审；后者作为「bug 诊断 + 修复委托」入口随时可触发：只出定位报告与修复任务清单，方案/改码/深度测试逐环委托对应 skill，承接报障/日志与 `Testing`/`Code-Review` 发现的可运行性问题。
+> `Workflow` 只做调度、记账与守门，**不产出任何业务文档**；链上 Skill 永远可独立调用，行为不受影响。`Fidelity-Review` 与 `Bug-Fix` 不入主链编号：前者作为独立验收能力随时可触发、在 `auto-test`（⑭ 节点）L2 内被自动调用做 UI 还原检查、并在 `Code-Review` 前端批次（⑬-前）并行参审；后者作为「bug 诊断 + 修复委托」入口随时可触发：只出定位报告与修复任务清单，方案/改码/深度测试逐环委托对应 skill，承接报障/日志与 `auto-test`/`Code-Review` 发现的可运行性问题。`OSS-Radar` 以 ⑧⑨ 前置调研步入链（非编号节点），也可独立巡逻。`Testing` 源码保留为链外人工走查备用，主链测试节点已由 `auto-test` 接替。
 >
 > 门禁闭环、防死循环三招（修复判据 / 分级冻结 / 轮次上限 3）、P0/P1/P2 分级与双向沉淀的权威定义见仓库根 `shared/anti-deadloop.md`；评审方案例库结构见 `shared/templates/known-issue-patterns-template.md`。
 
@@ -117,6 +122,7 @@ flowchart TD
 │   ├── 设计稿/              # UI/UX 设计稿（UI-UX-Design：README + 定稿 HTML + 设计规范副本 + 截图）
 │   ├── 设计评审/            # UI/UX 设计稿评审产物（UI-UX-Review：四维评审 + 汇总报告 + 任务清单）
 │   ├── 页面还原评审/         # 页面还原度评审产物（Fidelity-Review：还原度报告 + 任务清单 + screenshots）
+│   ├── 开源情报/             # OSS-Radar 产物（watchlist / 轮次报告 / 情报库 / 任务清单；⑧⑨ 前置调研）
 │   ├── TDD/                # 后端技术方案文档（Backend-Tech-Design）
 │   │   ├── V1/             # overview.md + NN_xxx.md
 │   │   └── V2/
@@ -126,7 +132,8 @@ flowchart TD
 │   ├── 需求评审/            # PRD-Review 产物（前端/后端/测试/产品评审 + 汇总报告 + 任务清单）
 │   ├── 技术方案评审/         # Tech-Review 产物（后端/前端评审 + 汇总报告 + 任务清单）
 │   ├── 代码评审/            # Code-Review 产物（后端/前端评审 + 汇总报告 + 任务清单；⑬-前 含 Fidelity-Review 还原度报告）
-│   ├── 测试/                # Testing 产物（测试计划/用例/问题文档 + 接口性能清单 + 截图）
+│   ├── auto-test/           # auto-test 产物（用例库 / 分层报告 / 修复任务卡 + evidence；⑭ 分层验收）
+│   ├── 测试/                # Testing 产物（链外人工走查备用：测试计划/用例/问题文档 + 接口性能清单 + 截图）
 │   └── bug修复/             # Bug-Fix 产物（问题定位报告 + 修复任务清单 + 复现材料）
 ├── src/（或 apps/）         # 代码（Backend-Dev / Frontend-Dev 产物）
 └── ...
@@ -143,10 +150,10 @@ flowchart TD
 
 | 级别 | Skill | 行为 |
 |------|-------|------|
-| **硬依赖** | `Prototype-Review` / `UI-UX-Review` / `Fidelity-Review` / `Frontend-Tech-Design` / `Frontend-Dev` / `Testing` | 开工前必检：任一可用即开工；全无 → 报错提醒安装，**安装完成才工作** |
+| **硬依赖** | `Prototype-Review` / `UI-UX-Review` / `Fidelity-Review` / `Frontend-Tech-Design` / `Frontend-Dev` / `auto-test`（L2 视觉层；其 L0/L1 确定性层无浏览器可跑） | 开工前必检：任一可用即开工；全无 → 报错提醒安装，**安装完成才工作** |
 | **软检测** | `Tech-Review` / `Backend-Tech-Design` | 有则用（版本核验），无则**跳过对应辅助步骤**，不阻塞 |
 
-> 不涉及浏览器工具的 Skill（如 `Backend-Dev`、`Code-Review`、`UI-UX-Design`）不做检测或仅截图增强；`midscenejs` 仅为 `Testing` 样式视觉断言的可选增强。
+> 不涉及浏览器工具的 Skill（如 `Backend-Dev`、`Code-Review`、`UI-UX-Design`）不做检测或仅截图增强；`midscenejs` 仅为 `auto-test` / `Testing` 样式视觉断言的可选增强。
 >
 > 策略正文（检测顺序 / 两级行为 / 硬依赖报错文案模板）见仓库根 `shared/browser-policy.md`；各 skill 正文只声明自身级别与动作，不重复定义。
 
@@ -154,7 +161,7 @@ flowchart TD
 
 | Skill | 目录 | 说明 | 状态 |
 |-------|------|------|------|
-| **全流程编排（总控）** | [**Workflow**](./Workflow) | 把 14 个链上专业 Skill 串成流水线：调度 + 状态（`.spec/PIPELINE.md`）+ **门禁闭环**（产物 ⇄ 评审成环、P0/P1 清零放行、上限 3 强制放行）+ **双向沉淀** | ✅ 完成 |
+| **全流程编排（总控）** | [**Workflow**](./Workflow) | 把 15 个链上专业 Skill（14 编号节点 + OSS-Radar 前置调研步）串成流水线：调度 + 状态（`.spec/PIPELINE.md`）+ **门禁闭环**（产物 ⇄ 评审成环、P0/P1 清零放行、上限 3 强制放行）+ **双向沉淀** | ✅ 完成 |
 | **Skill 元优化（链外）** | [**Skill-Optimizer**](./Skill-Optimizer) | 记录 / 挖掘 / 体检 / 优化各 Skill + 从集中池 `bug-patterns/` 与**评审闭环沉淀**提炼规则反哺方案/开发/评审 skill：问题入 `issue/` 池（埋点 + 兜底 + 聊天挖掘 + 模式④体检 + 评审闭环），模式④七维自洽体检（术语 / 逻辑闭环 / 文句 / 声明-流程 / 跨位置同步 / 简洁不落俗 / 安全审计）出问题清单逐条裁决，全方位优化沉淀，标准先行、长期迭代 | ✅ 完成 |
 | 竞品分析 | [Competitive-Analysis](./Competitive-Analysis) | 竞品调研、对比与分析 | ✅ 完成 |
 | 产品需求文档（PRD） | [PRD-Design](./PRD-Design) | PRD 编写 | ✅ 完成 |
@@ -163,16 +170,17 @@ flowchart TD
 | 原型评审 | [Prototype-Review](./Prototype-Review) | 原型与 PRD 一致性、页面完整性、交互闭环及原型缺陷评审（浏览器截图核验硬依赖） | ✅ 完成 |
 | UI/UX 设计稿 | [UI-UX-Design](./UI-UX-Design) | 以 Superdesign 为底座生成设计稿：风格决策 Gate（三套方案）→ 生成前沉淀设计规范 → 逐页生成（布局零改动 + 去 AI 味）→ 质量门禁 → 归档 `.spec/设计稿/` | ✅ 完成 |
 | UI/UX 设计稿评审 | [UI-UX-Review](./UI-UX-Review) | 设计稿四维独立复审（结构零改动 / 文案一致 / 规范一致 / 渲染质量 + 可点击性），浏览器渲染硬依赖，作为 UI-UX-Design 内部门禁的第三方兜底；防评审死循环三招内建 | ✅ 完成 |
-| 页面还原度评审 | [Fidelity-Review](./Fidelity-Review) | 前端实现页 vs UI 设计稿的还原度评审（视觉还原 + 交互还原 + 超长文案专项；只审不改、截图必证、每条附修改建议；**设计稿=视觉唯一应然**，三通道基准：A `.spec/设计稿/` 优先 / B 外部稿 / C 无设计稿回退原型【降级】）；三模式：独立出 `.spec/页面还原评审/` 报告+任务清单 / 被 Testing 内嵌出轻量清单 / 在 `Code-Review` 前端批次（⑬-前）**并行**参审、问题合并进 `.spec/代码评审/任务清单.md` | ✅ 完成 |
+| 页面还原度评审 | [Fidelity-Review](./Fidelity-Review) | 前端实现页 vs UI 设计稿的还原度评审（视觉还原 + 交互还原 + 超长文案专项；只审不改、截图必证、每条附修改建议；**设计稿=视觉唯一应然**，三通道基准：A `.spec/设计稿/` 优先 / B 外部稿 / C 无设计稿回退原型【降级】）；三模式：独立出 `.spec/页面还原评审/` 报告+任务清单 / 被 auto-test 内嵌出轻量清单 / 在 `Code-Review` 前端批次（⑬-前）**并行**参审、问题合并进 `.spec/代码评审/任务清单.md` | ✅ 完成 |
 | 后端技术方案 | [Backend-Tech-Design](./Backend-Tech-Design) | 后端技术方案文档（TDD）编写 | ✅ 完成 |
 | 前端技术方案 | [Frontend-Tech-Design](./Frontend-Tech-Design) | 前端技术方案文档（FTDD）编写 | ✅ 完成 |
 | 技术方案评审 | [Tech-Review](./Tech-Review) | 后端/前端技术方案评审（闭环 + 关联关系）；支持分端单批（⑩-后 / ⑩-前） | ✅ 完成 |
 | 后端开发 | [Backend-Dev](./Backend-Dev) | 后端代码开发（微服务 + NestJS 优先 + Monorepo，维护性优先） | ✅ 完成 |
 | 前端开发 | [Frontend-Dev](./Frontend-Dev) | 前端代码开发（依据 PRD + 原型【结构基线】+ 设计稿【视觉基准】+ TDD + FTDD；还原度优先：视觉对设计稿、结构对原型，含 token 搬运对账 + 每页设计稿并排截图；模块化 + 测试先行 + 不确定即问 + 功能点提交 + monorepo 共享类型 + lint 门禁 + 浏览器硬预检 + 进度文档） | ✅ 完成 |
 | 代码评审 | [Code-Review](./Code-Review) | 后端/前端代码评审（接口契约一致性 + 可运行性 + 架构合规，P0 附建议补丁）；支持分端单批，前端批次固定并行 Fidelity-Review 做还原度审查 | ✅ 完成 |
-| 项目测试 | [Testing](./Testing) | 依据 PRD + UI 设计稿本地跑真实项目做全流程测试（功能全状态 + 全点击 / 样式 midscenejs 视觉断言 + UI 还原度检查·内嵌 Fidelity-Review / 慢接口识别），输出分级测试问题文档 | ✅ 完成 |
-| Bug 诊断与修复 | [Bug-Fix](./Bug-Fix) | 日志驱动的 Bug 诊断与修复委托闭环（链外）：前后端日志入手 → 复现确认 → 根因定位（证据链三段）→ 根因 Gate → 只交付定位报告+修复任务清单，逐环委托方案/开发/回归；不产方案、不改码、不做深度测试；承接报障/Testing/Code-Review 可运行性问题 | ✅ 初版定稿 |
-| 开源情报雷达 | [OSS-Radar](./OSS-Radar) | GitHub 开源情报采集→提炼→反哺（链外）：采集优秀开源 skill 与同域工程项目，按三元组（出处/优秀点/建议落点）提炼优秀实践，产出轮次报告+情报库+反哺任务清单（skill 类经 Skill-Optimizer 落地）；双泳道 + 增量采集 + watchlist 台账，支持无人值守定时巡逻 | ✅ 初版定稿 |
+| 项目测试（⑭ 分层验收） | [auto-test](./auto-test) | AI 代码全景验收测试与修复闭环：L0 确定性门禁（install/typecheck/lint/单测/build）→ L1 契约冒烟 → L2 视觉 E2E（状态注入 + 内嵌 Fidelity-Review 还原检查）→ L3 探索性 → L4 专项（压测/安全/兼容/无障碍，信号触发）；带证据报告 + 覆盖率门禁 + 修复任务卡 + fresh-agent 回归闭环；引擎/会话双模式 | ✅ 完成（v0.1.1 入仓） |
+| 项目测试（链外备用） | [Testing](./Testing) | 传统项目测试：本地跑真实项目做全状态 + 全点击 + 样式截图 + 慢接口清单（人工走查口径）；**源码保留不动**，主链测试节点已由 auto-test 接替 | ✅ 保留 |
+| Bug 诊断与修复 | [Bug-Fix](./Bug-Fix) | 日志驱动的 Bug 诊断与修复委托闭环（链外）：前后端日志入手 → 复现确认 → 根因定位（证据链三段）→ 根因 Gate → 只交付定位报告+修复任务清单，逐环委托方案/开发/回归；不产方案、不改码、不做深度测试；承接报障/auto-test/Code-Review/运行日志监控（server-log·server-monitor·web-monitor）问题 | ✅ 初版定稿 |
+| 开源情报雷达 | [OSS-Radar](./OSS-Radar) | GitHub 开源情报采集→提炼→反哺（链外）：采集优秀开源 skill 与同域工程项目，按三元组（出处/优秀点/建议落点）提炼优秀实践，产出轮次报告+情报库+反哺任务清单（skill 类经 Skill-Optimizer 落地）；双泳道 + 增量采集 + watchlist 台账，支持无人值守定时巡逻；并作 Workflow ⑧⑨ 技术方案前置调研（写方案前先看同类项目怎么做，报告落 `.spec/开源情报/`） | ✅ 初版定稿 |
 | 源码导读 | [Source-Reading](./Source-Reading) | GitHub 仓库源码学习导读（链外）：流程图给全局感 + 关键点大白话讲透（干什么+为什么，带文件:行号 锚点），逻辑动线唯一（章节=阅读顺序、每章一条主线）；大仓（react/vue3 级）自动拆章节、先规划确认再逐章生成；前置知识先铺垫（简介+核实过的权威链接，宁缺毋错） | ✅ 初版定稿 |
 | 事实核验 | [Fact-Check](./Fact-Check) | AI 回答辨伪核验（链外，采纳前信任门禁）：拆原子断言 → 证据层级取证（L1 最小实验 > 官方文档 > 源码 > 多独立源，必做反证搜索、版本对齐用户环境）→ 四值判定（✅/⚠️/❌/❓）+ 证据链 + 修正版说法；先验承重断言，防照错误方案干半天 / 把错知识记进脑子；「再问一遍 AI」不算验证 | ✅ 初版定稿 |
 | Skill 进化引擎 | [Skill-Evolver](./Skill-Evolver) | Skill 进化引擎（链外，全功能闭环）：采集 skill 运行信号与用户偏好/行为习惯（读原文、增量、证据可回溯）→ `evolution/` 偏好库建模（新建/合并/跳过三决策，沉淀内容完整可见）→ 触发判据攒证据 → 读轨迹诊断 → 带证据链的进化建议单（五护栏：语义不漂移/体积红线/能力审计/确认后改/留痕可回滚）→ 确认后执行 + 进化台账；三档策略默认「确认后改」；Skill-Optimizer 模式②③内部调用；采集与偏好库环节可被任意 Agent 复用 | ✅ 初版定稿 |
@@ -203,12 +211,13 @@ tenger-skills/
 ├── Backend-Dev/               # 后端开发 Skill
 ├── Frontend-Dev/              # 前端开发 Skill
 ├── Code-Review/               # 代码评审 Skill
-├── Testing/                   # 项目测试 Skill
+├── auto-test/                 # AI 代码验收测试 Skill（⑭ 测试节点：L0-L4 分层验收 + 修复闭环）
+├── Testing/                   # 项目测试 Skill（链外人工走查备用，源码保留）
 ├── shared/                    # 跨 skill 公共约定（门禁闭环/防死循环/分级/沉淀、证据先于声明、接收评审纪律、浏览器策略、双基准术语、拷问协议核心、开发公共约定、评审模板）
 ├── issue/                     # 问题池（skill 自身问题 + 评审闭环沉淀，Skill-Optimizer 唯一事实源）
 ├── bug-patterns/              # 错误模式集中池（各被修项目 bug 统一沉淀此处，Bug-Fix 写 / Optimizer 提炼）
 ├── evolution/                 # 用户偏好与进化信号池（Skill-Evolver 维护：偏好库/信号月志/进化台账）
-├── skill-knowledge/           # 业务组件资产池（Frontend/Backend-Dev 开发中检索/沉淀的跨项目复用组件，规格见其 README）
+├── skill-knowledge/           # AI 知识库引用层（外部仓 skills-knowledge 的使用入口/映射表/防冗余硬规则/双仓同步协议；组件本体不在此）
 └── chats/                     # 待挖掘的聊天记录
 ```
 

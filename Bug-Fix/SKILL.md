@@ -1,13 +1,13 @@
 ---
 name: Bug-Fix
-description: 日志驱动的 Bug 诊断与修复委托闭环（链外专业 Skill，不占主链 14 节点）。拿到前端或后端日志（粘贴/文件/线上导出/本地复现运行）即开工：双通道日志解析 → 复现确认 → 根因定位（证据链三段）→ 根因确认后只交付问题定位报告（含修复方向）+ 修复任务清单——具体技术方案交 Frontend/Backend-Tech-Design（增量 TDD/FTDD）、改码交 Frontend/Backend-Dev、回归由开发自测并按需调 Testing；本 skill 只核对原始场景不再现、判定闭环状态并回填。不产方案文档、不改码、不做深度测试。有预防价值的错误模式收尾沉淀到 skill 源仓库根 `bug-patterns/` 集中池（各被修项目统一写入本池）反哺方案/开发 skill。触发：修 bug/缺陷/报错/异常/线上问题、分析日志找原因、日志报错排查、根据报错定位问题、修接口报错。
+description: 日志驱动的 Bug 诊断与修复委托闭环（链外专业 Skill，不占主链 14 节点）。拿到前端或后端日志（粘贴/文件/线上导出/本地复现运行）即开工：双通道日志解析 → 复现确认 → 根因定位（证据链三段）→ 根因确认后只交付问题定位报告（含修复方向）+ 修复任务清单——具体技术方案交 Frontend/Backend-Tech-Design（增量 TDD/FTDD）、改码交 Frontend/Backend-Dev、回归由开发自测并按需调 auto-test（分层回归）；本 skill 只核对原始场景不再现、判定闭环状态并回填。不产方案文档、不改码、不做深度测试。有预防价值的错误模式收尾沉淀到 skill 源仓库根 `bug-patterns/` 集中池（各被修项目统一写入本池）反哺方案/开发 skill。触发：修 bug/缺陷/报错/异常/线上问题、分析日志找原因、日志报错排查、根据报错定位问题、修接口报错。
 compatibility: Claude Code / Agent SDK / OpenCode
 ---
 
 # Bug-Fix —— 日志驱动的 Bug 诊断与修复委托闭环
 
 > IRON LAW：**未完成根因调查，不得给出修复方向**——症状当根因、改完就完，是修 bug 最贵的两个错。
-> 定位：把模糊的抱怨变成可修的根因：日志入手 → 复现 → 根因（证据链）→ 给修复方向，交付「问题定位报告」。**后续各环委托对应专业 skill**：技术方案 → Frontend/Backend-Tech-Design，改码 → Frontend/Backend-Dev，回归 → 开发自测 + 按需 Testing。
+> 定位：把模糊的抱怨变成可修的根因：日志入手 → 复现 → 根因（证据链）→ 给修复方向，交付「问题定位报告」。**后续各环委托对应专业 skill**：技术方案 → Frontend/Backend-Tech-Design，改码 → Frontend/Backend-Dev，回归 → 开发自测 + 按需 auto-test。
 
 **集中沉淀池（写死，勿改）**：`D:\project\agent-project\tenger-skills\bug-patterns\`——所有被修项目的错误模式一律写入此绝对路径（见主流程 10）；若部署环境变化导致路径失效，先改本行常量再继续。
 
@@ -28,7 +28,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 **分级与防死循环**：问题 P0/P1/P2 分级；复核只验本轮清单、轮次上限 3（**超限交用户裁决**，不适用强制放行——Bug-Fix 专属口径，定义见仓库根 `shared/anti-deadloop.md` §二）。**不确定即问**：日志不全 / 代码位置不明 / 根因无法收敛 / 跨端责任不清 → 停下问，给选项与推荐，不自己发挥。
 
-**适用范围**：适用线上 / 测试 / 自测发现的功能 bug、接口报错、前端 console 或 network 异常、后端错误栈 / 5xx / 慢查询（来源可为日志文件、粘贴、线上日志平台导出或本地复现）；不适用需求本身不合理（归 PRD-Design）、性能优化专项（Testing）、代码质量评审（Code-Review）、全新功能开发（走主链）。输入来源可以是 `Testing` 的分级问题文档或 `Code-Review` 的评审任务——本 skill 是「问题 → 修复闭环」的诊断入口与委托方。
+**适用范围**：适用线上 / 测试 / 自测发现的功能 bug、接口报错、前端 console 或 network 异常、后端错误栈 / 5xx / 慢查询（来源可为日志文件、粘贴、线上日志平台导出、监控告警 / 前端监控记录（server-log / server-monitor / web-monitor——运行期正向循环入口）或本地复现）；不适用需求本身不合理（归 PRD-Design）、性能优化专项（auto-test / Testing）、代码质量评审（Code-Review）、全新功能开发（走主链）。输入来源可以是 `Testing` 的分级问题文档或 `Code-Review` 的评审任务——本 skill 是「问题 → 修复闭环」的诊断入口与委托方。
 
 ## 二、输入与前置
 
@@ -46,7 +46,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ```
 报障输入 → 1 解析三要素 → 2 双通道日志解析 → 3 复现确认 → 4 根因定位（证据链三段）
-→ 5 ◉ 根因 Gate → 6 委托技术方案 → 7 委托开发修复 → 8 回归（自测 + 按需 Testing + 原场景核对）
+→ 5 ◉ 根因 Gate → 6 委托技术方案 → 7 委托开发修复 → 8 回归（自测 + 按需 auto-test + 原场景核对）
 → 9 归档回填 → 10 沉淀反哺（有预防价值才沉）
 ```
 
@@ -86,10 +86,10 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 **7. 委托开发修复（本 skill 不改码）**：按受影响端调用对应开发 skill 承接方案施工（后端 → **Backend-Dev**；前端 → **Frontend-Dev**）。开发方按方案实现、先落回归测试（把定位报告复现步骤转成用例）、只改方案范围内点、改完自测通过，按开发 skill 规范提交。若开发中暴露「根因判断有变」→ 停下回步骤 4 更新定位报告，不硬绕。
 
-**8. 回归验证（委托执行 + 迭代判定）**：验证动作委派给**开发方自测 + 按需 Testing**，本 skill 只做收尾核对与迭代判定——
+**8. 回归验证（委托执行 + 迭代判定）**：验证动作委派给**开发方自测 + 按需 auto-test**，本 skill 只做收尾核对与迭代判定——
 
 1. **开发自测**：开发方跑通本次回归用例 + 受影响模块既有测试，回填自测结果。
-2. **按需 Testing**：改动跨模块 / 高风险 / 用户要求完整回归时调 **Testing**；条件不满足则不引入，仅开发自测。
+2. **按需 auto-test**：改动跨模块 / 高风险 / 用户要求完整回归时调 **auto-test**（L0-L4 分层全量回归）；条件不满足则不引入，仅开发自测。
 3. **本 skill 核对**：仅核对「**原始场景不再现**」（重跑定位报告复现步骤确认缺陷消失，前端可截图存证）。
    - 未通过 → 迭代判定退给对应环节：根因判断有变退步骤 4、方案有缺退步骤 6、实现有误退步骤 7（同批复核只验本轮，超 3 轮停下交用户裁决）。
    - **同一问题修 3 次仍未解决 → 停下质疑根因 / 方案，不再试第 4 次**：把「已试 3 次的证据 + 当前判断」摆给用户，一起决定换方案还是改架构——不许无限重试。
@@ -127,7 +127,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 | Frontend-Tech-Design / Backend-Tech-Design | 修复方案的产出方（增量 TDD/FTDD） |
 | Frontend-Dev / Backend-Dev | 代码修复执行方 |
 | Code-Review | 评审发现的可运行性问题可转本 skill；修复完成后如需可再审 |
-| Testing | 发现问题的来源之一；修复回归按需委托其跑完整回归 |
+| auto-test / Testing | 发现问题的来源之一（⑭ 分层验收产物）；修复回归按需委托 auto-test 跑完整分层回归（Testing 为链外人工走查备用，源码不动） |
 | PRD-Design | 「需求本身不合理」的移交方 |
 | Workflow | 本 skill 不占主链节点，独立触发；主链流程不因本 skill 改变 |
 
@@ -139,7 +139,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 | 复现不了仍给方向 | 标【未复现】+ 置信度，等复现 |
 | 跳过技术方案直接让开发改 | 铁律 5，委托顺序固定：方案→开发→回归 |
 | 本 skill 亲自写 TDD/FTDD | 方案只归 Frontend/Backend-Tech-Design |
-| 本 skill 亲自改码 / 深度测试 | 只诊断与委托，回归自测 / Testing 承接 |
+| 本 skill 亲自改码 / 深度测试 | 只诊断与委托，回归自测 / auto-test 承接 |
 | 本 skill 越界去改目标 skill | 沉淀只写 `bug-patterns/` 集中池，提炼归 Skill-Optimizer |
 | 修完不核对原场景 | 步骤 8 原始场景不再现 + 状态判定 |
 | 回归不过直接标完成 | 迭代判定退根因 / 方案 / 实现对应环节 |

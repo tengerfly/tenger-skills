@@ -42,6 +42,7 @@
 | D-14 | 09-17 | 吸收外部精华：`frontend-checklist.md` 新增「N. 界面质量（a11y / 表单 / i18n / 水合 / 动效）」8 项可静态检出项（aria-label / label / focus-visible / 图片宽高 / transition:all / Intl / 水合 / 反模式扫描）+ 目录行 + Ask 提问，覆盖 A~M 之外的界面质量域 | 用户要求吸收外部前端设计 skill 精华（vercel web-design-guidelines 等）；规则全集见 Frontend-Dev `references/web-interface-quality-guide.md`，本组只取可静态检出面 | ✅ |
 | D-15 | 09-17 | 体检修复（本次吸收后自检）：SKILL 两处「A~M 组」→「A~N 组」（步骤 3 / 资源清单），与 frontend-checklist 新增 N 节同步 | Skill-Optimizer 模式④体检（判据=全文件「A~M」清零） | ✅ |
 
+| D-16 | 2026-09-19 | §4.1.0「M6 资产与契约检查」→「外部 AI 知识库」：新增第⑥项「零冗余并列」（未检索/未适配即新建与库内既有资产并列重复的组件，防冗余硬性条件），冗余并列升 P0；补调度侧引用层与映射表指针（仓库根 skill-knowledge/） | 用户拍板：AI 组件统一外部仓 skills-knowledge，防冗余为硬性条件 | ✅ |
 ## 四、待决问题
 
 无。

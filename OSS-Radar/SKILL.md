@@ -1,6 +1,6 @@
 ---
 name: OSS-Radar
-description: 开源情报雷达（GitHub 优秀实践采集→提炼→反哺）。采集 GitHub 上优秀的开源 skill 与同域工程项目，提炼人家的优秀实践点，反哺本仓自有 skill 与在研项目；支持增量采集与无人值守定时巡逻。触发：采集开源情报、跑一轮雷达、扫描/巡逻 GitHub、调研开源 skill、调研某项目的开源实现、看看别人怎么做的、借鉴优秀实践、反哺优化我们的 skill、出开源情报报告。边界：产品/商业层竞品分析走 Competitive-Analysis，本 skill 只管工程实现层与 skill 层。
+description: 开源情报雷达（GitHub 优秀实践采集→提炼→反哺）。采集 GitHub 上优秀的开源 skill 与同域工程项目，提炼人家的优秀实践点，反哺本仓自有 skill 与在研项目；支持增量采集与无人值守定时巡逻。触发：采集开源情报、跑一轮雷达、扫描/巡逻 GitHub、调研开源 skill、调研某项目的开源实现、看看别人怎么做的、借鉴优秀实践、反哺优化我们的 skill、出开源情报报告、写技术方案前先调研同类项目（TDD/FTDD 前置调研）。边界：产品/商业层竞品分析走 Competitive-Analysis，本 skill 只管工程实现层与 skill 层。
 compatibility: Claude Code / Agent SDK / OpenCode
 ---
 
@@ -16,7 +16,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 | 泳道 | 对象 | 提炼重点 | 反哺对象 |
 |---|---|---|---|
 | A · skill 泳道 | 优秀开源 skill / agent skill 集 | 触发描述、渐进披露分层、指令写法、流程稳定（Gate/防死循环）、脚本化、安全兜底 | 本仓各 skill（经 Skill-Optimizer 模式③） |
-| B · 项目泳道 | 与在研项目同域/同栈的开源项目 | 架构与模块边界、选型与理由、测试基建、工程化（CI/lint/规范）、可复用组件与模式 | 在研项目（对应方案/开发 skill） |
+| B · 项目泳道 | 与在研项目同域/同栈的开源项目 | 架构与模块边界、选型与理由、测试基建、工程化（CI/lint/规范）、可复用组件与模式 | 在研项目（对应方案/开发 skill）；本轮报告（`.spec/开源情报/`）可直接作 Workflow ⑧⑨ 技术方案的前置调研输入 |
 
 **双模式**：交互模式（用户在场，反哺清单确认后可继续推进）与无人值守模式（定时巡逻，行为差异见 §四）。
 

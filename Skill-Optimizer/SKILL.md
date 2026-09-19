@@ -56,7 +56,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ## 四、模式② 挖掘
 
-1. 输入：读 `chats/`（.md/.txt/.json/.html）或用户粘贴。
+1. 输入：读 `chats/`（.md/.txt/.json/.html）、运行期日志/监控问题记录（server-log / server-monitor / web-monitor 导出——正向循环第二入口）或用户粘贴。
 2. 扫信号：负面（不对/重来/怎么又/别乱发挥/反复返工/纠正/质疑）、正面（好/就这样/思路对/以后都这样）、返工循环、触发痕迹（哪个 skill 被调起、产出、断在哪步）。
 3. 提炼：信号聚合 → 现象 + 期望 vs 实际 + 归属 + 等级 + 标签 + 修复方向。
 4. **分流（2026-09-18）**：用户偏好/行为习惯类信号（稳定偏好的表达与反复修正，判据见 Skill-Evolver §三①）→ **REQUIRED SUB-SKILL**：交 Skill-Evolver ①采集②建模落 `evolution/` 池（含「沉淀内容完整展示」硬约束）；方法论问题 → 本池 `issue/`。界限不清问「这是用户的稳定偏好吗」。

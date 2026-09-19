@@ -35,4 +35,4 @@
 
 ## 消费方速查
 
-Frontend-Tech-Design / Frontend-Dev / Code-Review（前端还原基线）/ Testing / Fidelity-Review（还原比对基准）在各自流程中引用本表，不重复定义。
+Frontend-Tech-Design / Frontend-Dev / Code-Review（前端还原基线）/ auto-test / Testing / Fidelity-Review（还原比对基准）在各自流程中引用本表，不重复定义。

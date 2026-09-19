@@ -18,7 +18,7 @@
 | 主栈 | TypeScript + NestJS 优先；TDD 明确其它语言（Go/Java/Python）时跟随 |
 | 仓库 | 前后端同仓 Monorepo：apps/web + apps/server-* + libs/shared，pnpm workspace |
 | 测试 | 测试先行，承接 TDD 用例（正向/边界/异常/幂等/并发），Jest 优先 |
-| 业务组件资产 | S1 检索 skill-knowledge 复用；S10 归档沉淀判定（四件套入池，项目特有不沉） |
+| 业务组件资产 | S1 组件决策链检索外部 AI 知识库复用（经仓库根 skill-knowledge 引用层）；S10 归档沉淀判定（四件套入外部库，先查重防冗余，项目特有不沉） |
 | 提交 | 一功能点一 commit（Conventional Commits），提交前 eslint + commitlint |
 | 跟踪 | PROJECT.md（情况/规则/进度）+ PLAN.md（任务状态），支持断点续做 |
 | 产出 | 可运行后端微服务代码工程（代码 + 迁移 + 测试 + README） |

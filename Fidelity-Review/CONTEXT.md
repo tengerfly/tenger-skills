@@ -56,6 +56,7 @@
 | D-23 | 09-17 | 吸收外部精华：`interaction-checklist.md` 新增「六、动效还原」（时长/缓动对 token、可打断、origin、reduced-motion、hover 门控、transition:all）与「七、界面质量可见项」（焦点可见、label、省略号规范、图片尺寸、遮挡）两节，原「六、输出」顺延为「八」；`visual-checklist.md` §一 补「固定/悬浮元素不遮挡内容与焦点」、§五 补「图片显式尺寸不引起布局跳变」 | 用户要求吸收外部前端设计 skill 精华（emil-design-eng / vercel web-design-guidelines）；实现规则全集见 Frontend-Dev `references/motion-guide.md` + `web-interface-quality-guide.md` | ✅ |
 | D-24 | 09-17 | 体检修复（本次吸收后自检，用户裁决全量修）3 项：①interaction-checklist §六 时长口径统一（常规 UI <300ms、弹层 / 抽屉类据档）；②SKILL 步骤 4 括注补「动效还原 / 界面质量可见项」新节引用点；③去重：interaction-checklist §七 删图片尺寸行（归 visual-checklist §五）、visual-checklist §一 遮挡表述收窄为「不遮挡内容」（焦点归 interaction §七） | Skill-Optimizer 模式④体检 | ✅ |
 
+| D-25 | 2026-09-19 | 调用方切换：三模式中「Testing 场景」→「auto-test 场景」（⑭ 测试节点已由 auto-test 接替，L2 视觉 E2E 内嵌本 skill；链外 Testing 备用时同理）；description/边界表/铁律/模式二/收尾/错误表同步措辞 | 用户拍板：auto-test 入仓替换 Testing（Testing 源码不动） | ✅ |
 ## 四、待决问题
 
 Q1 已解决：不设独立 Workflow 节点，Testing 内嵌调用；Q2 已解决：有设计稿时还原走查交本 skill，midscenejs 负责三态+基础视觉断言。

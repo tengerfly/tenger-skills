@@ -27,7 +27,7 @@
 | 开发期零选型决策 | Zero Selection at Dev | 选型只来三个来源：读 TDD / 项目现状 / 无 TDD 全新开发启动前一次问清并记 PROJECT.md；实现期不再补选型 | 不是开发期逐步澄清 |
 | 编码层决策规则 | Decision Rules | decision-rules.md：框架选型/分层职责/API/鉴权/数据层/质量六板斧/安全编码的硬规则 | 与 Backend-Tech-Design 决策规则分工：那份管方案层，本份管编码层 |
 | 案例库 | Case Library | case-library/：language-patterns + api-security + quality-engineering + 同行样本 | 借鉴不照搬，TDD 选型优先 |
-| 业务组件资产池 | skill-knowledge | 仓库根跨项目业务组件集中池：S1 开工检索复用，S10 交付按四件套（职责边界 / 窄接口 / 最小示例 / 自测证据）沉淀（规格见池 README） | 项目特有组件不沉；不是 `libs/shared`（那共享的是契约类型，不是可复用业务模块） |
+| AI 知识库引用层 | skill-knowledge | 外部 AI 知识库 `D:\projectgent-project\skills-knowledge\` 的调度侧引用：S1 组件决策链检索复用，S10 按四件套（职责边界 / 窄接口 / 最小示例 / 自测证据）沉淀进外部库 | 防冗余硬条件：已有近似组件 → 兼容性适配/更新既有，禁新建并列组件；项目特有组件不沉；不是 `libs/shared`（那共享的是契约类型，不是可复用业务模块） |
 
 ## 三、决策日志
 
@@ -47,6 +47,7 @@
 | D-12 | 09-15 | 全仓一致性纠偏：README 流水线把 S1 三路判定合并为一个方框（原拆成两框致 11 步 ≠ SKILL 10 步） | 四代理并行七维体检 | ✅ |
 | D-13 | 2026-09-19 | 业务组件资产化闭环：S1 增业务组件检索（命中复用禁重复手写）；S10 增 REQUIRED 沉淀判定（四件套入仓库根 `skill-knowledge/业务组件/backend/`，项目特有不沉、判定留痕 PROJECT.md）；错误表 +2 行；description 补能力；README 核心表 +1 行；新建仓库根 `skill-knowledge/`（池 README 定目录与四件套规格，源仓库根集中池不随副本部署） | 用户要求：开发中用到的业务组件抽象封装沉淀 skill-knowledge，作为后续开发的组件资产 | ✅ |
 
+| D-14 | 2026-09-19 | 组件闭环统一外部 AI 知识库：S1「业务组件检索」并入组件决策链（blueprints 判型收敛入口 + 指向仓库根 skill-knowledge 引用层）；增防冗余硬条件（命中但不适用 → 兼容性适配优先，禁新建并列冗余组件；无法适配须 asset-gap 差异说明 + 用户确认，或留项目内不进库）；S10 沉淀落点由本仓 `skill-knowledge/业务组件/backend/` 改为外部库 asset-library 沉淀闭环 + 沉淀前必查重；错误表 +1 行；description/资源清单/README 同步；术语表改「AI 知识库引用层」 | 用户拍板：AI 组件统一在外部仓 skills-knowledge 作 AI 知识库，skill 侧只留引用+映射表，两边同步更新映射表；防冗余为硬性条件 | ✅ |
 ## 四、待决问题
 
 无。

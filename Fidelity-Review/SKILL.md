@@ -1,6 +1,6 @@
 ---
 name: Fidelity-Review
-description: 页面还原度评审（视觉 + 交互还原）。依据 UI 设计稿（优先 `.spec/设计稿/`，缺失可用外部设计稿）对前端实现页逐页比对：视觉不一致、交互不对、超长文案健壮性问题。只审不改：截图存证，输出分级问题清单（现象/出处/成因/截图/建议），三模式交付——独立调用落盘 `.spec/页面还原评审/`（报告+任务清单+截图）；被 Testing 调用时就地出轻量清单；被 Code-Review 调用时（⑬-前 并行）问题交 Code-Review 合并进 `.spec/代码评审/任务清单.md`（标来源=Fidelity-Review）。浏览器工具硬性前置，全无则报错停用。防死循环：判据 + P0/P1 冻结 + 复核只验本轮 + 轮次上限 3（超限清 P0 后放行）。触发：页面还原度评审、UI 还原检查、视觉走查、对照设计稿查前端页面。
+description: 页面还原度评审（视觉 + 交互还原）。依据 UI 设计稿（优先 `.spec/设计稿/`，缺失可用外部设计稿）对前端实现页逐页比对：视觉不一致、交互不对、超长文案健壮性问题。只审不改：截图存证，输出分级问题清单（现象/出处/成因/截图/建议），三模式交付——独立调用落盘 `.spec/页面还原评审/`（报告+任务清单+截图）；被 auto-test（⑭ 测试节点）调用时就地出轻量清单；被 Code-Review 调用时（⑬-前 并行）问题交 Code-Review 合并进 `.spec/代码评审/任务清单.md`（标来源=Fidelity-Review）。浏览器工具硬性前置，全无则报错停用。防死循环：判据 + P0/P1 冻结 + 复核只验本轮 + 轮次上限 3（超限清 P0 后放行）。触发：页面还原度评审、UI 还原检查、视觉走查、对照设计稿查前端页面。
 compatibility: Claude Code / Agent SDK / OpenCode
 ---
 
@@ -8,11 +8,11 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 > IRON LAW：**截图必证**——一切样式 / 视觉 / 溢出问题必须配浏览器截图，无截图的样式问题不算记录。
 > IRON LAW：**设计稿是视觉唯一应然**——有设计稿时，视觉维度的对错只以 `.spec/设计稿/`（+ `design-system.md` token）判定；低保真原型只作**结构 / 存在性**对照，**不得**用原型充当视觉基准，也不得因「与原型一致」判为还原达标（双基准定义见 `shared/baseline-terms.md`）。
-> 三模式：独立 / Testing 场景 / 代码评审场景（⑬-前 与 Code-Review 并行）。
+> 三模式：独立 / auto-test 场景 / 代码评审场景（⑬-前 与 Code-Review 并行）。
 
 ## 一、定位与铁律
 
-**角色**：对前端实现页对照 UI 设计稿做逐页还原度评审。**只对还原度负责**——不评业务逻辑、接口契约、代码架构（归 Testing / Code-Review）。
+**角色**：对前端实现页对照 UI 设计稿做逐页还原度评审。**只对还原度负责**——不评业务逻辑、接口契约、代码架构（归 auto-test / Code-Review）。
 
 **三个评审面**：
 
@@ -28,11 +28,11 @@ compatibility: Claude Code / Agent SDK / OpenCode
 | `Frontend-Dev` | 被审对象 + 主要修改方（其 `fidelity-guide` 是开发自查，本 skill 是第三方还原验收） |
 | `UI-UX-Review` | 评「设计稿 vs PRD/布局清单」，本 skill 评「实现页 vs 设计稿」，不重叠 |
 | `Code-Review` | 评代码层契约 / 架构；⑬-前 与本 skill **并行**审前端，本 skill 只出还原度问题并交其合并 |
-| `Testing` | 可调用本 skill 做 UI 还原检查（Testing 场景） |
+| `auto-test` | ⑭ 测试节点：L2 视觉 E2E 内嵌调用本 skill 做 UI 还原检查（auto-test 场景；链外 Testing 备用时同理） |
 
 **铁律**：
 
-1. **只审不改**：禁改实现页代码、设计稿、design-system；唯一产出为报告 / 清单 / 截图（或 Testing 轻量清单）。
+1. **只审不改**：禁改实现页代码、设计稿、design-system；唯一产出为报告 / 清单 / 截图（或 auto-test 轻量清单）。
 2. **截图必证**：命名 `<页面>_<问题>_<序号>.png`；交互问题截图表现不了则附操作步骤。
 3. **成因必写**：剖析成因（默认样式未对照稿、色值未走 token、容器未加省略 / min-width、flex 溢出、真实文案更长）；推不出标「成因未明」。
 4. **方向明确**：给具体修改建议（改哪个文件 / 哪类样式 / 加什么约束）和修改方——实现问题 → `Frontend-Dev`；设计稿自身缺陷 → `UI-UX-Design`；源于 PRD 口径变化 → 双方协商。
@@ -56,12 +56,12 @@ compatibility: Claude Code / Agent SDK / OpenCode
 **三模式输出**：
 
 - **模式一 · 独立调用** → `.spec/页面还原评审/`：`页面还原度评审报告.md`（视觉 + 交互 + 长文案分组，每条含截图引用与修改建议）、`任务清单.md`、`screenshots/`。
-- **模式二 · Testing 场景**：不另建任务清单，按 `assets/mini-issue-template.md` 就地出轻量清单交 Testing 汇总。
+- **模式二 · auto-test 场景**：不另建任务清单，按 `assets/mini-issue-template.md` 就地出轻量清单交 auto-test 汇总进其 L2 报告。
 - **模式三 · 代码评审场景（⑬-前 与 Code-Review 并行）**：报告落 `.spec/代码评审/前端页面还原度评审.md`，问题交 Code-Review **合并进** `.spec/代码评审/任务清单.md`（每条标「来源=Fidelity-Review」）；**不另建清单**，轮次与放行由 Code-Review 闭环统一管理，回退方 = `Frontend-Dev`。
 
 ## 三、主流程（7 步）
 
-1. **输入解析与预检**：读 `.spec/设计稿/` 或向用户要外部稿并记录通道（无设计稿才落通道 C 原型并标注降级）；确认实现页目录 / 启动命令 / 逐页 URL（未提供必问，不猜测）；按铁律 5 预检浏览器工具；**确认运行模式**（独立 / Testing / 代码评审并行）。
+1. **输入解析与预检**：读 `.spec/设计稿/` 或向用户要外部稿并记录通道（无设计稿才落通道 C 原型并标注降级）；确认实现页目录 / 启动命令 / 逐页 URL（未提供必问，不猜测）；按铁律 5 预检浏览器工具；**确认运行模式**（独立 / auto-test / 代码评审并行）。
 2. **页面清单 × 基准对齐**：按 `references/design-source-guide.md` 建逐页映射 `实现页 URL ↔ 设计稿页面`，记录响应式断点；通道 A 摘 token 速查，通道 B 记录目测基准，通道 C 标注「视觉基准=低保真原型（降级）」；生成比对范围清单交用户确认后再继续。
 3. **双开截图 + 点击验证**：**基准侧截图 = 设计稿**（有设计稿时；原型只作结构对照，不与实现页做视觉并排结论），相同视口并排截图；逐元素点击记录有反应 / 无反应 / 反应对不对。**独立走查纪律**：只认渲染产物与基准，不参考实现者说明或自查结论；任务重可开独立会话 / 换模型交叉复查。
 4. **视觉 + 交互 + 逐区块断言走查**：视觉按 `references/visual-checklist.md`（含设计稿有而实现没有、实现多出的**双向比对**）；交互按 `references/interaction-checklist.md`（可点性 / 反馈 / 方式一致 / 跳转链路 / 动效还原 / 界面质量可见项）；逐区块断言见 §4.2；另对照 `references/known-issue-patterns.md`（评审方案例库）过一遍，命中即入问题清单。
@@ -69,7 +69,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 6. **分级输出报告**：按 `assets/review-report-template.md` 生成报告；每条含编号 / 页面 / 基准出处 / 现象+截图 / 期望 vs 实际 / 成因 / 严重度 / 建议 / 修改方；分组统计 P0/P1/P2。
 7. **三模式收尾**：
    - **独立模式**：按 `assets/issue-list-template.md` 生成任务清单（自足可读 + 修复判据 + 修改方 + P0/P1 阻断 + 逐条确认裁决；要改 → `已确认`，不改 → `已忽略` + 理由；复核只验本轮清单）；放行后按 `shared/anti-deadloop.md` §五 判定（P0 双向必沉）——**A 防复发**：还原类问题改 `Frontend-Dev`、设计稿缺陷改 `UI-UX-Design`（记其 CONTEXT D-xx）；**B 检出力**：本 skill `references/known-issue-patterns.md` 按模板加一条（含「检出方法」）。
-   - **Testing 场景**：按 `assets/mini-issue-template.md` 就地出轻量清单，不生成任务清单。
+   - **auto-test 场景**：按 `assets/mini-issue-template.md` 就地出轻量清单，不生成任务清单。
    - **代码评审场景**：报告落 `.spec/代码评审/前端页面还原度评审.md`，问题清单交 Code-Review 合并（标来源）；不单独确认、不单独计轮次；**双向沉淀判定交 Code-Review 统一执行**（含本 skill 的 `known-issue-patterns.md`）。
 
 ## 四、评审规范
@@ -95,7 +95,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 | 无截图报样式问题 | 铁律 2 必配截图 |
 | **拿低保真原型当视觉基准评「还原达标」** | 视觉基准只能是设计稿；原型只判结构/存在性（铁律 2 附加项） |
 | **有设计稿却只与原型比对** | 截图必开「设计稿 ↔ 实现页」；原型比对不作视觉结论 |
-| 把业务逻辑当还原度问题 | 归 Testing |
+| 把业务逻辑当还原度问题 | 归 auto-test / Testing |
 | 与 UI-UX-Review / Code-Review 边界混跑 | 按 §一 边界；⑬-前 并行但各管各域 |
 | ⑬-前 另建任务清单 | 交 Code-Review 合并，标来源 |
 | 页面起不来仍评审 | 步骤 1 阻塞并提示 |

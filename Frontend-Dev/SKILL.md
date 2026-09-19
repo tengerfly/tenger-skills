@@ -1,6 +1,6 @@
 ---
 name: Frontend-Dev
-description: 前端代码开发。依据 PRD、原型（结构基线）、设计稿（视觉基准）、TDD、FTDD 把技术方案落地为可运行、高还原、模块化前端工程：测试先行、功能点提交、组件抽离铁律、业务组件资产沉淀复用（skill-knowledge）、接口契约双向对齐、浏览器工具硬性预检（全无报错停）。还原度优先，不确定即问给选项。触发：编写/实现/开发前端代码、实现页面、按 FTDD 写前端页面。
+description: 前端代码开发。依据 PRD、原型（结构基线）、设计稿（视觉基准）、TDD、FTDD 把技术方案落地为可运行、高还原、模块化前端工程：测试先行、功能点提交、组件抽离铁律、业务组件先检索外部 AI 知识库复用（经仓库根 skill-knowledge 引用层，防冗余沉淀）、接口契约双向对齐、浏览器工具硬性预检（全无报错停）。还原度优先，不确定即问给选项。触发：编写/实现/开发前端代码、实现页面、按 FTDD 写前端页面。
 compatibility: Claude Code / Agent SDK / OpenCode
 ---
 
@@ -47,11 +47,11 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 > 每步做完再进下一步；◉ = 强制暂停等用户确认。
 
-**S1 输入解析与预检**：确认产出位置（目标目录 + git 地址，缺一暂停）；判 monorepo（看 pnpm-workspace / turbo / nx / apps+packages；同仓时确认前端子包、共享类型包、根配置可否动，不确定就问）；读 PROJECT.md 与 `.spec/` 各文档；**输入瘦身（续做页 REQUIRED）**：逐页开发只读本页设计稿 + FTDD 模块 §3~§5 + 本页 shared 契约段，design-system/全局组件/惯例不重读（工程已对账进 variables 与口径表，见 `case-library/static-page-trial-playbook.md` §1）；口径冲突**先查 PROJECT 口径表**（§4.9），表内直接套；纳入评审任务清单；**批判性审视** FTDD 与计划（有疑虑先提，不闷头执行）；判目标端（web / app / 小程序，多套原型按端排期并确认分端或多端一套）；**业务组件检索**：检索仓库根 `skill-knowledge/业务组件/frontend/` 下已有组件，命中即复用或适配复用，禁重复手写同类业务组件；**浏览器工具预检**（任一可用记作还原校验工具）。
+**S1 输入解析与预检**：确认产出位置（目标目录 + git 地址，缺一暂停）；判 monorepo（看 pnpm-workspace / turbo / nx / apps+packages；同仓时确认前端子包、共享类型包、根配置可否动，不确定就问）；读 PROJECT.md 与 `.spec/` 各文档；**输入瘦身（续做页 REQUIRED）**：逐页开发只读本页设计稿 + FTDD 模块 §3~§5 + 本页 shared 契约段，design-system/全局组件/惯例不重读（工程已对账进 variables 与口径表，见 `case-library/static-page-trial-playbook.md` §1）；口径冲突**先查 PROJECT 口径表**（§4.9），表内直接套；纳入评审任务清单；**批判性审视** FTDD 与计划（有疑虑先提，不闷头执行）；判目标端（web / app / 小程序，多套原型按端排期并确认分端或多端一套）；**业务组件检索**：涉业务组件/通用 hooks/基建，按 S2 **组件决策链**检索外部 AI 知识库，命中即复用或适配复用，禁重复手写同类业务组件；**浏览器工具预检**（任一可用记作还原校验工具）。
 
 **S2 技术栈锁定**：FTDD 存在 → 读 overview 选型**不重选**；缺失 → 补选型（档位必问 + 组件库必问 + 端相关必问，一次性确认后定稿入 PROJECT.md）；`覆盖端 ≠ 目标端` → **⛔ 阻塞**，先让 Frontend-Tech-Design 补对应端方案；**施工框架与 FTDD 选型不一致 → 阻塞对齐**，禁自主切回 React 基线（非 React 框架按 `references/framework-equivalence-guide.md` 等价映射执行）。
 
-> **组件决策链（调度组件库，涉新组件/通用 hooks/基建 REQUIRED）**：① 盘点本仓已有基建（已有必须用）→ ② 检索 AI 组件库 `D:\project\agent-project\skills-knowledge\asset-library\`（capabilities → patterns/composites → adapters）→ ③ 命中 → 锁版本并记录 selected / rejected / unresolved；未命中 → 走封装七步法（`asset-library/shared/component-authoring.md`，造前写 asset-gap；新组件七步全走，小改动轻量通道①+⑥）→ ④ 交付时做沉淀判断（四出口：Case / Candidate / 更新既有 / 反模式）。
+> **组件决策链（调度 AI 知识库，涉新组件/通用 hooks/基建 REQUIRED）**：① 盘点本仓已有基建（已有必须用）→ ② 检索外部 AI 知识库 `D:\project\agent-project\skills-knowledge\asset-library\`（blueprints 判型收敛 → capabilities → patterns/composites → adapters；使用入口与同步协议见仓库根 `skill-knowledge/README.md`）→ ③ **命中 → 直接复用并锁版本；命中但不完全适用 → 兼容性适配优先**（扩参数 / 加 adapter / 版本演进既有资产），**禁新建并列冗余组件（硬性条件）**；确实无法适配 → 记 asset-gap 说明与既有资产的差异、经用户确认才新建，或采用其他方案留在项目内不进库 → ④ 交付时做沉淀判断（四出口：Case / Candidate / 更新既有 / 反模式；**沉淀前必查重**，见 S10）；使用记录随 asset-usage / evidence 回写外部库，映射表按双仓同步协议更新。
 
 **S3 工程初始化**：既有工程沿用现状，只补缺失基础设施（根配置改动先问）；全新工程——**web 端 SPA 直接复制可运行模板**（React / Vue3 功能点一一对应）：React → `assets/frontend-template-react/`（Vite + React 18 + AntD 5），Vue3 → `assets/frontend-template-vue3/`（Vite + Vue 3.5 + Element Plus + Pinia）；两版同款底座：TS strict 起手 + 请求层统一解包 / SSE 封装 / 路由守卫 / 错误边界 / 懒加载 + vendor 分包 / 设计 token / ui 组件库隔离出口 / 覆盖率门禁 / CI·Docker 全内置，lint·test·coverage·build 全绿基线，照模板 README「5 分钟改造清单」改品牌 / 主题色 / 代理端口等槽位；组件库或框架与 FTDD 选型不符时按模板 README「换组件库操作指南」在 `components/ui` 出口改造；**非 React/Vue / 非 web 端**仍按 `references/tech-stack-guide.md` + `assets/project-structure-template.md` 起手。monorepo 约定见 §4.2。
 
@@ -79,7 +79,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - **界面质量与动效验收**：按 `references/web-interface-quality-guide.md`「反模式速查」逐条扫描（表单可访问性 / 图片尺寸 / 焦点与语义 / i18n 格式 / 水合安全）；动效按 `references/motion-guide.md` 自查表核对（transition 属性明确、只动 transform/opacity、reduced-motion 与 hover 门控）。
 - 三项结果写进 PROJECT.md 留痕（取证口径见 `shared/evidence-before-claims.md`）。
 
-**S10 交付 + 回填**：更新 PROJECT.md 进度 + 收尾提交 + README 运行说明；**业务组件沉淀判定（⚠️ REQUIRED）**：本项目开发的业务组件——项目内已按铁律抽离且跨项目有复用潜力（可剥离项目特有依赖参数化）→ 按「职责边界 / 窄接口 / 最小示例 / 自测证据」四件套沉淀到仓库根 `skill-knowledge/业务组件/frontend/<组件名>/`（规格见其 README），判定结果留痕 PROJECT.md；强绑定本项目领域 / 数据结构的项目特有组件**不沉**（防为沉而沉）；回填 `.spec/代码评审/任务清单.md` 归本 skill 的 `已确认` 任务为 `已修复` + 修改说明；回填后须触发 `Code-Review` 复核（含 `Fidelity-Review` 还原度项），不得自判通过（闭环与上限规则见 `shared/anti-deadloop.md` §一/§二）；是否 push 由用户决定。
+**S10 交付 + 回填**：更新 PROJECT.md 进度 + 收尾提交 + README 运行说明；**业务组件沉淀判定（⚠️ REQUIRED）**：本项目开发的业务组件——项目内已按铁律抽离且跨项目有复用潜力（可剥离项目特有依赖参数化）→ 按「职责边界 / 窄接口 / 最小示例 / 自测证据」四件套沉淀到外部 AI 知识库 `D:\project\agent-project\skills-knowledge\`（asset-library 沉淀闭环：evidence 回写 → 四出口判断，规格见其使用手册）；**沉淀前必查重（硬性条件）**：库内已有近似组件 → 一律走「更新既有 / 兼容适配」出口，禁新建并列冗余组件；确需新建须记 asset-gap 差异说明并经用户确认；判定结果留痕 PROJECT.md；强绑定本项目领域 / 数据结构的项目特有组件**不沉**（防为沉而沉）；回填 `.spec/代码评审/任务清单.md` 归本 skill 的 `已确认` 任务为 `已修复` + 修改说明；回填后须触发 `Code-Review` 复核（含 `Fidelity-Review` 还原度项），不得自判通过（闭环与上限规则见 `shared/anti-deadloop.md` §一/§二）；是否 push 由用户决定。
 
 ## 四、关键规范
 
@@ -176,8 +176,9 @@ compatibility: Claude Code / Agent SDK / OpenCode
 | `<div onClick>` 当按钮 / 链接 | 换 `<button>` / `<a>`（§一） |
 | 图片无宽高 / 大列表未虚拟化 | 显式尺寸防 CLS；>50 项虚拟化（§六/§七） |
 | 硬编码日期 / 数字格式 / 阻止粘贴 | `Intl.*` 格式化；放开粘贴（§十二/§三） |
-| 同类业务组件不检索直接手写 | S1 先查 skill-knowledge 资产池，命中复用 |
-| 可复用业务组件交付即丢不沉淀 | S10 沉淀判定（⚠️ REQUIRED）：四件套入 skill-knowledge，项目特有不沉 |
+| 同类业务组件不检索直接手写 | S1/S2 组件决策链先查外部 AI 知识库，命中复用 |
+| 库内已有近似组件仍新建并列组件 | 兼容性适配优先 / 走「更新既有」出口；新建须 asset-gap 差异说明 + 用户确认（硬性条件，S2/S10） |
+| 可复用业务组件交付即丢不沉淀 | S10 沉淀判定（⚠️ REQUIRED）：四件套入外部 AI 知识库，项目特有不沉 |
 
 ## 六、资源清单
 
@@ -186,7 +187,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - `assets/frontend-template-react/`：**React SPA web 端可运行模板**（S3 全新工程起手复制；改造清单 / 换库指南 / 部署配置见其 README）
 - `assets/frontend-template-vue3/`：**Vue3 SPA web 端可运行模板**（与 React 版功能点一一对应，新增 Pinia 状态层；S3 起手复制，用法同上）
 - `assets/project-structure-template.md`、`module-code-template.md`、`project-status-template.md`
-- 仓库根 `skill-knowledge/`：跨项目业务组件资产池（S1 检索 / S10 沉淀；目录与四件套规格见其 README）
+- 仓库根 `skill-knowledge/`：**AI 知识库引用层**——外部库 `D:\project\agent-project\skills-knowledge\` 的使用入口 / 映射表 / 防冗余硬规则 / 双仓同步协议（见其 README；S1 检索 / S10 沉淀经此对接）
 - `shared/baseline-terms.md`、`shared/browser-policy.md`、`shared/dev-common.md`、`shared/receiving-review.md`、`shared/evidence-before-claims.md`、`shared/anti-deadloop.md`（仓库根）：公共约定
 - 产出位置：S1 用户给定目录 + git 地址
 

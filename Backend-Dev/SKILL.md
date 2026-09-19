@@ -1,6 +1,6 @@
 ---
 name: Backend-Dev
-description: 后端代码开发（TypeScript + NestJS + Monorepo 默认）。依据 PRD、原型、TDD、FTDD 把技术方案落地为可运行、可维护的微服务后端工程：测试先行逐功能点实现，四层分层 + 服务边界 + libs 共享；开发前出 PROJECT.md + PLAN.md，功能点完成即 eslint/commitlint 校验并提交；业务组件资产沉淀复用（skill-knowledge）。维护性第一；不确定就给选择项，一次只问一个关键问题。触发：编写/实现/开发后端代码、按技术方案写后端。
+description: 后端代码开发（TypeScript + NestJS + Monorepo 默认）。依据 PRD、原型、TDD、FTDD 把技术方案落地为可运行、可维护的微服务后端工程：测试先行逐功能点实现，四层分层 + 服务边界 + libs 共享；开发前出 PROJECT.md + PLAN.md，功能点完成即 eslint/commitlint 校验并提交；业务能力模块先检索外部 AI 知识库复用（经仓库根 skill-knowledge 引用层，防冗余沉淀）。维护性第一；不确定就给选择项，一次只问一个关键问题。触发：编写/实现/开发后端代码、按技术方案写后端。
 compatibility: Claude Code / Agent SDK / OpenCode
 ---
 
@@ -49,9 +49,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
 **S1 开工判定与解析**：
 - **三路判定**：续做（有 PROJECT.md + PLAN.md → 读后从进行中/待做续）；既有项目盘点（有代码无两文档 → 按仓库根 `shared/dev-common.md` §一沉淀「项目现状基线」，严格按现状落地，不套默认模板）；全新开发 → 完整流程建两文档。
 - 读 `.spec/`：TDD（选型/表结构/接口/边界/测试）、FTDD（fetch 清单）、PRD（先读速查表）、原型；检查评审任务清单并纳入 PLAN。
-- **业务组件检索**：检索仓库根 `skill-knowledge/业务组件/backend/` 下已有组件，命中即复用或适配复用，禁重复手写同类业务能力模块。
 - **技术栈锁定**：有 TDD → 逐项采用 TDD「技术选型总览」，不重选不追问；无 TDD + 既有代码 → 盘点现状为基线；无 TDD + 全新 → 开工前一次敲定（默认 TypeScript + NestJS / `@nestjs/microservices` / Prisma（备选 TypeORM）/ pnpm workspace / Jest+Supertest / `@nestjs/config`），记入 PROJECT.md 关键决策。
-- **组件决策链（调度组件库，涉新组件/基建/通用能力 REQUIRED）**：① 盘点本仓已有基建（AGENTS.md / 依赖清单，已有必须用）→ ② 检索 AI 组件库 `D:\project\agent-project\skills-knowledge\asset-library\`（capabilities → patterns/composites → adapters）→ ③ 命中 → 锁版本（pattern@x + adapter@x）并记录 selected / rejected / unresolved；未命中 → 走封装七步法（`asset-library/shared/component-authoring.md`，造前写 asset-gap；新组件七步全走，小改动轻量通道①+⑥）→ ④ 交付时做沉淀判断（四出口：Case / Candidate / 更新既有 / 反模式），并回写 asset-usage（实际使用版本，偏差记 deviation）与 evidence（命令/结果/局限，无证据视为未完成）。五门禁（检索/选择/实现/验证/沉淀）由 Workflow 据 `pipeline-state.yaml` 拦截。全程受目标项目 AGENTS.md 映射表 + lint/CI 机器兜底约束。
+- **组件决策链（调度 AI 知识库，涉业务能力模块/新组件/基建/通用能力 REQUIRED；命中即复用或适配复用，禁重复手写同类业务模块）**：① 盘点本仓已有基建（AGENTS.md / 依赖清单，已有必须用）→ ② 检索外部 AI 知识库 `D:\project\agent-project\skills-knowledge\asset-library\`（blueprints 判型收敛 → capabilities → patterns/composites → adapters；使用入口与同步协议见仓库根 `skill-knowledge/README.md`）→ ③ **命中 → 锁版本（pattern@x + adapter@x）直接复用并记录 selected / rejected / unresolved；命中但不完全适用 → 兼容性适配优先**（扩参数 / 加 adapter / 版本演进既有资产），**禁新建并列冗余组件（硬性条件）**；确实无法适配 → 记 asset-gap 说明与既有资产的差异、经用户确认才新建，或采用其他方案留在项目内不进库；未命中 → 走封装七步法（`asset-library/shared/component-authoring.md`，造前写 asset-gap；新组件七步全走，小改动轻量通道①+⑥）→ ④ 交付时做沉淀判断（四出口：Case / Candidate / 更新既有 / 反模式；**沉淀前必查重**，见 S10），并回写 asset-usage（实际使用版本，偏差记 deviation）与 evidence（命令/结果/局限，无证据视为未完成）。五门禁（检索/选择/实现/验证/沉淀）由 Workflow 据 `pipeline-state.yaml` 拦截。全程受目标项目 AGENTS.md 映射表 + lint/CI 机器兜底约束。
 - **批判性审视**：对 TDD 或计划本身有疑虑先向用户提出，不闷头执行。
 
 **S2 服务拆分**：TDD 模块清单 = 服务边界候选；是否合并按耦合度定，不确定用选项让用户选。既有项目新功能落既有服务，不擅自分服务。依赖与 TDD 关联图一致并标通信方式。
@@ -74,7 +73,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 **S9 全局一致性 + 生产就绪**：一致性（可编译可运行、分层无越界、服务边界无侵入、命名统一、注释完整、测试可跑且覆盖五类、覆盖率企业级 ≥80%）；生产就绪按 **§4.9 清单**逐项打勾，缺项不算完成；性能按 **§4.9** 口径核对。
 
-**S10 归档 + 回填**：README 运行说明；**业务组件沉淀判定（⚠️ REQUIRED）**：本项目开发的业务能力模块——项目内真实使用且跨项目有复用潜力（可剥离项目特有依赖参数化）→ 按「职责边界 / 窄接口 / 最小示例 / 自测证据」四件套沉淀到仓库根 `skill-knowledge/业务组件/backend/<组件名>/`（规格见其 README），判定结果留痕 PROJECT.md；强绑定本项目领域模型 / 数据结构的项目特有组件**不沉**（防为沉而沉）；更新 PROJECT.md / PLAN.md；回填评审任务清单（`已修复` + 修改说明）。回填后须触发 `Code-Review` 复核，不得自判通过（闭环与上限规则见仓库根 `shared/anti-deadloop.md` §一/§二）。
+**S10 归档 + 回填**：README 运行说明；**业务组件沉淀判定（⚠️ REQUIRED）**：本项目开发的业务能力模块——项目内真实使用且跨项目有复用潜力（可剥离项目特有依赖参数化）→ 按「职责边界 / 窄接口 / 最小示例 / 自测证据」四件套沉淀到外部 AI 知识库 `D:\project\agent-project\skills-knowledge\`（asset-library 沉淀闭环：evidence 回写 → 四出口判断，规格见其使用手册）；**沉淀前必查重（硬性条件）**：库内已有近似组件 → 一律走「更新既有 / 兼容适配」出口，禁新建并列冗余组件；确需新建须记 asset-gap 差异说明并经用户确认；判定结果留痕 PROJECT.md；强绑定本项目领域模型 / 数据结构的项目特有组件**不沉**（防为沉而沉）；更新 PROJECT.md / PLAN.md；回填评审任务清单（`已修复` + 修改说明）。回填后须触发 `Code-Review` 复核，不得自判通过（闭环与上限规则见仓库根 `shared/anti-deadloop.md` §一/§二）。
 
 ## 四、关键规范
 
@@ -136,15 +135,16 @@ compatibility: Claude Code / Agent SDK / OpenCode
 | heredoc / re.sub 转义吞噬生成坏源码 | 反斜杠字面量用 chr(92) 拼接；re.sub 替换串含反斜杠改用 lambda；生成后立即编译（bug-patterns/2026-09-15/02） |
 | Nest provider 构造参数用投影类型/接口/type-only 导入 → 运行时 DI 解析失败（tsc 全绿） | 非类类型参数显式 @Inject(token)；DI 参数禁 import type；forFeature 实体清单与 token 对应；回归必含全 AppModule 启动冒烟（bug-patterns/2026-09-15/03） |
 | 构造器加参后 spec 位置参数错位（as never 掩盖）→ 批量假失败 | grep 全部 new 调用点逐一补参；批量同症状假失败先查槽位错位；提交前 eslint --fix + commitlint 预检（bug-patterns/2026-09-15/04、05） |
-| 同类业务能力模块不检索直接重写 | S1 先查 skill-knowledge 资产池，命中复用 |
-| 可复用业务组件交付即丢不沉淀 | S10 沉淀判定（⚠️ REQUIRED）：四件套入 skill-knowledge，项目特有不沉 |
+| 同类业务能力模块不检索直接重写 | S1 组件决策链先查外部 AI 知识库，命中复用 |
+| 库内已有近似组件仍新建并列组件 | 兼容性适配优先 / 走「更新既有」出口；新建须 asset-gap 差异说明 + 用户确认（硬性条件，S1/S10） |
+| 可复用业务组件交付即丢不沉淀 | S10 沉淀判定（⚠️ REQUIRED）：四件套入外部 AI 知识库，项目特有不沉 |
 
 ## 六、资源清单
 
 - `references/architecture-guide.md`、`code-style-guide.md`、`test-guide.md`、`tech-stack-guide.md`、`decision-rules.md`
 - `references/case-library/`：语言规范 + API/安全 + 质量工程化 + 同行样本（按需加载）
 - `assets/project-structure-template.md`、`module-code-template.md`、`project-status-template.md`、`plan-template.md`
-- 仓库根 `skill-knowledge/`：跨项目业务组件资产池（S1 检索 / S10 沉淀；目录与四件套规格见其 README）
+- 仓库根 `skill-knowledge/`：**AI 知识库引用层**——外部库 `D:\project\agent-project\skills-knowledge\` 的使用入口 / 映射表 / 防冗余硬规则 / 双仓同步协议（见其 README；S1 检索 / S10 沉淀经此对接）
 - `shared/dev-common.md`、`shared/receiving-review.md`、`shared/evidence-before-claims.md`、`shared/anti-deadloop.md`（仓库根）：公共约定
 - 项目目录：代码 + `PROJECT.md` + `PLAN.md` + `README`
 

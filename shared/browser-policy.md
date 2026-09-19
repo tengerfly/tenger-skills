@@ -15,7 +15,7 @@
 
 ## 三、级别清单
 
-- **硬依赖**：Prototype-Review / UI-UX-Review / Fidelity-Review / Frontend-Tech-Design / Frontend-Dev / Testing
+- **硬依赖**：Prototype-Review / UI-UX-Review / Fidelity-Review / Frontend-Tech-Design / Frontend-Dev / auto-test（L2 视觉层；其 L0/L1 确定性层无浏览器可跑）
 - **软检测**：Tech-Review / Backend-Tech-Design
 - **不涉及**：其余 skill 不做检测（仅截图增强的如 UI-UX-Design：浏览器不可用时以替代手段核验，并在产物注明）
 
@@ -26,4 +26,4 @@
 请安装任一浏览器工具后重跑；安装前本 skill 不产出任何交付物。
 ```
 
-> 注：midscenejs 仅为 Testing 样式视觉断言的可选增强（需装依赖 + 模型配置），不属于检测链；不可用时降级并在 Scope Gate 说明。
+> 注：midscenejs 仅为 auto-test / Testing 样式视觉断言的可选增强（需装依赖 + 模型配置），不属于检测链；不可用时降级并在 Scope Gate 说明。

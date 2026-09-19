@@ -45,15 +45,16 @@ compatibility: Claude Code / Agent SDK / OpenCode
 | `.spec/设计稿/`（**视觉主基准**，含 `design-system.md` token 源）、`.spec/原型/`（**结构基线**） | 页面结构与视觉的输入；页面清单/组件拆分必须与之对应（结构对原型、视觉对设计稿） | 设计稿缺 → 回退原型并**明示视觉基准降级**（术语见 `shared/baseline-terms.md`） |
 | `.spec/TDD/VN/` | 请求封装与对接的**唯一依据** | ⛔ 阻塞，先要 |
 | `.spec/技术方案评审/任务清单.md` | 归本 skill 的 `已确认` 任务逐条纳入 | 无则跳过 |
+| `.spec/开源情报/`（OSS-Radar 同域调研报告） | **写方案前先看同类项目怎么做**：同域开源项目的前端架构/状态方案/组件库选型/测试基建发现（B 泳道三元组）反哺选型候选与组件设计 | 推荐有——缺失时建议先跑 `OSS-Radar`（项目泳道、按 PRD 关键词定向，可复用 ⑧ 轮报告补前端视角）；快速档或用户确认可跳过并留痕 |
 | 浏览器工具（**硬依赖**） | 查所选框架/组件库官方文档与版本兼容 | **全无 → 报错要求安装，不跳过**（前端选型依赖官方版本信息；策略见仓库根 `shared/browser-policy.md`） |
 
 ## 三、主流程（7 步）
 
 > 每步做完再进下一步；◉ = 强制暂停等用户确认。
 
-**S1 解析输入 + 浏览器检测**：读上表输入；抽取页面清单、组件线索、接口清单（来自 TDD）、AC。
+**S1 解析输入 + 浏览器检测**：读上表输入；抽取页面清单、组件线索、接口清单（来自 TDD）、AC；**读同域开源调研报告（`.spec/开源情报/`，有则 REQUIRED）**——同域项目的前端架构/状态方案/测试基建做法反哺 S2 选型候选与 S5 组件拆分（报告三元组中「建议落点=本方案」的条目逐条纳入并留出处；无报告先建议跑 OSS-Radar，快速档经用户确认跳过并留痕）。
 
-**S1.5 资产检索与选择（M6 资产门禁）**：检索 AI 组件库 `D:\project\agent-project\skills-knowledge\asset-library\`——先判项目类型命中 `blueprints/`（可叠加取严）收敛范围，再按 capabilities → patterns/composites → adapters 检索；命中 → 记录 selected/rejected/unresolved 并锁版本；未命中 → 记录缺口，交 Dev 走封装七步法。产物落 `.spec/<feature>/` 的 `asset-needs.yaml`、`asset-selection.yaml`、`composition.yaml`（模板在组件库 `templates/project-side/`）。
+**S1.5 资产检索与选择（AI 知识库门禁）**：检索外部 AI 知识库 `D:\project\agent-project\skills-knowledge\asset-library\`（使用入口与同步协议见仓库根 `skill-knowledge/README.md`）——先判项目类型命中 `blueprints/`（可叠加取严）收敛范围，再按 capabilities → patterns/composites → adapters 检索；**命中 → 命中资产直接进方案**（组件清单/选型总览标注资产来源与版本），记录 selected/rejected/unresolved 并锁版本；**命中但不完全适用 → 方案层即做兼容性适配**（扩参数 / 加 adapter / 版本演进既有资产），禁并列冗余资产（防冗余硬条件）；无法适配 → 记缺口并说明与既有资产的差异，交 Dev 走封装七步法（造前 asset-gap）。产物落 `.spec/<feature>/` 的 `asset-needs.yaml`、`asset-selection.yaml`、`composition.yaml`（模板在组件库 `templates/project-side/`）。
 
 **S2 选型澄清（一次定全）**：⛔ 每个决策点过「收敛证明」——结论落到具体页面 / 组件 / 状态归属 + 失败 / 涨 10 倍 / 漏项已拷问 + 用户对定稿复述点头；一两句回答不算定稿（协议见 `references/socratic-grilling.md`，通用核心 `shared/socratic-grilling-core.md`）。
 
@@ -135,6 +136,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 | 只问做什么，不问不做/交界 | 补边界拷问（socratic-grilling 领域节） |
 | 关键数据流只设计正常主链路 | 逐节点补异常/弱网/重复/失败恢复 |
 | 状态只写加载/空/错 | 按 10 大 UI 状态逐态核对（含禁用/403/断网；涉 AI 加流式/增量） |
+| 方案层引入与库内既有资产并列的新组件 | S1.5 命中但不适用先兼容性适配（扩参数/加 adapter），禁并列冗余资产（防冗余硬条件） |
 
 ## 六、资源清单
 
