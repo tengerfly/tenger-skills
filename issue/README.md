@@ -31,3 +31,16 @@ issue/
 
 - 字段：等级 `P0/P1/P2` + 标签（10 个预定义枚举）+ 优化状态
 - 状态机：`待处理 → 处理中 → 已沉淀 / 已忽略`；「已沉淀」必填沉淀目标 + 沉淀位置
+
+## 问题数据流总览（2026-09-19 收敛约定）
+
+原始问题**入口唯一**，反哺**出口分工**——同一问题只进一个入口、反哺只写一个出口，禁止跨池重复记同一件事：
+
+| 层 | 入口（原始问题只进这里） | 出口（综合分析后按类型反哺） |
+|---|---|---|
+| skill 层 | **本池 `issue/`**（skill 运行问题唯一 intake） | ① 流程缺陷 → 改对应 SKILL.md 主流程 REQUIRED 位 / 错误表；② 评审检出力 → 该评审 skill `references/known-issue-patterns.md`；③ 类别级代码错误 → `bug-patterns/`；④ 用户偏好信号 → `evolution/` |
+| 项目层 | `<项目>/.spec/问题日志.md`（一行索引台账）+ 各评审任务清单（详情单一事实源不变） | 跨项目综合分析后：skill 层出口同上；组件资产缺陷 → skills-knowledge `asset-library/anti-patterns/` 或 `cases/failure/` |
+| 原材料 | `chats/`（待挖掘聊天记录） | 挖掘确认后落 `issue/` |
+
+- **定期综合分析**输入 = 本池 + 各项目 `.spec/问题日志.md` + `evolution/信号/`；输出 = 上表出口的反哺改动（对 Skill-Optimizer 说「综合分析问题日志」触发）。
+- 项目问题日志格式模板：`shared/templates/problem-log-template.md`。
