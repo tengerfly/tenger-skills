@@ -1,7 +1,7 @@
 # 设计规范（Design System）— {{产品名称}}
 
-> 用途：UI-UX-Design 步骤 5 产出物。**任何页面生成之前**必须沉淀并经用户确认，落盘 `.superdesign/design-system.md`（CLI 硬性路径）。
-> 强制消费：所有生成调用必带 `--context-file` 指向本文件 + 保真约束语（只允许本规范内定义的视觉值）。
+> 用途：UI-UX-Design 步骤 5 产出物。**任何页面生成之前**必须沉淀并经用户确认，落盘 `.superdesign/design-system.md`（〔A〕CLI 硬性路径）或 `.spec/设计稿/design-system.md`（〔B〕自写路径）。
+> 强制消费：〔A〕所有生成调用必带 `--context-file` 指向本文件 + 保真约束语（只允许本规范内定义的视觉值）；〔B〕每页成稿的 token 唯一来源同为本文件。
 > 组件规范对齐 `references/open-source-design-systems.md` 所选开源体系基线，不自造无依据的值。
 
 ---
@@ -11,6 +11,36 @@
 | 原则 | 说明 |
 |---|---|
 | {{如「少即是多，克制留白」}} | {{一句话落地方式}} |
+
+---
+
+## 0.5 机器可读 Token 头（对齐 DESIGN.md 开放格式 · 2026-09-20 增）
+
+> 对齐 [google-labs-code/design.md](https://github.com/google-labs-code/design.md) 开放格式：落盘时在本节填 YAML 块（与 §7 逐值一致，不得多值少值），使本文件可被生态工具与下游 agent 直读。 prose 描述感觉，token 是规范值——冲突时以 token 为准。
+
+```yaml
+design_tokens:
+  name: {{产品名称}}
+  colors:
+    primary: {{#hex}}        # 对应 --color-primary
+    bg: {{#hex}}             # 对应 --color-bg
+    surface: {{#hex}}        # 对应 --color-surface
+    text: {{#hex}}           # 对应 --color-text
+    border: {{#hex}}         # 对应 --color-border
+    success: {{#hex}}
+    warning: {{#hex}}
+    danger: {{#hex}}
+    info: {{#hex}}
+  typography:
+    h1: { font-family: {{字体栈}}, font-size: {{28px}}, font-weight: {{700}}, line-height: {{1.3}} }
+    h2: { font-family: {{…}}, font-size: {{20px}}, font-weight: {{600}}, line-height: {{1.4}} }
+    body: { font-family: {{…}}, font-size: {{14px}}, font-weight: {{400}}, line-height: {{1.6}} }
+    caption: { font-family: {{…}}, font-size: {{12px}}, font-weight: {{400}}, line-height: {{1.5}} }
+  spacing: { base: 4px, sm: 8px, md: 16px, lg: 24px, xl: 32px, "2xl": 48px }
+  rounded: { sm: {{4px}}, md: {{8px}}, lg: {{12px}}, full: 999px }
+```
+
+> 本节是 §7 的**镜像视图**（面向机器），§7 是**落码视图**（面向 `:root` 对账）——两处值必须同步维护，门禁 §二同时抽查。
 
 ---
 

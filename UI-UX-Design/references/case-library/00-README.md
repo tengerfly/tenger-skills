@@ -32,6 +32,8 @@
 
 **实抓纪律**：检索命中后，对匹配场景的 **1~3 个资源用 `web_fetch` / `extract-website --design-md` 实抓提取**（教学类页提取模式要点，案例类提取场景/解法/参考截图），把要点带入步骤 4 风格决策与步骤 5 规范；抓取失败或站点失效 → 产出中标注「资源未取用（原因）」，**禁止凭链接名编造内容**。
 
+**〔B〕自写路径外部风格源（2026-09-20 登记）**：Superdesign 灵感库不可用（无额度/B 路径）时，按序取用——① [VoltAgent/awesome-design-md](https://github.com/VoltAgent/awesome-design-md)（品牌 DESIGN.md 集合，按气质取 1–3 个实抓）；② [google-labs-code/design.md](https://github.com/google-labs-code/design.md)（DESIGN.md 开放格式规范，design-system 模板 §0.5 的依据）；③ `npx extract-design-system <url>`（站点 token 提取；安全边界：不覆盖既有规范、不推断未提取值）；④ browser 实抓截图 + 读 CSS。0 结果诚实：检索不到显式标注 fallback 依据，禁编造。
+
 ---
 
 ## 三、条目统一字段（沉淀案例必填）

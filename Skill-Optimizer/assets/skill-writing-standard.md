@@ -219,6 +219,8 @@ AI 写的 skill 天然臃肿，做完只做减法。
 
 **已采纳**：Iron Law 置顶、Red Flags 撤退机制、问题式指令、懒惰默认值挖掘法、自由度匹配脆弱度、确认门四类触发、可验证交付清单、大 reference 加 TOC、按领域组织 references、信息不重复、审阅先列优点（见模式④）、**形式匹配失败类型**、**描述禁止剧透流程**、**交叉引用强度标记**、**流程图使用判据**、**证据先于声明**（`shared/evidence-before-claims.md`）、**接收评审纪律**（`shared/receiving-review.md`）。
 **已采纳（第二批 · 前端设计类）**：动效设计工程（决策四问 / 强度档 / 曲线时长 token → UI-UX-Design `references/motion-design-guide.md`，design-system 模板 §6/§7 承接）、动效实现技法（组件手感 / 性能 / reduced-motion → Frontend-Dev `references/motion-guide.md`）、Web 界面质量规则集（→ Frontend-Dev `references/web-interface-quality-guide.md`，Fidelity-Review / Code-Review 取检出子集）、设计读声明（风格提案 §〇，先声明「读作什么」再出方案）、AI Slop Test 放行自问、动效强度档入风格决策（交互气质显式化）。
+**已采纳（第三批 · 2026-09-20 UI-UX-Design 双路径改造，14 仓采集见 skills-knowledge `.spec/开源情报/`）**：AI 自写路径 B 整体（两遍式设计计划+唯一性自查 → `references/self-write-sop.md` §三）、有界验证「1 全量 + 1 确认」封顶（impeccable → self-write-sop §一/§六，挂靠既有 anti-deadloop 3 轮上限，不另立口径）、Iron Law「第一版不算数」（design-taste → §一）、hex 级禁令与机械检查精选（taste-skill → 门禁 §三 M1–M8 + self-write-sop §四）、vercel MUST 交互红线精选（→ §四.5）、Before/After/Why 评审表（emil → §六）、八锚点 token 包+失格条件（Ilm-Alan/frontend-design → §十，三方案差异化弹药）、DESIGN.md 开放格式 YAML token 头（google-labs-code/design.md → design-system 模板 §0.5，§7 对账机制不变）、P0/P1/P2 按「谁看得出来」分级 + code-certain/inferred 置信标签 + 三成功判据（avoid-ai-design → 门禁 §三 + §七）、检索优先 / 0 结果诚实原则（ui-ux-pro-max → §八）。
+**第三批边界（防与第二批不采纳项误判冲突）**：①「eyebrow 配额 / em-dash 零容忍 / CTA 一意图一标签」属**反 AI 味判据的量化落地**（§4.3 官方聚类参照既有方向），归机械检查项——下表「taste-skill 布局重排类不采纳」中 hero 范式 / bento 格数 / split-header 禁 / zigzag 上限等**版式重排规则仍不采纳**（布局零改动铁律不变，self-write-sop 未收录），仅「eyebrow 配额」从该类移出为反 AI 味量化项；②awesome-design-md 仅登记**外部实抓源**（case-library 00-README），维持不入库版权裁决；③三 Dials、Python+CSV 检索、impeccable 场景 references 整搬继续不采纳（理由同第二批）。
 
 **不采纳（本仓库有明确理由）**：
 
