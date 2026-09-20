@@ -1,0 +1,250 @@
+---
+name: bug-fix
+description: "日志驱动的 Bug 诊断与修复委托闭环（链外专业 Skill，不占主链 14 节点）。拿到前端或后端日志（粘贴/文件/线上导出/本地复现运行）即开工：双通道日志解析 → 复现确认 → 根因定位（证据链三段）→ 根因确认后只交付问题定位报告（含修复方向）+ 修复任务清单——具体技术方案交 Frontend/Backend-Tech-Design（增量 TDD/FTDD）、改码交 Frontend/Backend-Dev、回归由开发自测并按需调 auto-test（分层回归）；本 skill 只核对原始场景不再现、判定闭环状态并回填。不产方案文档、不改码、不做深度测试。有预防价值的错误模式收尾沉淀到 skill 源仓库根 `../../bug-patterns/` 集中池（各被修项目统一写入本池）反哺方案/开发 skill。触发：修 bug/缺陷/报错/异常/线上问题、分析日志找原因、日志报错排查、根据报错定位问题、修接口报错。"
+metadata:
+  contract-level: legacy-wrapper
+  legacy-alias: "Bug-Fix"
+  compatibility: "Claude Code / Agent SDK / OpenCode"
+---
+
+
+# Bug-Fix —— 日志驱动的 Bug 诊断与修复委托闭环
+
+> IRON LAW：**未完成根因调查，不得给出修复方向**——症状当根因、改完就完，是修 bug 最贵的两个错。
+> 定位：把模糊的抱怨变成可修的根因：日志入手 → 复现 → 根因（证据链）→ 给修复方向，交付「问题定位报告」。**后续各环委托对应专业 skill**：技术方案 → Frontend/Backend-Tech-Design，改码 → Frontend/Backend-Dev，回归 → 开发自测 + 按需 auto-test。
+
+**集中沉淀池（写死，勿改）**：`D:\project\agent-project\tenger-skills\bug-patterns\`——所有被修项目的错误模式一律写入此绝对路径（见主流程 10）；若部署环境变化导致路径失效，先改本行常量再继续。
+
+## 一、定位与铁律
+
+**角色**：bug 诊断专家 + 委托编排——**只诊断与交接**，不执行方案 / 改码 / 深度测试。
+
+**铁律**：
+
+1. **只诊断与委托，不越界执行**：交付定位报告（含修复方向）与修复任务清单；不产 TDD/FTDD、不改代码、不做深度测试——防「根因未证就动手」与职责重叠。
+2. **先复现后定位**：能复现是硬前提（构造前置 / 最小复现亦可）；不能复现 → 结论标 `【未复现】` + 置信度，**绝不据猜测下修复方向**。
+3. **证据链三段**：现象 → 直接原因（日志 / 调用证明）→ 根因（代码证明）；每段必须有依据，缺依据标 `【假设】` 不硬断。
+4. **根因 Gate 不过不委托**：定位报告未经用户确认，不进技术方案与开发。
+5. **委托顺序固定**：根因确认后按「方案 → 开发 → 回归」委托，不跳过方案直接让开发改；方案只覆盖受影响模块的增量变更。
+6. **修复判据 + 迭代判定**：每条修复方向写「修到什么表现算完成」；回归结果只作迭代判定——不过则退给对应环节（根因错退诊断、方案错退方案、实现错退开发），通过才标 `已验证`。
+7. **修 3 次不过即质疑根因**：同一问题修 3 次仍未解决 → 停下质疑根因 / 方案，不再试第 4 次（反复修不好通常是根因判断或方案选错，不是「再调一点」）。
+8. **有预防价值才沉池**：收尾判断是否暴露「会再犯的一类错」——是则沉淀到集中池、用户确认后落池；不沉一次性 / 环境特殊问题。
+
+**分级与防死循环**：问题 P0/P1/P2 分级；复核只验本轮清单、轮次上限 3（**超限交用户裁决**，不适用授权 CONDITIONAL——Bug-Fix 专属口径，定义见仓库根 `../../shared/anti-deadloop.md` §二）。**不确定即问**：日志不全 / 代码位置不明 / 根因无法收敛 / 跨端责任不清 → 停下问，给选项与推荐，不自己发挥。
+
+**适用范围**：适用线上 / 测试 / 自测发现的功能 bug、接口报错、前端 console 或 network 异常、后端错误栈 / 5xx / 慢查询（来源可为日志文件、粘贴、线上日志平台导出、监控告警 / 前端监控记录（server-log / server-monitor / web-monitor——运行期正向循环入口）或本地复现）；不适用需求本身不合理（归 PRD-Design）、性能优化专项（auto-test / Testing）、代码质量评审（Code-Review）、全新功能开发（走主链）。输入来源可以是 `Testing` 的分级问题文档或 `Code-Review` 的评审任务——本 skill 是「问题 → 修复闭环」的诊断入口与委托方。
+
+## 二、输入与前置
+
+**解析三要素（输入不齐即阻塞）**：
+
+| 要素 | 必得 | 缺了怎么办 |
+|---|---|---|
+| 代码位置 | 仓库 / 项目根目录 | ⛔ 阻塞：先问 |
+| 日志 / 报障 | 粘贴文本、日志文件路径、线上导出或可复现运行入口 | ⛔ 阻塞：先问 |
+| 现象描述 | 操作路径 + 期望 vs 实际 + 环境（版本 / 浏览器 / 端 / 时间） | 有日志可倒推，描述尽量问全 |
+
+**基线文档**：读 `.spec/PRD/VN/`（先读 `PRD速查表.md` 建索引）判「预期行为」——实现不符 PRD = 修代码；**PRD 本身不合理 = 回退 PRD 流程，不按 bug 硬修**。读 `.spec/TDD|FTDD/VN/` 取接口契约与既有方案基线（无则标注「无既有方案，增量方案按现状基线」）。
+
+## 三、主流程（10 步）
+
+```
+报障输入 → 1 解析三要素 → 2 双通道日志解析 → 3 复现确认 → 4 根因定位（证据链三段）
+→ 5 ◉ 根因 Gate → 6 委托技术方案 → 7 委托开发修复 → 8 回归（自测 + 按需 auto-test + 原场景核对）
+→ 9 归档回填 → 10 沉淀反哺（有预防价值才沉）
+```
+
+**1. 解析三要素**：按 §二 校验输入（不齐即阻塞）；读基线文档判定预期行为。
+
+**2. 双通道日志解析**：按日志来源走对应通道，两侧都涉及则都走、先定链路归属（日志种类、识别要点、截取方法见 `references/log-channels-guide.md`）。
+- **前端通道**：console 错误、未捕获异常、network 4xx/5xx/超时、资源加载失败、跨域、白屏 / 报错页 → 定位到对应页面 / 组件 / 请求。
+- **后端通道**：应用错误栈、access / 请求日志、5xx、DB 异常 / 慢查询、缓存 / 队列 / 依赖服务超时 → 定位到服务 / 接口 / 代码行。
+- **链路串接**：有 `trace_id` / `requestId` 则沿 ID 串前端请求 → 网关 → 服务全链路，一次定位到底。
+
+产出 `日志解析记录`（来源 / 时间窗 / 关键错误行 / 状态码 / 链路 ID）入定位报告素材。
+
+**3. 复现确认**：尽量本地复现（启动项目按现象操作；后端构造入参 / 数据；前端直连接口复现数据问题）。复现成功 → 记下**稳定复现步骤**（写进定位报告，作为回归判据的验证脚本）；复现失败 → 用日志时间线 / 代码阅读收敛，结论标 `【未复现】`，给出置信度与下一步（加日志 / 等复现），**不进入修复**。
+
+**4. 根因定位（证据链三段）**：方法论细则见 `references/root-cause-guide.md`，核心是不断问「直接原因是什么、为什么发生」直到抵达代码层根因。
+
+1. **现象 → 直接原因**：从日志错误行 / 状态码推断触发点（哪个请求 / 哪个函数抛错、哪条校验失败）。
+2. **直接原因 → 代码位置**：错误栈 / 日志定位到文件与函数；读代码确认触发逻辑与异常路径。
+3. **代码位置 → 根因**：追问为什么走到异常（入参错误 / 数据不符预期 / 状态未初始化 / 竞态 / 资源未释放 / 契约不一致），验证到具体语句。
+
+**多组件系统：先在边界加诊断埋点，别猜。** 链路跨网关 / 服务 / DB / 前端时，在**每个组件边界**记录「进入什么数据、出去什么数据、配置与环境是否正确传递」，跑一次拿到「哪一层开始不对」的证据，再钻那一层——比逐层读代码快，且不靠猜。
+
+**假设验证纪律（科学方法）**：一次只立**一个**假设，写成一句话（「我认为是 X 导致，因为 Y」）；用**最小改动**验证，一次只动一个变量；不成立 → 立**新**假设，不在原假设上叠补丁；不知道就说「我不理解 X」，不装懂。
+
+**模式分析（找差异）**：定位前先找「同类可用样例」——同仓库里能跑通、与坏掉部分相似的那段；逐条列出「能跑 vs 不能跑」的差异（再小也列，别假设「这点应该无关」）；若在套用某范式，把参考实现**完整读完**再动。
+
+产出：
+
+- 根因结论（一句话：什么条件下、哪段代码、因什么而错）+ 证据（日志行 + 代码位置）+ 影响面（影响哪些功能 / 用户 / 端，触发频率）。
+- **防御纵深建议**：根因修完之后，指出还该在哪几层补校验 / 兜底（源头 + 中间层 + 出口），让同类问题不可能再静默发生——不只在报错点打补丁。
+- 严重度：**P0** 阻断主流程 / 数据损坏 / 大面积不可用；**P1** 明显功能错误 / 高频触发；**P2** 边缘 / 低影响。
+- 修改方向建议：改哪个文件 / 函数、怎么改、涉及契约或表结构则明确影响，风险点（引入回归风险、需回归范围）。
+
+**5. ◉ 根因 Gate（强制暂停）**：呈现 `问题定位报告.md`（根因 / 证据 / 影响 / 严重度 / 修复方向，多根因逐条列出），**请用户确认后再委托**——根因判断有误 → 回步骤 4 重新收敛；根因确认 → 记「根因已确认」，进入步骤 6；属需求问题而非代码 bug → 改走 PRD-Design，本次关闭。
+
+**6. 委托技术方案（增量 TDD/FTDD，本 skill 不产方案）**：按受影响端把「定位报告」作为输入**委托给方案 skill**（根因跨端则先后端方案再前端方案）——后端根因 → **Backend-Tech-Design** 产出受影响模块的**增量 TDD**（变更点、接口 / 数据变更、回归测试用例）；前端根因 → **Frontend-Tech-Design** 产出受影响模块的**增量 FTDD**（页面 / 组件 / hooks 变更、fetch 对接、回归用例）。无既有 `.spec/TDD|FTDD/` 的项目 → 方案 skill 按其「现状基线」模式收敛，范围严格限定受影响模块，不做无关重构。本 skill 在 `.spec/bug修复/修复任务清单.md` 记录状态 `方案已确认` + 方案产物路径，**不代为撰写方案文档**。
+
+**7. 委托开发修复（本 skill 不改码）**：按受影响端调用对应开发 skill 承接方案施工（后端 → **Backend-Dev**；前端 → **Frontend-Dev**）。开发方按方案实现、先落回归测试（把定位报告复现步骤转成用例）、只改方案范围内点、改完自测通过，按开发 skill 规范提交。若开发中暴露「根因判断有变」→ 停下回步骤 4 更新定位报告，不硬绕。
+
+**8. 回归验证（委托执行 + 迭代判定）**：验证动作委派给**开发方自测 + 按需 auto-test**，本 skill 只做收尾核对与迭代判定——
+
+1. **开发自测**：开发方跑通本次回归用例 + 受影响模块既有测试，回填自测结果。
+2. **按需 auto-test**：改动跨模块 / 高风险 / 用户要求完整回归时调 **auto-test**（L0-L4 分层全量回归）；条件不满足则不引入，仅开发自测。
+3. **本 skill 核对**：仅核对「**原始场景不再现**」（重跑定位报告复现步骤确认缺陷消失，前端可截图存证）。
+   - 未通过 → 迭代判定退给对应环节：根因判断有变退步骤 4、方案有缺退步骤 6、实现有误退步骤 7（同批复核只验本轮，超 3 轮停下交用户裁决）。
+   - **同一问题修 3 次仍未解决 → 停下质疑根因 / 方案，不再试第 4 次**：把「已试 3 次的证据 + 当前判断」摆给用户，一起决定换方案还是改架构——不许无限重试。
+   - 通过 → 状态 `已验证`（核对证据必须是**本次实测**：重跑复现步骤、前端截图存证；**不采信「改好了」的口头结论**，见 `../../shared/evidence-before-claims.md`）。
+
+**9. 归档回填**：定位报告、复现材料 / 截图落 `.spec/bug修复/<日期>-<简述>/`；`修复任务清单.md` 状态回填 `定位已确认` → `方案已确认`（附方案路径）→ `已修复`（附改动说明）→ `已验证`（附验证说明），异常分支 `已忽略`（附理由）/ `已移交PRD`；全过程可追溯。若修复涉及接口契约 / PRD 口径变化 → 提醒回写对应文档，不单方改口径。**问题日志**：归档同时在项目 `.spec/问题日志.md` 台账追加一行索引（日期｜来源｜问题产物｜轮次｜状态｜反哺出口；格式见 skill 源仓库 `../../shared/templates/problem-log-template.md`）。收尾按 §七 上报埋点。
+
+**10. 沉淀反哺（有预防价值才沉，本 skill 只写池不改目标 skill）**：修复闭环走完后，判断本次 bug 是否暴露「**会再犯的一类错**」——是则沉淀到**集中池**（路径写死 = 顶部常量），一次性 / 环境特殊问题不沉。池只有一个且固定——无论 bug 修在哪个项目，都直接按常量路径写入本池；用户只需在本仓库一处定期提炼。
+
+1. **预防价值判断**：根因属可类别化错误模式（数据 / 状态 / 竞态 / 契约 / 环境五类）、且大概率再次发生 → 有预防价值；单点偶发 / 环境特殊 → 不沉。
+2. **按写死路径落池**：直接写入 `../../bug-patterns/<日期>/`，不做路径询问（部署环境变化导致失效则先改顶部常量）。
+3. **按模板成卡**：按 `assets/pattern-card-template.md` 提炼「现象 / 根因（证据链摘要）/ 防复发规则 / 受益 skill / 建议落点层级」，「依据」字段记该项目 `问题定位报告.md` 路径（可回查）。
+4. **用户确认后落池**：判定 + 受益 skill + 防复发规则逐条列给用户确认；确认后写 `../../bug-patterns/<日期>/<序号>-<简述>.md`，状态 `待提炼`。
+5. **不越界**：沉淀只写池；「池 → 方案 / 开发 skill 规则」的提炼由 **Skill-Optimizer 模式③** 定期执行（错误表加行 → references 防复发清单 → Gate 预检项，逐层升级）。
+
+## 四、关键规范
+
+**4.1 澄清协议（需拍板点逐条列清单）**：执行中遇到以下场景停下问，给 2~4 选项并标推荐 + 理由；多处可一次列编号清单确认。
+
+| 必问 | 默认 / 推荐 |
+|---|---|
+| 代码位置 / 日志来源缺失 | 阻塞必问 |
+| 复现不了 | 列假设 + 置信度，问下一步（加日志复现 / 先按日志定位） |
+| 根因多条 / 责任跨前后端 | 逐条确认根因与归属，先后端契约后前端 |
+| 修复优先级 | 线上 P0 优先，用户定序 |
+| 无既有 TDD/FTDD | 按现状基线出增量，范围锁定受影响模块 |
+| 修复涉及契约 / 表结构 / PRD 口径 | 停下问是否允许动契约，允许则同步更新方案 |
+| 沉淀判断拿不准 | 列「根因类型 + 会否再犯 + 受益 skill」给用户裁决是否落池 |
+| 提炼归属不清 | 本 skill 只写池；提炼目标 skill 交 Skill-Optimizer 模式③ |
+
+**4.2 与上下游关系**：
+
+| Skill | 关系 |
+|---|---|
+| Frontend-Tech-Design / Backend-Tech-Design | 修复方案的产出方（增量 TDD/FTDD） |
+| Frontend-Dev / Backend-Dev | 代码修复执行方 |
+| Code-Review | 评审发现的可运行性问题可转本 skill；修复完成后如需可再审 |
+| auto-test / Testing | 发现问题的来源之一（⑭ 分层验收产物）；修复回归按需委托 auto-test 跑完整分层回归（Testing 为链外人工走查备用，源码不动） |
+| PRD-Design | 「需求本身不合理」的移交方 |
+| Workflow | 本 skill 不占主链节点，独立触发；主链流程不因本 skill 改变 |
+
+## 五、常见错误对照表
+
+| 错误 | 纠正 |
+|---|---|
+| 症状当根因，直接给改法 | 证据链三段到代码层，根因 Gate |
+| 复现不了仍给方向 | 标【未复现】+ 置信度，等复现 |
+| 跳过技术方案直接让开发改 | 铁律 5，委托顺序固定：方案→开发→回归 |
+| 本 skill 亲自写 TDD/FTDD | 方案只归 Frontend/Backend-Tech-Design |
+| 本 skill 亲自改码 / 深度测试 | 只诊断与委托，回归自测 / auto-test 承接 |
+| 本 skill 越界去改目标 skill | 沉淀只写 `../../bug-patterns/` 集中池，提炼归 Skill-Optimizer |
+| 修完不核对原场景 | 步骤 8 原始场景不再现 + 状态判定 |
+| 回归不过直接标完成 | 迭代判定退根因 / 方案 / 实现对应环节 |
+| 修 3 次还在试第 4 次 | 停下质疑根因 / 方案，交用户决定 |
+| 定位报告凭感觉无日志 / 代码证据 | 证据链每段有依据，缺标【假设】 |
+| 一次改多个疑似点 | 根因收敛到一处，逐条验证 |
+| 根因判断有变还硬绕 | 回步骤 4 更新定位报告 |
+| 不维护修复任务清单 | 方案 / 开发 / 验证回填，全程可追溯 |
+| 涉及契约 / PRD 口径自己改 | 停下问，同步文档 |
+| 有预防价值错误不沉池 | 步骤 10 按模板落集中池 |
+| 前端问题只查前端 | 沿 `trace_id` 串全链路 |
+
+## 六、资源清单
+
+- `references/log-channels-guide.md`：前后端双通道日志识别与截取
+- `references/root-cause-guide.md`：证据链三段定位方法论
+- `references/case-library/`：调试方法学 + 日志定位专项 + 同行样本（按需加载）
+- `assets/locate-report-template.md`：问题定位报告模板
+- `assets/fix-task-list-template.md`：修复任务清单模板（闭环单一事实源）
+- `assets/pattern-card-template.md`：错误模式案例卡模板（步骤 10 沉淀用）
+- `../../shared/evidence-before-claims.md`、`../../shared/anti-deadloop.md`（仓库根）：取证口径、分级与防死循环（Bug-Fix 适用「超限交用户裁决」口径）
+- `CONTEXT.md`：术语 + 决策日志；产出位置 `.spec/bug修复/`（被修项目内）、集中沉淀池 `../../bug-patterns/`（源仓库根）
+
+## 七、运行问题埋点
+
+收尾按 `../Skill-Optimizer/references/instrumentation-guide.md` 自查上报 `../../issue/Bug-Fix/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `../Skill-Optimizer/assets/issue-template.md`）。不确定不记，不打断主流程。
+
+## Contract Compatibility Layer
+
+Use the common Gate contract: PASS requires no unresolved P0/P1; residual P0 is BLOCKED; residual P1 may only be an authorized CONDITIONAL with exceptionId, owner, dueAt, remediation, allowDownstream, and approvalRef. There is no force-pass rule.
+
+
+> LEGACY BODY BOUNDARY: The preceding body, references, and assets are retained for capability compatibility. When any wording conflicts, the contracts in `../../shared/` and the sections below win.
+
+## Purpose
+
+Preserve the mature capability of `Bug-Fix` while exposing it through the v2 Skill contract.
+
+## Trigger
+
+Run when the user explicitly requests this capability or when `WorkFlow/` routes a compatible stage to this wrapper.
+
+## Inputs
+
+- the user's request and confirmed scope;
+- current project artifacts, evidence, decisions, and `.spec/workflow.yaml`;
+- the retained legacy body, references, assets, and scripts in this directory.
+
+## Preconditions
+
+- read `../../shared/skill-contract.md`, `../../shared/gate-policy.md`, and `../../shared/anti-deadloop.md`;
+- read `.spec/manifest.yaml` and `.spec/workflow.yaml` when a project is available;
+- verify scope, authorization, repository boundaries, and required upstream artifacts;
+- do not overwrite unrelated or uncommitted files.
+
+## Responsibilities
+
+- execute the retained domain capability within its stated scope;
+- translate legacy outputs into the current artifact, evidence, decision, and Gate vocabulary;
+- record execution, traceability, residual issues, and the next action;
+- route work outside this wrapper to the responsible domain Skill.
+
+## Non-goals
+
+- do not silently change product decisions, scope, or acceptance criteria;
+- do not invent missing facts, evidence, approvals, or test results;
+- do not use legacy Gate values or legacy state files as current truth;
+- do not delete retained compatibility material.
+
+## Procedure
+
+1. Read the request, current state, manifest, and upstream handoff.
+2. Load only the retained legacy resources needed for this execution.
+3. Execute the domain action and keep assumptions separate from evidence.
+4. Validate the output against its repair or acceptance criteria.
+5. Register artifacts, evidence, decisions, and open items.
+6. Write the execution record and `.spec/workflow.yaml`.
+7. Emit exactly one Gate and one explicit next action.
+
+## Outputs
+
+- the domain artifact, report, code change, test evidence, or routed task defined by the retained capability;
+- `artifactRefs`, `evidenceRefs`, `decisionRefs`, `openItems`, `gate`, and `nextAction`;
+- a failure route when the wrapper cannot complete safely.
+
+## Evidence
+
+Use direct source files, command output, test results, screenshots, dated external sources, or explicit user decisions. Label conclusions as `FACT`, `EVIDENCE`, `INFERENCE`, `ASSUMPTION`, `RECOMMENDATION`, `DECISION`, or `OPEN`. A recommendation is not approval.
+
+## Gate
+
+Use only `PASS`, `CONDITIONAL`, or `BLOCKED`. `PASS` requires complete inputs and artifacts with no unresolved P0/P1. Residual P0 is always `BLOCKED`. Residual P1 is never `PASS` and may be `CONDITIONAL` only with `exceptionId`, `risk`, `owner`, `dueAt`, `remediation`, `allowDownstream`, and `approvalRef`. Three review rounds are the maximum; never force-pass or start an automatic fourth round.
+
+## Failure Route
+
+If evidence, authorization, scope, or an upstream Gate is missing, set `BLOCKED`, name the missing item and owner, and route to the responsible upstream Skill. If the issue is outside this wrapper's boundary, stop and route it rather than improvising.
+
+## Downstream Contract
+
+Downstream Skills may consume only manifest entries whose status and Gate allow downstream use. They must read `sourceRefs`, `evidenceRefs`, `decisionRefs`, `openItems`, and `nextAction`; they must not infer approval from chat context or file existence.
+
+## State Changes
+
+Record the old state, new state, actor, timestamp, reason, evidence references, Gate, and next action in `.spec/workflow.yaml`. The exact state names come from `governance/state-registry.yaml`.

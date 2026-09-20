@@ -1,0 +1,27 @@
+version: 1
+projectId: fixture-change-api-contract
+artifacts:
+  - artifactId: INT-CHANGE-001
+    type: intake
+    path: .spec/intake/INT-CHANGE-001.md
+    lifecycle: CHANGE
+    owner: fixture
+    status: APPROVED
+    producedBy: change-intake
+    producedAt: 2026-09-20T09:00:00+08:00
+  - artifactId: IMPACT-CHANGE-001
+    type: decision
+    path: .spec/impact/IMPACT-CHANGE-001.md
+    lifecycle: CHANGE
+    owner: fixture
+    status: REVIEW
+    producedBy: impact-analysis
+    producedAt: 2026-09-20T10:00:00+08:00
+  - artifactId: TECH-CHANGE-001
+    type: tech-design
+    path: .spec/tech/TECH-CHANGE-001.md
+    lifecycle: CHANGE
+    owner: fixture
+    status: DRAFT
+    producedBy: Backend-Tech-Design
+    producedAt: 2026-09-20T11:00:00+08:00

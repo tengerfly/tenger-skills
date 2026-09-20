@@ -1,0 +1,400 @@
+version: 1
+registry: artifact-registry
+updatedAt: 2026-09-20
+artifacts:
+- type: intake
+  required:
+  - artifactId
+  - type
+  - path
+  - lifecycle
+  - owner
+  - status
+  - producedBy
+  - producedAt
+  statuses:
+  - DRAFT
+  - REVIEW
+  - APPROVED
+  - SUPERSEDED
+- type: research
+  required:
+  - artifactId
+  - type
+  - path
+  - lifecycle
+  - owner
+  - status
+  - producedBy
+  - producedAt
+  statuses:
+  - DRAFT
+  - REVIEW
+  - APPROVED
+  - SUPERSEDED
+- type: prd
+  required:
+  - artifactId
+  - type
+  - path
+  - lifecycle
+  - owner
+  - status
+  - producedBy
+  - producedAt
+  statuses:
+  - DRAFT
+  - REVIEW
+  - APPROVED
+  - SUPERSEDED
+- type: prototype
+  required:
+  - artifactId
+  - type
+  - path
+  - lifecycle
+  - owner
+  - status
+  - producedBy
+  - producedAt
+  statuses:
+  - DRAFT
+  - REVIEW
+  - APPROVED
+  - SUPERSEDED
+- type: ui-spec
+  required:
+  - artifactId
+  - type
+  - path
+  - lifecycle
+  - owner
+  - status
+  - producedBy
+  - producedAt
+  statuses:
+  - DRAFT
+  - REVIEW
+  - APPROVED
+  - SUPERSEDED
+- type: tech-design
+  required:
+  - artifactId
+  - type
+  - path
+  - lifecycle
+  - owner
+  - status
+  - producedBy
+  - producedAt
+  statuses:
+  - DRAFT
+  - REVIEW
+  - APPROVED
+  - SUPERSEDED
+- type: code-change
+  required:
+  - artifactId
+  - type
+  - path
+  - lifecycle
+  - owner
+  - status
+  - producedBy
+  - producedAt
+  statuses:
+  - DRAFT
+  - REVIEW
+  - APPROVED
+  - SUPERSEDED
+- type: test-plan
+  required:
+  - artifactId
+  - type
+  - path
+  - lifecycle
+  - owner
+  - status
+  - producedBy
+  - producedAt
+  statuses:
+  - DRAFT
+  - REVIEW
+  - APPROVED
+  - SUPERSEDED
+- type: test-report
+  required:
+  - artifactId
+  - type
+  - path
+  - lifecycle
+  - owner
+  - status
+  - producedBy
+  - producedAt
+  statuses:
+  - DRAFT
+  - REVIEW
+  - APPROVED
+  - SUPERSEDED
+- type: release-plan
+  required:
+  - artifactId
+  - type
+  - path
+  - lifecycle
+  - owner
+  - status
+  - producedBy
+  - producedAt
+  statuses:
+  - DRAFT
+  - REVIEW
+  - APPROVED
+  - SUPERSEDED
+- type: release-report
+  required:
+  - artifactId
+  - type
+  - path
+  - lifecycle
+  - owner
+  - status
+  - producedBy
+  - producedAt
+  statuses:
+  - DRAFT
+  - REVIEW
+  - APPROVED
+  - SUPERSEDED
+- type: baseline
+  required:
+  - artifactId
+  - type
+  - path
+  - lifecycle
+  - owner
+  - status
+  - producedBy
+  - producedAt
+  statuses:
+  - DRAFT
+  - REVIEW
+  - APPROVED
+  - SUPERSEDED
+- type: signal
+  required:
+  - artifactId
+  - type
+  - path
+  - lifecycle
+  - owner
+  - status
+  - producedBy
+  - producedAt
+  statuses:
+  - DRAFT
+  - REVIEW
+  - APPROVED
+  - SUPERSEDED
+- type: triage
+  required:
+  - artifactId
+  - type
+  - path
+  - lifecycle
+  - owner
+  - status
+  - producedBy
+  - producedAt
+  statuses:
+  - DRAFT
+  - REVIEW
+  - APPROVED
+  - SUPERSEDED
+- type: incident
+  required:
+  - artifactId
+  - type
+  - path
+  - lifecycle
+  - owner
+  - status
+  - producedBy
+  - producedAt
+  statuses:
+  - DRAFT
+  - REVIEW
+  - APPROVED
+  - SUPERSEDED
+- type: inspection
+  required:
+  - artifactId
+  - type
+  - path
+  - lifecycle
+  - owner
+  - status
+  - producedBy
+  - producedAt
+  statuses:
+  - DRAFT
+  - REVIEW
+  - APPROVED
+  - SUPERSEDED
+- type: decision
+  required:
+  - artifactId
+  - type
+  - path
+  - lifecycle
+  - owner
+  - status
+  - producedBy
+  - producedAt
+  statuses:
+  - DRAFT
+  - REVIEW
+  - APPROVED
+  - SUPERSEDED
+- type: knowledge-candidate
+  required:
+  - artifactId
+  - type
+  - path
+  - lifecycle
+  - owner
+  - status
+  - producedBy
+  - producedAt
+  statuses:
+  - DRAFT
+  - REVIEW
+  - APPROVED
+  - SUPERSEDED
+- type: discovery-brief
+  required:
+  - artifactId
+  - type
+  - path
+  - lifecycle
+  - owner
+  - status
+  - producedBy
+  - producedAt
+  - sourceRefs
+  - evidenceRefs
+  - decisionRefs
+  statuses:
+  - DRAFT
+  - REVIEW
+  - APPROVED
+  - SUPERSEDED
+- type: product-definition
+  required:
+  - artifactId
+  - type
+  - path
+  - lifecycle
+  - owner
+  - status
+  - producedBy
+  - producedAt
+  - sourceRefs
+  - evidenceRefs
+  - decisionRefs
+  statuses:
+  - DRAFT
+  - REVIEW
+  - APPROVED
+  - SUPERSEDED
+- type: application-blueprint
+  required:
+  - artifactId
+  - type
+  - path
+  - lifecycle
+  - owner
+  - status
+  - producedBy
+  - producedAt
+  - sourceRefs
+  - evidenceRefs
+  - decisionRefs
+  statuses:
+  - DRAFT
+  - REVIEW
+  - APPROVED
+  - SUPERSEDED
+- type: journey-map
+  required:
+  - artifactId
+  - type
+  - path
+  - lifecycle
+  - owner
+  - status
+  - producedBy
+  - producedAt
+  - sourceRefs
+  - evidenceRefs
+  - decisionRefs
+  statuses:
+  - DRAFT
+  - REVIEW
+  - APPROVED
+  - SUPERSEDED
+- type: feature-decision
+  required:
+  - artifactId
+  - type
+  - path
+  - lifecycle
+  - owner
+  - status
+  - producedBy
+  - producedAt
+  - sourceRefs
+  - evidenceRefs
+  - decisionRefs
+  statuses:
+  - DRAFT
+  - REVIEW
+  - APPROVED
+  - SUPERSEDED
+- type: scope-decision
+  required:
+  - artifactId
+  - type
+  - path
+  - lifecycle
+  - owner
+  - status
+  - producedBy
+  - producedAt
+  - sourceRefs
+  - evidenceRefs
+  - decisionRefs
+  statuses:
+  - DRAFT
+  - REVIEW
+  - APPROVED
+  - SUPERSEDED
+- type: prototype-review
+  required:
+  - artifactId
+  - type
+  - path
+  - lifecycle
+  - owner
+  - status
+  - producedBy
+  - producedAt
+  - sourceRefs
+  - evidenceRefs
+  - decisionRefs
+  statuses:
+  - DRAFT
+  - REVIEW
+  - APPROVED
+  - SUPERSEDED

@@ -1,0 +1,14 @@
+version: 1
+workflowId: WF-YYYYMMDD-001
+projectId: replace-with-project-id
+lifecycle: CREATE
+state: INTAKE_REQUESTED
+gate: BLOCKED
+allowDownstream: false
+currentSkill: change-intake
+startedAt: 2026-09-20T00:00:00+08:00
+updatedAt: 2026-09-20T00:00:00+08:00
+evidenceRefs: []
+artifactRefs: []
+decisionRefs: []
+nextAction: ""

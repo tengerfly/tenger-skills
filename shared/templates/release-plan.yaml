@@ -1,0 +1,21 @@
+version: 1
+releaseId: REL-YYYYMMDD-001
+projectId: <project-id>
+lifecycle: CHANGE
+versionLabel: <version>
+commit: <commit-or-tag>
+environment: staging | production
+scope: []
+preconditions: []
+verification:
+  healthChecks: []
+  criticalJourneys: []
+  telemetryWindow: <duration>
+rollback:
+  trigger: <explicit-trigger>
+  command: <approved-command-or-runbook>
+  owner: <responsible-person>
+approval:
+  status: PENDING | APPROVED | REJECTED
+  approver: <person-or-role>
+  recordedAt: 2026-09-20T00:00:00+08:00

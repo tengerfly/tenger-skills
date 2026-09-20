@@ -1,0 +1,28 @@
+# 竞品分析测试与评估报告（Evaluation Template）
+
+> 候选稿工业级验收（Pass Gate）模板。评测者以 Senior PM 视角按三段式审查，PASS 后才可交付。
+
+## 1. 基础信息
+| 字段 | 内容 |
+|---|---|
+| Case ID | TC-CA-XXX |
+| 日期 | |
+| 赛道特征 | [红海/内容蚕食/灰区/出海/数据稀缺] |
+| 原始输入 | |
+| 物料目录 | `.spec/<主题>竞品分析/` |
+| 对标项 | |
+
+## 2. Pass Gate 裁决
+结论：PASS / CONDITIONAL / BLOCKED。
+Use the common Gate contract: PASS requires no unresolved P0/P1; residual P0 is BLOCKED; residual P1 may only be an authorized CONDITIONAL with exceptionId, owner, dueAt, remediation, allowDownstream, and approvalRef. There is no force-pass rule.
+红线自检：无编造 / 假设隔离 / 独立优缺点表 / 口径并列。
+
+## 3. 三段式详情
+- 结果是什么：11 模块完整度、五层穿透度、双矩阵、破局点。
+- 缺什么：未公开数据声明、口径差异、合规/履约盲区。
+- 优化什么：
+| 优先级 | 状态 | 优化项 | 模块 | 处置 |
+|---|---|---|---|---|
+
+## 4. PM 综合意见
+2~3 句总结工业水准、商业价值与落地建议。

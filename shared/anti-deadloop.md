@@ -1,87 +1,51 @@
-# 评审门禁闭环 + 防死循环 + 分级（评审类公共约定）
+# Anti-Deadloop v2
 
-> 适用：6 个评审类 skill（PRD-Review / Prototype-Review / UI-UX-Review / Tech-Review / Code-Review / Fidelity-Review）的**门禁闭环**（§一~§五）。
-> Bug-Fix 的修复闭环（定位→方案→开发→回归）沿用 §二.2 分级冻结与「复核只验本轮」，但其轮次超限动作为**交用户裁决**（修复不收敛需用户介入，不适用 §二.3 强制放行）。
-> 本文件是定义唯一权威；各 skill 只保留差异参数（修改方映射、新发现处理），正文引用此处即可，不再重复定义。
+This contract prevents endless review-fix-review loops while preserving safety and user control.
 
-## 一、评审门禁闭环（节点内循环）
+## 1. Required issue fields
 
-每个「产物 ⇄ 评审」配对构成一个**门禁闭环**：循环不收敛，不得进入下一节点。
+Every review or verification issue must have:
 
-```
-产物 skill 产出 → 评审 skill 评审 → 任务清单（待确认）→ 用户逐条裁决
-  → P0/P1 有未清 → 回退修改方修复 → 回填「已修复」→ 重跑评审（只验本轮）
-  → 循环直到 P0/P1 清零且复核通过 → 门禁放行 → 进入下一节点
-  → 收尾「沉淀判定」（见 §五）
-```
+- a stable `issueId`;
+- severity `P0`, `P1`, `P2`, or `P3`;
+- source location and evidence references;
+- a concrete repair criterion;
+- an accountable owner;
+- a state such as `OPEN`, `CONFIRMED`, `FIXED`, `WAIVED`, or `REJECTED`;
+- the round in which it was found and the round in which it was verified.
 
-**放行判据**（三者同时满足才放行）：
+A verbal statement such as "fixed" is not evidence.
 
-1. 任务清单内 P0 全部 `已修复`；
-2. P1 全部 `已修复`（标 `已忽略` 的须有用户确认的理由）；
-3. 复核只验本轮清单并确认通过；复核新发现一律降 P2，不阻塞本轮放行（用户同意才可进下一轮单批）。
+## 2. Review round protocol
 
-P2 只记录、留后续，写入 PIPELINE「遗留问题」，不阻塞放行。
+1. Freeze the current issue list before repair.
+2. Ask the user or authorized owner to confirm, waive, or reject each actionable issue.
+3. The responsible Skill repairs only confirmed items and records the change.
+4. Re-review only the current round's confirmed items; new findings are recorded separately.
+5. Record evidence, Gate, residual issues, and the next action in `.spec/workflow.yaml` and the execution record.
 
-**闭环责任分工**：评审 skill 只审不改（不改被审产物）；修复由修改方 skill 执行并回填清单；放行由编排侧（Workflow）判定，独立调用时由用户判定。
+## 3. Maximum rounds and residual issues
 
-**并发**：同一门禁内允许多个评审 skill 并行审同一产物（如 Code-Review 前端视角 ∥ Fidelity-Review），问题合并进同一份任务清单、共用一个循环与轮次计数。
+The same issue batch has a maximum of three repair-review rounds. After round 3:
 
-## 二、防评审死循环三招
+- residual P0 => `BLOCKED`;
+- residual P1 => never `PASS`; it may become `CONDITIONAL` only with the complete authorized exception record from `shared/gate-policy.md`;
+- residual P2/P3 => may remain open if impact and owner are recorded;
+- no automatic fourth round;
+- never use "force pass", "clear P0 then pass", or "leave P1 as legacy" as a Gate rule.
 
-1. **修复判据**：每条问题附「修到什么表现算修复完成」的可检查判据；修改方与复核共用同一把尺子。无判据的问题不得进任务清单。
-2. **分级冻结**：P0/P1 未清零不放行；复核只验本轮已确认清单，不无限新增同级问题；新发现降 P2 留后续，或经用户同意进下一轮单批。
-3. **轮次上限 3 + 强制放行**：同批「修复 → 复核」满 3 轮仍未收敛时——
+A new scope, new evidence, or a changed decision starts a new execution rather than silently extending the old loop.
 
-   - 先**强制清零 P0**（P0 为阻断项，必须修完）；
-   - P0 修完后**直接放行**，不再开第 4 轮；
-   - 残留 P1 记入 PIPELINE「遗留问题」，不阻塞下游，后续可另行处理；
-   - 全程留痕（轮次 + 残留项 + 放行理由）并告知用户。
+## 4. Bidirectional learning
 
-## 三、严重度分级（P0/P1/P2）
+When an issue is confirmed as a repeatable pattern:
 
-| 级别 | 定义 | 处理 |
-|---|---|---|
-| P0 | 阻断性：流程/契约断头、核心对象或入口缺失、无法开工/联调/交付 | 阻断；必须修复并通过复核 |
-| P1 | 重要：明显影响交付一致性或可运行性，须进任务清单 | 原则上全修 |
-| P2 | 建议：润色、次要细节、非关键缺失 | 记录，由用户裁决，不阻塞 |
+- add a prevention rule to the producing Skill;
+- add a detection rule to the reviewing Skill's known-issue pattern library;
+- link both changes to the original `issueId` and evidence.
 
-各 skill 严重度表中的「典型示例」为其领域判定参考；定义与处理以本表为准。
+Learning changes the Skills, not the current Gate outcome.
 
-## 四、任务清单状态机（单一事实源）
+## 5. Source of truth
 
-`待确认` →（用户逐条裁决：要改 → `已确认`；不改 → `已忽略` + 理由）→（修改方回填）→ `已修复`（+ 修改说明）。
-
-全量问题去重后只收口一份任务清单；修改方按各评审 skill 的回退映射执行；复核只验本轮 `已确认` 项。
-
-## 五、闭环问题沉淀（双向反哺，正向循环）
-
-闭环放行后必须做**沉淀判定**——把一个问题的价值同时榨干到两端：**产出方下次不做错** + **评审方下次查得出来**。只沉一边 = 闭环不完整。
-
-**判定规则**：
-
-| 等级 | 是否沉淀 |
-|---|---|
-| P0 | **必沉淀（双向，强制，不可跳过）** |
-| P1 | 由模型判断是否属「会再犯的一类问题」——是则双向沉淀，否则仅记录 |
-| P2 | 同上；一次性细节不沉淀 |
-
-**双向落点**：
-
-| 方向 | 目标 skill | 沉什么（增量） |
-|---|---|---|
-| **A · 防复发** | 产出方：PRD-Design / Prototype-Design / UI-UX-Design / Backend-Tech-Design / Frontend-Tech-Design / Backend-Dev / Frontend-Dev | 错误表加行 / references 防复发清单 / Gate 预检项 / 补充修复判据 |
-| **B · 检出力** | 发现问题的那一个（或几个）评审 skill：PRD-Review / Prototype-Review / UI-UX-Review / Tech-Review / Code-Review / Fidelity-Review | `references/known-issue-patterns.md`（评审方案例库）加一条：模式 / 典型现象 / 检出方法 / 来源 |
-
-方向 B 即**评审 skill 的案例库**：沉淀已知问题模式，下次评审对照检查——同类问题再出现即判为问题；「检出方法」是该条的可执行判据（看什么、比什么、跑什么），不是案例复述。
-
-**分流（先当场、后入池）**：
-
-1. **当场沉淀（首选）**：成因明确、改动属增量 → **直接改 A/B 两个 skill**，各自记 `CONTEXT.md` D-xx、同步部署副本。
-2. **入池（次选）**：成因不明、影响面大、或不确定具普遍性 → 落 `issue/<目标 skill>/<日期>/<序号>-<标题>.md`（来源填「评审闭环」，状态标 `待处理`），**须写明 A/B 双向落点**，交 Skill-Optimizer 模式③ 提炼。
-
-**留痕**：每次闭环在 PIPELINE 记一条沉淀痕迹（A 落点 + B 落点 + 入池路径）；当场改动的 skill 必须记 CONTEXT D-xx。
-
-**模板**：`shared/templates/known-issue-patterns-template.md`（评审方案例库）。
-
-> 边界：沉淀只改「方法论文档（skill 自身）」，不改被审产物——「只审不改」铁律不变；结构性重写一律走入池，不在闭环里做。
+Use `shared/gate-policy.md` for Gate meaning, this file for loop control, and `.spec/workflow.yaml` for current execution state. Legacy pipeline files are read-only compatibility inputs.

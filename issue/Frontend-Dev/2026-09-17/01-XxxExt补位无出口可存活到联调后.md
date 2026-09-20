@@ -21,7 +21,7 @@
 
 ## 修复方向
 
-S7 补「临时态非终态 + PROJECT.md 逐条登记 + 联调前清零」；S8 补「核对 Ext 补位清单，残留升级 §4.8 提问」。同根问题联动落点：FTDD 页面字段清单（`issue/Frontend-Tech-Design/2026-09-17/01`）+ Tech-Review 三方对账（`issue/Tech-Review/2026-09-17/01`）从源头减少缺口流入开发期。
+S7 补「临时态非终态 + PROJECT.md 逐条登记 + 联调前清零」；S8 补「核对 Ext 补位清单，残留升级 §4.8 提问」。同根问题联动落点：FTDD 页面字段清单（`../../issue/Frontend-Tech-Design/2026-09-17/01`）+ Tech-Review 三方对账（`../../issue/Tech-Review/2026-09-17/01`）从源头减少缺口流入开发期。
 
 ## 沉淀记录（优化模式回填）
 

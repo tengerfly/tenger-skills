@@ -28,7 +28,7 @@
 |---|---|
 | asset-library/ | 不存在，需从零建立 |
 | 现有可迁移内容 | `shared/`（公共规则+templates）、`bug-patterns/`（可作 Failure Case / Anti-Pattern 素材）、各 Skill 的 references/case-library 与 assets/（按三阶段渐进迁移，不一次搬空） |
-| Skill 侧接口 | PRD-Design/PRD-Review、前后端 Tech-Design、前后端 Dev、Tech-Review/Code-Review、Testing、Bug-Fix、Workflow 共 13 个 Skill 存在集成点 |
+| Skill 侧接口 | PRD/PRD-Design/PRD-Review、前后端 Tech-Design、前后端 Dev、DEV/Tech-Review/Code-Review、Testing、Bug-Fix、Workflow 共 13 个 Skill 存在集成点 |
 | 治理角色 | 单人维护为主，需按「一人可兼多角色、高风险资产不得单人自批」执行 |
 
 ## 3. 里程碑总览（90 天 + 两条并行线）

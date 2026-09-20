@@ -1,0 +1,4 @@
+interface:
+  display_name: post-release-review
+  short_description: 比较发布前假设与发布后结果，决定继续、扩大、回滚、再迭代或关闭。
+  default_prompt: 严格按 SKILL.md 执行，保存证据和状态，不越权执行生产动作。

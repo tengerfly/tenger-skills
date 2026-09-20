@@ -1,0 +1,11 @@
+version: 1
+projectId: replace-with-project-id
+links:
+  - linkId: LINK-YYYYMMDD-001
+    from: INT-001
+    relation: derived-from
+    to: REQ-001
+    lifecycle: CREATE
+    evidenceRefs: []
+    recordedBy: change-intake
+    recordedAt: 2026-09-20T00:00:00+08:00

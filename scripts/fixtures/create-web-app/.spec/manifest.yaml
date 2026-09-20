@@ -1,0 +1,19 @@
+version: 1
+projectId: fixture-create-web-app
+artifacts:
+  - artifactId: INT-CREATE-001
+    type: intake
+    path: .spec/intake/INT-CREATE-001.md
+    lifecycle: CREATE
+    owner: fixture
+    status: APPROVED
+    producedBy: change-intake
+    producedAt: 2026-09-20T09:00:00+08:00
+  - artifactId: PRD-CREATE-001
+    type: prd
+    path: .spec/prd/PRD-CREATE-001.md
+    lifecycle: CREATE
+    owner: fixture
+    status: APPROVED
+    producedBy: PRD-Design
+    producedAt: 2026-09-20T10:00:00+08:00

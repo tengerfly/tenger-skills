@@ -1,0 +1,422 @@
+version: 1
+registry: skill-registry
+updatedAt: '2026-09-20'
+contract:
+  required:
+  - name
+  - description
+  - Purpose
+  - Trigger
+  - Inputs
+  - Preconditions
+  - Responsibilities
+  - Non-goals
+  - Procedure
+  - Outputs
+  - Evidence
+  - Gate
+  - Failure Route
+  - Downstream Contract
+  - State Changes
+  legacyPolicy: legacy skills remain callable but are wrapped by the new Workflow
+    and migrated incrementally
+skills:
+- id: workflow
+  path: WorkFlow
+  role: orchestrator
+  status: active
+  legacyAliases:
+  - Workflow
+  contractLevel: v1
+  lifecycle:
+  - CREATE
+  - CHANGE
+  - DEFECT
+  - REFACTOR
+  - INCIDENT
+  - OPTIMIZE
+- id: project-onboarding
+  path: Other/project-onboarding
+  role: baseline
+  status: active
+  contractLevel: v1
+  lifecycle:
+  - CREATE
+  - CHANGE
+  - DEFECT
+  - REFACTOR
+  - INCIDENT
+  - OPTIMIZE
+- id: quality-inspection
+  path: Other/quality-inspection
+  role: governance
+  status: active
+  contractLevel: v1
+  lifecycle:
+  - CHANGE
+  - DEFECT
+  - REFACTOR
+  - INCIDENT
+  - OPTIMIZE
+- id: change-intake
+  path: PRD/change-intake
+  role: lifecycle-routing
+  status: active
+  contractLevel: v1
+  lifecycle:
+  - CREATE
+  - CHANGE
+  - DEFECT
+  - REFACTOR
+  - INCIDENT
+  - OPTIMIZE
+- id: impact-analysis
+  path: PRD/impact-analysis
+  role: lifecycle-routing
+  status: active
+  contractLevel: v1
+  lifecycle:
+  - CHANGE
+  - OPTIMIZE
+  - REFACTOR
+- id: defect-triage
+  path: Other/defect-triage
+  role: lifecycle-routing
+  status: active
+  contractLevel: v1
+  lifecycle:
+  - DEFECT
+  - INCIDENT
+- id: refactor-planning
+  path: Other/refactor-planning
+  role: lifecycle-routing
+  status: active
+  contractLevel: v1
+  lifecycle:
+  - REFACTOR
+- id: release-planning
+  path: Other/release-planning
+  role: release
+  status: active
+  contractLevel: v1
+  lifecycle:
+  - CREATE
+  - CHANGE
+  - DEFECT
+  - REFACTOR
+  - INCIDENT
+  - OPTIMIZE
+- id: deployment-execution
+  path: Other/deployment-execution
+  role: release
+  status: active
+  contractLevel: v1
+  lifecycle:
+  - CREATE
+  - CHANGE
+  - DEFECT
+  - REFACTOR
+  - INCIDENT
+  - OPTIMIZE
+- id: release-verification
+  path: Other/release-verification
+  role: release
+  status: active
+  contractLevel: v1
+  lifecycle:
+  - CREATE
+  - CHANGE
+  - DEFECT
+  - REFACTOR
+  - INCIDENT
+  - OPTIMIZE
+- id: signal-collection
+  path: Other/signal-collection
+  role: operations
+  status: active
+  contractLevel: v1
+  lifecycle:
+  - DEFECT
+  - INCIDENT
+  - OPTIMIZE
+- id: signal-triage
+  path: Other/signal-triage
+  role: operations
+  status: active
+  contractLevel: v1
+  lifecycle:
+  - DEFECT
+  - INCIDENT
+  - OPTIMIZE
+- id: incident-response
+  path: Other/incident-response
+  role: operations
+  status: active
+  contractLevel: v1
+  lifecycle:
+  - INCIDENT
+  - DEFECT
+- id: product-analytics
+  path: PRD/product-analytics
+  role: operations
+  status: active
+  contractLevel: v1
+  lifecycle:
+  - OPTIMIZE
+  - CHANGE
+- id: optimization-planning
+  path: Other/optimization-planning
+  role: operations
+  status: active
+  contractLevel: v1
+  lifecycle:
+  - OPTIMIZE
+- id: post-release-review
+  path: Other/post-release-review
+  role: operations
+  status: active
+  contractLevel: v1
+  lifecycle:
+  - CREATE
+  - CHANGE
+  - DEFECT
+  - INCIDENT
+  - OPTIMIZE
+- id: prd-workflow
+  path: PRD/prd-workflow
+  role: domain-orchestrator
+  status: active
+  contractLevel: v1
+  lifecycle:
+  - CREATE
+  - CHANGE
+  - OPTIMIZE
+- id: idea-intake
+  path: PRD/idea-intake
+  role: product-intake
+  status: active
+  contractLevel: v1
+  lifecycle:
+  - CREATE
+  - CHANGE
+  - OPTIMIZE
+- id: product-discovery
+  path: PRD/product-discovery
+  role: product-discovery
+  status: active
+  contractLevel: v1
+  lifecycle:
+  - CREATE
+  - CHANGE
+  - OPTIMIZE
+- id: product-definition
+  path: PRD/product-definition
+  role: product-definition
+  status: active
+  contractLevel: v1
+  lifecycle:
+  - CREATE
+  - CHANGE
+  - OPTIMIZE
+- id: application-blueprint
+  path: PRD/application-blueprint
+  role: product-journey
+  status: active
+  contractLevel: v1
+  lifecycle:
+  - CREATE
+  - CHANGE
+  - OPTIMIZE
+- id: feature-decision
+  path: PRD/feature-decision
+  role: product-scope
+  status: active
+  contractLevel: v1
+  lifecycle:
+  - CREATE
+  - CHANGE
+  - OPTIMIZE
+- id: Competitive-Analysis
+  path: PRD/Competitive-Analysis
+  role: product-research
+  status: active
+  contractLevel: v1
+  lifecycle:
+  - CREATE
+  - CHANGE
+  - OPTIMIZE
+- id: PRD-Design
+  path: PRD/PRD-Design
+  role: product-definition
+  status: active
+  contractLevel: v1
+  lifecycle:
+  - CREATE
+  - CHANGE
+  - OPTIMIZE
+- id: PRD-Review
+  path: PRD/PRD-Review
+  role: gate-review
+  status: active
+  contractLevel: v1
+  lifecycle:
+  - CREATE
+  - CHANGE
+  - OPTIMIZE
+- id: Prototype-Design
+  path: UI/Prototype-Design
+  role: product-design
+  status: active
+  contractLevel: v1
+  lifecycle:
+  - CREATE
+  - CHANGE
+- id: Prototype-Review
+  path: UI/Prototype-Review
+  role: gate-review
+  status: active
+  contractLevel: v1
+  lifecycle:
+  - CREATE
+  - CHANGE
+- id: UI-UX-Design
+  path: UI/UI-UX-Design
+  role: experience-design
+  status: active
+  contractLevel: legacy-wrapper
+  lifecycle:
+  - CREATE
+  - CHANGE
+  - REFACTOR
+- id: UI-UX-Review
+  path: UI/UI-UX-Review
+  role: gate-review
+  status: active
+  contractLevel: legacy-wrapper
+  lifecycle:
+  - CREATE
+  - CHANGE
+  - REFACTOR
+- id: Backend-Tech-Design
+  path: DEV/Backend-Tech-Design
+  role: technical-design
+  status: active
+  contractLevel: legacy-wrapper
+  lifecycle:
+  - CREATE
+  - CHANGE
+  - DEFECT
+  - REFACTOR
+- id: Frontend-Tech-Design
+  path: DEV/Frontend-Tech-Design
+  role: technical-design
+  status: active
+  contractLevel: legacy-wrapper
+  lifecycle:
+  - CREATE
+  - CHANGE
+  - DEFECT
+  - REFACTOR
+- id: Backend-Dev
+  path: DEV/Backend-Dev
+  role: implementation
+  status: active
+  contractLevel: legacy-wrapper
+  lifecycle:
+  - CREATE
+  - CHANGE
+  - DEFECT
+  - REFACTOR
+  - INCIDENT
+  - OPTIMIZE
+- id: Frontend-Dev
+  path: DEV/Frontend-Dev
+  role: implementation
+  status: active
+  contractLevel: legacy-wrapper
+  lifecycle:
+  - CREATE
+  - CHANGE
+  - DEFECT
+  - REFACTOR
+  - INCIDENT
+  - OPTIMIZE
+- id: Code-Review
+  path: DEV/Code-Review
+  role: quality-gate
+  status: active
+  contractLevel: legacy-wrapper
+  lifecycle:
+  - CHANGE
+  - DEFECT
+  - REFACTOR
+  - INCIDENT
+  - OPTIMIZE
+- id: auto-test
+  path: Test/auto-test
+  role: verification
+  status: active
+  contractLevel: legacy-wrapper
+  lifecycle:
+  - CREATE
+  - CHANGE
+  - DEFECT
+  - REFACTOR
+  - INCIDENT
+  - OPTIMIZE
+- id: Testing
+  path: Test/Testing
+  role: verification-fallback
+  status: active
+  contractLevel: legacy-wrapper
+  lifecycle:
+  - CREATE
+  - CHANGE
+  - DEFECT
+  - REFACTOR
+  - INCIDENT
+  - OPTIMIZE
+- id: Bug-Fix
+  path: Other/Bug-Fix
+  role: defect-remediation
+  status: active
+  contractLevel: legacy-wrapper
+  lifecycle:
+  - DEFECT
+  - INCIDENT
+- id: OSS-Radar
+  path: Other/OSS-Radar
+  role: technical-research
+  status: active
+  contractLevel: legacy-wrapper
+  lifecycle:
+  - CREATE
+  - CHANGE
+  - REFACTOR
+  - OPTIMIZE
+- id: Skill-Optimizer
+  path: Other/Skill-Optimizer
+  role: system-improvement
+  status: active
+  contractLevel: legacy-wrapper
+  lifecycle:
+  - INCIDENT
+  - OPTIMIZE
+- id: Skill-Evolver
+  path: Other/Skill-Evolver
+  role: system-improvement
+  status: active
+  contractLevel: legacy-wrapper
+  lifecycle:
+  - OPTIMIZE
+- id: skill-knowledge
+  path: skill-knowledge
+  role: knowledge-adapter
+  status: external-reference
+  contractLevel: external
+  lifecycle:
+  - CREATE
+  - CHANGE
+  - DEFECT
+  - REFACTOR
+  - OPTIMIZE

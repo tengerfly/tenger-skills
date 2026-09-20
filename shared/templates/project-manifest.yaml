@@ -1,0 +1,15 @@
+version: 1
+projectId: replace-with-project-id
+artifacts:
+  - artifactId: ART-YYYYMMDD-001
+    type: intake
+    path: .spec/intake/INT-001.md
+    lifecycle: CREATE
+    owner: user-or-agent
+    status: DRAFT
+    sourceRefs: []
+    evidenceRefs: []
+    decisionRefs: []
+    producedBy: change-intake
+    producedAt: 2026-09-20T00:00:00+08:00
+    supersedes: null

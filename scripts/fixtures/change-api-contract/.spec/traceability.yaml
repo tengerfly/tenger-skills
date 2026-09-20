@@ -1,0 +1,24 @@
+version: 1
+projectId: fixture-change-api-contract
+links:
+  - linkId: LINK-CHANGE-001
+    from: INT-CHANGE-001
+    relation: derived-from
+    to: API-REQUEST-001
+    lifecycle: CHANGE
+    recordedBy: change-intake
+    recordedAt: 2026-09-20T09:00:00+08:00
+  - linkId: LINK-CHANGE-002
+    from: IMPACT-CHANGE-001
+    relation: satisfies
+    to: INT-CHANGE-001
+    lifecycle: CHANGE
+    recordedBy: impact-analysis
+    recordedAt: 2026-09-20T10:00:00+08:00
+  - linkId: LINK-CHANGE-003
+    from: TECH-CHANGE-001
+    relation: implements
+    to: IMPACT-CHANGE-001
+    lifecycle: CHANGE
+    recordedBy: Backend-Tech-Design
+    recordedAt: 2026-09-20T11:00:00+08:00

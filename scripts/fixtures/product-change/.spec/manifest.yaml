@@ -1,0 +1,47 @@
+version: 1
+projectId: fixture-product-change
+artifacts:
+- artifactId: INT-CHANGE-PRODUCT-001
+  type: intake
+  path: .spec/intake/INT-CHANGE-PRODUCT-001.md
+  lifecycle: CHANGE
+  owner: fixture
+  status: APPROVED
+  producedBy: idea-intake
+  producedAt: '2026-09-20T12:00:00+08:00'
+- artifactId: DEF-CHANGE-PRODUCT-001
+  type: product-definition
+  path: .spec/definition/DEF-CHANGE-PRODUCT-001.md
+  lifecycle: CHANGE
+  owner: fixture
+  status: APPROVED
+  producedBy: product-definition
+  producedAt: '2026-09-20T12:00:00+08:00'
+  sourceRefs:
+  - SRC-DEF-CHANGE-PRODUCT-001
+  evidenceRefs:
+  - EVID-DEF-CHANGE-PRODUCT-001
+  decisionRefs:
+  - DEC-DEF-CHANGE-PRODUCT-001
+- artifactId: FEATURE-CHANGE-PRODUCT-001
+  type: feature-decision
+  path: .spec/features/FEATURE-CHANGE-PRODUCT-001.md
+  lifecycle: CHANGE
+  owner: fixture
+  status: APPROVED
+  producedBy: feature-decision
+  producedAt: '2026-09-20T12:00:00+08:00'
+  sourceRefs:
+  - SRC-FEATURE-CHANGE-PRODUCT-001
+  evidenceRefs:
+  - EVID-FEATURE-CHANGE-PRODUCT-001
+  decisionRefs:
+  - DEC-FEATURE-CHANGE-PRODUCT-001
+- artifactId: PRD-CHANGE-PRODUCT-001
+  type: prd
+  path: .spec/prd/PRD-CHANGE-PRODUCT-001.md
+  lifecycle: CHANGE
+  owner: fixture
+  status: APPROVED
+  producedBy: PRD-Design
+  producedAt: '2026-09-20T12:00:00+08:00'

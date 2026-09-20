@@ -35,6 +35,6 @@
 
 | 字段 | 值 |
 |---|---|
-| 提炼落点 | `Backend-Dev/SKILL.md` 常见错误对照表新增行（显式 @Inject / 禁 type-only 导入 DI 参数 / 启动冒烟门禁） |
-| 决策记录 | `Backend-Dev/CONTEXT.md` D-09 |
+| 提炼落点 | `DEV/Backend-Dev/SKILL.md` 常见错误对照表新增行（显式 @Inject / 禁 type-only 导入 DI 参数 / 启动冒烟门禁） |
+| 决策记录 | `DEV/Backend-Dev/CONTEXT.md` D-09 |
 | 忽略理由 | — |

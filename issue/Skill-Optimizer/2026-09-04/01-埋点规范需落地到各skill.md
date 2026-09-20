@@ -28,4 +28,4 @@ D-03 定了「记录 = 埋点为主 + 兜底」，但埋点规范（`instrumenta
 | 字段 | 值 |
 |---|---|
 | 沉淀目标 | 12 个专业 skill（Competitive-Analysis / PRD-Design / PRD-Review / Prototype-Design / Prototype-Review / Backend-Tech-Design / Frontend-Tech-Design / Tech-Review / Backend-Dev / Frontend-Dev / Code-Review / Testing） |
-| 沉淀位置 | 各 SKILL.md 末尾新增「运行问题埋点（收尾自查）」节；规范源 `Skill-Optimizer/references/instrumentation-guide.md`；模板 `Skill-Optimizer/assets/issue-template.md` |
+| 沉淀位置 | 各 SKILL.md 末尾新增「运行问题埋点（收尾自查）」节；规范源 `../Skill-Optimizer/references/instrumentation-guide.md`；模板 `../Skill-Optimizer/assets/issue-template.md` |

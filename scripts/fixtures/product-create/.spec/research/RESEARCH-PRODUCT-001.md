@@ -1,0 +1,2 @@
+# Competitive Research
+status: APPROVED

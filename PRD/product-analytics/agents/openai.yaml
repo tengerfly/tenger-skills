@@ -1,0 +1,4 @@
+interface:
+  display_name: product-analytics
+  short_description: 用产品目标、用户旅程和行为数据判断功能效果、异常和证据不足。
+  default_prompt: 严格按 SKILL.md 执行，保存证据和状态，不越权执行生产动作。

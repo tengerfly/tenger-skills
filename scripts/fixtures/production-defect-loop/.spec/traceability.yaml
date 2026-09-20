@@ -1,0 +1,24 @@
+version: 1
+projectId: fixture-production-defect-loop
+links:
+  - linkId: LINK-DEFECT-001
+    from: SIG-DEFECT-001
+    relation: observed-by
+    to: PRODUCTION-SERVICE-001
+    lifecycle: DEFECT
+    recordedBy: signal-collection
+    recordedAt: 2026-09-20T12:00:00+08:00
+  - linkId: LINK-DEFECT-002
+    from: TRIAGE-DEFECT-001
+    relation: caused-by
+    to: SIG-DEFECT-001
+    lifecycle: DEFECT
+    recordedBy: defect-triage
+    recordedAt: 2026-09-20T12:30:00+08:00
+  - linkId: LINK-DEFECT-003
+    from: INCIDENT-DEFECT-001
+    relation: routes-to
+    to: TRIAGE-DEFECT-001
+    lifecycle: INCIDENT
+    recordedBy: incident-response
+    recordedAt: 2026-09-20T12:45:00+08:00

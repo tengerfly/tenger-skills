@@ -1,0 +1,4 @@
+interface:
+  display_name: signal-collection
+  short_description: 从前端监控、服务日志、服务监控和产品数据收集可关联、可脱敏的运行信号。
+  default_prompt: 严格按 SKILL.md 执行，保存证据和状态，不越权执行生产动作。

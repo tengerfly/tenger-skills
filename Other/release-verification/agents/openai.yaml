@@ -1,0 +1,4 @@
+interface:
+  display_name: release-verification
+  short_description: 验证发布后的健康、关键旅程、遥测和版本关联，并给出继续、暂停或回滚建议。
+  default_prompt: 严格按 SKILL.md 执行，保存证据和状态，不越权执行生产动作。

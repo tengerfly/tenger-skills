@@ -1,0 +1,17 @@
+version: 1
+projectId: fixture-create-web-app
+links:
+  - linkId: LINK-CREATE-001
+    from: INT-CREATE-001
+    relation: derived-from
+    to: USER-REQUEST-001
+    lifecycle: CREATE
+    recordedBy: change-intake
+    recordedAt: 2026-09-20T09:00:00+08:00
+  - linkId: LINK-CREATE-002
+    from: PRD-CREATE-001
+    relation: satisfies
+    to: INT-CREATE-001
+    lifecycle: CREATE
+    recordedBy: PRD-Design
+    recordedAt: 2026-09-20T10:00:00+08:00

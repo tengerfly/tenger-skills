@@ -1,0 +1,4 @@
+interface:
+  display_name: deployment-execution
+  short_description: 按批准的发布计划执行部署并保存可审计结果，不擅自改变生产范围。
+  default_prompt: 严格按 SKILL.md 执行，保存证据和状态，不越权执行生产动作。

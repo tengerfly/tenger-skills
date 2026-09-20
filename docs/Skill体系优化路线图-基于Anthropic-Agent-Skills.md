@@ -321,7 +321,7 @@ verification/
 
 ### 4.8 P1：资产中混入生成物和运行环境
 
-已发现 `Frontend-Dev/assets/frontend-template-vue3/` 下存在：
+已发现 `DEV/Frontend-Dev/assets/frontend-template-vue3/` 下存在：
 
 ```text
 node_modules/
@@ -892,7 +892,7 @@ Backend-Tech-Design
 - 本仓库内部设计依据：
   - `案例库体系方案-草案.md`
   - `personal-ai-engineering-skill-system.md`
-  - `Workflow/SKILL.md`
+  - `WorkFlow/SKILL.md`
   - `shared/anti-deadloop.md`
   - `shared/evidence-before-claims.md`
 

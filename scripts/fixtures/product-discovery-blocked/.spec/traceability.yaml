@@ -1,0 +1,17 @@
+version: 1
+projectId: fixture-product-discovery-blocked
+links:
+- linkId: LINK-BLOCKED-PROD-001
+  from: INT-BLOCKED-PRODUCT-001
+  relation: derived-from
+  to: USER-IDEA-OPEN-001
+  lifecycle: CREATE
+  recordedBy: idea-intake
+  recordedAt: '2026-09-20T12:00:00+08:00'
+- linkId: LINK-BLOCKED-PROD-002
+  from: DISC-BLOCKED-PRODUCT-001
+  relation: blocks
+  to: PRD-NOT-ALLOWED-001
+  lifecycle: CREATE
+  recordedBy: product-discovery
+  recordedAt: '2026-09-20T12:00:00+08:00'

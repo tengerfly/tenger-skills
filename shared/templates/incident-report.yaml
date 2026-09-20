@@ -1,0 +1,19 @@
+version: 1
+incidentId: INC-YYYYMMDD-001
+projectId: <project-id>
+severity: P0 | P1 | P2 | P3
+status: OPEN | MITIGATING | RECOVERED | CLOSED
+detectedAt: 2026-09-20T00:00:00+08:00
+detectedBy: web-monitor | server-log | server-monitor | user
+impact: <observed-impact>
+containment: []
+rootCause:
+  status: UNKNOWN | HYPOTHESIZED | CONFIRMED
+  evidenceRefs: []
+recovery:
+  actions: []
+  verifiedAt: null
+followUp:
+  defectRefs: []
+  releaseRefs: []
+  owner: <responsible-person>

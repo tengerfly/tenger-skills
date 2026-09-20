@@ -1,6 +1,6 @@
 # 本地会话 rollout 记录不含全量历史轮次——挖掘输入不能只靠它
 
-> 归属：`issue/Skill-Optimizer/` ｜ 来源：挖掘 ｜ 状态：待处理
+> 归属：`../../issue/Skill-Optimizer/` ｜ 来源：挖掘 ｜ 状态：待处理
 > 日期：2026-09-15 ｜ 标签：工具依赖、流程缺陷 ｜ 等级：P2
 
 ## 现象
@@ -17,8 +17,8 @@
 
 ## 修复方向
 
-1. `Skill-Optimizer` 模式②（挖掘）输入源优先级写明：**① 项目 `.spec/` 各轮评审/测试问题文档 + git log → ② rollout jsonl（仅近段行为证据/错误签名统计）→ ③ chats/ 手工导出**；
-2. `chats/README.md` 补一段「会话记录自带口径」：rollout 轮转 + 跨项目混存两 caveats，引导导出时标注项目名；
+1. `Skill-Optimizer` 模式②（挖掘）输入源优先级写明：**① 项目 `.spec/` 各轮评审/测试问题文档 + git log → ② rollout jsonl（仅近段行为证据/错误签名统计）→ ③ ../../chats/ 手工导出**；
+2. `../../chats/README.md` 补一段「会话记录自带口径」：rollout 轮转 + 跨项目混存两 caveats，引导导出时标注项目名；
 3. 挖掘产物标注证据来源类型（spec 产物 / rollout 签名 / git 提交），供后续复核。
 
 ## 双向落点

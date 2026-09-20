@@ -1,0 +1,27 @@
+version: 1
+projectId: fixture-production-defect-loop
+artifacts:
+  - artifactId: SIG-DEFECT-001
+    type: signal
+    path: .spec/signals/SIG-DEFECT-001.md
+    lifecycle: DEFECT
+    owner: fixture
+    status: APPROVED
+    producedBy: signal-collection
+    producedAt: 2026-09-20T12:00:00+08:00
+  - artifactId: TRIAGE-DEFECT-001
+    type: triage
+    path: .spec/triage/TRIAGE-DEFECT-001.md
+    lifecycle: DEFECT
+    owner: fixture
+    status: APPROVED
+    producedBy: defect-triage
+    producedAt: 2026-09-20T12:30:00+08:00
+  - artifactId: INCIDENT-DEFECT-001
+    type: incident
+    path: .spec/incidents/INCIDENT-DEFECT-001.md
+    lifecycle: INCIDENT
+    owner: fixture
+    status: DRAFT
+    producedBy: incident-response
+    producedAt: 2026-09-20T12:45:00+08:00

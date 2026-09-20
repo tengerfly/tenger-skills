@@ -1,0 +1,4 @@
+interface:
+  display_name: defect-triage
+  short_description: 依据复现、日志和批准基线判断缺陷、事故、环境问题或需求变化，并路由到修复闭环。
+  default_prompt: 按 SKILL.md 执行，先标记事实与未知项，再产出可验证交付物。

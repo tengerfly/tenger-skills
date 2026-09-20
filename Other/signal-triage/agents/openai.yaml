@@ -1,0 +1,4 @@
+interface:
+  display_name: signal-triage
+  short_description: 对运行信号去重、分级和路由到事故、缺陷、变更或优化。
+  default_prompt: 严格按 SKILL.md 执行，保存证据和状态，不越权执行生产动作。

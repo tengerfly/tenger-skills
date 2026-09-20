@@ -1,0 +1,144 @@
+version: 1
+registry: workflow-registry
+updatedAt: 2026-09-20
+workflows:
+- id: workflow
+  name: PEOS 总编排 Workflow
+  status: active
+  entrySkills:
+  - project-onboarding
+  - change-intake
+  - defect-triage
+  - refactor-planning
+  - quality-inspection
+  lifecycle:
+  - CREATE
+  - CHANGE
+  - DEFECT
+  - REFACTOR
+  - INCIDENT
+  - OPTIMIZE
+  childWorkflows:
+  - prd-workflow
+  - ui-workflow
+  - dev-workflow
+  - testing-workflow
+  - release-workflow
+  - operations-workflow
+  - inspection-workflow
+- id: prd-workflow
+  name: 产品需求 Workflow
+  status: active
+  skills:
+  - idea-intake
+  - product-discovery
+  - Competitive-Analysis
+  - product-definition
+  - application-blueprint
+  - feature-decision
+  - PRD-Design
+  - PRD-Review
+  - Prototype-Design
+  - Prototype-Review
+  entryLifecycle:
+  - CREATE
+  - CHANGE
+  - OPTIMIZE
+  exitGate: PROTOTYPE_APPROVED
+- id: ui-workflow
+  name: UI/UX Workflow
+  status: active
+  skills:
+  - UI-UX-Design
+  - UI-UX-Review
+  entryLifecycle:
+  - CREATE
+  - CHANGE
+  - REFACTOR
+  exitGate: UI_APPROVED
+- id: dev-workflow
+  name: 开发 Workflow
+  status: active
+  skills:
+  - OSS-Radar
+  - Backend-Tech-Design
+  - Frontend-Tech-Design
+  - Backend-Dev
+  - Frontend-Dev
+  - Code-Review
+  entryLifecycle:
+  - CREATE
+  - CHANGE
+  - DEFECT
+  - REFACTOR
+  - INCIDENT
+  - OPTIMIZE
+  exitGate: CODE_REVIEW_PASSED
+- id: testing-workflow
+  name: 测试 Workflow
+  status: active
+  skills:
+  - auto-test
+  - Testing
+  entryLifecycle:
+  - CREATE
+  - CHANGE
+  - DEFECT
+  - REFACTOR
+  - INCIDENT
+  - OPTIMIZE
+  exitGate: TEST_PASSED
+- id: release-workflow
+  name: 发布 Workflow
+  status: active
+  skills:
+  - release-planning
+  - deployment-execution
+  - release-verification
+  entryLifecycle:
+  - CREATE
+  - CHANGE
+  - DEFECT
+  - REFACTOR
+  - INCIDENT
+  - OPTIMIZE
+  exitGate: RELEASE_VERIFIED
+- id: operations-workflow
+  name: 运行与反馈 Workflow
+  status: active
+  skills:
+  - signal-collection
+  - signal-triage
+  - incident-response
+  - product-analytics
+  - optimization-planning
+  - post-release-review
+  integrations:
+  - web-monitor
+  - server-log
+  - server-monitor
+  entryLifecycle:
+  - CREATE
+  - CHANGE
+  - DEFECT
+  - REFACTOR
+  - INCIDENT
+  - OPTIMIZE
+  exitGate: SIGNAL_ROUTED
+- id: inspection-workflow
+  name: 周期巡检 Workflow
+  status: active
+  skills:
+  - quality-inspection
+  integrations:
+  - web-monitor
+  - server-log
+  - server-monitor
+  - skill-knowledge
+  entryLifecycle:
+  - CHANGE
+  - DEFECT
+  - REFACTOR
+  - INCIDENT
+  - OPTIMIZE
+  exitGate: INSPECTION_RECORDED

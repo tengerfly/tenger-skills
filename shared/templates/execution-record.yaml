@@ -1,0 +1,14 @@
+version: 2
+execution:
+  executionId: EXE-YYYYMMDD-001
+  skill: <registry-skill-id>
+  lifecycle: CREATE | CHANGE | DEFECT | REFACTOR | INCIDENT | OPTIMIZE
+  projectId: <project-id>
+  startedAt: 2026-09-20T00:00:00+08:00
+  completedAt: 2026-09-20T00:00:00+08:00
+  status: COMPLETED | PARTIAL | BLOCKED
+  gate: PASS | CONDITIONAL | BLOCKED
+  evidenceRefs: []
+  artifactRefs: []
+  decisionRefs: []
+  nextAction: <explicit-action-or-NONE>

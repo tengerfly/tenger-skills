@@ -1,0 +1,5 @@
+version: 1
+requiredRoot: [artifacts]
+requiredArtifactFields: [artifactId, type, path, lifecycle, owner, status, producedBy, producedAt]
+allowedLifecycle: [CREATE, CHANGE, DEFECT, REFACTOR, INCIDENT, OPTIMIZE]
+allowedStatus: [DRAFT, REVIEW, APPROVED, SUPERSEDED]

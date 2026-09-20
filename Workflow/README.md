@@ -1,46 +1,44 @@
-# Workflow —— 全流程开发编排 Skill
+# WORKFLOW
 
-> 状态：✅ 定稿
-> 定位：只调度、记账、守门，不产出业务文档。原则：一条链，任意起点，产物 ⇄ 评审成环，收敛才下行，随时可停。
-> 链外修复闭环：`Bug-Fix` 不入主链、独立触发——⑭ 测试发现的可运行性问题转 `Bug-Fix`（定位→方案→开发→回归），修复沉淀入源仓库 `bug-patterns/` 集中池反哺方案/开发 skill。
+`WorkFlow/` is the root-level orchestrator. It does not replace domain Skills and does not create product, UI, code, or test artifacts on their behalf.
 
-## 一、核心模型
+## Responsibilities
 
-```
-①竞品 → ②PRD ⇄ ③PRD评审 → ④原型 ⇄ ⑤原型评审 → ⑥UI/UX ⇄ ⑦UI/UX评审
-→ ⑧TDD ⇄ ⑩-后 方案评审(后端) → ⑨FTDD ⇄ ⑩-前 方案评审(前端)
-→ ⑪后端 ⇄ ⑬-后 代码评审(后端) → ⑫前端 ⇄ ⑬-前 代码评审(前端 ∥ 还原度) → ⑭测试
-```
+1. identify lifecycle, scope, entry point, and authorized owner;
+2. read `.spec/manifest.yaml` and `.spec/workflow.yaml` before routing;
+3. select the next domain Skill from the registries;
+4. record artifacts, evidence, decisions, Gate, and next action;
+5. stop at an explicit boundary and route missing inputs to the named owner.
 
-`⇄` = 门禁闭环（产物 → 评审 → 修复 → 复核，P0/P1 清零才进下行）；`∥` = 并行评审。
+## Current product route
 
-| 参数 | 默认 |
-|---|---|
-| 起点 | 用户点名或按 .spec/ 推断（须确认） |
-| 终点 | 不点名 = 只跑起点节点 |
-| 跳过 | 用户随时说跳过 |
-
-每节点完成（含门禁闭环收敛）→ 回填 PIPELINE → 交接摘要 → 停下等用户。
-
-硬串行：⑧→⑩-后→⑨→⑩-前、⑪→⑬-后→⑫→⑬-前（**写一个审一个**，前者门禁放行才起后者）。
-门禁放行：P0/P1 清零 + 复核通过；满 3 轮未收敛 → 强制清 P0 后放行（残留 P1 记遗留）。
-闭环沉淀（双向）：放行后做沉淀判定（P0 必沉）→ **产出方 skill 防复发** + **评审方 skill 案例库**（`references/known-issue-patterns.md`）；当场改优先，改不了入 `issue/` 池交 Skill-Optimizer 提炼。
-
-## 二、节点速查（要点）
-
-每节点前置缺失即阻塞；⑩/⑬ 分端两批执行；浏览器硬依赖 ⑤⑦⑨⑫⑭ 与 ⑬-前，软检测 ⑧⑩（检测顺序与两级行为见仓库根 `shared/browser-policy.md`）；⑥ Superdesign 三件套硬依赖、⑥⑦ 可选。⑭ 发现可运行性问题 → 转 `Bug-Fix`。详见 SKILL.md 与仓库根 `shared/anti-deadloop.md`。
-
-## 三、目录
-
-```
-Workflow/
-├── SKILL.md / README.md / CONTEXT.md
-└── assets/pipeline-template.md
+```text
+IDEA_INTAKE
+ -> PRODUCT_DISCOVERY
+ -> COMPETITIVE_RESEARCH
+ -> PRODUCT_DEFINITION
+ -> APPLICATION_BLUEPRINT
+ -> FEATURE_DECISION
+ -> PRD_DESIGN
+ -> PRD_REVIEW
+ -> PROTOTYPE_DESIGN
+ -> PROTOTYPE_REVIEW
 ```
 
-被开发项目 `.spec/PIPELINE.md` 是唯一状态源与续跑锚点（记门禁轮次、门禁结果、沉淀痕迹、遗留问题）。
+The numbered legacy pipeline and old `PIPELINE.md` state file remain callable as read-only compatibility inputs. They are wrapped by the current artifact, lifecycle, Gate, and traceability contracts.
 
-## 四、快速上手
+## Gate policy
 
-- 从零开发 → ①→⑭；有 PRD 走后续 → ④→⑭；只点名某节点 → 只跑该节点。
-- 想改流向直接说「跳过 XX / 从 X 开始 / 继续」。
+Use only `PASS`, `CONDITIONAL`, and `BLOCKED`.
+
+- `PASS`: required inputs, evidence, decisions, artifacts, and acceptance checks are complete; no unresolved P0/P1 remains.
+- `CONDITIONAL`: an authorized exception record is complete and explicitly sets `allowDownstream`.
+- `BLOCKED`: required evidence, authorization, upstream Gate, artifact, or safe handoff is missing; residual P0 is always blocked.
+
+After three review-fix-review rounds, do not start a fourth round automatically. Residual P0 is `BLOCKED`; residual P1 is never `PASS` and requires an authorized `CONDITIONAL` if downstream use is approved.
+
+## State and artifacts
+
+The current project state is `.spec/workflow.yaml`. The manifest is `.spec/manifest.yaml`, and traceability is `.spec/traceability.yaml`. Every handoff must include `projectId`, `executionId`, `artifactRefs`, `evidenceRefs`, `decisionRefs`, `gate`, `allowDownstream`, and `nextAction`.
+
+See `SKILL.md` and the contracts in `../shared/` for the complete routing procedure.

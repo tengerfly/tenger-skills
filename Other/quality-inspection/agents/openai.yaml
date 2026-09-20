@@ -1,0 +1,3 @@
+interface:
+  display_name: "Quality Inspection"
+  short_description: "周期巡检代码质量运行健康度架构漂移并生成可追踪改进任务"

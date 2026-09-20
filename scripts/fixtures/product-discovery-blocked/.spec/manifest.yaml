@@ -1,0 +1,25 @@
+version: 1
+projectId: fixture-product-discovery-blocked
+artifacts:
+- artifactId: INT-BLOCKED-PRODUCT-001
+  type: intake
+  path: .spec/intake/INT-BLOCKED-PRODUCT-001.md
+  lifecycle: CREATE
+  owner: fixture
+  status: APPROVED
+  producedBy: idea-intake
+  producedAt: '2026-09-20T12:00:00+08:00'
+- artifactId: DISC-BLOCKED-PRODUCT-001
+  type: discovery-brief
+  path: .spec/discovery/DISC-BLOCKED-PRODUCT-001.md
+  lifecycle: CREATE
+  owner: fixture
+  status: APPROVED
+  producedBy: product-discovery
+  producedAt: '2026-09-20T12:00:00+08:00'
+  sourceRefs:
+  - SRC-DISC-BLOCKED-PRODUCT-001
+  evidenceRefs:
+  - EVID-DISC-BLOCKED-PRODUCT-001
+  decisionRefs:
+  - DEC-DISC-BLOCKED-PRODUCT-001

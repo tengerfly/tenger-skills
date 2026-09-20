@@ -1,0 +1,31 @@
+version: 1
+projectId: fixture-product-change
+links:
+- linkId: LINK-CHANGE-PROD-001
+  from: INT-CHANGE-PRODUCT-001
+  relation: derived-from
+  to: RELEASED-BASELINE-001
+  lifecycle: CHANGE
+  recordedBy: idea-intake
+  recordedAt: '2026-09-20T12:00:00+08:00'
+- linkId: LINK-CHANGE-PROD-002
+  from: DEF-CHANGE-PRODUCT-001
+  relation: derived-from
+  to: PRODUCT-DEFINITION-BASELINE-001
+  lifecycle: CHANGE
+  recordedBy: product-definition
+  recordedAt: '2026-09-20T12:00:00+08:00'
+- linkId: LINK-CHANGE-PROD-003
+  from: FEATURE-CHANGE-PRODUCT-001
+  relation: derived-from
+  to: BLUEPRINT-BASELINE-001
+  lifecycle: CHANGE
+  recordedBy: feature-decision
+  recordedAt: '2026-09-20T12:00:00+08:00'
+- linkId: LINK-CHANGE-PROD-004
+  from: PRD-CHANGE-PRODUCT-001
+  relation: satisfies
+  to: FEATURE-CHANGE-PRODUCT-001
+  lifecycle: CHANGE
+  recordedBy: PRD-Design
+  recordedAt: '2026-09-20T12:00:00+08:00'

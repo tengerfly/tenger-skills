@@ -1,0 +1,4 @@
+version: 1
+requiredRoot: [links]
+requiredLinkFields: [linkId, from, relation, to, lifecycle, recordedBy, recordedAt]
+allowedRelations: [derived-from, satisfies, implements, verified-by, released-as, observed-by, caused-by, fixes, supersedes, blocks, routes-to]

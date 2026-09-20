@@ -1,0 +1,4 @@
+version: 1
+requiredRoot: [workflowId, projectId, lifecycle, state, gate]
+allowedLifecycle: [CREATE, CHANGE, DEFECT, REFACTOR, INCIDENT, OPTIMIZE]
+allowedGate: [PASS, CONDITIONAL, BLOCKED]

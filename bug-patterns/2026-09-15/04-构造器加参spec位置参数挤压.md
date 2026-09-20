@@ -33,6 +33,6 @@
 
 | 字段 | 值 |
 |---|---|
-| 提炼落点 | `Backend-Dev/SKILL.md` 常见错误对照表新增行（加参 grep 调用点 / 假失败先查错位） |
-| 决策记录 | `Backend-Dev/CONTEXT.md` D-09 |
+| 提炼落点 | `DEV/Backend-Dev/SKILL.md` 常见错误对照表新增行（加参 grep 调用点 / 假失败先查错位） |
+| 决策记录 | `DEV/Backend-Dev/CONTEXT.md` D-09 |
 | 忽略理由 | — |

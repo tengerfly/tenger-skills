@@ -33,6 +33,6 @@
 
 | 字段 | 值 |
 |---|---|
-| 提炼落点 | `Backend-Dev/SKILL.md` 常见错误对照表新增行（chr(92) 构造 / lambda 替换 / 即改即编译） |
-| 决策记录 | `Backend-Dev/CONTEXT.md` D-09 |
+| 提炼落点 | `DEV/Backend-Dev/SKILL.md` 常见错误对照表新增行（chr(92) 构造 / lambda 替换 / 即改即编译） |
+| 决策记录 | `DEV/Backend-Dev/CONTEXT.md` D-09 |
 | 忽略理由 | — |

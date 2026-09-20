@@ -37,8 +37,8 @@
 | 数量 | {{n}} | {{n}} | {{n}} | {{n}} |
 
 - 复核只验本轮 `已确认` 项是否按判据修复，不无限新增同级问题；新发现降 P2 或经同意进下一轮；
-- P0/P1 未清零不放行；P2 不阻塞，由用户裁决（记入 PIPELINE 遗留）；
-- 修复-复核满 3 轮不收敛 → 强制清 P0 后放行，残留 P1 记遗留（见 `shared/anti-deadloop.md` §二.3）。
+- After round 3: residual P0 is `BLOCKED`; residual P1 is never `PASS` and requires the complete authorized `CONDITIONAL` exception record; P2/P3 may remain open only with owner and next action.
+- No automatic fourth round and no force-pass rule. Use `shared/gate-policy.md` and `shared/anti-deadloop.md` as the only Gate source.
 
 ## 5. 闭环沉淀（双向，放行后回填）
 

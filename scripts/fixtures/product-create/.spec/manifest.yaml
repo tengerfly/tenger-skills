@@ -1,0 +1,105 @@
+version: 1
+projectId: fixture-product-create
+artifacts:
+- artifactId: INT-PRODUCT-001
+  type: intake
+  path: .spec/intake/INT-PRODUCT-001.md
+  lifecycle: CREATE
+  owner: fixture
+  status: APPROVED
+  producedBy: idea-intake
+  producedAt: '2026-09-20T12:00:00+08:00'
+- artifactId: DISC-PRODUCT-001
+  type: discovery-brief
+  path: .spec/discovery/DISC-PRODUCT-001.md
+  lifecycle: CREATE
+  owner: fixture
+  status: APPROVED
+  producedBy: product-discovery
+  producedAt: '2026-09-20T12:00:00+08:00'
+  sourceRefs:
+  - SRC-DISC-PRODUCT-001
+  evidenceRefs:
+  - EVID-DISC-PRODUCT-001
+  decisionRefs:
+  - DEC-DISC-PRODUCT-001
+- artifactId: RESEARCH-PRODUCT-001
+  type: research
+  path: .spec/research/RESEARCH-PRODUCT-001.md
+  lifecycle: CREATE
+  owner: fixture
+  status: APPROVED
+  producedBy: Competitive-Analysis
+  producedAt: '2026-09-20T12:00:00+08:00'
+- artifactId: DEF-PRODUCT-001
+  type: product-definition
+  path: .spec/definition/DEF-PRODUCT-001.md
+  lifecycle: CREATE
+  owner: fixture
+  status: APPROVED
+  producedBy: product-definition
+  producedAt: '2026-09-20T12:00:00+08:00'
+  sourceRefs:
+  - SRC-DEF-PRODUCT-001
+  evidenceRefs:
+  - EVID-DEF-PRODUCT-001
+  decisionRefs:
+  - DEC-DEF-PRODUCT-001
+- artifactId: BLUEPRINT-PRODUCT-001
+  type: application-blueprint
+  path: .spec/blueprint/BLUEPRINT-PRODUCT-001.md
+  lifecycle: CREATE
+  owner: fixture
+  status: APPROVED
+  producedBy: application-blueprint
+  producedAt: '2026-09-20T12:00:00+08:00'
+  sourceRefs:
+  - SRC-BLUEPRINT-PRODUCT-001
+  evidenceRefs:
+  - EVID-BLUEPRINT-PRODUCT-001
+  decisionRefs:
+  - DEC-BLUEPRINT-PRODUCT-001
+- artifactId: FEATURE-PRODUCT-001
+  type: feature-decision
+  path: .spec/features/FEATURE-PRODUCT-001.md
+  lifecycle: CREATE
+  owner: fixture
+  status: APPROVED
+  producedBy: feature-decision
+  producedAt: '2026-09-20T12:00:00+08:00'
+  sourceRefs:
+  - SRC-FEATURE-PRODUCT-001
+  evidenceRefs:
+  - EVID-FEATURE-PRODUCT-001
+  decisionRefs:
+  - DEC-FEATURE-PRODUCT-001
+- artifactId: PRD-PRODUCT-001
+  type: prd
+  path: .spec/prd/PRD-PRODUCT-001.md
+  lifecycle: CREATE
+  owner: fixture
+  status: APPROVED
+  producedBy: PRD-Design
+  producedAt: '2026-09-20T12:00:00+08:00'
+- artifactId: PROTO-PRODUCT-001
+  type: prototype
+  path: .spec/prototype/PROTO-PRODUCT-001.md
+  lifecycle: CREATE
+  owner: fixture
+  status: APPROVED
+  producedBy: Prototype-Design
+  producedAt: '2026-09-20T12:00:00+08:00'
+- artifactId: PROTOV-PRODUCT-001
+  type: prototype-review
+  path: .spec/prototype-review/PROTOV-PRODUCT-001.md
+  lifecycle: CREATE
+  owner: fixture
+  status: APPROVED
+  producedBy: Prototype-Review
+  producedAt: '2026-09-20T12:00:00+08:00'
+  sourceRefs:
+  - SRC-PROTOV-PRODUCT-001
+  evidenceRefs:
+  - EVID-PROTOV-PRODUCT-001
+  decisionRefs:
+  - DEC-PROTOV-PRODUCT-001

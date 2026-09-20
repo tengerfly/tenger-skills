@@ -24,7 +24,7 @@
 bug-patterns/
 ├── README.md              # 本说明
 └── <YYYY-MM-DD>/
-    └── <NN>-<错误模式简述>.md   # 案例卡（模板：Bug-Fix/assets/pattern-card-template.md）
+    └── <NN>-<错误模式简述>.md   # 案例卡（模板：Other/Bug-Fix/assets/pattern-card-template.md）
 ```
 
 - 案例卡字段：根因类型（数据/状态/竞态/契约/环境）、受益 skill、现象、根因（证据链摘要）、**防复发规则**、建议落点层级、状态。
