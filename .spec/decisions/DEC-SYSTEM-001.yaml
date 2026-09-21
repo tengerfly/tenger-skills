@@ -1,0 +1,21 @@
+version: 1
+decisionId: DEC-SYSTEM-001
+projectId: tenger-skills
+status: DRAFT
+title: Proposed executable governance v2
+owner: workflow
+lifecycle: OPTIMIZE
+decision: pending-acceptance
+rationale: Separate state and Gate outcome, require registry consistency, self-validation,
+  executable task envelopes, and reproducible validation tooling.
+evidenceRefs:
+- EVID-SYSTEM-VALIDATION
+artifactRefs:
+- ART-SKILL-REGISTRY
+- ART-WORKFLOW-REGISTRY
+- ART-STATE-REGISTRY
+- ART-ARTIFACT-REGISTRY
+- ART-KNOWLEDGE-REGISTRY
+- ART-GATE-CONTRACT
+- ART-TASK-ENVELOPE
+executionId: EXEC-20260920-SYSTEM-001

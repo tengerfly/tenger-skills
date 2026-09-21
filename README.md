@@ -10,7 +10,7 @@ UI/        prototype, UI/UX, and fidelity work
 DEV/       technical design, implementation, and code review
 Test/      automated and manual testing
 Other/     defects, OSS research, release/operations, and Skill meta-work
-WorkFlow/  root-level orchestration only
+Workflow/  root-level orchestration only
 shared/    common contracts, templates, and evidence rules
 governance/ registries and schemas
 ```
@@ -66,8 +66,21 @@ Old Skills, references, assets, aliases, and the numbered pipeline are retained 
 Run from the repository root:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\validate-skill-contract.ps1 -IncludeLegacy
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\validate-system.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\run-tests.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\validate.ps1
 ```
 
 The validators check frontmatter, required Skill sections, registry paths, workflow transitions, artifact manifests, and traceability fixtures.
+
+## Execution status
+
+The repository self-spec is intentionally recorded as BLOCKED while remediation and independent acceptance are pending. A passing local validator means the checks ran successfully; it is not a human approval or production-release decision.
+
+The executable validation path is:
+
+1. scripts/bootstrap.ps1 creates/uses .venv and installs the pinned dependency.
+2. scripts/run-tests.ps1 runs positive and negative validator tests.
+3. scripts/validate.ps1 runs regression tests and validates registries, contracts, the envelope template, graph semantics, references, Gates, fixtures, and knowledge dependency policy.
+4. Set SKILLS_KNOWLEDGE_ROOT to enable the external knowledge checks; otherwise validation reports explicit degraded mode.
+
+Actual task transition readiness is checked with `python scripts/task_preflight.py --project-root <project> --task-file .spec/tasks/TASK-001.yaml`. It emits a read-only plan; it does not execute Skills, change state, or deploy. See `docs/validation-toolchain.md` for authorization records, evidence digests, migration notes, and remaining manual controls.

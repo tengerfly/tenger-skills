@@ -1,6 +1,6 @@
-version: 1
+version: 2
 registry: workflow-registry
-updatedAt: 2026-09-20
+updatedAt: '2026-09-21'
 workflows:
 - id: workflow
   name: PEOS 总编排 Workflow
@@ -26,46 +26,49 @@ workflows:
   - release-workflow
   - operations-workflow
   - inspection-workflow
+  exitState: COMPLETED
 - id: prd-workflow
   name: 产品需求 Workflow
   status: active
   skills:
   - idea-intake
   - product-discovery
-  - Competitive-Analysis
+  - competitive-analysis
   - product-definition
   - application-blueprint
   - feature-decision
-  - PRD-Design
-  - PRD-Review
-  - Prototype-Design
-  - Prototype-Review
+  - prd-design
+  - prd-review
+  - prototype-design
+  - prototype-review
   entryLifecycle:
   - CREATE
   - CHANGE
   - OPTIMIZE
-  exitGate: PROTOTYPE_APPROVED
+  exitState: PROTOTYPE_APPROVED
 - id: ui-workflow
   name: UI/UX Workflow
   status: active
   skills:
-  - UI-UX-Design
-  - UI-UX-Review
+  - ui-ux-design
+  - ui-ux-review
+  - fidelity-review
   entryLifecycle:
   - CREATE
   - CHANGE
   - REFACTOR
-  exitGate: UI_APPROVED
+  exitState: UI_APPROVED
 - id: dev-workflow
   name: 开发 Workflow
   status: active
   skills:
-  - OSS-Radar
-  - Backend-Tech-Design
-  - Frontend-Tech-Design
-  - Backend-Dev
-  - Frontend-Dev
-  - Code-Review
+  - oss-radar
+  - backend-tech-design
+  - frontend-tech-design
+  - tech-review
+  - backend-dev
+  - frontend-dev
+  - code-review
   entryLifecycle:
   - CREATE
   - CHANGE
@@ -73,13 +76,13 @@ workflows:
   - REFACTOR
   - INCIDENT
   - OPTIMIZE
-  exitGate: CODE_REVIEW_PASSED
+  exitState: CODE_REVIEW_PASSED
 - id: testing-workflow
   name: 测试 Workflow
   status: active
   skills:
   - auto-test
-  - Testing
+  - testing
   entryLifecycle:
   - CREATE
   - CHANGE
@@ -87,7 +90,7 @@ workflows:
   - REFACTOR
   - INCIDENT
   - OPTIMIZE
-  exitGate: TEST_PASSED
+  exitState: TEST_PASSED
 - id: release-workflow
   name: 发布 Workflow
   status: active
@@ -102,7 +105,7 @@ workflows:
   - REFACTOR
   - INCIDENT
   - OPTIMIZE
-  exitGate: RELEASE_VERIFIED
+  exitState: RELEASE_VERIFIED
 - id: operations-workflow
   name: 运行与反馈 Workflow
   status: active
@@ -124,7 +127,7 @@ workflows:
   - REFACTOR
   - INCIDENT
   - OPTIMIZE
-  exitGate: SIGNAL_ROUTED
+  exitState: SIGNAL_ROUTED
 - id: inspection-workflow
   name: 周期巡检 Workflow
   status: active
@@ -141,4 +144,4 @@ workflows:
   - REFACTOR
   - INCIDENT
   - OPTIMIZE
-  exitGate: INSPECTION_RECORDED
+  exitState: INSPECTION_RECORDED

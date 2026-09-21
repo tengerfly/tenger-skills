@@ -147,3 +147,12 @@ ONBOARDING_REQUESTED | INTAKE_REQUESTED -> DISCOVERY_IN_PROGRESS
 ```
 
 详细旧版节点与脚本兼容规则见 `references/legacy-pipeline.md`；通用契约见仓库根目录 `shared/`。
+## Execution Envelope（required）
+
+每次调用 Skill 前必须创建或更新 `task-envelope.yaml` 的实例。Envelope 是执行边界，不是普通说明文档；至少声明 `taskId`、`projectId`、`executionId`、`lifecycle`、`currentState`、允许/禁止路径、输入/产物/证据/决策引用、授权、期望输出、Gate 和 `nextAction`。没有 Envelope、授权或路径范围时，执行必须停在 `WORKFLOW_BLOCKED`，不能直接修改项目文件。
+
+Skill 完成后只允许通过 Envelope 交接：写入实际产物引用、证据引用、决策引用、Gate outcome 和下一状态。`PASS` / `CONDITIONAL` / `BLOCKED` 是 Gate outcome；`PRD_APPROVED`、`TEST_PASSED` 等是状态/里程碑，不能混用。
+
+### 可执行校验边界
+
+`scripts/task_preflight.py` 是 **落盘状态转换前的只读就绪检查**，不是执行器。执行前确认 Envelope 输入、范围和真实授权；执行后归档证据、绑定 executionId/revision 和文件摘要，再调用预检。预检拒绝缺少完成证据不代表必须伪造证据才能开始工作；不得提前记录完成状态。它不会调用 Skill、写入状态或部署。批准策略与记录须由外部可信审批流程维护，格式和边界见 `docs/validation-toolchain.md`。

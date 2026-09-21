@@ -7,3 +7,8 @@ vibe Coding 高效能秘籍/
 
 # 源码导读克隆仓（只读参考，不纳入版本控制）
 .spec/源码学习/_clones/
+
+# Local validation environment
+.venv/
+__pycache__/
+*.py[cod]

@@ -1,0 +1,20 @@
+version: 1
+gateId: GATE-SYSTEM-001
+projectId: tenger-skills
+workflowId: WF-20260920-001
+gate: BLOCKED
+allowDownstream: false
+reason: independent-acceptance-pending
+unresolvedRisks:
+- severity: P1
+  description: Independent acceptance and a real project pilot have not been performed.
+  owner: quality-inspection
+nextAction: run-real-project-pilot-and-independent-acceptance
+recordedAt: '2026-09-21T09:40:21+08:00'
+executionId: EXEC-20260920-SYSTEM-001
+lifecycle: OPTIMIZE
+owner: quality-inspection
+requiredInput: independent acceptance and real project pilot
+clearanceCondition: authorized owner records acceptance after pilot
+evidenceRefs:
+- EVID-SYSTEM-VALIDATION

@@ -1,0 +1,34 @@
+﻿version: 1
+task:
+  taskId: TASK-YYYYMMDD-001
+  projectId: replace-with-project-id
+  executionId: EXEC-YYYYMMDD-001
+  lifecycle: CHANGE
+  revision: replace-with-source-revision
+  transitionId: TR-002
+  currentState: INTAKE_REQUESTED
+  targetState: DISCOVERY_IN_PROGRESS
+  requestedAction: describe-the-next-atomic-action
+  scope:
+    summary: short-scope
+    allowedPaths: []
+    forbiddenPaths: []
+  inputRefs: []
+  artifactRefs: []
+  evidenceRefs: []
+  decisionRefs: []
+  requiredSkill: workflow
+  authorization:
+    actor: workflow
+    approvalRef: DEC-REPLACE-WITH-ACTUAL-APPROVAL
+    grantedBy: user-or-policy
+    grantedAt: 2026-09-20T00:00:00+08:00
+  expectedOutput:
+    artifactType: intake
+    path: .spec/intake/INT-001.md
+    acceptanceChecks: []
+  gate:
+    outcome: BLOCKED
+    allowDownstream: false
+    reason: awaiting-input
+  nextAction: collect-required-input

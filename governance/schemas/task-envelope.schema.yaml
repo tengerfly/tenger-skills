@@ -1,0 +1,5 @@
+﻿version: 1
+requiredRoot: [task]
+requiredTaskFields: [taskId, projectId, executionId, lifecycle, revision, transitionId, targetState, currentState, scope, requestedAction, requiredSkill, authorization, expectedOutput, gate, nextAction]
+allowedLifecycle: [CREATE, CHANGE, DEFECT, REFACTOR, INCIDENT, OPTIMIZE]
+allowedGateOutcome: [PASS, CONDITIONAL, BLOCKED]

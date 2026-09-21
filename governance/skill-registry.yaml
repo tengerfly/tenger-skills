@@ -1,6 +1,6 @@
-version: 1
+version: 2
 registry: skill-registry
-updatedAt: '2026-09-20'
+updatedAt: '2026-09-21'
 contract:
   required:
   - name
@@ -20,9 +20,11 @@ contract:
   - State Changes
   legacyPolicy: legacy skills remain callable but are wrapped by the new Workflow
     and migrated incrementally
+  canonicalId: lowercase-kebab-case
+  pathCase: exact-git-path
 skills:
 - id: workflow
-  path: WorkFlow
+  path: Workflow
   role: orchestrator
   status: active
   legacyAliases:
@@ -53,6 +55,7 @@ skills:
   status: active
   contractLevel: v1
   lifecycle:
+  - CREATE
   - CHANGE
   - DEFECT
   - REFACTOR
@@ -180,6 +183,7 @@ skills:
   - CREATE
   - CHANGE
   - DEFECT
+  - REFACTOR
   - INCIDENT
   - OPTIMIZE
 - id: prd-workflow
@@ -236,7 +240,7 @@ skills:
   - CREATE
   - CHANGE
   - OPTIMIZE
-- id: Competitive-Analysis
+- id: competitive-analysis
   path: PRD/Competitive-Analysis
   role: product-research
   status: active
@@ -245,7 +249,9 @@ skills:
   - CREATE
   - CHANGE
   - OPTIMIZE
-- id: PRD-Design
+  legacyAliases:
+  - Competitive-Analysis
+- id: prd-design
   path: PRD/PRD-Design
   role: product-definition
   status: active
@@ -254,7 +260,9 @@ skills:
   - CREATE
   - CHANGE
   - OPTIMIZE
-- id: PRD-Review
+  legacyAliases:
+  - PRD-Design
+- id: prd-review
   path: PRD/PRD-Review
   role: gate-review
   status: active
@@ -263,7 +271,9 @@ skills:
   - CREATE
   - CHANGE
   - OPTIMIZE
-- id: Prototype-Design
+  legacyAliases:
+  - PRD-Review
+- id: prototype-design
   path: UI/Prototype-Design
   role: product-design
   status: active
@@ -271,7 +281,9 @@ skills:
   lifecycle:
   - CREATE
   - CHANGE
-- id: Prototype-Review
+  legacyAliases:
+  - Prototype-Design
+- id: prototype-review
   path: UI/Prototype-Review
   role: gate-review
   status: active
@@ -279,7 +291,9 @@ skills:
   lifecycle:
   - CREATE
   - CHANGE
-- id: UI-UX-Design
+  legacyAliases:
+  - Prototype-Review
+- id: ui-ux-design
   path: UI/UI-UX-Design
   role: experience-design
   status: active
@@ -288,7 +302,9 @@ skills:
   - CREATE
   - CHANGE
   - REFACTOR
-- id: UI-UX-Review
+  legacyAliases:
+  - UI-UX-Design
+- id: ui-ux-review
   path: UI/UI-UX-Review
   role: gate-review
   status: active
@@ -297,7 +313,9 @@ skills:
   - CREATE
   - CHANGE
   - REFACTOR
-- id: Backend-Tech-Design
+  legacyAliases:
+  - UI-UX-Review
+- id: backend-tech-design
   path: DEV/Backend-Tech-Design
   role: technical-design
   status: active
@@ -307,7 +325,11 @@ skills:
   - CHANGE
   - DEFECT
   - REFACTOR
-- id: Frontend-Tech-Design
+  - INCIDENT
+  - OPTIMIZE
+  legacyAliases:
+  - Backend-Tech-Design
+- id: frontend-tech-design
   path: DEV/Frontend-Tech-Design
   role: technical-design
   status: active
@@ -317,7 +339,11 @@ skills:
   - CHANGE
   - DEFECT
   - REFACTOR
-- id: Backend-Dev
+  - INCIDENT
+  - OPTIMIZE
+  legacyAliases:
+  - Frontend-Tech-Design
+- id: backend-dev
   path: DEV/Backend-Dev
   role: implementation
   status: active
@@ -329,7 +355,9 @@ skills:
   - REFACTOR
   - INCIDENT
   - OPTIMIZE
-- id: Frontend-Dev
+  legacyAliases:
+  - Backend-Dev
+- id: frontend-dev
   path: DEV/Frontend-Dev
   role: implementation
   status: active
@@ -341,17 +369,22 @@ skills:
   - REFACTOR
   - INCIDENT
   - OPTIMIZE
-- id: Code-Review
+  legacyAliases:
+  - Frontend-Dev
+- id: code-review
   path: DEV/Code-Review
   role: quality-gate
   status: active
   contractLevel: legacy-wrapper
   lifecycle:
+  - CREATE
   - CHANGE
   - DEFECT
   - REFACTOR
   - INCIDENT
   - OPTIMIZE
+  legacyAliases:
+  - Code-Review
 - id: auto-test
   path: Test/auto-test
   role: verification
@@ -364,7 +397,7 @@ skills:
   - REFACTOR
   - INCIDENT
   - OPTIMIZE
-- id: Testing
+- id: testing
   path: Test/Testing
   role: verification-fallback
   status: active
@@ -376,7 +409,9 @@ skills:
   - REFACTOR
   - INCIDENT
   - OPTIMIZE
-- id: Bug-Fix
+  legacyAliases:
+  - Testing
+- id: bug-fix
   path: Other/Bug-Fix
   role: defect-remediation
   status: active
@@ -384,7 +419,9 @@ skills:
   lifecycle:
   - DEFECT
   - INCIDENT
-- id: OSS-Radar
+  legacyAliases:
+  - Bug-Fix
+- id: oss-radar
   path: Other/OSS-Radar
   role: technical-research
   status: active
@@ -394,7 +431,9 @@ skills:
   - CHANGE
   - REFACTOR
   - OPTIMIZE
-- id: Skill-Optimizer
+  legacyAliases:
+  - OSS-Radar
+- id: skill-optimizer
   path: Other/Skill-Optimizer
   role: system-improvement
   status: active
@@ -402,21 +441,101 @@ skills:
   lifecycle:
   - INCIDENT
   - OPTIMIZE
-- id: Skill-Evolver
+  legacyAliases:
+  - Skill-Optimizer
+- id: skill-evolver
   path: Other/Skill-Evolver
   role: system-improvement
   status: active
   contractLevel: legacy-wrapper
   lifecycle:
   - OPTIMIZE
+  legacyAliases:
+  - Skill-Evolver
 - id: skill-knowledge
-  path: skill-knowledge
-  role: knowledge-adapter
-  status: external-reference
-  contractLevel: external
+  path: ${SKILLS_KNOWLEDGE_ROOT}
+  role: external-reference
+  status: external
+  contractLevel: external-reference
   lifecycle:
   - CREATE
   - CHANGE
   - DEFECT
   - REFACTOR
+  - INCIDENT
+  - OPTIMIZE
+- id: tech-review
+  path: DEV/Tech-Review
+  role: specialist
+  status: active
+  contractLevel: legacy-adapter
+  contractPath: shared/legacy-skill-adapter.md
+  legacyAliases:
+  - Tech-Review
+  lifecycle:
+  - CREATE
+  - CHANGE
+  - DEFECT
+  - REFACTOR
+  - INCIDENT
+  - OPTIMIZE
+- id: essence-distill
+  path: Other/Essence-Distill
+  role: specialist
+  status: active
+  contractLevel: legacy-adapter
+  contractPath: shared/legacy-skill-adapter.md
+  legacyAliases:
+  - Essence-Distill
+  lifecycle:
+  - CREATE
+  - CHANGE
+  - DEFECT
+  - REFACTOR
+  - INCIDENT
+  - OPTIMIZE
+- id: fact-check
+  path: Other/Fact-Check
+  role: specialist
+  status: active
+  contractLevel: legacy-adapter
+  contractPath: shared/legacy-skill-adapter.md
+  legacyAliases:
+  - Fact-Check
+  lifecycle:
+  - CREATE
+  - CHANGE
+  - DEFECT
+  - REFACTOR
+  - INCIDENT
+  - OPTIMIZE
+- id: source-reading
+  path: Other/Source-Reading
+  role: specialist
+  status: active
+  contractLevel: legacy-adapter
+  contractPath: shared/legacy-skill-adapter.md
+  legacyAliases:
+  - Source-Reading
+  lifecycle:
+  - CREATE
+  - CHANGE
+  - DEFECT
+  - REFACTOR
+  - INCIDENT
+  - OPTIMIZE
+- id: fidelity-review
+  path: UI/Fidelity-Review
+  role: specialist
+  status: active
+  contractLevel: legacy-adapter
+  contractPath: shared/legacy-skill-adapter.md
+  legacyAliases:
+  - Fidelity-Review
+  lifecycle:
+  - CREATE
+  - CHANGE
+  - DEFECT
+  - REFACTOR
+  - INCIDENT
   - OPTIMIZE

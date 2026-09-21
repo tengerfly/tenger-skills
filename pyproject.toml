@@ -1,0 +1,9 @@
+[project]
+name = "tenger-skills-tooling"
+version = "0.1.0"
+description = "Reproducible validation tooling for the tenger-skills engineering system"
+requires-python = ">=3.10"
+dependencies = ["PyYAML==6.0.3"]
+
+[tool.ruff]
+line-length = 120

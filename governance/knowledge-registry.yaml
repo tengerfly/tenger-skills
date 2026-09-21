@@ -1,0 +1,19 @@
+﻿version: 1
+registry: knowledge-registry
+updatedAt: '2026-09-20'
+provider: skill-knowledge
+rootEnv: SKILLS_KNOWLEDGE_ROOT
+required: false
+missingPolicy: warn-and-degrade
+minimum:
+  - asset-library/registry.yaml
+  - 组件总清单.md
+consumers:
+  - skill: backend-tech-design
+    purpose: 技术方案资产检索
+  - skill: frontend-tech-design
+    purpose: 前端方案资产检索
+  - skill: code-review
+    purpose: 复用与冗余检查
+  - skill: auto-test
+    purpose: 测试基础设施检索

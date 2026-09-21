@@ -1,4 +1,26 @@
-version: 1
-requiredRoot: [workflowId, projectId, lifecycle, state, gate]
-allowedLifecycle: [CREATE, CHANGE, DEFECT, REFACTOR, INCIDENT, OPTIMIZE]
-allowedGate: [PASS, CONDITIONAL, BLOCKED]
+version: 2
+requiredRoot:
+- workflowId
+- projectId
+- executionId
+- lifecycle
+- state
+- gate
+- allowDownstream
+- artifactRefs
+- evidenceRefs
+- decisionRefs
+- nextAction
+- revision
+allowedLifecycle:
+- CREATE
+- CHANGE
+- DEFECT
+- REFACTOR
+- INCIDENT
+- OPTIMIZE
+allowedGate:
+- PASS
+- CONDITIONAL
+- BLOCKED
+stateSource: governance/state-registry.yaml

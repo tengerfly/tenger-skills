@@ -1,9 +1,10 @@
 # Governance schemas
 
-这里保存治理文件的机器可读约束说明。当前 PowerShell 校验器采用无第三方依赖的结构检查，后续可在确定 YAML 解析运行时后升级为完整 JSON Schema 校验。
+These YAML files describe the minimum structure and enumerations for the repository governance records. The executable validator is scripts/validate_core.py; the engine reads required-field lists and relation enumerations from these files, but they are not passed to a generic JSON-Schema engine.
 
-- `artifact-manifest.schema.yaml`：项目 `.spec/manifest.yaml` 的最小字段；
-- `workflow.schema.yaml`：项目 `.spec/workflow.yaml` 的状态、Gate 和生命周期；
-- `traceability.schema.yaml`：项目 `.spec/traceability.yaml` 的链接字段。
+- artifact-manifest.schema.yaml: .spec/manifest.yaml artifact inventory
+- workflow.schema.yaml: .spec/workflow.yaml state, Gate, and task-envelope fields
+- traceability.schema.yaml: .spec/traceability.yaml link fields and relations
+- task-envelope.schema.yaml: shared/templates/task-envelope.yaml execution boundary
 
-本目录只描述结构，不承载项目私有数据。
+The validator additionally enforces cross-file references, filesystem paths, duplicate-key rejection, lifecycle graph rules, Gate policy, and authorization semantics.

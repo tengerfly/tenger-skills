@@ -1,0 +1,67 @@
+version: 1
+projectId: tenger-skills
+links:
+- linkId: LINK-SYSTEM-001
+  from: ART-SKILL-REGISTRY
+  relation: validated-by
+  to: EVID-SYSTEM-VALIDATION
+  lifecycle: OPTIMIZE
+  evidenceRefs: []
+  decisionRefs: []
+  recordedBy: quality-inspection
+  recordedAt: 2026-09-20 23:30:00+08:00
+- linkId: LINK-SYSTEM-002
+  from: ART-WORKFLOW-REGISTRY
+  relation: implements
+  to: ART-TASK-ENVELOPE
+  lifecycle: OPTIMIZE
+  evidenceRefs: []
+  decisionRefs: []
+  recordedBy: workflow
+  recordedAt: 2026-09-20 23:30:00+08:00
+- linkId: LINK-SYSTEM-003
+  from: ART-GATE-CONTRACT
+  relation: governs
+  to: ART-WORKFLOW-REGISTRY
+  lifecycle: OPTIMIZE
+  evidenceRefs: []
+  decisionRefs: []
+  recordedBy: workflow
+  recordedAt: 2026-09-20 23:30:00+08:00
+- linkId: LINK-SYSTEM-004
+  from: ART-STATE-REGISTRY
+  relation: validated-by
+  to: EVID-SYSTEM-VALIDATION
+  lifecycle: OPTIMIZE
+  evidenceRefs: []
+  decisionRefs: []
+  recordedBy: quality-inspection
+  recordedAt: 2026-09-20 23:30:00+08:00
+- linkId: LINK-SYSTEM-005
+  from: ART-SHARED-LEGACY-ADAPTER
+  relation: implements
+  to: ART-SKILL-REGISTRY
+  lifecycle: OPTIMIZE
+  evidenceRefs: []
+  decisionRefs: []
+  recordedBy: skill-evolver
+  recordedAt: 2026-09-20 23:30:00+08:00
+- linkId: LINK-SYSTEM-006
+  from: ART-VALIDATION-ENGINE
+  relation: verified-by
+  to: ART-VALIDATION-TESTS
+  lifecycle: OPTIMIZE
+  evidenceRefs: []
+  decisionRefs: []
+  recordedBy: quality-inspection
+  recordedAt: 2026-09-20 23:30:00+08:00
+- linkId: LINK-SYSTEM-007
+  from: ART-TASK-PREFLIGHT
+  relation: verified-by
+  to: ART-VALIDATION-TESTS
+  lifecycle: OPTIMIZE
+  evidenceRefs:
+  - EVID-SYSTEM-VALIDATION
+  decisionRefs: []
+  recordedBy: quality-inspection
+  recordedAt: '2026-09-21T09:40:21+08:00'

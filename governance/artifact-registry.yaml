@@ -1,6 +1,6 @@
 version: 1
 registry: artifact-registry
-updatedAt: 2026-09-20
+updatedAt: '2026-09-20'
 artifacts:
 - type: intake
   required:
@@ -393,6 +393,66 @@ artifacts:
   - sourceRefs
   - evidenceRefs
   - decisionRefs
+  statuses:
+  - DRAFT
+  - REVIEW
+  - APPROVED
+  - SUPERSEDED
+- type: governance-registry
+  required:
+  - artifactId
+  - type
+  - path
+  - lifecycle
+  - owner
+  - status
+  - producedBy
+  - producedAt
+  statuses:
+  - DRAFT
+  - REVIEW
+  - APPROVED
+  - SUPERSEDED
+- type: contract
+  required:
+  - artifactId
+  - type
+  - path
+  - lifecycle
+  - owner
+  - status
+  - producedBy
+  - producedAt
+  statuses:
+  - DRAFT
+  - REVIEW
+  - APPROVED
+  - SUPERSEDED
+- type: validation-report
+  required:
+  - artifactId
+  - type
+  - path
+  - lifecycle
+  - owner
+  - status
+  - producedBy
+  - producedAt
+  statuses:
+  - DRAFT
+  - REVIEW
+  - APPROVED
+  - SUPERSEDED
+- type: workflow-record
+  required:
+  - artifactId
+  - type
+  - path
+  - lifecycle
+  - owner
+  - status
+  - producedBy
+  - producedAt
   statuses:
   - DRAFT
   - REVIEW
