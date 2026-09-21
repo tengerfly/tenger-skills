@@ -10,6 +10,10 @@ metadata:
 
 本目录保留旧版成熟逻辑和资源；旧版完整说明已归档到 `references/legacy-skill.md`，原有 references/assets 不删除。新流程通过本入口承接，但职责和 Gate 受 `../../shared/product-workflow-contract.md` 约束。
 
+## 问题记录与恢复（执行必需）
+
+发现失败、阻塞或用户纠正时，在下一安全节点按 `../../shared/problem-recording.md` 记录；根因未明不丢事实。恢复/交付前核对未决项，沿用已有详情与唯一索引。此规则优先于旧的仅收尾埋点/不确定不记表述，不增加轻量任务的正式建档要求。
+
 ## Purpose
 平滑接入新的 PRD Workflow，同时保留已经验证过的领域规则和模板。
 

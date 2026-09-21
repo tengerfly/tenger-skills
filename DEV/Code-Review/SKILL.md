@@ -7,6 +7,8 @@ metadata:
   compatibility: "Claude Code / Agent SDK / OpenCode"
 ---
 
+> **独立调用**：先按 `../../shared/execution-profiles.md` 判强度，按 `../../shared/requirements-context.md` 取相关需求。低风险局部任务不要求完整上游文档/Envelope，只执行本领域相关动作并记录真实证据；下文正式建档用于标准/完整。专业检查的必需工具、只审不改边界、相关阻塞和安全授权不降级，不把局部验证冒充全量或正式 Gate。
+
 
 # 代码评审 Skill
 
@@ -14,6 +16,10 @@ metadata:
 > 头号目标：接口契约对不上。问题定位到 `文件:行`，结论可追溯 AC / 接口。
 > 术语：TDD = 后端技术文档；FTDD = 前端技术文档；AC = PRD 验收标准编号（`AC-Mxx-nnn`）。
 > 分端两批：⑬-后（只审后端）与 ⑬-前（只审前端，前端视角 ∥ Fidelity-Review）；单批只出对应角色文档。
+
+## 问题记录与恢复（执行必需）
+
+发现失败、阻塞或用户纠正时，在下一安全节点按 `../../shared/problem-recording.md` 记录；根因未明不丢事实。恢复/交付前核对未决项，沿用已有详情与唯一索引。此规则优先于旧的仅收尾埋点/不确定不记表述，不增加轻量任务的正式建档要求。
 
 ## 一、定位与铁律
 
@@ -74,7 +80,7 @@ metadata:
 4. **删除候选与清理计划**：按两清单 M 组扫描死代码 / 未用依赖 / 重复实现 / 调试残留，按 `references/removal-plan-template.md` 分列「现在可安全删」与「需延后（前置条件 / 迁移 / 验证 / 回滚）」，落 `.spec/代码评审/删除候选与清理计划.md`；**只给计划不代删**。
 5. **契约专项**：按 `references/contract-checklist.md` 做前端 fetch ↔ 后端实现 ↔ 共享类型三方比对，逐接口核对；命中项按 §二 归因。
 6. **角色文档落盘**：按 `assets/role-review-template.md` 写本批次角色文档至 `.spec/代码评审/`；P0 按 `assets/patch-template.md` 附建议补丁（仅代码块，不落盘源码）。
-7. **汇总**：按 `assets/summary-template.md` 合并去重（⑬-前 含 Fidelity-Review 并行结果），重点标「前后端契约错误」，按 P0/P1/P2 统计；**零问题也要写清覆盖边界**（见 §一）。
+7. **汇总**：按 `../../shared/problem-recording.md` 将本批次清单及问题 ID/范围登记至项目 `.spec/问题日志.md`；Code-Review 负责合并 Fidelity-Review 结果后的唯一索引，复核同步状态，主方中断时保留待合并引用。按 `assets/summary-template.md` 合并去重（⑬-前 含 Fidelity-Review 并行结果），重点标「前后端契约错误」，按 P0/P1/P2 统计；**零问题也要写清覆盖边界**（见 §一）。
 8. **任务清单 + 用户确认**：按 `assets/issue-list-template.md` 生成任务清单，状态 `待确认`，按归因填修改方（Backend-Dev / Frontend-Dev / 双方）；每条附**修复判据**；逐条请用户确认（要改 → `已确认`；不改 → `已忽略` + 理由）；P0/P1 阻断、P2 可留后续；确认后交对应 Dev skill 修改并回填状态。
 9. **闭环复核 + 双向沉淀判定**：修改方回填 `已修复` 后只验本轮 `已确认` 项；新发现降 P2；同批满 3 轮不收敛：P0 残留保持 BLOCKED；P1 残留不得 PASS，只能经授权并登记例外后 CONDITIONAL；不自动开启第 4 轮
 
@@ -151,9 +157,11 @@ metadata:
 
 ## 七、运行问题埋点
 
-收尾按 `../../Other/Skill-Optimizer/references/instrumentation-guide.md` 自查上报 `../../issue/Code-Review/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `../../Other/Skill-Optimizer/assets/issue-template.md`）。不确定不记，不打断主流程。
+收尾按 `../../Other/Skill-Optimizer/references/instrumentation-guide.md` 自查上报 `../../issue/Code-Review/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `../../Other/Skill-Optimizer/assets/issue-template.md`）。归因未明先留事实，按共享记录规则处理；不为经验提炼阻塞主流程。
 
 ## Contract Compatibility Layer
+
+下方正式状态/manifest/Gate 写入步骤适用于标准/完整交接；轻量独立任务按共享执行强度使用同一任务摘要，不执行正式状态写入、不伪造批准。
 
 Use the common Gate contract: PASS requires no unresolved P0/P1; residual P0 is BLOCKED; residual P1 may only be an authorized CONDITIONAL with exceptionId, owner, dueAt, remediation, allowDownstream, and approvalRef. There is no force-pass rule.
 

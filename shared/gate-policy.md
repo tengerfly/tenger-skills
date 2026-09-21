@@ -6,6 +6,8 @@ This file is the single source of truth for Gate semantics. Every Skill and Work
 PASS | CONDITIONAL | BLOCKED
 ```
 
+> 适用范围：以下正式产物/Gate/状态契约用于标准、完整及正式交接。低风险独立任务按 `shared/execution-profiles.md` 留最小摘要，不写正式状态、不授予下游权限；已有相关阻塞与安全要求不因轻量而失效。
+
 ## 1. Severity and Gate mapping
 
 | Severity | Meaning | Default handling |

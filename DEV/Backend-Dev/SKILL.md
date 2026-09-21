@@ -7,8 +7,18 @@ metadata:
   compatibility: "Claude Code / Agent SDK / OpenCode"
 ---
 
-
 # 后端代码开发 Skill
+
+## 问题记录与恢复（执行必需）
+
+发现失败、阻塞或用户纠正时，在下一安全节点按 `../../shared/problem-recording.md` 记录；根因未明不丢事实。恢复/交付前核对未决项，沿用已有详情与唯一索引。此规则优先于旧的仅收尾埋点/不确定不记表述，不增加轻量任务的正式建档要求。
+
+## 先判任务强度
+
+先按 `../../shared/execution-profiles.md` 选择强度，按 `../../shared/requirements-context.md` 读取本次需求原文与依赖。低风险独立任务直接走“确认验收点 → 相关代码/接口盘点 → 局部实现 → 针对性验证 → 结果”；缺少完整 TDD/FTDD、PROJECT/PLAN 不单独阻塞，可用同一任务摘要中的局部计划替代。复用现有栈与组件，不强制新模板、外部资产沉淀、完整 Scope Gate 或自动提交；关键业务/接口未知仍须澄清，风险变化则升级。
+
+下文完整开发步骤与产物要求用于标准/完整；轻量仍保留适用的业务约束、范围、实现质量与测试要求，不宣称正式 Gate 通过。无浏览器可交付待视觉验证代码，但不能声称视觉/交互验收通过。
+
 
 > IRON LAW：**开发期零选型决策**——技术栈只从 TDD / 现状基线 / 开工前一次性敲定三个来源来，中途不重选。
 > 依据 PRD + 原型 + TDD + FTDD 落地后端工程。原则：维护性优先；不确定就问并给选项；小步提交。
@@ -154,9 +164,11 @@ metadata:
 
 ## 七、运行问题埋点
 
-收尾按 `../../Other/Skill-Optimizer/references/instrumentation-guide.md` 自查上报 `../../issue/Backend-Dev/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `../../Other/Skill-Optimizer/assets/issue-template.md`）。不确定不记，不打断主流程。
+收尾按 `../../Other/Skill-Optimizer/references/instrumentation-guide.md` 自查上报 `../../issue/Backend-Dev/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `../../Other/Skill-Optimizer/assets/issue-template.md`）。归因未明先留事实，按共享记录规则处理；不为经验提炼阻塞主流程。
 
 ## Contract Compatibility Layer
+
+下方正式状态/manifest/Gate 写入步骤适用于标准/完整交接；轻量独立任务按共享执行强度使用同一任务摘要，不执行正式状态写入、不伪造批准。
 
 Use the common Gate contract: PASS requires no unresolved P0/P1; residual P0 is BLOCKED; residual P1 may only be an authorized CONDITIONAL with exceptionId, owner, dueAt, remediation, allowDownstream, and approvalRef. There is no force-pass rule.
 

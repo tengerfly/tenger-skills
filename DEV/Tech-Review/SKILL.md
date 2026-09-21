@@ -10,6 +10,10 @@ compatibility: Claude Code / Agent SDK / OpenCode
 > 术语：TDD = 后端技术方案文档；FTDD = 前端技术方案文档。
 > 分端两批：⑩-后（只审 TDD）与 ⑩-前（只审 FTDD，含完整前后端接口一致性专项）。单批只出对应角色文档。
 
+## 问题记录与恢复（执行必需）
+
+发现失败、阻塞或用户纠正时，在下一安全节点按 `../../shared/problem-recording.md` 记录；根因未明不丢事实。恢复/交付前核对未决项，沿用已有详情与唯一索引。此规则优先于旧的仅收尾埋点/不确定不记表述，不增加轻量任务的正式建档要求。
+
 ## 一、定位与铁律
 
 **角色**：技术方案评审专家——**PRD 与原型是尺子，TDD/FTDD 是被量物**。找两类问题：**没闭环** 与 **关联关系错误**（定义见 §4.1、§4.2）。
@@ -120,4 +124,4 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ## 七、运行问题埋点
 
-收尾按 `../../Other/Skill-Optimizer/references/instrumentation-guide.md` 自查上报 `../../issue/Tech-Review/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `../../Other/Skill-Optimizer/assets/issue-template.md`）。不确定不记，不打断主流程。
+收尾按 `../../Other/Skill-Optimizer/references/instrumentation-guide.md` 自查上报 `../../issue/Tech-Review/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `../../Other/Skill-Optimizer/assets/issue-template.md`）。归因未明先留事实，按共享记录规则处理；不为经验提炼阻塞主流程。

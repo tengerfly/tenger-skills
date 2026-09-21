@@ -10,6 +10,10 @@ compatibility: Claude Code / Agent SDK / OpenCode
 > IRON LAW：**设计稿是视觉唯一应然**——有设计稿时，视觉维度的对错只以 `.spec/设计稿/`（+ `design-system.md` token）判定；低保真原型只作**结构 / 存在性**对照，**不得**用原型充当视觉基准，也不得因「与原型一致」判为还原达标（双基准定义见 `../../shared/baseline-terms.md`）。
 > 三模式：独立 / auto-test 场景 / 代码评审场景（⑬-前 与 Code-Review 并行）。
 
+## 问题记录与恢复（执行必需）
+
+发现失败、阻塞或用户纠正时，在下一安全节点按 `../../shared/problem-recording.md` 记录；根因未明不丢事实。恢复/交付前核对未决项，沿用已有详情与唯一索引。此规则优先于旧的仅收尾埋点/不确定不记表述，不增加轻量任务的正式建档要求。
+
 ## 一、定位与铁律
 
 **角色**：对前端实现页对照 UI 设计稿做逐页还原度评审。**只对还原度负责**——不评业务逻辑、接口契约、代码架构（归 auto-test / Code-Review）。
@@ -55,7 +59,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 **三模式输出**：
 
-- **模式一 · 独立调用** → `.spec/页面还原评审/`：`页面还原度评审报告.md`（视觉 + 交互 + 长文案分组，每条含截图引用与修改建议）、`任务清单.md`、`screenshots/`；**问题日志**：归档同时在项目 `.spec/问题日志.md` 台账追加一行索引（日期｜来源｜问题产物｜轮次｜状态｜反哺出口；格式见 skill 源仓库 `../../shared/templates/problem-log-template.md`；并行模式由 Code-Review 统一记，不重复记）。
+- **模式一 · 独立调用** → `.spec/页面还原评审/`：`页面还原度评审报告.md`（视觉 + 交互 + 长文案分组，每条含截图引用与修改建议）、`任务清单.md`、`screenshots/`；**问题日志**：归档同时在项目 `.spec/问题日志.md` 台账追加一行索引（日期｜来源｜问题产物｜轮次｜状态｜反哺出口；格式见 skill 源仓库 `../../shared/templates/problem-log-template.md`；并行模式由 Code-Review 统一记，不重复记；主方中断时按共享记录规则保留已观察证据和待合并引用，恢复后合并并保留 ID 映射）。
 - **模式二 · auto-test 场景**：不另建任务清单，按 `assets/mini-issue-template.md` 就地出轻量清单交 auto-test 汇总进其 L2 报告。
 - **模式三 · 代码评审场景（⑬-前 与 Code-Review 并行）**：报告落 `.spec/代码评审/前端页面还原度评审.md`，问题交 Code-Review **合并进** `.spec/代码评审/任务清单.md`（每条标「来源=Fidelity-Review」）；**不另建清单**，轮次与放行由 Code-Review 闭环统一管理，回退方 = `Frontend-Dev`。
 
@@ -117,4 +121,4 @@ Use the common Gate contract: PASS requires no unresolved P0/P1; residual P0 is 
 
 ## 七、运行问题埋点
 
-收尾按 `../../Other/Skill-Optimizer/references/instrumentation-guide.md` 自查上报 `../../issue/Fidelity-Review/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `../../Other/Skill-Optimizer/assets/issue-template.md`；含协作侧）。不确定不记，不打断主流程。
+收尾按 `../../Other/Skill-Optimizer/references/instrumentation-guide.md` 自查上报 `../../issue/Fidelity-Review/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `../../Other/Skill-Optimizer/assets/issue-template.md`；含协作侧）。归因未明先留事实，按共享记录规则处理；不为经验提炼阻塞主流程。

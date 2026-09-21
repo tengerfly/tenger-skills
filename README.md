@@ -1,6 +1,24 @@
 # tenger-skills
 
+## 中文说明书：先从这里看
+
+- **日常怎么用**：[工程体系使用手册](docs/工程体系使用手册.md)——入口、环境准备、常用场景、暂停恢复、Gate、产物与命令。
+- **体系是什么、有没有偏离目标**：[当前项目介绍与目标对齐说明书](docs/当前项目介绍与目标对齐说明书.md)——目标复述、整体流程、45 个本地 Skill、模块边界、已实现/待验证能力及待确认取舍。
+
+> 2026-09-21 核对：本地全量校验通过（36 个测试；外部知识库未配置，属降级），不等于体系已验收。当前自举 Gate 仍为 `BLOCKED`，真实项目试跑与独立验收待完成。日常无需逐一阅读所有 Skill，先按手册给出项目、目标、范围和终点。
+
 A modular Skill repository for product discovery, PRD, UI, development, testing, release, operations, and Skill optimization.
+
+## 直接聊天，流程按任务大小选择
+
+“做个 Demo，不部署”“给现有列表加筛选，改完验证”“只优化这一页的视觉”都可以直接作为请求。AI 按范围和风险选择轻量、标准或完整流程，不要求用户掌握内部字段和 Skill 顺序。
+
+- **轻量**：低风险独立任务只保留目标/验收点、必要上下文、实现与验证摘要，不强制全套 PRD、技术设计或 Envelope。
+- **标准/完整**：复用有效基线，仅按需进入正式交接；权限、资金、迁移、生产等风险控制不能省。
+- **需求按需读取**：现有 PRD 速查表作为 Wiki 导航，固定版本后读取相关原文/AC/依赖，不维护第二套需求摘要。
+- **UI 自写 B**：新设计/延展/局部修改分流，继承现有风格；检查通过的首版可交付。Superdesign A 保持原流程。
+
+运行规则：`shared/execution-profiles.md`、`shared/requirements-context.md`。规则由 Agent 执行，现有脚本只校验正式契约，不是自动路由器；轻量不会赋予正式状态、绕过相关阻塞或发布授权。
 
 ## Repository layout
 
@@ -19,6 +37,8 @@ Every Skill entry point is named `SKILL.md`. Folder names identify the domain; c
 
 ## Current product workflow
 
+The following is the formal product workflow, not a mandatory checklist for low-risk standalone tasks. Select execution scope first.
+
 ```text
 Idea Intake
  -> Product Discovery
@@ -36,7 +56,7 @@ Idea Intake
 
 ## Common contracts
 
-All Skills and Workflows use the same rules:
+All Skills share the safety and evidence rules. The Gate/state/artifact requirements below apply to formal execution and handoffs; lightweight standalone tasks use a scoped result summary without claiming formal approval:
 
 - Gate values are exactly `PASS`, `CONDITIONAL`, or `BLOCKED`.
 - `PASS` requires no unresolved P0/P1 in scope.
@@ -50,6 +70,8 @@ All Skills and Workflows use the same rules:
 
 Read the contracts before changing a Skill:
 
+- `shared/execution-profiles.md`
+- `shared/requirements-context.md`
 - `shared/skill-contract.md`
 - `shared/gate-policy.md`
 - `shared/anti-deadloop.md`
@@ -67,7 +89,7 @@ Run from the repository root:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\run-tests.ps1
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\validate.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\validate.ps1 -ProjectRoot (Get-Location).Path
 ```
 
 The validators check frontmatter, required Skill sections, registry paths, workflow transitions, artifact manifests, and traceability fixtures.

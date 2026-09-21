@@ -13,6 +13,10 @@
 | 硬依赖 | 开工前必检；任一可用即开工（记作走查/校验工具）；全部不可用 → 报错并要求安装后重跑，不产出任何交付物 |
 | 软检测 | 有则用（执行对应辅助步骤，如选型版本核验），无则跳过该步骤，不阻塞主流程 |
 
+## 轻量实现与验收的边界
+
+按 `shared/execution-profiles.md` 执行的低风险 Frontend-Dev 可在缺少浏览器时实现代码并跑现有确定性测试，但只能交付“待视觉/交互验证”，不能宣称视觉通过。UI 自写 B 草稿按其独立 SOP 处理。Prototype-Review / UI-UX-Review / Fidelity-Review 等专业验收的真实浏览器硬依赖不变，标准/完整前端流程与 Superdesign A 路径也不变。
+
 ## 三、级别清单
 
 - **硬依赖**：Prototype-Review / UI-UX-Review / Fidelity-Review / Frontend-Tech-Design / Frontend-Dev / auto-test（L2 视觉层；其 L0/L1 确定性层无浏览器可跑）

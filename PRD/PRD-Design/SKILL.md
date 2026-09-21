@@ -10,6 +10,14 @@ metadata:
 
 本目录保留旧版成熟逻辑和资源；旧版完整说明已归档到 `references/legacy-skill.md`，原有 references/assets 不删除。新流程通过本入口承接，但职责和 Gate 受 `../../shared/product-workflow-contract.md` 约束。
 
+## 问题记录与恢复（执行必需）
+
+发现失败、阻塞或用户纠正时，在下一安全节点按 `../../shared/problem-recording.md` 记录；根因未明不丢事实。恢复/交付前核对未决项，沿用已有详情与唯一索引。此规则优先于旧的仅收尾埋点/不确定不记表述，不增加轻量任务的正式建档要求。
+
+## Task scope & context
+
+先按 `../../shared/execution-profiles.md` 判断强度，需求读写按 `../../shared/requirements-context.md`。轻量 Demo/局部任务只保留确认的目标、边界、验收点与本领域必要产物，不要求下文的全套上游正式文档和建档；不得用摘要冒充批准或绕过相关阻塞。标准/完整及正式交接才执行下述 manifest、Gate、状态契约。资源按任务加载，不先通读全部 references。
+
 ## Purpose
 平滑接入新的 PRD Workflow，同时保留已经验证过的领域规则和模板。
 
@@ -40,10 +48,10 @@ metadata:
 - 不把竞品存在、模型推荐或原型表现升级为产品事实。
 
 ## Procedure
-1. 阅读本目录 legacy-skill 和资源，识别要复用的成熟规则。
+1. 按本次范围读取 legacy-skill 的适用规则与相关模板，不全量加载案例库。
 2. 校验生命周期、上游状态、证据和开放项。
 3. 执行本领域动作，只生成职责范围内的草案、报告或结果。
-4. 使用旧模板、清单、脚本和案例库做自检。
+4. 使用适用模板/清单自检；修改需求源时同步刷新受影响速查索引、REQ↔AC 与依赖，保留历史批准版本，标记受影响任务上下文失效。
 5. 写入 manifest、traceability、decision/execution record 并输出 Gate。
 6. 评审最多 3 轮，问题路由到产品定义、蓝图、范围、原型或 UI/DEV。
 

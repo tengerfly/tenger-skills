@@ -56,3 +56,12 @@
 ## 四、待决问题
 
 Q1 已完成（埋点已落地全部 skill，2026-09-09 体检确认）；Q2 已定（500 行红线）。
+
+
+## 2026-09-21 问题记录修复（D-RECORDING-20260921）
+
+- 依据：`issue/Skill-Optimizer/2026-09-21/01-试跑前问题记录入口与聚合台账接线不完整.md` 与 `02-收尾式埋点缺少已观察异常的及时持久化规则.md`；用户指令「修复问题」。
+- 决定：共享记录规则统一下一安全节点落盘、一事一源、最小索引、恢复与复核；所有注册 Skill 入口显式接入，重点补 auto-test / Code-Review + Fidelity-Review / defect-triage。
+- 不做：新增后台服务、默认跨仓写入、同步安装目录、解除正式 Gate、变更 Superdesign 设计流程。
+- 复核：静态接线测试见 `scripts/tests/test_problem_recording.py`；实际 Agent 行为与中断恢复仍按 `docs/task-scope-regression.md` 试跑，不能用静态通过代替。
+- 回退：只撤销本次记录入口段、共享记录规则及配套模板/消费者修订；保留问题事实及此前用户修改，不执行整文件 Git 回退。

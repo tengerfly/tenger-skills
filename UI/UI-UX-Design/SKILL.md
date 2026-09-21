@@ -1,6 +1,6 @@
 ---
 name: ui-ux-design
-description: "UI/UX 设计稿生成（双路径：Superdesign 云端 / AI 自写）。依据 PRD + Prototype-Design 的布局清单与低保真原型，先推荐三套差异化风格方案，沉淀并确认设计规范后，逐页生成布局零改动、反 AI 味、风格统一的设计稿 HTML，过质量门禁后归档 `.spec/设计稿/`。开工先探测 Superdesign 额度：有额度走云端出稿（A 路径），无额度转 AI 自写（B 路径，references/self-write-sop.md），不阻塞。额度即预算，花钱动作先问。触发：生成设计稿/UI 设计/视觉稿/把原型变成设计稿。"
+description: "UI/UX 设计稿生成（双路径：Superdesign 云端 / AI 自写）。A 路径沿用 PRD/原型、三套风格方案、云端生成和原门禁；B 路径按新设计/延展/局部修改裁剪，复用已确认规范，生成并验证本地 HTML。用户指定自写时直接走 B；否则探测 Superdesign，有额度走 A，不可用转 B。额度即预算，花钱动作先问。触发：生成设计稿/UI 设计/视觉稿/把原型变成设计稿。"
 metadata:
   contract-level: legacy-wrapper
   legacy-alias: "UI-UX-Design"
@@ -10,7 +10,18 @@ metadata:
 
 # UI/UX 设计稿生成 Skill（双路径：Superdesign 云端 / AI 自写）
 
-> IRON LAW：**布局零改动 + 规范先行 + 第一版不算数**——布局清单与低保真原型是结构真相源；设计规范未确认前禁止任何生成调用；任何路径生成的第一版都是草稿，必须过自检环 + pre-flight 才算数。
+## 问题记录与恢复（执行必需）
+
+发现失败、阻塞或用户纠正时，在下一安全节点按 `../../shared/problem-recording.md` 记录；根因未明不丢事实。恢复/交付前核对未决项，沿用已有详情与唯一索引。此规则优先于旧的仅收尾埋点/不确定不记表述，不增加轻量任务的正式建档要求。
+
+## 入口分流（先执行，避免混用规则）
+
+- 用户明确指定 AI 自写 → 直接读取 `references/self-write-sop.md`，不探测或调用 Superdesign。
+- 未指定时仍按下方步骤 1 探测 A 的环境/额度；满足则沿用原 A 流程，任一不满足则进入 B SOP。不在同一任务中混合云端和本地稿源。
+- **B 路径转入后在其 SOP 内完成输入、规范、生成、检查和归档，不继续执行下方 A 的步骤 2–9、铁律、直编契约、审美禁令或模板门禁。** B 的前置与优先级见 SOP，检查只用 `references/self-write-review-gate.md`。
+- 以下保留 A 主流程与兼容说明，A 的额度/确认/导入/回传/评审不变。B 不因任务轻量降低安全、业务保真或证据诚实，也不以此改变 A 的行为。
+
+> 〔A 路径〕IRON LAW：**布局零改动 + 规范先行 + 第一版不算数**——布局清单与低保真原型是结构真相源；设计规范未确认前禁止任何生成调用；A 路径生成的第一版都是草稿，必须过自检环 + pre-flight 才算数。
 > 本 skill 是设计总监 + 编排器：管标准、决策、门禁、归档。生成本体双路径：**A = Superdesign CLI 云端出稿**（`references/superdesign-sop.md`）；**B = 会话模型 AI 自写**（`references/self-write-sop.md`，无额度时的默认）。
 
 ## 一、定位与铁律
@@ -42,26 +53,27 @@ metadata:
 
 ```
 输入 → ◉1 环境检测与路径路由 → 2 输入解析 → 3 风格情报 → ◉4 风格决策 → ◉5 设计规范
-→ 〔A〕6 项目创建 + 7 逐页生成（云端） / 〔B〕7 自写生成环 → ◉8 质量门禁 → 9 落盘归档
+→ 〔A〕6 项目创建 + 7 逐页生成（云端） → ◉8 质量门禁 → 9 落盘归档
+〔B〕步骤 1 分流后 → 独立 self-write-sop（不接 A 步骤 2–9）
 ```
 
 **1. ◉ 环境检测与路径路由 Gate**：先验 A 路径三件套 + **额度探测**（轻量命令实测或用户告知；报无额度 / 失效即视为不过）。全过 → **A 路径**（Superdesign 云端）；任一不过 → 一句话告知用户后转 **B 路径**（AI 自写，按 `references/self-write-sop.md`），**不阻塞**。路径一经确定全程不混用（不 A 出首稿又 B 延展）。
 
 **2. 输入解析**：纳入评审任务清单；执行双输入校验；**逐页读原型 HTML，按视觉顺序提取区块行（区块 / 组件 / 内容 / 交互）——只翻译不改动**；展开设计任务清单（`assets/design-task-list-template.md`）。
 
-**3. 风格情报**：〔A〕Superdesign 灵感库（`search-prompts` → `get-prompts --full`，先索引后取全文）；〔B〕外部风格源（awesome-design-md 品牌集合 / `npx extract-design-system` / browser 实抓，见 self-write-sop §八）；共同：**案例库体系**按序检索（总索引 `references/case-library/00-README.md`）：`patterns/index.md` 高频模式 → `case-library/flows.md` 用户流与状态表达 → `layouts.md` / `components.md` / `interactions.md` → `case-library/design-systems.md` + `open-source-design-systems.md` 体系基线 → `style-case-library.md` 自有深案例与踩坑。外部资源取用前**验证可达与许可**；命中资源须**实抓提取**（`web_fetch` / `extract-website`，1~3 个/场景；失败标注跳过禁编造）；**参考 ≠ 照抄**，提取值仍须过步骤 5 用户确认；案例库更新由用户手动发起。
+**3. 风格情报**：〔A〕Superdesign 灵感库（`search-prompts` → `get-prompts --full`，先索引后取全文）；〔B〕参考资源按独立 SOP 按需加载；〔A〕**案例库体系**按序检索（总索引 `references/case-library/00-README.md`）：`patterns/index.md` 高频模式 → `case-library/flows.md` 用户流与状态表达 → `layouts.md` / `components.md` / `interactions.md` → `case-library/design-systems.md` + `open-source-design-systems.md` 体系基线 → `style-case-library.md` 自有深案例与踩坑。外部资源取用前**验证可达与许可**；命中资源须**实抓提取**（`web_fetch` / `extract-website`，1~3 个/场景；失败标注跳过禁编造）；**参考 ≠ 照抄**，提取值仍须过步骤 5 用户确认；案例库更新由用户手动发起。
 
-**4. ◉ 风格决策 Gate**：**先出一行「设计读」**（读作：〈产品类型〉给〈受众〉，走〈气质〉语言；受众与气质取自 PRD，见 `assets/style-proposal-template.md` §〇）——读错则三套方案全废，用户可先纠偏；再出三套**真实差异化**方案（配色 / 排版 / 密度 / 交互气质含动效强度档，禁止只换主色；〔B〕每套绑定一个锚点 token 包 + 失格条件，见 self-write-sop §十），默认文字 + 色板小样，按 `assets/style-proposal-template.md` 出；**出稿对比花额度须用户同意**（该通道在步骤 6 基线复刻出稿后执行，属本 Gate 的补充确认，完成后回填该模板 §六/§七）。参考站用 `extract-website --url --design-md` 提取 DNA，用户三选一（完全采用 / 借鉴融合 / 更新现有），**禁静默混搭**。
+**4. ◉ 风格决策 Gate**：**先出一行「设计读」**（读作：〈产品类型〉给〈受众〉，走〈气质〉语言；受众与气质取自 PRD，见 `assets/style-proposal-template.md` §〇）——读错则三套方案全废，用户可先纠偏；再出三套**真实差异化**方案（配色 / 排版 / 密度 / 交互气质含动效强度档，禁止只换主色；〔B〕不执行本步骤，是否探索风格由独立 SOP 判断），默认文字 + 色板小样，按 `assets/style-proposal-template.md` 出；**出稿对比花额度须用户同意**（该通道在步骤 6 基线复刻出稿后执行，属本 Gate 的补充确认，完成后回填该模板 §六/§七）。参考站用 `extract-website --url --design-md` 提取 DNA，用户三选一（完全采用 / 借鉴融合 / 更新现有），**禁静默混搭**。
 
 **5. ◉ 设计规范 Gate**：选定风格按 `assets/design-system-template.md` 展开（原则 / 色彩 / 字体 / 间距 4px / 圆角阴影 / 组件规范 / 界面状态 / 页面宽度分层 / 动效——按 `references/motion-design-guide.md` 定强度档与曲线 / 时长 token / CSS token），对齐开源基线；布局清单 / 原型中出现空、错、加载、禁用等状态的页面，状态稿按模板 §5.10 一并纳入；用户确认后落盘：〔A〕`.superdesign/design-system.md`（副本进 `.spec/设计稿/`）；〔B〕直接落 `.spec/设计稿/design-system.md`。模板带 DESIGN.md 开放格式 YAML token 头（`assets/design-system-template.md` §0.5）。**规范未确认禁任何生成调用**；生成必带保真约束语（只使用 design-system 定义的字体 / 颜色 / 间距 / 组件，不得引入规范外视觉）。
 
 **6. 项目创建（仅 A）**：新项目先做基线复刻（灰调 HTML、结构 100% 正确），`create-project --template <复刻> --device <端> --no-open` 取 projectId；续跑先查 `.superdesign/resume.json`，缺失用 `fetch-design-nodes` 找回，**禁止重复建项目**；品牌资产先 `upload-asset --purpose brand` 再以 reference-id 传。
 
-**7. 逐页生成**：〔A〕首张主流程页 `create-design-draft`（只接受一个 `-p`）+ `--context-file .superdesign/design-system.md`；出画布 URL 给用户确认后再 `execute-flow-pages` 批量延展（1–10 页/次，JSON 先过目）；变体一律 `iterate --mode branch`（数量用户定，默认 2）；用户原话传 `--user-request`。〔B〕**自写生成环**（self-write-sop §一/§六）：每页走「设计计划 → 唯一性自查 → 成稿 → 渲染截图 → 有界自检（1 全量 + 1 确认封顶）→ pre-flight」；首张主流程页先出、用户确认视觉方向后再延展其余页；变体 = 同布局并行写 2 版不同锚点方向。
+**7. 逐页生成**：〔A〕首张主流程页 `create-design-draft`（只接受一个 `-p`）+ `--context-file .superdesign/design-system.md`；出画布 URL 给用户确认后再 `execute-flow-pages` 批量延展（1–10 页/次，JSON 先过目）；变体一律 `iterate --mode branch`（数量用户定，默认 2）；用户原话传 `--user-request`。〔B〕已转入独立 SOP，不执行本步骤；按任务类型生成/局改，经检查通过的首版可以交付。
 
-**8. ◉ 质量门禁（全绿才放行）**：按 `references/design-review-gate.md` 六查——① 布局零改动（多删改返工）② 规范一致性（规范外视觉值返工）③ 反 AI 味 12 条（§4.3 + 扩充机械项）④ 文案保真（与 PRD / 布局清单逐字一致、无杜撰）⑤ 布局基线与全站组件不变量 ⑥ 稿源同步核验（〔A〕云端稿 import 回传核验；〔B〕本地渲染核验）。
+**8. ◉ 质量门禁（A 路径，全绿才放行）**：按 `references/design-review-gate.md` 六查——① 布局零改动（多删改返工）② 规范一致性（规范外视觉值返工）③ 反 AI 味 12 条（§4.3 + 扩充机械项）④ 文案保真（与 PRD / 布局清单逐字一致、无杜撰）⑤ 布局基线与全站组件不变量 ⑥ 稿源同步核验（〔A〕云端稿 import 回传核验；〔B〕本地渲染核验）。
 
-**9. 落盘归档**：〔A〕`get-design --draft-id --output .spec/设计稿/<页面>.html`；〔B〕本地文件即交付物（核对路径与命名，无导出步骤）。按 `assets/archive-readme-template.md` 写 README（页面 / 〔A〕projectId + draftId 或〔B〕稿源=AI 自写 + git 版本 / 规范出处 / 端类型 / **§7 token 条数对账基线**）；回填评审任务清单（`已确认` → `已修复` + 修改说明）；**回填后须触发 `UI-UX-Review` 复核，不得自判通过**（闭环与上限规则见 `../../shared/anti-deadloop.md` §一/§二）；埋点收尾。
+**9. 落盘归档（A 路径；B 按独立 SOP §七）**：〔A〕`get-design --draft-id --output .spec/设计稿/<页面>.html`；〔B〕本地文件即交付物（核对路径与命名，无导出步骤）。按 `assets/archive-readme-template.md` 写 README（页面 / 〔A〕projectId + draftId 或〔B〕稿源=AI 自写 + git 版本 / 规范出处 / 端类型 / **§7 token 条数对账基线**）；回填评审任务清单（`已确认` → `已修复` + 修改说明）；**回填后须触发 `UI-UX-Review` 复核，不得自判通过**（闭环与上限规则见 `../../shared/anti-deadloop.md` §一/§二）；埋点收尾。
 
 > **下游交接口径**：`design-system.md` §7「CSS 变量 Token 汇总」是下游 Frontend-Tech-Design（§8.6 登记条数）与 Frontend-Dev（`styles/variables` 逐条对账）的**视觉唯一来源**；低保真原型不承载视觉基准（见 `../../shared/baseline-terms.md`）。
 
@@ -77,11 +89,11 @@ metadata:
 | 回旧版 | revert（免额度） | `revert-design-draft --draft-id <id> --to-version <n>` |
 
 - 用户选定 branch 结果后设为当前，后续走 replace / 直编，不再开新 branch；意图歧义先问清。
-- **〔B〕自写路由**：看不同方向 = 同布局并行写 2 版（不同锚点包，self-write-sop §十）；选定方向上改 = 该页 replace 式重写（受有界验证约束）；确定性修正 = 本地直改（pre-flight 抽查）；回旧版 = git 或 `<页面>.v<n>.html` 副本。
+- **〔B〕自写路由**：仅按 `references/self-write-sop.md`，不继承此表的整页 replace、固定变体数量或云端导入限制。
 - **400 过载**：把超大上下文按 ~900 行裁到实际渲染段后**重试同一调用**；绝不瘦成最小上下文重试（模型会凭规范发明假页）。
 - 同一页超 3 轮不收敛 → **停下对齐**，不烧额度。
 
-**4.2 直编契约与闭环**（〔A〕用于 import 回传；〔B〕该契约即生成契约，且闭环简化——本地 `.spec/设计稿/` 即唯一事实源，无云端回传步骤）：
+**4.2 直编契约与闭环**（〔A〕用于 import 回传；〔B〕不适用此契约，使用独立 SOP 的本地生成契约）：
 
 - **契约**：完整 HTML 文档（`DOCTYPE` → `/html`）；Tailwind 类样式；图标用 `<iconify-icon>` 自带 CDN script；`body` 无 class、布局在一个根 div；每个 `<a>` 有唯一描述性 id 且不嵌套；链接用完整 `https` 或 `#hash`，**禁相对路径**。违规被拒或 `warnings[]` 必须处理。
 - **闭环**：本地改完 → 本地渲染请用户确认 → **同一轮内 `import-design-draft` 回传云端** → `get-design` 核 version 递增并同步 README。**云端（宿主入口指向的 draft URL）是评审单一事实源**；只改本地 = 用户看到旧稿，「待回传」不跨会话。
@@ -176,9 +188,11 @@ superdesign upload-asset <file> --project-id <id> --purpose brand|content|refere
 
 ## 七、运行问题埋点
 
-收尾按 `../../Other/Skill-Optimizer/references/instrumentation-guide.md` 自查上报 `../../issue/UI-UX-Design/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `../../Other/Skill-Optimizer/assets/issue-template.md`；含生成本体侧：A=Superdesign 云端额度/命令行为，B=自写质量与自检环）。不确定不记，不打断主流程。
+收尾按 `../../Other/Skill-Optimizer/references/instrumentation-guide.md` 自查上报 `../../issue/UI-UX-Design/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `../../Other/Skill-Optimizer/assets/issue-template.md`；含生成本体侧：A=Superdesign 云端额度/命令行为，B=自写质量与自检环）。归因未明先留事实，按共享记录规则处理；不为经验提炼阻塞主流程。
 
 ## Contract Compatibility Layer
+
+B 先按共享执行强度分流：轻量独立结果使用任务摘要，下方正式状态/manifest/Gate 写入只用于 B 的标准/完整交接；A 沿用原完整兼容流程不变。
 
 Use the common Gate contract: PASS requires no unresolved P0/P1; residual P0 is BLOCKED; residual P1 may only be an authorized CONDITIONAL with exceptionId, owner, dueAt, remediation, allowDownstream, and approvalRef. There is no force-pass rule.
 

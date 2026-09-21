@@ -13,6 +13,16 @@ metadata:
 > IRON LAW：**只审不改**——禁改设计稿 HTML、design-system、PRD、布局清单；唯一产物是 `.spec/设计评审/` 下文件。
 > 定位：对 UI-UX-Design 产出的设计稿做**独立第三方复审**，兜底其内部门禁自查盲区。只查问题、找成因、给方向。
 
+## 问题记录与恢复（执行必需）
+
+发现失败、阻塞或用户纠正时，在下一安全节点按 `../../shared/problem-recording.md` 记录；根因未明不丢事实。恢复/交付前核对未决项，沿用已有详情与唯一索引。此规则优先于旧的仅收尾埋点/不确定不记表述，不增加轻量任务的正式建档要求。
+
+## B 稿复核口径（A 不变）
+
+README 稿源为 AI 自写（B）时，先读 `../UI-UX-Design/references/self-write-review-gate.md` 与本次需求上下文。以已确认业务/结构/Token 和真实渲染判质量，不套用 A 的云端导入格式、相对链接禁令、em-dash 零容忍或不适用的风格偏好。B 的局部修改只查变更与必要关联回归；新多页稿仍覆盖本次全部交付页。新方向的审美选择不能改写业务需求。
+
+本 Skill 的只审不改、真实浏览器硬依赖、独立复核和正式 Gate 规则不变；无浏览器不能给待验收 B 草稿补发视觉通过。A 稿继续原规则。消费需求按 `../../shared/requirements-context.md` 固定版本、索引定位后读相关原文。
+
 ## 一、定位与铁律
 
 **四个评审维度**：
@@ -97,7 +107,7 @@ metadata:
 
 ## 七、运行问题埋点
 
-收尾按 `../../Other/Skill-Optimizer/references/instrumentation-guide.md` 自查上报 `../../issue/UI-UX-Review/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `../../Other/Skill-Optimizer/assets/issue-template.md`；含 Superdesign / UI-UX-Design 侧）。不确定不记，不打断主流程。
+收尾按 `../../Other/Skill-Optimizer/references/instrumentation-guide.md` 自查上报 `../../issue/UI-UX-Review/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `../../Other/Skill-Optimizer/assets/issue-template.md`；含 Superdesign / UI-UX-Design 侧）。归因未明先留事实，按共享记录规则处理；不为经验提炼阻塞主流程。
 
 ## Contract Compatibility Layer
 

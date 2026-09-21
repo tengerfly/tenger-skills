@@ -7,6 +7,8 @@ metadata:
   compatibility: "Claude Code / Agent SDK / OpenCode"
 ---
 
+> **独立调用**：先按 `../../shared/execution-profiles.md` 判强度，按 `../../shared/requirements-context.md` 取相关需求。低风险局部任务不要求完整上游文档/Envelope，只执行本领域相关动作并记录真实证据；下文正式建档用于标准/完整。专业检查的必需工具、只审不改边界、相关阻塞和安全授权不降级，不把局部验证冒充全量或正式 Gate。
+
 
 # Bug-Fix —— 日志驱动的 Bug 诊断与修复委托闭环
 
@@ -14,6 +16,10 @@ metadata:
 > 定位：把模糊的抱怨变成可修的根因：日志入手 → 复现 → 根因（证据链）→ 给修复方向，交付「问题定位报告」。**后续各环委托对应专业 skill**：技术方案 → Frontend/Backend-Tech-Design，改码 → Frontend/Backend-Dev，回归 → 开发自测 + 按需 auto-test。
 
 **集中沉淀池（写死，勿改）**：`D:\project\agent-project\tenger-skills\bug-patterns\`——所有被修项目的错误模式一律写入此绝对路径（见主流程 10）；若部署环境变化导致路径失效，先改本行常量再继续。
+
+## 问题记录与恢复（执行必需）
+
+发现失败、阻塞或用户纠正时，在下一安全节点按 `../../shared/problem-recording.md` 记录；根因未明不丢事实。恢复/交付前核对未决项，沿用已有详情与唯一索引。此规则优先于旧的仅收尾埋点/不确定不记表述，不增加轻量任务的正式建档要求。
 
 ## 一、定位与铁律
 
@@ -169,9 +175,11 @@ metadata:
 
 ## 七、运行问题埋点
 
-收尾按 `../Skill-Optimizer/references/instrumentation-guide.md` 自查上报 `../../issue/Bug-Fix/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `../Skill-Optimizer/assets/issue-template.md`）。不确定不记，不打断主流程。
+收尾按 `../Skill-Optimizer/references/instrumentation-guide.md` 自查上报 `../../issue/Bug-Fix/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `../Skill-Optimizer/assets/issue-template.md`）。归因未明先留事实，按共享记录规则处理；不为经验提炼阻塞主流程。
 
 ## Contract Compatibility Layer
+
+下方正式状态/manifest/Gate 写入步骤适用于标准/完整交接；轻量独立任务按共享执行强度使用同一任务摘要，不执行正式状态写入、不伪造批准。
 
 Use the common Gate contract: PASS requires no unresolved P0/P1; residual P0 is BLOCKED; residual P1 may only be an authorized CONDITIONAL with exceptionId, owner, dueAt, remediation, allowDownstream, and approvalRef. There is no force-pass rule.
 

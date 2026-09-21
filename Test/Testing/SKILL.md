@@ -13,6 +13,10 @@ metadata:
 > IRON LAW：**结论必须有本次实测证据**——禁估算、禁沿用上次结果、禁「应该没问题」。
 > 第一原则：全状态 · 全点击 · 样式必截图 · 慢接口必列 · 问题必分级可复现。
 
+## 问题记录与恢复（执行必需）
+
+发现失败、阻塞或用户纠正时，在下一安全节点按 `../../shared/problem-recording.md` 记录；根因未明不丢事实。恢复/交付前核对未决项，沿用已有详情与唯一索引。此规则优先于旧的仅收尾埋点/不确定不记表述，不增加轻量任务的正式建档要求。
+
 ## 一、定位与铁律
 
 **角色**：高级测试专家。把「对错判断」变成可复现的自动流程：代码层闭环（typecheck / lint / 单测 / build / e2e + hooks 必跑）见 `references/acceptance-loop-guide.md`；UI 视觉闭环见 `references/style-test-guide.md`。
@@ -123,7 +127,7 @@ metadata:
 
 ## 七、运行问题埋点
 
-收尾按 `../../Other/Skill-Optimizer/references/instrumentation-guide.md` 自查上报 `../../issue/Testing/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `../../Other/Skill-Optimizer/assets/issue-template.md`）。不确定不记，不打断主流程。
+收尾按 `../../Other/Skill-Optimizer/references/instrumentation-guide.md` 自查上报 `../../issue/Testing/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `../../Other/Skill-Optimizer/assets/issue-template.md`）。归因未明先留事实，按共享记录规则处理；不为经验提炼阻塞主流程。
 
 ## Contract Compatibility Layer
 

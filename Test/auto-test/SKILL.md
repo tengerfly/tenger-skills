@@ -7,12 +7,18 @@ metadata:
   compatibility: "ZCode / Claude Code 等 coding agent。需要 Bash；L2 需浏览器工具（Playwright/Midscene 任一）；auto-test 引擎 CLI 或 MCP 可用时自动切换引擎模式。"
 ---
 
+> **独立调用**：先按 `../../shared/execution-profiles.md` 判强度，按 `../../shared/requirements-context.md` 取相关需求。低风险局部任务不要求完整上游文档/Envelope，只执行本领域相关动作并记录真实证据；下文正式建档用于标准/完整。专业检查的必需工具、只审不改边界、相关阻塞和安全授权不降级，不把局部验证冒充全量或正式 Gate。
+
 
 # Auto-Test：AI 代码验收测试与修复闭环
 
 > **Iron Law：证据先于声明，永远。** 没有本次实测证据（命令输出 / 截图 / 实测耗时），禁止宣称「通过 / 已修复 / 没问题」。
 > **Iron Law 2：分层短路。** L0 未过不跑 L1，L1 未过不跑 L2——错误越晚发现代价越高，AI token 只花在确定性检查之后。
 > **Iron Law 3：真实优先，mock 兜底。** 被测项目已支持真实 AI/外部服务时，默认打**真实链路**；仅当接口不通、无凭证、服务不可用时才降级 mock，且必须在报告「覆盖边界声明」中逐条列出降级项。把项目核心 AI 链路整体 mock 掉 = 核心功能零覆盖。
+
+## 问题记录与恢复（执行必需）
+
+发现失败、阻塞或用户纠正时，在下一安全节点按 `../../shared/problem-recording.md` 记录；根因未明不丢事实。恢复/交付前核对未决项，沿用已有详情与唯一索引。此规则优先于旧的仅收尾埋点/不确定不记表述，不增加轻量任务的正式建档要求。
 
 ## 一、定位与边界
 
@@ -45,7 +51,7 @@ metadata:
 5. **L2 视觉 E2E**：按三段式用例（`setup 注入 → act 操作 → assert 断言`）逐条执行；全状态 + 全点击 + 三态必测（加载/空/错误）；样式问题与异常**必截图**；监听 console 报错与网络（慢接口必记：>1000ms 慢 / >3000ms 很慢 / >5000ms 严重）；**有设计稿时（`.spec/设计稿/`）内嵌 `Fidelity-Review`（还原场景模式）做 UI 还原度检查**——其轻量问题清单并入本轮报告，视觉以设计稿为唯一应然（双基准术语见仓库根 `../../shared/baseline-terms.md`）；无设计稿才回退原型并明示降级。细则见 [references/layered-testing-guide.md](references/layered-testing-guide.md)，用例编写见 [references/case-authoring-guide.md](references/case-authoring-guide.md)。
 6. **L3 探索性测试（可选）**：无预设脚本自由探索找 bug（乱点乱填、非常规路径）；沙箱内执行；只出报告不阻断。被测系统含不可控外部副作用（发邮件/支付）时必须先 mock。
 7. **L4 专项测试（信号触发，可选）**：默认不跑；命中需求信号才执行——性能/并发关键词 → 负载/压力/稳定（负载模型与指标见 [references/specialty-testing-guide.md](references/specialty-testing-guide.md)）；敏感数据/对外接口 → 安全扫描（依赖审计 + SAST 快扫，DAST 可选）；多端/多浏览器 → 兼容矩阵；无障碍要求 → axe 扫描。结果只分级报告，P0（如压测下数据损坏/错误率爆表）才阻断。
-8. **汇总与门禁**：计算状态覆盖率 / 迁移覆盖率 / 元素点击率（见 [references/coverage-gate.md](references/coverage-gate.md)）；L4 有执行则附专项指标表；产出报告（[assets/report-template.md](assets/report-template.md)）+ 每条缺陷一张修复任务卡（[assets/bug-card-template.md](assets/bug-card-template.md)），归档 `.spec/auto-test/`。
+8. **汇总与门禁**：计算状态覆盖率 / 迁移覆盖率 / 元素点击率（见 [references/coverage-gate.md](references/coverage-gate.md)）；L4 有执行则附专项指标表；产出报告（[assets/report-template.md](assets/report-template.md)）+ 每条缺陷一张修复任务卡（[assets/bug-card-template.md](assets/bug-card-template.md)），归档 `.spec/auto-test/`。**问题索引**：按 `../../shared/problem-recording.md`，失败在下一安全节点先记事实，汇总/复测后以原 BUG ID（P3 用报告锚点）更新项目 `.spec/问题日志.md`，详情不重复复制。
 
 ## 四、修复闭环（本 skill 的灵魂）
 
@@ -132,9 +138,11 @@ metadata:
 
 ## 九、运行问题埋点
 
-收尾按 `../../Other/Skill-Optimizer/references/instrumentation-guide.md` 自查上报 `../../issue/auto-test/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `../../Other/Skill-Optimizer/assets/issue-template.md`）。不确定不记，不打断主流程。
+收尾按 `../../Other/Skill-Optimizer/references/instrumentation-guide.md` 自查上报 `../../issue/auto-test/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `../../Other/Skill-Optimizer/assets/issue-template.md`）。归因未明先留事实，按共享记录规则处理；不为经验提炼阻塞主流程。
 
 ## Contract Compatibility Layer
+
+下方正式状态/manifest/Gate 写入步骤适用于标准/完整交接；轻量独立任务按共享执行强度使用同一任务摘要，不执行正式状态写入、不伪造批准。
 
 Use the common Gate contract: PASS requires no unresolved P0/P1; residual P0 is BLOCKED; residual P1 may only be an authorized CONDITIONAL with exceptionId, owner, dueAt, remediation, allowDownstream, and approvalRef. There is no force-pass rule.
 

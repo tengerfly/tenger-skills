@@ -7,6 +7,10 @@ metadata:
 
 # Project Onboarding
 
+## 问题记录与恢复（执行必需）
+
+发现失败、阻塞或用户纠正时，在下一安全节点按 `../../shared/problem-recording.md` 记录；根因未明不丢事实。恢复/交付前核对未决项，沿用已有详情与唯一索引。此规则优先于旧的仅收尾埋点/不确定不记表述，不增加轻量任务的正式建档要求。
+
 ## Purpose
 
 把一个新项目或陌生旧项目转成**可理解、可追踪、可交接、可继续交付**的工程基线。它是 `CREATE`、`CHANGE`、`DEFECT`、`REFACTOR`、`INCIDENT` 和 `OPTIMIZE` 的共同入口，尤其适用于旧项目接管。

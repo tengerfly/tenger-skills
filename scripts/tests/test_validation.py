@@ -269,6 +269,22 @@ class TaskPreflightTests(unittest.TestCase):
         self.policy["approvers"] = []
         self.assertTrue(any("not authorized" in e for e in self.run_plan()[1]))
 
+    def test_lightweight_hint_cannot_bypass_formal_authority(self):
+        # Profile hints are not a supported exemption from formal authorization.
+        self.task["executionProfile"] = "light"
+        self.policy["approvers"] = []
+        plan, errors = self.run_plan()
+        self.assertTrue(any("not authorized" in e for e in errors))
+        self.assertIsNone(plan)
+
+    def test_lightweight_hint_cannot_clear_existing_block(self):
+        self.task["executionProfile"] = "light"
+        self.workflow.update(gate="BLOCKED", allowDownstream=False, owner="reviewer",
+                             requiredInput="new review", clearanceCondition="authorized clearance")
+        plan, errors = self.run_plan()
+        self.assertTrue(any("clear-block" in e or "clearanceEvidenceRefs" in e for e in errors))
+        self.assertIsNone(plan)
+
     def test_cli_emits_read_only_plan_without_changing_workflow(self):
         self.assertEqual(self.run_plan()[1], [])
         self.write_yaml(".spec/task.yaml", {"task": self.task})

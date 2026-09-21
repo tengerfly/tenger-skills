@@ -8,10 +8,16 @@ metadata:
 ---
 
 
+> **增量设计入口**：先按 `../../shared/execution-profiles.md` 判断是否需要本 Skill。低风险已有栈局部修改可直接由开发做局部计划，不为了补形式文档强制调用技术设计。确需技术方案时按 `../../shared/requirements-context.md` 固定相关需求/AC 与依赖；已有框架和选型未变化则复用，不重复询问、不重做全套方案。新增架构/关键基础设施/不熟悉依赖仍按 OSS 研究策略核验，专业工具与安全要求不降级。
+
 # 后端技术方案文档（TDD）编写 Skill
 
 > IRON LAW：**开发期零技术决策**——所有选型必须在方案阶段一次定全并过收敛证明。
 > TDD = Technical Design Document；全程测试驱动：先写测试用例，后写实现方案。
+
+## 问题记录与恢复（执行必需）
+
+发现失败、阻塞或用户纠正时，在下一安全节点按 `../../shared/problem-recording.md` 记录；根因未明不丢事实。恢复/交付前核对未决项，沿用已有详情与唯一索引。此规则优先于旧的仅收尾埋点/不确定不记表述，不增加轻量任务的正式建档要求。
 
 ## 一、定位与铁律
 
@@ -131,7 +137,7 @@ metadata:
 
 ## 七、运行问题埋点
 
-收尾按 `../../Other/Skill-Optimizer/references/instrumentation-guide.md` 自查上报 `../../issue/Backend-Tech-Design/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `../../Other/Skill-Optimizer/assets/issue-template.md`）。不确定不记，不打断主流程。
+收尾按 `../../Other/Skill-Optimizer/references/instrumentation-guide.md` 自查上报 `../../issue/Backend-Tech-Design/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `../../Other/Skill-Optimizer/assets/issue-template.md`）。归因未明先留事实，按共享记录规则处理；不为经验提炼阻塞主流程。
 
 ## Contract Compatibility Layer
 

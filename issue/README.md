@@ -6,16 +6,16 @@ Skill-Optimizer 的核心数据：各 skill 运行中暴露的问题与优化点
 
 `issue/<skill名称>/<日期目录>/<问题文件>`
 
-- 每个 skill 一个文件夹（以 skill 目录名命名，如 `PRD/PRD-Design/`）
+- 每个 skill 一个文件夹，复用源仓已有叶目录名，如 `PRD-Design/`、`Skill-Optimizer/`；不再按分类另建嵌套目录。
 - 每天一个子文件夹（`YYYY-MM-DD`）
 - 每个问题一个文件（`<序号>-<简短标题>.md`），模板见 `Other/Skill-Optimizer/assets/issue-template.md`
 
 ```
 issue/
-├── Other/Skill-Optimizer/
+├── Skill-Optimizer/
 │   └── 2026-09-04/
 │       └── 01-xxx.md
-└── UI/Prototype-Design/
+└── Prototype-Design/
     └── 2026-09-04/
         ├── 01-xxx.md
         └── 02-xxx.md
@@ -23,7 +23,7 @@ issue/
 
 ## 写入方
 
-- **各 skill 埋点**（主通道）：执行收尾自查上报，规则见 `Other/Skill-Optimizer/references/instrumentation-guide.md`
+- **各 skill 埋点**（主通道）：下一安全节点先记已观察事实，收尾补结果；跨仓授权、索引去重与恢复规则见 `shared/problem-recording.md`，自查上报，规则见 `Other/Skill-Optimizer/references/instrumentation-guide.md`
 - **Skill-Optimizer 兜底 / 挖掘**：用户喊「记个问题 / 复盘」、或从 `chats/` 挖掘确认后落盘
 - **Skill-Optimizer 体检**：模式④ 体检发现、经用户裁决「记 issue」的问题（来源填「体检」）
 
@@ -34,7 +34,7 @@ issue/
 
 ## 问题数据流总览（2026-09-19 收敛约定）
 
-原始问题**入口唯一**，反哺**出口分工**——同一问题只进一个入口、反哺只写一个出口，禁止跨池重复记同一件事：
+原始问题**入口唯一**，反哺**出口分工**——同一问题只进一个入口、反哺按类型选择出口，禁止跨池复制同一原始问题；同一来源可同时链接产出方防复发和评审方检出规则：
 
 | 层 | 入口（原始问题只进这里） | 出口（综合分析后按类型反哺） |
 |---|---|---|

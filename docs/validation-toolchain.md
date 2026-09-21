@@ -6,7 +6,7 @@
 
 ```powershell
 .\scripts\bootstrap.ps1
-.\scripts\validate.ps1
+.\scripts\validate.ps1 -ProjectRoot (Get-Location).Path
 .\scripts\run-tests.ps1
 ```
 
@@ -15,6 +15,8 @@
 - 所有入口优先使用 TENGER_PYTHON，其次 .venv/Scripts/python.exe 或 .venv/bin/python，最后系统 python。
 - CI 配置在 Ubuntu / Windows 上运行 bootstrap。配置存在不代表远端 CI 已执行。
 - 沙箱若阻止临时目录读写，需要在获准的本地环境运行；失败不得被记录为通过。
+
+> 2026-09-21 说明书核验：当前环境以 `powershell -File` 不带 ProjectRoot 启动 validate.ps1 会遇到默认参数中的 PSScriptRoot 为空；显式传入仓库路径后全量校验退出 0、36 个测试通过。以上日常调用显式传路径；本次未更改脚本。
 
 ## 2. 检查范围
 
@@ -32,7 +34,10 @@
 schema.yaml 是描述型 YAML，不是 JSON Schema。核心引擎读取其必填字段和关系枚举，跨文件语义由 Python 实现。
 外部 sourceRefs 的 USER-/REQ-/EXT-/URL-/ISSUE-/PR-/COMMIT-/RUN- 前缀只作标识语法检查，不证明外部对象存在。
 
-## 3. 真实任务：只读转换就绪检查
+## 3. 正式交接：只读转换就绪检查
+
+低风险独立任务按 `shared/execution-profiles.md` 留任务摘要，不调用本预检来创建或跳过正式状态。任何正式转换仍须完整 Envelope/批准/证据，工具没有“轻量免检”选项。轻量升级时注册实际产物并补缺口，不能伪造过去阶段已经完成。
+
 
 复制 shared/templates/task-envelope.yaml 到项目的 .spec/tasks/，填写实际值，然后运行：
 
@@ -78,5 +83,13 @@ Envelope.authorization 的 grantedBy / grantedAt 必须与 decision 一致，不
 - Registry 的 legacyAliases 只用于旧名称映射，新实例使用 canonical ID。
 - IncludeLegacy 保留为兼容参数；默认不会跳过已注册 wrapper / adapter。
 - 原 ManifestPath、TraceabilityPath、SkipPathExistence、SkillPath 过滤和单个 registry override 不再静默忽略：传入即报错，要求使用一致的 ProjectRoot / 注册表集合。
+- 执行强度判断、PRD 上下文组装/失效刷新、B 自写的任务裁剪是 Agent 指令规则，尚非独立自动调度/检索服务；需用真实任务验证遵循情况。
 - 三轮评审上限、超时调度、并发任务锁、原子状态写入、真实部署/回滚和生产观测仍由流程执行者负责；注册元数据不等于实现了调度器。
 - 本地测试通过不等于独立验收或发布批准；当前自举 Gate 保持 BLOCKED，等待真实项目试跑和授权负责人验收。
+
+
+## 问题记录接线回归
+
+`tests/test_problem_recording.py` 已纳入全量 unittest discover，检查活动本地 Skill 的共享记录引用、auto-test/Code-Review/Fidelity-Review/defect-triage 的索引职责，以及模板和关键边界。外部知识库注册项不是本地 Skill，不纳入此入口检查。
+
+它不验证 Agent 实际写文件、去重、恢复或视觉行为。修复结果和额外格式兼容限制见 `problem-recording-verification.md`；真实行为试跑见 `task-scope-regression.md`。

@@ -7,6 +7,14 @@ metadata:
 
 # prd-workflow
 
+## 问题记录与恢复（执行必需）
+
+发现失败、阻塞或用户纠正时，在下一安全节点按 `../../shared/problem-recording.md` 记录；根因未明不丢事实。恢复/交付前核对未决项，沿用已有详情与唯一索引。此规则优先于旧的仅收尾埋点/不确定不记表述，不增加轻量任务的正式建档要求。
+
+## Task scope & context
+
+先按 `../../shared/execution-profiles.md` 判断强度，需求读写按 `../../shared/requirements-context.md`。轻量 Demo/局部任务只保留确认的目标、边界、验收点与本领域必要产物，不要求下文的全套上游正式文档和建档；不得用摘要冒充批准或绕过相关阻塞。标准/完整及正式交接才执行下述 manifest、Gate、状态契约。资源按任务加载，不先通读全部 references。
+
 ## Purpose
 把产品域原子 Skill 按证据和 Gate 串起来，从模糊入口建立可追踪的产品基线。成功标准是正式 PRD 和原型都建立在已确认的用户、问题、旅程、范围和行为边界上。
 

@@ -14,6 +14,16 @@ When instructions conflict, apply this order:
 
 A local Skill must not redefine Gate values, lifecycle states, evidence labels, or the current state source.
 
+## 1.1 Execution scope
+
+先按 `shared/execution-profiles.md` 选择执行强度，直接调用原子 Skill 同样适用。其轻量独立执行规定优先限定本契约及领域 Skill 的程序性前置；安全、真实授权、范围、证据诚实和已存在的相关阻塞不降级。标准/完整执行才使用下述正式 execution、artifact、Gate 和状态契约。轻量不伪造这些记录，也不调用正式预检来绕过它们。
+
+消费需求时遵循 `shared/requirements-context.md`，先索引再读已确认版本的相关原文与依赖。只加载本任务需要的 references/assets，不先通读整个 Skill 资源库。
+
+## 1.2 Problem recording
+
+所有执行强度及独立调用均遵循 `shared/problem-recording.md`：失败事实在下一安全节点持久化，详情一事一源、项目索引可发现，恢复/交付核对未决项。未知根因不妨碍记事实；此义务不依赖正式 Envelope，也不授权跨仓写入或解除 Gate。
+
 ## 2. SKILL.md frontmatter
 
 ```yaml

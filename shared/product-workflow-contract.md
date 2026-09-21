@@ -2,6 +2,10 @@
 
 This contract defines the product-domain sequence. It uses the common Skill, artifact, lifecycle, Gate, and anti-deadloop contracts.
 
+## 0. Task scope
+
+先按 `shared/execution-profiles.md` 判定强度。以下为正式产品流程；轻量 Demo/局部需求只确认目标、边界与验收点，不为进入开发重做产品发现、竞品与完整 PRD。轻量摘要不是下列阶段的 APPROVED 产物，也不能解锁已阻塞阶段。标准变更只更新受影响需求与依赖，复用有效基线。所有需求读写遵循 `shared/requirements-context.md`，索引不是第二需求源。
+
 ## 1. Product sequence
 
 ```text
