@@ -35,7 +35,7 @@ Use the common Gate contract: PASS requires no unresolved P0/P1; residual P0 is 
 - 列出受影响产物、模块、用户旅程、接口、数据、权限、测试、发布和可观测性；
 - 区分事实影响、推断影响和待验证影响；
 - 给出最小变更路径、风险、回滚和需要确认的决策；
-- 将任务路由到 PRD/UI/DEV/Testing/Release。
+- 将任务路由到 PRD/UI/DEV/auto-test/Release。
 
 ## Non-goals
 - 不写最终技术实现；

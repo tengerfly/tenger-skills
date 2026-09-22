@@ -134,6 +134,10 @@ def plan(root, task, registry_root=TOOL_ROOT):
         artifact_types.add(item.get("type"))
         if item.get("status") not in {"REVIEW", "APPROVED"}:
             errors.append(f"task subject is not ready: {ref}")
+        if (transition["to"] in core.PRD_BASELINE_STATES
+                and item.get("type") in core.PRODUCT_BASELINE_TYPES
+                and item.get("status") != "APPROVED"):
+            errors.append(f"PRD product baseline must be APPROVED: {ref}")
     missing = set(transition["requiredArtifacts"]) - artifact_types
     if missing:
         errors.append(f"missing transition artifact types: {sorted(missing)}")

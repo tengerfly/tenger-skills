@@ -1,0 +1,14 @@
+[
+  {
+    "check": "system-validation",
+    "exitCode": 0
+  },
+  {
+    "check": "workflow-status",
+    "exitCode": 0
+  },
+  {
+    "check": "diff-check",
+    "exitCode": 0
+  }
+]

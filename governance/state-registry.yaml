@@ -731,7 +731,10 @@ transitions:
   - INCIDENT
   - OPTIMIZE
   actor: workflow
-  requiredArtifacts: []
+  requiredArtifacts:
+  - product-definition
+  - application-blueprint
+  - feature-decision
   requiredEvidence: []
   requiredOutcome: PASS
   allowDownstream: true
@@ -787,7 +790,10 @@ transitions:
   - INCIDENT
   - OPTIMIZE
   actor: workflow
-  requiredArtifacts: []
+  requiredArtifacts:
+  - product-definition
+  - application-blueprint
+  - feature-decision
   requiredEvidence: []
   requiredOutcome: PASS
   allowDownstream: true
@@ -919,7 +925,10 @@ transitions:
   - INCIDENT
   - OPTIMIZE
   actor: workflow
-  requiredArtifacts: []
+  requiredArtifacts:
+  - product-definition
+  - application-blueprint
+  - feature-decision
   requiredEvidence: []
   requiredOutcome: PASS
   allowDownstream: true
@@ -2545,7 +2554,10 @@ transitions:
   - INCIDENT
   - OPTIMIZE
   actor: workflow
-  requiredArtifacts: []
+  requiredArtifacts:
+  - product-definition
+  - application-blueprint
+  - feature-decision
   requiredEvidence: []
   requiredOutcome: PASS
   allowDownstream: true
@@ -2563,7 +2575,11 @@ transitions:
   - INCIDENT
   - OPTIMIZE
   actor: workflow
-  requiredArtifacts: []
+  requiredArtifacts:
+  - product-definition
+  - application-blueprint
+  - feature-decision
+  - prd
   requiredEvidence: []
   requiredOutcome: PASS
   allowDownstream: true
@@ -2575,6 +2591,9 @@ transitions:
   id: TR-113
   actor: prd-review
   requiredArtifacts:
+  - product-definition
+  - application-blueprint
+  - feature-decision
   - prd
   requiredEvidence:
   - prd-review
@@ -2792,7 +2811,11 @@ transitions:
   - INCIDENT
   - OPTIMIZE
   actor: workflow
-  requiredArtifacts: []
+  requiredArtifacts:
+  - product-definition
+  - application-blueprint
+  - feature-decision
+  - prd
   requiredEvidence: []
   requiredOutcome: PASS
   allowDownstream: true

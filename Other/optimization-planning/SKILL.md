@@ -34,7 +34,7 @@ product-analytics、巡检、运行信号或用户反馈发现优化机会。
 2. 判断候选是否其实是 defect/incident/change。
 3. 生成方案对比，必要时查 GitHub 同域实现并核验许可证。
 4. 定义预期收益、保护指标、最小批次、实验/灰度和回滚。
-5. 委托 ../../PRD/impact-analysis/tech-design/dev/testing，并记录追踪链。
+5. 委托 impact-analysis、技术设计、开发及 auto-test，并记录追踪链。
 6. 发布后通过 post-release-review 比较实际结果。
 
 ## Outputs

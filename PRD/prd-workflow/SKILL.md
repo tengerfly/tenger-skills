@@ -1,6 +1,6 @@
 ---
 name: prd-workflow
-description: 编排从模糊产品想法到已确认 PRD 与原型基线的产品需求流程。
+description: 只编排模糊想法到批准 PRD/原型的产品阶段、用户决策与 Gate；不代替竞品研究、产品定义、蓝图、功能取舍、PRD 编写或评审。
 metadata:
   short-description: 编排产品发现、定义、蓝图、范围、PRD 和原型的阶段门禁。
 ---
@@ -19,7 +19,7 @@ metadata:
 把产品域原子 Skill 按证据和 Gate 串起来，从模糊入口建立可追踪的产品基线。成功标准是正式 PRD 和原型都建立在已确认的用户、问题、旅程、范围和行为边界上。
 
 ## Trigger
-CREATE、CHANGE、OPTIMIZE 进入产品域，或运行反馈被判断为产品问题/优化机会时触发。不接收没有项目标识和生命周期的孤立“写个 PRD”命令。
+CREATE、CHANGE、OPTIMIZE 进入产品域，或运行反馈被判断为产品问题/优化机会时触发。孤立“写个 PRD”请求先识别范围、建立必要项目上下文；不要求用户预先了解项目标识或生命周期术语。
 
 ## Inputs
 - lifecycle、projectId、用户请求或批准变更；
@@ -37,7 +37,7 @@ CREATE、CHANGE、OPTIMIZE 进入产品域，或运行反馈被判断为产品�
 - 顺序调度 `idea-intake`、`product-discovery`、`Competitive-Analysis`、`product-definition`、`application-blueprint`、`feature-decision`、`PRD-Design`、`PRD-Review`、`Prototype-Design`、`Prototype-Review`；
 - 校验证据、产物、决策和回退路径；
 - 将产品问题路由回正确上游，不让下游补猜；
-- 形成 UI/DEV/Testing 可消费的产品基线。
+- 形成 UI/DEV/auto-test 可消费的产品基线。
 
 ## Non-goals
 - 不替原子 Skill 生成领域产物；
@@ -46,10 +46,10 @@ CREATE、CHANGE、OPTIMIZE 进入产品域，或运行反馈被判断为产品�
 
 ## Procedure
 1. 读取 lifecycle 和现有基线；CREATE 走完整路径，CHANGE/OPTIMIZE 由 impact analysis 定位受影响阶段。
-2. 执行 Intake、Discovery 和 Competitive Research；证据不足即阻塞。
+2. 按 `../../shared/workflow-visibility.md` 展示阶段、当前 Skill、待用户决策与下一步。执行 Intake、Discovery 和 Competitive Research；对标应用或用户明确要求竞品时必须交付功能全景，不能用入口问答替代。Discovery 缺口可用独立研究草稿补证后复核，不伪造 Gate。
 3. 执行 Product Definition，等待目标用户、定位、非目标和成功指标确认。
 4. 执行 Application Blueprint，冻结旅程、流程、异常、权限、状态和能力地图。
-5. 执行 Feature Decision，等待 MVP、Later、Reject、Defer 和行为边界确认。
+5. 执行 Feature Decision：先向用户展示完整模块图，再分模块解释候选及取舍，等待明确版本的 MVP、Later、Reject、Defer 和行为边界确认；用户不清楚时先给调研信息/示例，不要求其自己补全全体系功能。
 6. 将批准范围交 PRD-Design；PRD-Review 只审不改，问题回正确上游。
 7. PRD 通过后交 ../../UI/Prototype-Design/Review；原型不得改变产品范围。
 8. 输出 execution summary、manifest、decision、traceability 和下一 Workflow。
@@ -69,7 +69,7 @@ PASS：产品基线和原型批准，关键开放项为零；CONDITIONAL：例�
 研究不足回 Product Discovery/Competitive Analysis；定位冲突回 Product Definition；流程/状态缺口回 Application Blueprint；MVP/范围冲突回 Feature Decision；PRD 结构问题回 PRD-Design；原型问题回 Prototype-Design；技术未知交 DEV Workflow。
 
 ## Downstream Contract
-UI/DEV/Testing 只消费 manifest 中 APPROVED 的产品 artifact；OPEN、ASSUMPTION、RECOMMENDATION 不得作为批准需求实现。
+UI/DEV/auto-test 只消费 manifest 中 APPROVED 的产品 artifact；OPEN、ASSUMPTION、RECOMMENDATION 不得作为批准需求实现。
 
 ## State Changes
 `INTAKE_READY → IDEA_INTAKE_IN_PROGRESS → DISCOVERY_IN_PROGRESS → COMPETITIVE_RESEARCH_IN_PROGRESS → PRODUCT_DEFINITION_IN_PROGRESS → APPLICATION_BLUEPRINT_IN_PROGRESS → FEATURE_DECISION_IN_PROGRESS → PRD_IN_PROGRESS → PRD_REVIEW_IN_PROGRESS → PRD_APPROVED → PROTOTYPE_IN_PROGRESS → PROTOTYPE_REVIEW_IN_PROGRESS → PROTOTYPE_APPROVED`。

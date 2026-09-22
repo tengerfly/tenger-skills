@@ -1,6 +1,6 @@
 ---
 name: product-discovery
-description: 验证目标用户、问题场景、替代方案和证据强度，形成产品发现简报。
+description: 调查用户任务、痛点、当前做法与证据，形成 discovery-brief；不盘点竞品功能、不冻结产品定位或 MVP。
 metadata:
   short-description: 验证目标用户、问题场景、替代方案和证据强度，形成产品发现简报。
 ---
@@ -31,7 +31,7 @@ Intake 已准备，产品方向不清，或 CHANGE/OPTIMIZE 需要重新验证�
 - 不能把宣传文案、搜索摘要或模型记忆当用户事实。
 
 ## Responsibilities
-- 定义角色、场景、任务、痛点、频率、影响和替代方案；
+- 调查并澄清角色、场景、任务、痛点、频率、影响和用户当前替代做法，不在此冻结目标定位；
 - 组织证据并记录强度、样本和偏差；
 - 识别冲突说法；
 - 生成待验证假设和成功信号；
@@ -47,7 +47,8 @@ Intake 已准备，产品方向不清，或 CHANGE/OPTIMIZE 需要重新验证�
 2. 建立角色—场景—任务—问题—影响—替代方案表。
 3. 记录资料原文位置、时间、样本和口径。
 4. 把推断拆成可证伪假设，写验证动作、责任人和截止点。
-5. 输出 Discovery Brief；核心问题无证据时保持 OPEN 并阻塞。
+5. 按当前问题的缺口继续小批量追问：现在如何完成任务、哪里最痛、谁使用/管理、频率与规模、成功/失败实例及约束；已知答案不重复问。“不知道”改为待研究项，不逼用户编造需求。
+6. 输出 Discovery Brief；核心问题无证据时保持 OPEN 并阻塞正式交接，但不禁止编排器安排独立竞品补证草稿。补证后回本节点复核，不伪造 DISCOVERY_READY 或绕过注册状态。
 
 ## Outputs
 - `discovery-brief` artifact；
@@ -67,7 +68,7 @@ PASS：核心问题和人群有足够直接证据；CONDITIONAL：假设有责�
 ## Failure Route
 证据缺失回补研究；外部问题交 Competitive-Analysis；运行信号不明交 ../../Other/signal-triage/product-analytics。
 
-评审或澄清最多 3 轮；仍未收敛时保留问题并请求人工裁决，不无限生成。
+同一阻塞点反复 3 轮未收敛则请求裁决；新场景、新证据和不同问题可继续探索，不把三轮理解为整个 PRD 的访谈上限。不得为结束对话把 OPEN 改为已确认。
 
 ## Downstream Contract
 Product Definition 可消费问题、用户、场景、替代方案、证据和假设，不得将假设当事实。

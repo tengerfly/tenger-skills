@@ -1,0 +1,44 @@
+{
+  "workflowId": "WF-20260920-001",
+  "projectId": "tenger-skills",
+  "executionId": "EXEC-20260920-SYSTEM-001",
+  "lifecycle": "OPTIMIZE",
+  "state": "INSPECTION_IN_PROGRESS",
+  "currentSkill": "workflow",
+  "gate": "BLOCKED",
+  "nextAction": "run-real-project-pilot-and-independent-acceptance",
+  "revision": "governance-v2-remediation-20260921",
+  "artifactRefs": [
+    "ART-SKILL-REGISTRY",
+    "ART-WORKFLOW-REGISTRY",
+    "ART-STATE-REGISTRY",
+    "ART-ARTIFACT-REGISTRY",
+    "ART-KNOWLEDGE-REGISTRY",
+    "ART-GATE-CONTRACT",
+    "ART-TASK-ENVELOPE",
+    "ART-SHARED-LEGACY-ADAPTER",
+    "ART-VALIDATION-ENGINE",
+    "ART-VALIDATION-TESTS",
+    "ART-TASK-PREFLIGHT"
+  ],
+  "evidenceRefs": [
+    "EVID-SYSTEM-VALIDATION"
+  ],
+  "decisionRefs": [],
+  "allowDownstream": false,
+  "updatedAt": "2026-09-21T09:40:21+08:00",
+  "reason": "independent-acceptance-pending",
+  "owner": "quality-inspection",
+  "requiredInput": "independent acceptance and real project pilot",
+  "clearanceCondition": "authorized owner records acceptance after pilot",
+  "unresolvedRisks": [
+    {
+      "severity": "P1",
+      "description": "Independent acceptance and a real project pilot have not been performed.",
+      "owner": "quality-inspection"
+    }
+  ],
+  "source": "D:\\project\\agent-project\\tenger-skills\\.spec\\workflow.yaml",
+  "stateChanged": false,
+  "notice": "仅展示已落盘快照；不表示正在运行，不验证证据新鲜度或授予执行/发布权限。"
+}

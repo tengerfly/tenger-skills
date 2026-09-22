@@ -1,7 +1,8 @@
 ---
 name: fidelity-review
 description: 页面还原度评审（视觉 + 交互还原）。依据 UI 设计稿（优先 `.spec/设计稿/`，缺失可用外部设计稿）对前端实现页逐页比对：视觉不一致、交互不对、超长文案健壮性问题。只审不改：截图存证，输出分级问题清单（现象/出处/成因/截图/建议），三模式交付——独立调用落盘 `.spec/页面还原评审/`（报告+任务清单+截图）；被 auto-test（⑭ 测试节点）调用时就地出轻量清单；被 Code-Review 调用时（⑬-前 并行）问题交 Code-Review 合并进 `.spec/代码评审/任务清单.md`（标来源=Fidelity-Review）。浏览器工具硬性前置，全无则报错停用。防死循环：判据 + P0/P1 冻结 + 复核只验本轮 + 轮次上限 3（超限后 P0 残留 BLOCKED；P1 残留只能经授权 CONDITIONAL，不得 PASS。触发：页面还原度评审、UI 还原检查、视觉走查、对照设计稿查前端页面。
-compatibility: Claude Code / Agent SDK / OpenCode
+metadata:
+  compatibility: Claude Code / Agent SDK / OpenCode
 ---
 
 # Fidelity-Review —— 页面还原度评审
@@ -32,7 +33,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 | `Frontend-Dev` | 被审对象 + 主要修改方（其 `fidelity-guide` 是开发自查，本 skill 是第三方还原验收） |
 | `UI-UX-Review` | 评「设计稿 vs PRD/布局清单」，本 skill 评「实现页 vs 设计稿」，不重叠 |
 | `Code-Review` | 评代码层契约 / 架构；⑬-前 与本 skill **并行**审前端，本 skill 只出还原度问题并交其合并 |
-| `auto-test` | ⑭ 测试节点：L2 视觉 E2E 内嵌调用本 skill 做 UI 还原检查（auto-test 场景；链外 Testing 备用时同理） |
+| `auto-test` | ⑭ 测试节点：L2 视觉 E2E 内嵌调用本 skill 做 UI 还原检查（由 auto-test 统一编排） |
 
 **铁律**：
 
@@ -99,7 +100,7 @@ Use the common Gate contract: PASS requires no unresolved P0/P1; residual P0 is 
 | 无截图报样式问题 | 铁律 2 必配截图 |
 | **拿低保真原型当视觉基准评「还原达标」** | 视觉基准只能是设计稿；原型只判结构/存在性（铁律 2 附加项） |
 | **有设计稿却只与原型比对** | 截图必开「设计稿 ↔ 实现页」；原型比对不作视觉结论 |
-| 把业务逻辑当还原度问题 | 归 auto-test / Testing |
+| 把业务逻辑当还原度问题 | 归 auto-test |
 | 与 UI-UX-Review / Code-Review 边界混跑 | 按 §一 边界；⑬-前 并行但各管各域 |
 | ⑬-前 另建任务清单 | 交 Code-Review 合并，标来源 |
 | 页面起不来仍评审 | 步骤 1 阻塞并提示 |

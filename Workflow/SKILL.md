@@ -52,6 +52,10 @@ metadata:
 
 ## Procedure
 
+### 0. 公开路径与当前位置
+
+按 `../shared/workflow-visibility.md` 展示阶段路线与状态卡；开工/恢复、阶段切换、等待决策、阻塞和收尾都要更新。先说明当前 skill、正在做什么、产物、下一步与需用户决定的事项，再执行。用户查询状态先回应；要求暂停即保存并停止。
+
 ### 1. 判断强度与终点
 
 按 `shared/execution-profiles.md` 选择轻量/标准/完整；对用户只简述拟走路径、复用基线、修改边界和验收终点。默认完成用户要求的可验收结果，不默认执行发布/运维，也不每完成一小步都等待“继续”。用户只要分析/计划时不修改实现。
@@ -62,6 +66,8 @@ metadata:
 ### 2. 选择正式流程入口与基线（标准/完整）
 
 - 新项目或陌生旧项目：`project-onboarding`；
+- “旧项目按现在体系重跑/接入新流程/工程流程补齐”：先 `project-onboarding` 产出阶段缺口矩阵，再让用户确认补齐范围；不是自动 REFACTOR，也不是只跑测试。仅补工程基线按 CHANGE 记录，若实际目标是重构/缺陷/优化则按相应生命周期；不新增迁移状态、不重写旧 PIPELINE、不默认改代码或发布；
+- “全流程测试/全量回归”仅测试已有实现：直接 `auto-test`，缺失基准如实列出，不扩成需求重做；
 - 模式不明：`change-intake`；
 - 运行信号/缺陷：`defect-triage`；
 - 内部结构治理：`refactor-planning`；
@@ -70,15 +76,17 @@ metadata:
 ### 3. 路由领域 Workflow（标准/完整）
 
 ```text
-CREATE  -> PRD -> UI -> Tech Design -> DEV -> Testing -> Release -> Operations
-CHANGE  -> Intake -> Impact -> affected domain -> Tech Design -> DEV -> Testing -> Release -> Operations
-DEFECT  -> Triage -> Tech Design (when needed) -> DEV -> Testing -> Release -> Operations
-REFACTOR -> Refactor -> Tech Design -> DEV -> Testing -> Release -> Operations
-INCIDENT -> Triage -> Incident Response -> Tech Design (when needed) -> DEV -> Testing -> Release -> Operations
-OPTIMIZE -> Intake -> Impact -> experiment/Tech Design/DEV -> Testing -> Release -> Analytics
+CREATE  -> PRD -> UI -> Tech Design -> DEV -> auto-test -> Release -> Operations
+CHANGE  -> Intake -> Impact -> affected domain -> Tech Design -> DEV -> auto-test -> Release -> Operations
+DEFECT  -> Triage -> Tech Design (when needed) -> DEV -> auto-test -> Release -> Operations
+REFACTOR -> Refactor -> Tech Design -> DEV -> auto-test -> Release -> Operations
+INCIDENT -> Triage -> Incident Response -> Tech Design (when needed) -> DEV -> auto-test -> Release -> Operations
+OPTIMIZE -> Intake -> Impact -> experiment/Tech Design/DEV -> auto-test -> Release -> Analytics
 ```
 
 以上为可选领域路线，不是每次必跑清单。标准迭代只处理受影响领域；完整新项目才按所需阶段建立产物。已有批准产物通过证据复用，正式状态转换仍须沿注册合法边，不可伪造跳跃；没有合法边时说明缺口并停下，不手工宣称通过。
+
+测试执行唯一入口为 `auto-test`，`testing-workflow` 只是领域路由 ID，不是第二套测试流程。旧 Testing 请求重定向 auto-test，不启动历史人工测试流程。
 
 ### 4. 守门与交接
 
@@ -107,7 +115,7 @@ PEOS v2 is an incremental refactor. It preserves the proven controls from the pr
 - **Ordering and parallel boundaries**: Technical design remains "write one, review one". Frontend and backend may run in parallel only after dependencies are satisfied; merge parallel findings, check conflicts, run the full validation, and sample-review the result. Frontend code review and Fidelity Review share one issue list.
 - **Runtime feedback**: `web-monitor`, `server-log`, and `server-monitor` are controlled inputs only. Signals flow through `signal-collection`, `signal-triage`, and `incident-response`, then return to defect remediation, testing, release, and review. No external repository or production action is changed automatically.
 - **Learning loop**: Gate and runtime findings keep the existing paths into project issues, `bug-patterns/`, and `issue/`; `Skill-Optimizer` and `Skill-Evolver` may distill them later. Every learning entry records evidence, destination, and rollback information.
-- **Compatibility entry points**: The numbered legacy pipeline, legacy `.spec/PIPELINE.md`, `Bug-Fix`, `Testing`, and `Fidelity-Review` remain callable as compatibility entries, wrapped by the current contracts. This Workflow wraps them with lifecycle, artifact, Gate, and traceability contracts instead of requiring a one-shot migration.
+- **Compatibility entry points**: The numbered legacy pipeline, legacy `.spec/PIPELINE.md`, `Bug-Fix` and `Fidelity-Review` remain callable as compatibility entries, wrapped by the current contracts. This Workflow wraps them with lifecycle, artifact, Gate, and traceability contracts instead of requiring a one-shot migration.
 
 
 ## Outputs

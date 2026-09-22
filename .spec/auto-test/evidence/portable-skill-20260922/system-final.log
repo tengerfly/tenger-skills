@@ -1,0 +1,67 @@
+system validation passed
+WARNING: knowledge dependency is not configured; set SKILLS_KNOWLEDGE_ROOT (policy=warn-and-degrade)
+test_absolute_local_links_fail (portable_skill_tests.PortableBundleTests.test_absolute_local_links_fail) ... ok
+test_bad_python_syntax_fails (portable_skill_tests.PortableBundleTests.test_bad_python_syntax_fails) ... ok
+test_completed_target_template_stands_alone_without_maintainer (portable_skill_tests.PortableBundleTests.test_completed_target_template_stands_alone_without_maintainer) ... ok
+test_copied_package_runs_offline_without_site_packages_or_source_repo (portable_skill_tests.PortableBundleTests.test_copied_package_runs_offline_without_site_packages_or_source_repo) ... ok
+test_escape_to_existing_external_file_fails (portable_skill_tests.PortableBundleTests.test_escape_to_existing_external_file_fails) ... ok
+test_invalid_utf8_fails (portable_skill_tests.PortableBundleTests.test_invalid_utf8_fails) ... ok
+test_metadata_missing_duplicate_and_name_mismatch_fail (portable_skill_tests.PortableBundleTests.test_metadata_missing_duplicate_and_name_mismatch_fail) ... ok
+test_missing_referenced_template_fails (portable_skill_tests.PortableBundleTests.test_missing_referenced_template_fails) ... ok
+test_python_is_compiled_but_not_executed (portable_skill_tests.PortableBundleTests.test_python_is_compiled_but_not_executed) ... ok
+test_redirected_directory_is_not_traversed (portable_skill_tests.PortableBundleTests.test_redirected_directory_is_not_traversed) ... skipped "Symlink creation unavailable: [WinError 1314] 客户端没有所需的特权。: 'C:\\\\Users\\\\15136\\\\AppData\\\\Local\\\\Temp\\\\tmpwyrpn3_j\\\\external' -> 'C:\\\\Users\\\\15136\\\\AppData\\\\Local\\\\Temp\\\\tmpwyrpn3_j\\\\skill-lifecycle\\\\outside'"
+test_reference_can_use_parent_inside_bundle (portable_skill_tests.PortableBundleTests.test_reference_can_use_parent_inside_bundle) ... ok
+test_unfilled_entry_template_is_not_a_finished_skill (portable_skill_tests.PortableBundleTests.test_unfilled_entry_template_is_not_a_finished_skill) ... ok
+test_authoritative_policy_keeps_failure_and_authority_boundaries (test_problem_recording.ProblemRecordingContractTests.test_authoritative_policy_keeps_failure_and_authority_boundaries) ... ok
+test_every_registered_entry_loads_recording_policy (test_problem_recording.ProblemRecordingContractTests.test_every_registered_entry_loads_recording_policy) ... ok
+test_index_and_detail_templates_keep_tracking_fields (test_problem_recording.ProblemRecordingContractTests.test_index_and_detail_templates_keep_tracking_fields) ... ok
+test_reporting_consumers_bind_to_project_index (test_problem_recording.ProblemRecordingContractTests.test_reporting_consumers_bind_to_project_index) ... ok
+test_absent_authority_fails_closed (test_validation.TaskPreflightTests.test_absent_authority_fails_closed) ... ok
+test_ambiguous_gate_outcome_is_rejected (test_validation.TaskPreflightTests.test_ambiguous_gate_outcome_is_rejected) ... ok
+test_approval_cannot_grant_broader_paths (test_validation.TaskPreflightTests.test_approval_cannot_grant_broader_paths) ... ok
+test_blocked_cannot_be_cleared_by_task_pass_alone (test_validation.TaskPreflightTests.test_blocked_cannot_be_cleared_by_task_pass_alone) ... ok
+test_changed_evidence_content_is_rejected (test_validation.TaskPreflightTests.test_changed_evidence_content_is_rejected) ... ok
+test_changed_subject_content_is_rejected (test_validation.TaskPreflightTests.test_changed_subject_content_is_rejected) ... ok
+test_cli_emits_read_only_plan_without_changing_workflow (test_validation.TaskPreflightTests.test_cli_emits_read_only_plan_without_changing_workflow) ... ok
+test_create_change_defect_positive_readiness (test_validation.TaskPreflightTests.test_create_change_defect_positive_readiness) ... ok
+test_deployment_requires_separate_deploy_authorization (test_validation.TaskPreflightTests.test_deployment_requires_separate_deploy_authorization) ... ok
+test_forbidden_parent_takes_precedence (test_validation.TaskPreflightTests.test_forbidden_parent_takes_precedence) ... ok
+test_lightweight_hint_cannot_bypass_formal_authority (test_validation.TaskPreflightTests.test_lightweight_hint_cannot_bypass_formal_authority) ... ok
+test_lightweight_hint_cannot_clear_existing_block (test_validation.TaskPreflightTests.test_lightweight_hint_cannot_clear_existing_block) ... ok
+test_mismatched_granter_is_rejected (test_validation.TaskPreflightTests.test_mismatched_granter_is_rejected) ... ok
+test_portable_absolute_and_traversal_paths_are_rejected (test_validation.TaskPreflightTests.test_portable_absolute_and_traversal_paths_are_rejected) ... ok
+test_prd_can_reuse_approved_product_baseline (test_validation.TaskPreflightTests.test_prd_can_reuse_approved_product_baseline) ... ok
+test_prd_rejects_approval_label_without_scoped_decision (test_validation.TaskPreflightTests.test_prd_rejects_approval_label_without_scoped_decision) ... ok
+test_prd_rejects_missing_feature_decision (test_validation.TaskPreflightTests.test_prd_rejects_missing_feature_decision) ... ok
+test_prd_rejects_reviewed_but_unapproved_baseline (test_validation.TaskPreflightTests.test_prd_rejects_reviewed_but_unapproved_baseline) ... ok
+test_scalar_paths_and_acceptance_checks_are_rejected (test_validation.TaskPreflightTests.test_scalar_paths_and_acceptance_checks_are_rejected) ... ok
+test_stale_revision_is_rejected (test_validation.TaskPreflightTests.test_stale_revision_is_rejected) ... ok
+test_wrong_actor_and_lifecycle_are_rejected (test_validation.TaskPreflightTests.test_wrong_actor_and_lifecycle_are_rejected) ... ok
+test_wrong_evidence_role_is_rejected (test_validation.TaskPreflightTests.test_wrong_evidence_role_is_rejected) ... ok
+test_wrong_execution_is_rejected (test_validation.TaskPreflightTests.test_wrong_execution_is_rejected) ... ok
+test_boolean_string_and_blocked_downstream_are_rejected (test_validation.ValidationTests.test_boolean_string_and_blocked_downstream_are_rejected) ... ok
+test_conditional_requires_live_scoped_authorization (test_validation.ValidationTests.test_conditional_requires_live_scoped_authorization) ... ok
+test_current_graph_has_completion_and_review_test_dominators (test_validation.ValidationTests.test_current_graph_has_completion_and_review_test_dominators) ... ok
+test_duplicate_yaml_keys_are_rejected (test_validation.ValidationTests.test_duplicate_yaml_keys_are_rejected) ... ok
+test_graph_rejects_missing_product_baseline_on_every_prd_entry (test_validation.ValidationTests.test_graph_rejects_missing_product_baseline_on_every_prd_entry) ... ok
+test_graph_rejects_test_bypass_even_with_required_evidence_fields (test_validation.ValidationTests.test_graph_rejects_test_bypass_even_with_required_evidence_fields) ... ok
+test_graph_rejects_unknown_actor (test_validation.ValidationTests.test_graph_rejects_unknown_actor) ... ok
+test_graph_rejects_wrong_state_lifecycle (test_validation.ValidationTests.test_graph_rejects_wrong_state_lifecycle) ... ok
+test_knowledge_missing_is_visible_and_strict_fails (test_validation.ValidationTests.test_knowledge_missing_is_visible_and_strict_fails) ... ok
+test_legacy_fixture_checks_required_fields_not_just_nonempty (test_validation.ValidationTests.test_legacy_fixture_checks_required_fields_not_just_nonempty) ... ok
+test_malformed_document_cli_fails_without_traceback (test_validation.ValidationTests.test_malformed_document_cli_fails_without_traceback) ... ok
+test_missing_self_spec_fails (test_validation.ValidationTests.test_missing_self_spec_fails) ... ok
+test_pass_rejects_p0_and_p1_but_allows_p2 (test_validation.ValidationTests.test_pass_rejects_p0_and_p1_but_allows_p2) ... ok
+test_reference_checker_checks_existing_endpoints_evidence (test_validation.ValidationTests.test_reference_checker_checks_existing_endpoints_evidence) ... ok
+test_only_auto_test_is_discoverable_and_routed_for_testing (test_workflow_status.WorkflowRoutingTests.test_only_auto_test_is_discoverable_and_routed_for_testing) ... ok
+test_cli_emits_utf8_under_non_utf8_environment (test_workflow_status.WorkflowStatusTests.test_cli_emits_utf8_under_non_utf8_environment) ... ok
+test_duplicate_or_malformed_yaml_is_rejected (test_workflow_status.WorkflowStatusTests.test_duplicate_or_malformed_yaml_is_rejected) ... ok
+test_invalid_or_conflicting_records_fail_closed (test_workflow_status.WorkflowStatusTests.test_invalid_or_conflicting_records_fail_closed) ... ok
+test_json_reports_exact_persisted_block_without_writing (test_workflow_status.WorkflowStatusTests.test_json_reports_exact_persisted_block_without_writing) ... ok
+test_no_formal_file_does_not_create_one_or_invent_state (test_workflow_status.WorkflowStatusTests.test_no_formal_file_does_not_create_one_or_invent_state) ... ok
+test_text_includes_pending_decision_and_next_action (test_workflow_status.WorkflowStatusTests.test_text_includes_pending_decision_and_next_action) ... ok
+
+----------------------------------------------------------------------
+Ran 60 tests in 44.290s
+
+OK (skipped=1)

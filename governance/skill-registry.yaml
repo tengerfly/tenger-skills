@@ -386,6 +386,9 @@ skills:
   legacyAliases:
   - Code-Review
 - id: auto-test
+  legacyAliases:
+  - Testing
+  - testing
   path: Test/auto-test
   role: verification
   status: active
@@ -397,20 +400,6 @@ skills:
   - REFACTOR
   - INCIDENT
   - OPTIMIZE
-- id: testing
-  path: Test/Testing
-  role: verification-fallback
-  status: active
-  contractLevel: legacy-wrapper
-  lifecycle:
-  - CREATE
-  - CHANGE
-  - DEFECT
-  - REFACTOR
-  - INCIDENT
-  - OPTIMIZE
-  legacyAliases:
-  - Testing
 - id: bug-fix
   path: Other/Bug-Fix
   role: defect-remediation
@@ -538,4 +527,15 @@ skills:
   - DEFECT
   - REFACTOR
   - INCIDENT
+  - OPTIMIZE
+
+- id: skill-lifecycle
+  path: Skill/skill-lifecycle
+  recordingPolicy: Skill/skill-lifecycle/references/record.md
+  role: specialist
+  status: active
+  contractLevel: v1
+  legacyAliases: []
+  lifecycle:
+  - CREATE
   - OPTIMIZE

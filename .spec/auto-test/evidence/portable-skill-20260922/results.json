@@ -1,0 +1,22 @@
+[
+  {
+    "check": "bundle-check",
+    "exitCode": 0
+  },
+  {
+    "check": "portable-tests",
+    "exitCode": 0
+  },
+  {
+    "check": "skill-format",
+    "exitCode": 0
+  },
+  {
+    "check": "system-validation",
+    "exitCode": 1
+  },
+  {
+    "check": "diff-check",
+    "exitCode": 0
+  }
+]

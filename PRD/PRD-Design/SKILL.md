@@ -1,14 +1,12 @@
 ---
 name: prd-design
-description: 根据已确认产品定义、应用蓝图和功能决策编写可执行 PRD 的兼容入口。
+description: 将已批准的产品定义、业务蓝图与功能范围编写为带验收标准的 PRD。用于需求规格撰写或更新；不做竞品研究、范围决策或 PRD 评审。
 metadata:
   legacy-alias: PRD-Design
-  migration-target: prd-workflow
+  migration-target: prd-design
 ---
 
-# PRD-Design 兼容入口
-
-本目录保留旧版成熟逻辑和资源；旧版完整说明已归档到 `references/legacy-skill.md`，原有 references/assets 不删除。新流程通过本入口承接，但职责和 Gate 受 `../../shared/product-workflow-contract.md` 约束。
+# PRD Design
 
 ## 问题记录与恢复（执行必需）
 
@@ -16,61 +14,47 @@ metadata:
 
 ## Task scope & context
 
-先按 `../../shared/execution-profiles.md` 判断强度，需求读写按 `../../shared/requirements-context.md`。轻量 Demo/局部任务只保留确认的目标、边界、验收点与本领域必要产物，不要求下文的全套上游正式文档和建档；不得用摘要冒充批准或绕过相关阻塞。标准/完整及正式交接才执行下述 manifest、Gate、状态契约。资源按任务加载，不先通读全部 references。
+按 `../../shared/execution-profiles.md` 判强度，按 `../../shared/requirements-context.md` 固定需求版本，按 `../../shared/product-workflow-contract.md` 守职责边界。轻量只处理已确认的局部范围；正式交接遵守 manifest、Gate、决策与状态契约。旧 references/assets 按需复用，不执行旧版跨域流程。
 
 ## Purpose
-平滑接入新的 PRD Workflow，同时保留已经验证过的领域规则和模板。
+把批准输入转成清晰、可实现、可测试的需求规格；不重新发现或批准产品需求。
 
 ## Trigger
-用户明确要求执行本领域动作，或 `prd-workflow` 在对应阶段调度时触发。请求属于上游研究、定位、蓝图或范围决策时先路由上游。
+feature-decision 已批准范围，需要编写/更新 PRD，或 prd-review 将规格表达问题退回。模糊想法先交 prd-workflow，不直接生成正式全量 PRD。
 
 ## Inputs
-- 上游 artifact、manifest、决策记录和 traceability；
-- 用户确认、研究证据、PRD/原型原文；
-- 本目录 legacy-skill、references、assets 和既有脚本。
+批准的 product-definition、application-blueprint、feature-decision 及其版本/decisionRefs；research 功能 ID、现有需求与影响分析。
 
 ## Preconditions
-- 上游输入可定位，OPEN/ASSUMPTION 不能被当作批准结论；
-- 工作区边界已检查，不覆盖未提交内容；
-- 读取产品契约和 Gate 规则；
-- 评审类入口必须只审不改。
+输入可定位且正式 Gate 允许交接；范围确认可追踪，关键规则无 OPEN。用户明确限定的局部任务可用已确认验收点，但不能冒充整套产品基线。
 
 ## Responsibilities
-- 校验输入 artifact、证据和用户确认；
-- 在职责边界内复用旧版成熟规则；
-- 产出带 artifactId、sourceRefs、evidenceRefs、decisionRefs 的结果；
-- 失败时回退到正确上游；
-- 将 execution、Gate 和问题写入项目 `.spec/`。
+组织规格结构与稳定 REQ ID；把批准规则写成前置条件、行为、权限、数据、异常、恢复和可验证验收标准；建立需求—功能决策—蓝图追踪。只编写规格，不批准自己的产物。
 
 ## Non-goals
-- 不替用户决定产品定位、MVP、范围或重大取舍；
-- 不删除旧版 references/assets；
-- 不把竞品存在、模型推荐或原型表现升级为产品事实。
+不重做研究或定位；不增删批准范围；不代写业务规则和商业取舍；不执行 PRD 评审、原型、技术选型或代码开发。
 
 ## Procedure
-1. 按本次范围读取 legacy-skill 的适用规则与相关模板，不全量加载案例库。
-2. 校验生命周期、上游状态、证据和开放项。
-3. 执行本领域动作，只生成职责范围内的草案、报告或结果。
-4. 使用适用模板/清单自检；修改需求源时同步刷新受影响速查索引、REQ↔AC 与依赖，保留历史批准版本，标记受影响任务上下文失效。
-5. 写入 manifest、traceability、decision/execution record 并输出 Gate。
-6. 评审最多 3 轮，问题路由到产品定义、蓝图、范围、原型或 UI/DEV。
+1. 固定输入版本并核查功能 ID、范围决策与关键规则。缺失就退回对应节点，不凭竞品清单直接写实现需求。
+2. 按批准范围编写 PRD；结构用 `references/prd-structure.md`，验收语法用 `references/gherkin-guide.md`，按需使用 `assets/overview-template.md`、`assets/module-template.md`、`assets/quickref-template.md`。若旧模板要求顺带研究/定范围/自批 Gate，忽略该越界部分。
+3. 每项需求写可测试的正常、失败、权限与恢复结果及来源，引用蓝图而非建立互相冲突的规则副本。
+4. 检查批准范围覆盖和双向追踪，标出排除项与非阻塞开放项。自检不等于独立评审。
+5. 输出 DRAFT/REVIEW 版本交 prd-review；评审修改后产生新版本并标明受影响条目，不能继续沿用失效批准。
 
 ## Outputs
-- 本领域 artifact、问题清单或评审报告；
-- 证据、决策、开放项和下游接口；
-- executionId、status、gate、evidenceRefs、artifactRefs、decisionRefs、nextAction。
+prd artifact、需求索引/验收标准、来源与范围覆盖表。正式执行记录 executionId、status、gate、artifactRefs、evidenceRefs、decisionRefs、nextAction。
 
 ## Evidence
-使用上游 artifact、用户确认、文件/源码/截图、可核验外部来源和确定性命令结果。无来源数据标 OPEN；预测/估算显式标注；多方口径并列保留。
+已批准输入与用户确认引用；估算注明来源和假设，不把未知约束编成事实。
 
 ## Gate
-PASS：输入、产物、证据和关键确认齐全；CONDITIONAL：风险、责任人、期限、补证动作和 allowDownstream 已登记；BLOCKED：关键证据、授权、范围或上游 Gate 缺失。文件存在不等于 Gate 通过。
+PASS 仅表示本节点规格编写满足交接要求，PRD_APPROVED 必须经 prd-review 与授权确认。关键范围/规则/验收标准缺失为 BLOCKED；CONDITIONAL 按共享契约记录例外与限制。
 
 ## Failure Route
-证据/用户问题不足回 `feature-decision`；产品定位/核心价值回 `product-definition`；业务流程/状态回 `application-blueprint`；MVP/功能范围回 `feature-decision`；技术未知交 DEV Workflow；页面/视觉问题交 `prd-review`。
+来源不足回 competitive-analysis/product-discovery；定位回 product-definition；流程/权限/状态回 application-blueprint；取舍回 feature-decision；纯表达遗漏由本节点修订；技术未知交 DEV。
 
 ## Downstream Contract
-下游只能消费 manifest 中状态明确的 artifact，必须读取 sourceRefs、evidenceRefs、decisionRefs 和 openItems，不得从聊天上下文补齐未确认结论。
+prd-review 消费固定版本、确认引用和范围覆盖表。未评审批准的 PRD 不作为正式实现授权。
 
 ## State Changes
-`WORKFLOW_BLOCKED → INTAKE_REQUESTED → DISCOVERY_IN_PROGRESS → INTAKE_READY`。
+`FEATURE_DECISION_READY → PRD_IN_PROGRESS → PRD_REVIEW_IN_PROGRESS`；正式推进由编排器按注册合法边完成，编写者不能自行设置 PRD_APPROVED。

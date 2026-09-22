@@ -38,7 +38,7 @@ metadata:
 
 **分级与防死循环**：问题 P0/P1/P2 分级；复核只验本轮清单、轮次上限 3（**超限交用户裁决**，不适用授权 CONDITIONAL——Bug-Fix 专属口径，定义见仓库根 `../../shared/anti-deadloop.md` §二）。**不确定即问**：日志不全 / 代码位置不明 / 根因无法收敛 / 跨端责任不清 → 停下问，给选项与推荐，不自己发挥。
 
-**适用范围**：适用线上 / 测试 / 自测发现的功能 bug、接口报错、前端 console 或 network 异常、后端错误栈 / 5xx / 慢查询（来源可为日志文件、粘贴、线上日志平台导出、监控告警 / 前端监控记录（server-log / server-monitor / web-monitor——运行期正向循环入口）或本地复现）；不适用需求本身不合理（归 PRD-Design）、性能优化专项（auto-test / Testing）、代码质量评审（Code-Review）、全新功能开发（走主链）。输入来源可以是 `Testing` 的分级问题文档或 `Code-Review` 的评审任务——本 skill 是「问题 → 修复闭环」的诊断入口与委托方。
+**适用范围**：适用线上 / 测试 / 自测发现的功能 bug、接口报错、前端 console 或 network 异常、后端错误栈 / 5xx / 慢查询（来源可为日志文件、粘贴、线上日志平台导出、监控告警 / 前端监控记录（server-log / server-monitor / web-monitor——运行期正向循环入口）或本地复现）；不适用需求本身不合理（归 PRD-Design）、性能优化专项（auto-test）、代码质量评审（Code-Review）、全新功能开发（走主链）。输入来源可以是 `auto-test` 的分级问题文档（也可读取历史 Testing 报告）或 `Code-Review` 的评审任务——本 skill 是「问题 → 修复闭环」的诊断入口与委托方。
 
 ## 二、输入与前置
 
@@ -137,7 +137,7 @@ metadata:
 | Frontend-Tech-Design / Backend-Tech-Design | 修复方案的产出方（增量 TDD/FTDD） |
 | Frontend-Dev / Backend-Dev | 代码修复执行方 |
 | Code-Review | 评审发现的可运行性问题可转本 skill；修复完成后如需可再审 |
-| auto-test / Testing | 发现问题的来源之一（⑭ 分层验收产物）；修复回归按需委托 auto-test 跑完整分层回归（Testing 为链外人工走查备用，源码不动） |
+| auto-test | 发现问题的来源之一（⑭ 分层验收产物）；修复回归按需委托 auto-test 跑完整分层回归（不再调用历史 Testing 流程） |
 | PRD-Design | 「需求本身不合理」的移交方 |
 | Workflow | 本 skill 不占主链节点，独立触发；主链流程不因本 skill 改变 |
 

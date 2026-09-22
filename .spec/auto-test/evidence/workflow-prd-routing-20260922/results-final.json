@@ -1,0 +1,90 @@
+{
+  "checks": [
+    {
+      "check": "system-validation",
+      "exitCode": 0
+    },
+    {
+      "check": "workflow-status",
+      "exitCode": 0
+    },
+    {
+      "check": "diff-check",
+      "exitCode": 0
+    }
+  ],
+  "skills": [
+    {
+      "skill": "Other/Bug-Fix/SKILL.md",
+      "exitCode": 0
+    },
+    {
+      "skill": "Other/Fact-Check/SKILL.md",
+      "exitCode": 0
+    },
+    {
+      "skill": "Other/optimization-planning/SKILL.md",
+      "exitCode": 0
+    },
+    {
+      "skill": "Other/project-onboarding/SKILL.md",
+      "exitCode": 0
+    },
+    {
+      "skill": "Other/release-planning/SKILL.md",
+      "exitCode": 0
+    },
+    {
+      "skill": "PRD/Competitive-Analysis/SKILL.md",
+      "exitCode": 0
+    },
+    {
+      "skill": "PRD/PRD-Design/SKILL.md",
+      "exitCode": 0
+    },
+    {
+      "skill": "PRD/PRD-Review/SKILL.md",
+      "exitCode": 0
+    },
+    {
+      "skill": "PRD/application-blueprint/SKILL.md",
+      "exitCode": 0
+    },
+    {
+      "skill": "PRD/feature-decision/SKILL.md",
+      "exitCode": 0
+    },
+    {
+      "skill": "PRD/idea-intake/SKILL.md",
+      "exitCode": 0
+    },
+    {
+      "skill": "PRD/impact-analysis/SKILL.md",
+      "exitCode": 0
+    },
+    {
+      "skill": "PRD/prd-workflow/SKILL.md",
+      "exitCode": 0
+    },
+    {
+      "skill": "PRD/product-definition/SKILL.md",
+      "exitCode": 0
+    },
+    {
+      "skill": "PRD/product-discovery/SKILL.md",
+      "exitCode": 0
+    },
+    {
+      "skill": "Test/auto-test/SKILL.md",
+      "exitCode": 0
+    },
+    {
+      "skill": "UI/Fidelity-Review/SKILL.md",
+      "exitCode": 0
+    },
+    {
+      "skill": "Workflow/SKILL.md",
+      "exitCode": 0
+    }
+  ]
+}

@@ -1,5 +1,7 @@
-version: 1
+version: 2
 workflowId: WF-YYYYMMDD-001
+executionId: EXEC-YYYYMMDD-001
+revision: replace-with-current-revision
 projectId: replace-with-project-id
 lifecycle: CREATE
 state: INTAKE_REQUESTED
@@ -11,4 +13,8 @@ updatedAt: 2026-09-20T00:00:00+08:00
 evidenceRefs: []
 artifactRefs: []
 decisionRefs: []
-nextAction: ""
+reason: initialization-pending
+owner: workflow
+requiredInput: project scope and baseline evidence
+clearanceCondition: verify inputs and record authorized transition
+nextAction: confirm-project-scope-and-baseline

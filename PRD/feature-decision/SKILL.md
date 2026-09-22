@@ -1,6 +1,6 @@
 ---
 name: feature-decision
-description: 基于产品蓝图对候选功能做价值、成本、风险和依赖取舍，冻结 MVP 与行为边界。
+description: 向用户解释功能全景并逐模块确认 MVP/Later/Reject/Defer、依赖和范围边界；不做竞品研究、不设计业务状态或编写 PRD。
 metadata:
   short-description: 基于产品蓝图对候选功能做价值、成本、风险和依赖取舍，冻结 MVP 与行为边界。
 ---
@@ -35,7 +35,7 @@ Application Blueprint 已准备，或 CHANGE/OPTIMIZE 调整功能范围、MVP�
 - 建立功能卡和评价维度；
 - 比较价值、频率、成本、风险、依赖、可逆性和验证成本；
 - 产出 MVP/Later/Reject/Defer 与 Must/Should/Could/Won’t；
-- 记录不可变行为、验收边界、保护指标和不做项；
+- 引用蓝图中的规则，确认选入范围的不可变行为、验收边界、保护指标和不做项；
 - 生成用户确认的 Feature Decision Record。
 
 ## Non-goals
@@ -44,12 +44,13 @@ Application Blueprint 已准备，或 CHANGE/OPTIMIZE 调整功能范围、MVP�
 - 不写完整 PRD、视觉或代码。
 
 ## Procedure
-1. 从蓝图生成并去重候选功能。
-2. 记录价值、证据、成本/风险/依赖、可逆性和验证方式。
-3. 比较范围方案，明确 MVP 与 Later 边界。
-4. 写关键行为、权限、状态、异常和验收边界。
-5. 等待确认，未确认项保持 PROPOSED/OPEN。
-6. 通过 Gate 后交 PRD-Design。
+1. 引用 research 的模块全景/功能 ID 与蓝图映射，合并有来源的补充候选；不从用户随口提到的单点反推整个产品范围。
+2. 先展示整个能力地图，再逐模块解释“做什么、解决什么、依赖什么、不做会怎样”；给出范围建议及理由，不能只问“还有什么需求”。
+3. 用决策表记录：功能 ID、用户场景/价值、候选实现边界、依赖、成本/风险（估算注明）、AI 建议、用户选择、确认引用。选择统一用 MVP/Later/Reject/Defer；未答复为 OPEN，不默认同意。
+4. 每轮聚焦少量有关联的决策，按用户理解程度深入；用户不知道时给案例、差异和可选方案。用户可一次确认一组明确列出的功能及版本，不必逐条点头。
+5. 引用蓝图的规则，只确认本次纳入哪些行为/权限/异常边界；发现规则不清回 application-blueprint，不在这里重复设计状态机。检查选入功能的依赖与主链，删减导致断链则提出选择，不能自动扩大范围。
+6. 展示最终 MVP/Later/Reject/Defer 表、未决项、范围外内容及验收边界，请用户或授权负责人明确确认版本；沉默、“继续研究”或同意竞品名单不等于范围批准。
+7. 只有已批准范围可交 PRD-Design。尚未决定的模块继续探索或由用户明确延期；缺关键确认即停，不用评审轮次上限强行定稿。
 
 ## Outputs
 - `feature-decision` artifact；
@@ -69,7 +70,7 @@ PASS：MVP、范围、关键行为和不做项已确认；CONDITIONAL：低风�
 ## Failure Route
 来源不足回 Blueprint/Discovery；定位变化回 product-definition；技术不确定交 DEV Workflow；评审发现范围问题回本 Skill。
 
-评审或澄清最多 3 轮；仍未收敛时保留问题并请求人工裁决，不无限生成。
+同一阻塞点反复 3 轮未收敛则请求裁决；新场景、新证据和不同问题可继续探索，不把三轮理解为整个 PRD 的访谈上限。不得为结束对话把 OPEN 改为已确认。
 
 ## Downstream Contract
 PRD-Design 只能写 APPROVED 的范围、行为、验收边界和不做项；Prototype 不能超出批准范围。

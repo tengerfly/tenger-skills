@@ -93,6 +93,17 @@ class ValidationTests(unittest.TestCase):
         with patch.object(core, "load_yaml", side_effect=load):
             return core.check_graph(ROOT)
 
+    def test_graph_rejects_missing_product_baseline_on_every_prd_entry(self):
+        states = core.load_yaml(ROOT / "governance/state-registry.yaml")
+        ids = [t["id"] for t in states["transitions"] if t["to"] in core.PRD_BASELINE_STATES]
+        self.assertTrue(ids)
+        for tid in ids:
+            with self.subTest(transition=tid):
+                def mutate(data):
+                    edge = next(t for t in data["transitions"] if t["id"] == tid)
+                    edge["requiredArtifacts"].remove("feature-decision")
+                self.assertTrue(any(tid in e and "bypasses" in e for e in self.mutated_graph(mutate)))
+
     def test_graph_rejects_test_bypass_even_with_required_evidence_fields(self):
         def mutate(states):
             edge = copy.deepcopy(next(t for t in states["transitions"] if t["to"] == "RELEASE_PLANNING_IN_PROGRESS"))
@@ -142,6 +153,7 @@ class TaskPreflightTests(unittest.TestCase):
         # Cleanup is confined to this test's freshly created directory inside the workspace.
         assert self.root.is_relative_to(ROOT.resolve()) and self.root.name.startswith(".validation-test-")
         self.addCleanup(self.temp.cleanup)
+        self.product_artifacts = []
         self.decision = grant()
         self.workflow = dict(passing_gate(), projectId="synthetic", executionId="EXEC-1",
                              workflowId="WF-1", lifecycle="CHANGE", state="CODE_REVIEW_PASSED", revision="r1")
@@ -182,10 +194,64 @@ class TaskPreflightTests(unittest.TestCase):
 
     def run_plan(self):
         self.write_yaml(".spec/workflow.yaml", self.workflow)
-        self.write_yaml(".spec/manifest.yaml", {"projectId": "synthetic", "artifacts": [self.code_artifact, self.evidence, self.decision_artifact]})
+        self.write_yaml(".spec/manifest.yaml", {"projectId": "synthetic", "artifacts": [self.code_artifact, self.evidence, self.decision_artifact] + self.product_artifacts})
         self.write_yaml(".spec/authorization.yaml", self.policy)
         self.write_yaml(".spec/decisions/DEC-1.yaml", self.decision)
         return preflight.plan(self.root, self.task)
+
+    def prepare_product_baseline(self):
+        self.workflow["state"] = "INTAKE_READY"
+        self.task.update(currentState="INTAKE_READY", targetState="PRD_IN_PROGRESS", transitionId="TR-011")
+        self.task["expectedOutput"].update(artifactType="prd", path=".spec/tests/prd.md")
+        self.decision["scope"]["transitionIds"] = ["TR-011"]
+        self.decision["scope"]["actions"].append("approve-artifact")
+        self.policy["approvers"][0]["actions"].append("approve-artifact")
+        subjects, digests = [], {}
+        for typ in sorted(core.PRODUCT_BASELINE_TYPES):
+            aid = "ART-" + typ
+            content = ("synthetic approved baseline: " + typ).encode()
+            location = f".spec/{typ}.md"
+            self.write_bytes(location, content)
+            self.product_artifacts.append({
+                "artifactId": aid, "type": typ, "path": location, "lifecycle": "CHANGE",
+                "owner": "reviewer", "status": "APPROVED", "producedBy": typ,
+                "producedAt": self.decision["approvedAt"], "sourceRefs": [], "evidenceRefs": ["EVID-1"],
+                "decisionRefs": ["DEC-1"],
+            })
+            subjects.append(aid)
+            digests[aid] = digest(content)
+        self.decision["scope"]["artifactIds"] = subjects.copy()
+        self.task["inputRefs"] = subjects
+        self.evidence.update(subjectRefs=subjects.copy(), subjectDigests=digests)
+
+    def test_prd_can_reuse_approved_product_baseline(self):
+        self.prepare_product_baseline()
+        plan, errors = self.run_plan()
+        self.assertEqual(errors, [])
+        self.assertEqual(plan["to"], "PRD_IN_PROGRESS")
+        self.assertFalse(plan["stateChanged"])
+
+    def test_prd_rejects_reviewed_but_unapproved_baseline(self):
+        self.prepare_product_baseline()
+        for item in self.product_artifacts:
+            with self.subTest(type=item["type"]):
+                item["status"] = "REVIEW"
+                plan, errors = self.run_plan()
+                self.assertIsNone(plan)
+                self.assertTrue(any("PRD product baseline must be APPROVED" in e for e in errors))
+                item["status"] = "APPROVED"
+
+    def test_prd_rejects_missing_feature_decision(self):
+        self.prepare_product_baseline()
+        self.task["inputRefs"].remove("ART-feature-decision")
+        self.assertTrue(any("missing transition artifact types" in e and "feature-decision" in e
+                            for e in self.run_plan()[1]))
+
+    def test_prd_rejects_approval_label_without_scoped_decision(self):
+        self.prepare_product_baseline()
+        self.decision["scope"]["artifactIds"].remove("ART-feature-decision")
+        self.assertTrue(any("approved artifact lacks valid scoped approval: ART-feature-decision" in e
+                            for e in self.run_plan()[1]))
 
     def test_create_change_defect_positive_readiness(self):
         for lifecycle in ("CREATE", "CHANGE", "DEFECT"):

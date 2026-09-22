@@ -1,6 +1,6 @@
 ---
 name: idea-intake
-description: 把模糊产品想法登记为带证据边界、未知项和确认问题的产品入口。
+description: 登记原始产品想法、约束、歧义与研究问题，形成 intake；只做入口澄清，不研究竞品、不完成范围确认或编写 PRD。
 metadata:
   short-description: 把模糊产品想法登记为带证据边界、未知项和确认问题的产品入口。
 ---
@@ -33,7 +33,8 @@ metadata:
 - 保存问题、目标、初始场景、约束和非目标；
 - 区分 FACT、INFERENCE、ASSUMPTION、OPEN；
 - 识别 CREATE/CHANGE/OPTIMIZE；
-- 生成不超过三个的最小确认问题；
+- 每轮生成不超过三个的入口确认问题；这是本节点的认知负担限制，不是整个 PRD 探索只问三题或三轮；
+- 保存用户明确要求的研究/确认顺序及产品歧义，把“我不知道整体功能”交给后续研究，不要求用户凭空列完需求；
 - 建立 intake、manifest 和 traceability 起点。
 
 ## Non-goals
@@ -66,7 +67,7 @@ PASS：原始意图、生命周期、边界和研究问题清晰；CONDITIONAL�
 ## Failure Route
 语义冲突回用户确认；上下文缺失回 project-onboarding；变化交 ../change-intake/impact-analysis；故障交 defect-triage。
 
-评审或澄清最多 3 轮；仍未收敛时保留问题并请求人工裁决，不无限生成。
+同一阻塞问题最多重复澄清 3 轮，仍未收敛则保留缺口并请求裁决；不限制后续节点对新主题继续探索。入口完成不等于需求已明确。
 
 ## Downstream Contract
 Product Discovery 可消费原始意图、候选问题、场景、约束和未知项，不得假设定位、功能范围或 MVP 已批准。

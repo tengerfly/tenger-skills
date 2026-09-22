@@ -20,9 +20,15 @@ class ProblemRecordingContractTests(unittest.TestCase):
             with self.subTest(skill=skill["id"]):
                 text = entry.read_text(encoding="utf-8")
                 section = text.split("## 问题记录与恢复（执行必需）", 1)[1].split("\n## ", 1)[0]
-                refs = re.findall(r"`([^`]*problem-recording\.md)`", section)
+                refs = re.findall(r"`([^`]*\.md)`", section)
                 self.assertEqual(len(refs), 1)
-                self.assertEqual((entry.parent / refs[0]).resolve(), POLICY.resolve())
+                # Portable packages declare their self-contained recording policy;
+                # all engineering entries retain the shared repository default.
+                policy = ROOT / skill.get("recordingPolicy", "shared/problem-recording.md")
+                self.assertTrue(policy.is_file())
+                self.assertEqual((entry.parent / refs[0]).resolve(), policy.resolve())
+                if "recordingPolicy" in skill:
+                    self.assertTrue(policy.resolve().is_relative_to(entry.parent.resolve()))
                 for obligation in ("下一安全节点", "根因未明", "恢复/交付前", "唯一索引"):
                     self.assertIn(obligation, section)
 

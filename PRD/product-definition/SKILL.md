@@ -1,6 +1,6 @@
 ---
 name: product-definition
-description: 把发现证据转成待用户确认的产品问题、定位、价值、非目标和成功指标。
+description: 依据发现与研究证据确认目标用户、价值、定位、目标和非目标；不做功能级取舍、业务状态设计或 PRD 编写。
 metadata:
   short-description: 把发现证据转成待用户确认的产品问题、定位、价值、非目标和成功指标。
 ---
@@ -33,7 +33,7 @@ Discovery Brief 和竞争研究可用，或 CHANGE/OPTIMIZE 影响目标用户�
 ## Responsibilities
 - 形成问题陈述、目标用户、核心价值和定位候选；
 - 明确非目标、成功指标、风险和依赖；
-- 将竞品观察转成 Adopt/Adapt/Reject 候选；
+- 将竞品证据转成定位差异与价值假设；功能级 Adopt/Adapt/Reject 仅由 feature-decision 处理；
 - 生成 Definition Decision Record 和确认清单。
 
 ## Non-goals

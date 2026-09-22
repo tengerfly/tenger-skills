@@ -78,11 +78,10 @@ workflows:
   - OPTIMIZE
   exitState: CODE_REVIEW_PASSED
 - id: testing-workflow
-  name: 测试 Workflow
+  name: 自动化测试 Workflow（唯一执行入口 auto-test）
   status: active
   skills:
   - auto-test
-  - testing
   entryLifecycle:
   - CREATE
   - CHANGE

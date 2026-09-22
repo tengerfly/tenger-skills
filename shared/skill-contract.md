@@ -24,6 +24,10 @@ A local Skill must not redefine Gate values, lifecycle states, evidence labels, 
 
 所有执行强度及独立调用均遵循 `shared/problem-recording.md`：失败事实在下一安全节点持久化，详情一事一源、项目索引可发现，恢复/交付核对未决项。未知根因不妨碍记事实；此义务不依赖正式 Envelope，也不授权跨仓写入或解除 Gate。
 
+## 1.3 Workflow visibility
+
+遵循 `shared/workflow-visibility.md`：开工、恢复、阶段交接、等待决策、阻塞和收尾时向用户展示当前位置、当前 Skill、证据、待决定事项与下一步。正式状态以 workflow.yaml 为唯一来源；轻量复用任务摘要，不增加第二套状态或自动审批。
+
 ## 2. SKILL.md frontmatter
 
 ```yaml

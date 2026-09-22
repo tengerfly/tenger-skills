@@ -1,0 +1,18 @@
+[
+  {
+    "check": "bundle-final",
+    "exitCode": 0
+  },
+  {
+    "check": "skill-format-final",
+    "exitCode": 0
+  },
+  {
+    "check": "system-final",
+    "exitCode": 0
+  },
+  {
+    "check": "diff-final",
+    "exitCode": 0
+  }
+]

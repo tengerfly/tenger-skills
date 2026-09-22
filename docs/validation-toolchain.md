@@ -93,3 +93,15 @@ Envelope.authorization 的 grantedBy / grantedAt 必须与 decision 一致，不
 `tests/test_problem_recording.py` 已纳入全量 unittest discover，检查活动本地 Skill 的共享记录引用、auto-test/Code-Review/Fidelity-Review/defect-triage 的索引职责，以及模板和关键边界。外部知识库注册项不是本地 Skill，不纳入此入口检查。
 
 它不验证 Agent 实际写文件、去重、恢复或视觉行为。修复结果和额外格式兼容限制见 `problem-recording-verification.md`；真实行为试跑见 `task-scope-regression.md`。
+
+
+## 只读流程状态快照
+
+`python scripts/workflow_status.py --project-root <项目目录>` 显示持久状态、当前 Skill、Gate、产物/证据/决策引用、待补输入和下一动作；加 `--json` 输出结构化快照。
+
+退出码 0 只表示快照读取成功，不代表 Gate 已验证或允许执行；缺少正式文件/字段冲突/无效 YAML 退出 2，提示读取轻量摘要或核验记录。工具不生成看板副本、不改变状态、不验证证据时效、不推断历史完成阶段。
+
+
+### 正式 PRD 的范围前置
+
+进入 PRD 编写、评审与批准的所有注册路径（包括旧项目复用路径）都要求 product-definition、application-blueprint、feature-decision；评审/批准另需 prd。task_preflight 要求这三类产品基线为 APPROVED，沿用已有的 scoped approve-artifact 授权检查，不能用 REVIEW 或手填 APPROVED 代替批准。仍可复用有效基线，不强制重做研究；工具不验证访谈深度、研究真实性或授权人的真实身份，相关行为验收见 task-scope-regression.md。

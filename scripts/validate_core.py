@@ -8,6 +8,8 @@ import yaml
 
 LIFECYCLES = {"CREATE", "CHANGE", "DEFECT", "REFACTOR", "INCIDENT", "OPTIMIZE"}
 GATES = {"PASS", "CONDITIONAL", "BLOCKED"}
+PRODUCT_BASELINE_TYPES = {"product-definition", "application-blueprint", "feature-decision"}
+PRD_BASELINE_STATES = {"PRD_IN_PROGRESS", "PRD_REVIEW_IN_PROGRESS", "PRD_APPROVED"}
 STATUSES = {"DRAFT", "REVIEW", "APPROVED", "SUPERSEDED"}
 EVIDENCE_TYPES = {"validation-report", "test-report", "release-report", "inspection", "signal", "research", "triage", "incident"}
 EXTERNAL_REF = re.compile(r"^(?:USER|REQ|EXT|URL|ISSUE|PR|COMMIT|RUN)-[A-Za-z0-9][A-Za-z0-9_.:-]*$")
@@ -440,7 +442,9 @@ def check_transitions(root):
         if dst=="DEPLOYMENT_IN_PROGRESS" and not {"release-plan","test-report"}.issubset(reqa|{""}): add(errors,f"{tid} entering deployment must require release-plan and test-report")
         if dst=="DEPLOYMENT_IN_PROGRESS" and "test-run" not in reqe: add(errors,f"{tid} entering deployment must require test-run")
     policies = {
-        "PRD_APPROVED": ("prd-review", {"prd"}, {"prd-review"}),
+        "PRD_IN_PROGRESS": (None, PRODUCT_BASELINE_TYPES, set()),
+        "PRD_REVIEW_IN_PROGRESS": (None, PRODUCT_BASELINE_TYPES | {"prd"}, set()),
+        "PRD_APPROVED": ("prd-review", PRODUCT_BASELINE_TYPES | {"prd"}, {"prd-review"}),
         "TECH_DESIGN_APPROVED": ("tech-review", {"tech-design"}, {"tech-review"}),
         "CODE_REVIEW_PASSED": ("code-review", {"code-change"}, {"code-review"}),
         "TEST_IN_PROGRESS": (None, {"code-change"}, {"code-review"}),
