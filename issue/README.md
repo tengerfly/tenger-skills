@@ -38,7 +38,7 @@ issue/
 
 | 层 | 入口（原始问题只进这里） | 出口（综合分析后按类型反哺） |
 |---|---|---|
-| skill 层 | **本池 `issue/`**（skill 运行问题唯一 intake） | ① 流程缺陷 → 改对应 SKILL.md 主流程 REQUIRED 位 / 错误表；② 评审检出力 → 该评审 skill `references/known-issue-patterns.md`；③ 类别级代码错误 → `bug-patterns/`；④ 用户偏好信号 → `evolution/` |
+| skill 层 | **本池 `issue/`**（skill 运行问题唯一 intake） | ① 流程缺陷 → 改对应 SKILL.md 主流程 REQUIRED 位 / 错误表；② 评审检出力 → 该评审 skill `references/known-issue-patterns.md`；编排器（`WorkFlow`/`prd-workflow`）没有上游评审方，其流程与交互类模式落 `Other/Skill-Optimizer/references/known-issue-patterns.md`，由模式④体检检出；③ 类别级代码错误 → `bug-patterns/`；④ 用户偏好信号 → `evolution/` |
 | 项目层 | `<项目>/.spec/问题日志.md`（一行索引台账）+ 各评审任务清单（详情单一事实源不变） | 跨项目综合分析后：skill 层出口同上；组件资产缺陷 → skills-knowledge `asset-library/anti-patterns/` 或 `cases/failure/` |
 | 原材料 | `chats/`（待挖掘聊天记录） | 挖掘确认后落 `issue/` |
 
