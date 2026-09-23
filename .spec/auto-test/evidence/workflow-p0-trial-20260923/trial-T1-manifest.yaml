@@ -1,0 +1,17 @@
+version: 1
+projectId: kb-app-20260923
+artifacts:
+  - artifactId: ART-20260923-001
+    type: intake
+    path: .spec/intake/INT-001.md
+    lifecycle: CREATE
+    owner: user
+    status: DRAFT
+    sourceRefs:
+      - 用户 2026-09-23 会话原始请求（见 INT-001 §原始表达）
+    evidenceRefs:
+      - .spec/intake/INT-001.md#原始表达
+    decisionRefs: []
+    producedBy: idea-intake
+    producedAt: 2026-09-23T16:50:00+08:00
+    supersedes: null

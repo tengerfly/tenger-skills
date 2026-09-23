@@ -1,0 +1,44 @@
+version: 1
+task:
+  taskId: TASK-20260923-001
+  projectId: kb-app-20260923
+  executionId: EXEC-20260923-001
+  lifecycle: CREATE
+  revision: r1
+  transitionId: TR-001
+  currentState: INTAKE_REQUESTED
+  targetState: IDEA_INTAKE_IN_PROGRESS
+  requestedAction: 登记原始产品想法并结构化未知项与研究命题
+  scope:
+    summary: 仅创建 .spec 入口基线与 intake 产物，不产需求结论、不做研究/选型/改码
+    allowedPaths:
+      - D:/project/_qoder_trials/kb-app-20260923/.spec/**
+    forbiddenPaths:
+      - D:/project/_qoder_trials/kb-app-20260923/**（除 .spec 之外）
+      - 本机其他任何目录
+  inputRefs:
+    - 用户 2026-09-23 会话原始请求
+  artifactRefs:
+    - ART-20260923-001
+  evidenceRefs:
+    - .spec/intake/INT-001.md#原始表达
+  decisionRefs: []
+  requiredSkill: idea-intake
+  authorization:
+    actor: user
+    approvalRef: 用户 2026-09-23 指令「项目目录用 D:\project\_qoder_trials\kb-app-20260923，所有产物和代码都放在这个目录里」
+    grantedBy: user
+    grantedAt: 2026-09-23T16:50:00+08:00
+  expectedOutput:
+    artifactType: intake
+    path: .spec/intake/INT-001.md
+    acceptanceChecks:
+      - 原始表达可回放未改写
+      - FACT/INFERENCE/ASSUMPTION/OPEN 分层带标签
+      - 只提出只有用户能回答的入口问题，无技术选型问题
+      - 研究命题登记但未启动
+  gate:
+    outcome: BLOCKED
+    allowDownstream: false
+    reason: 需求方向（OPEN-1/2/3）影响范围，待用户确认；未确认前不启动研究与选型
+  nextAction: wait-user-requirement-confirmation

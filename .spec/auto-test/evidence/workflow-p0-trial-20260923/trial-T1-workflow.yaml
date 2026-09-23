@@ -1,0 +1,22 @@
+version: 2
+workflowId: WF-20260923-001
+executionId: EXEC-20260923-001
+revision: r1
+projectId: kb-app-20260923
+lifecycle: CREATE
+state: IDEA_INTAKE_IN_PROGRESS
+gate: BLOCKED
+allowDownstream: false
+currentSkill: idea-intake
+startedAt: 2026-09-23T16:50:00+08:00
+updatedAt: 2026-09-23T16:50:00+08:00
+evidenceRefs:
+  - .spec/intake/INT-001.md#原始表达
+artifactRefs:
+  - ART-20260923-001
+decisionRefs: []
+reason: 需求方向（知识库数据粒度、写入形态、图谱连线语义）未由用户确认，按资源投入门禁停在入口澄清
+owner: workflow
+requiredInput: 用户对 INT-001 待确认清单 Q1-Q3 的回答
+clearanceCondition: 用户复述确认需求方向后登记 decision， Gate 转 CONDITIONAL/PASS 并进入 Product Discovery
+nextAction: wait-user-requirement-confirmation

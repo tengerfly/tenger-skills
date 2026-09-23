@@ -1,0 +1,18 @@
+确定性探针：TR-015 封堵验证（task_preflight.plan 真实调用，非规则文本比对）
+对照组设计：同一边的 CHANGE 必须仍放行，避免「全都拒绝」的假绿
+
+[用例1 期望被拒] CREATE INTAKE_READY -> TECH_DESIGN_IN_PROGRESS (TR-015)
+  plan = None
+  生命周期类拒绝 = ['transition or actor does not support task lifecycle']
+  其他错误 = 无
+
+[用例2 对照·期望放行] CHANGE INTAKE_READY -> TECH_DESIGN_IN_PROGRESS (TR-015)
+  plan = TECH_DESIGN_IN_PROGRESS
+  生命周期类拒绝 = 无
+  其他错误 = 无
+
+[用例3 对照·期望放行] CREATE INTAKE_READY -> PRD_IN_PROGRESS (TR-011)
+  plan = PRD_IN_PROGRESS
+  生命周期类拒绝 = 无
+  其他错误 = 无
+
