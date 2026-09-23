@@ -853,7 +853,6 @@ transitions:
   to: TECH_DESIGN_IN_PROGRESS
   id: TR-015
   lifecycle:
-  - CREATE
   - CHANGE
   - DEFECT
   - REFACTOR

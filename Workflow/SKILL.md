@@ -1,6 +1,6 @@
 ---
 name: workflow
-description: 自然语言任务入口：按范围和风险选择轻量、标准或完整流程，复用已有基线，调用必要的产品/UI/开发/测试 Skill；低风险任务直接实现并验证，正式交接遵守产物、状态和 Gate 契约，研究与发布仅按需启动。
+description: 任何软件任务的自然语言总入口（PEOS 编排器）。凡是用户提出「我想做一个 XX 应用/产品/网站/工具」「从零做个 XX」「先做一个 XX 的 MVP」「帮我搭一个 XX」「做一个类似 Obsidian 那样的」，或要求把已有项目纳入流程：「接着改这个项目」「按现在体系重跑这个旧项目」「补走一遍工程流程」，以及功能迭代、需求变更、Bug、线上事故、重构、性能与成本优化、发布上线、上线后问题和项目巡检，都先用它判定范围与风险并调度产品/UI/开发/测试 Skill，哪怕用户没说「流程」或「workflow」二字。不代做需求澄清、竞品研究、PRD 编写或代码实现。
 metadata:
   short-description: PEOS 总编排器
 ---
@@ -17,7 +17,9 @@ metadata:
 
 ## Trigger
 
-当用户提出新建、迭代、Bug、事故、重构、性能/成本优化、发布、上线后问题或项目巡检时触发。先判断目标、范围与风险，不要求用户选择 Skill 或理解流程字段；信息缺失只澄清影响验收/安全的关键问题。明确的独立任务可直接调用原子 Skill，不强制经过本编排器。
+当用户提出新建、迭代、Bug、事故、重构、性能/成本优化、发布、上线后问题或项目巡检时触发。先判断目标、范围与风险，不要求用户选择 Skill 或理解流程字段。明确的独立任务可直接调用原子 Skill，不强制经过本编排器。
+
+**澄清分层（硬约束）**：需求方向确认阶段的澄清只允许落在业务范围、目标用户、使用场景、数据语义与验收预期层；语言、框架、数据库、存储真相源、渲染库、部署形态等技术决策不得在此阶段提问，须留到 Tech Design 节点按 `shared/oss-research-policy.md` 展开。不得用「只澄清关键问题」为由把选型问题充当需求澄清，也不得把 AI 自己可查证、可推断的认知转成用户的填空题（判据见 `shared/product-workflow-contract.md` §2.2）。
 
 ## Inputs
 
@@ -65,6 +67,7 @@ metadata:
 
 ### 2. 选择正式流程入口与基线（标准/完整）
 
+- **先判产品意图（最高优先）**：目标目录为空、无 `.spec/`、无已有实现，且请求含产品意图（目标用户、功能、形态）⇒ 归 CREATE 并进入需求域（`idea-intake`），强度按 `shared/execution-profiles.md` 落到标准/完整档。此时禁止从探查兄弟项目工程栈、盘点技术栈或抛技术选型问题开始；起点由该判据决定，不由执行方自行发挥。对标应用与从零新应用共用本判据；
 - 新项目或陌生旧项目：`project-onboarding`；
 - “旧项目按现在体系重跑/接入新流程/工程流程补齐”：先 `project-onboarding` 产出阶段缺口矩阵，再让用户确认补齐范围；不是自动 REFACTOR，也不是只跑测试。仅补工程基线按 CHANGE 记录，若实际目标是重构/缺陷/优化则按相应生命周期；不新增迁移状态、不重写旧 PIPELINE、不默认改代码或发布；
 - “全流程测试/全量回归”仅测试已有实现：直接 `auto-test`，缺失基准如实列出，不扩成需求重做；
@@ -76,7 +79,7 @@ metadata:
 ### 3. 路由领域 Workflow（标准/完整）
 
 ```text
-CREATE  -> PRD -> UI -> Tech Design -> DEV -> auto-test -> Release -> Operations
+CREATE  -> PRD -> Prototype -> UI Design -> UI Review -> Tech Design -> DEV -> auto-test -> Release -> Operations
 CHANGE  -> Intake -> Impact -> affected domain -> Tech Design -> DEV -> auto-test -> Release -> Operations
 DEFECT  -> Triage -> Tech Design (when needed) -> DEV -> auto-test -> Release -> Operations
 REFACTOR -> Refactor -> Tech Design -> DEV -> auto-test -> Release -> Operations
@@ -84,13 +87,27 @@ INCIDENT -> Triage -> Incident Response -> Tech Design (when needed) -> DEV -> a
 OPTIMIZE -> Intake -> Impact -> experiment/Tech Design/DEV -> auto-test -> Release -> Analytics
 ```
 
+CREATE 行的 `UI Design -> UI Review` 是**必经节点**（`ui-ux-design` → `ui-ux-review`，产物 `.spec/设计稿/`），不是可选领域名：`PROTOTYPE_APPROVED → TECH_DESIGN_IN_PROGRESS` 不是合法边，进入技术设计的 CREATE 合法前驱是 `UI_APPROVED`。需求阶段亦不得提前抛出技术选型问题（见 `Trigger` 澄清分层与 §3.1）。以上仅对 CREATE 强制；CHANGE/DEFECT 等复用已批准视觉基线，局部改动不重做设计稿。
+
 以上为可选领域路线，不是每次必跑清单。标准迭代只处理受影响领域；完整新项目才按所需阶段建立产物。已有批准产物通过证据复用，正式状态转换仍须沿注册合法边，不可伪造跳跃；没有合法边时说明缺口并停下，不手工宣称通过。
 
 测试执行唯一入口为 `auto-test`，`testing-workflow` 只是领域路由 ID，不是第二套测试流程。旧 Testing 请求重定向 auto-test，不启动历史人工测试流程。
 
+### 3.1 资源投入门禁与等待态（标准/完整）
+
+高成本动作——调度研究类 Skill、大范围检索、竞品或源码调研、技术选型展开、代码实现——的准入前提是**存在用户已确认并登记的需求方向**（decision 或 artifact 状态 `ACCEPTED`，或用户在本会话内明确复述确认过的事实）。未确认时只允许零成本的意图澄清。
+
+- 禁止以「并行不空等／利用等待时间／先把能做的做了」为理由启动上述动作：研究范围本身取决于需求方向，方向未定即开跑属资源浪费，且该浪费由用户买单；
+- 启动前向用户简述「查什么范围、大概什么代价、回来后给你什么」，由用户决定是否现在投入——用户是资源裁决者；
+- 与用户确定需求的正确抓手，是先陈述 AI 理解的需求方向供其改写，而不是抛选择题、或自行调研代替这一步。
+
+后台研究未回传期间，本轮交付物只能是「已登记事实 + 当前在等什么 + 回来后给你什么」，不得同时向用户追加索取答案依赖该研究的题目；用户可见的交付顺序必须与研究的交付顺序一致。提问本身的合法性判据（只问只有用户能回答的题）见 `shared/product-workflow-contract.md` §2.2，本处不另立规则。
+
 ### 4. 守门与交接
 
 正式交接的每个 Skill 必须输出 `PASS`、`CONDITIONAL` 或 `BLOCKED`，并声明 `allowDownstream`。轻量仅报告完成内容、真实验证和剩余限制，不输出正式 Gate/状态，也不授予下游自动执行权限。只允许 `PASS` 或显式允许下游的 `CONDITIONAL` 交接；任何 P0/P1 未处理、证据缺失、未授权或产物不完整均停止推进。
+
+**视觉基线准入**：CREATE 流程进入技术设计或前端开发前，须存在设计稿批准记录（`UI_APPROVED`，或已批准的 `.spec/设计稿/` + `design-system.md`）。缺失时只有经用户显式批准的例外（EXC）可放行；凡输入基线自称「设计稿：无」「本批不涉及视觉」「缺省回退低保真原型」而无 EXC 引用，判 `BLOCKED` 并停下报告，不得把缺失写成批次说明后继续推进（规则见 `shared/product-workflow-contract.md` §5.1）。
 
 ### 5. 失败回退
 

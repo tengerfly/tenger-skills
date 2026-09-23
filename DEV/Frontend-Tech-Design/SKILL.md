@@ -1,6 +1,6 @@
 ---
 name: frontend-tech-design
-description: "前端技术方案（FTDD）编写。依据 PRD、UI 设计稿（缺省回退低保真原型）与后端 TDD，先苏格拉底式澄清选型（档位、端形态、技术框架——默认 React 但必问可换 Vue3/Taro/uni-app/React Native/Electron，组件库/路由/状态随框架联动；暗黑主题、i18n、浏览器兼容；澄清即定稿），输出总文档（选型+架构图+页面/组件清单+目录+模块边界+请求/逻辑层/CSS 规范）与逐模块方案（页面组件拆分+逻辑层数据流+接口对接+TDD 用例）。默认基线 pnpm+Vite+TS+React hooks+原生 fetch+Sass/Less+Vitest/RTL，框架与生态按清单可换。浏览器工具硬前置，全无报错停。触发：编写前端技术文档/方案/架构设计/FTDD。"
+description: "前端技术方案（FTDD）编写。依据 PRD、UI 设计稿（缺失须凭用户批准的例外才可回退低保真原型）与后端 TDD，先苏格拉底式澄清选型（档位、端形态、技术框架——默认 React 但必问可换 Vue3/Taro/uni-app/React Native/Electron，组件库/路由/状态随框架联动；暗黑主题、i18n、浏览器兼容；澄清即定稿），输出总文档（选型+架构图+页面/组件清单+目录+模块边界+请求/逻辑层/CSS 规范）与逐模块方案（页面组件拆分+逻辑层数据流+接口对接+TDD 用例）。默认基线 pnpm+Vite+TS+React hooks+原生 fetch+Sass/Less+Vitest/RTL，框架与生态按清单可换。浏览器工具硬前置，全无报错停。触发：编写前端技术文档/方案/架构设计/FTDD。"
 metadata:
   contract-level: legacy-wrapper
   legacy-alias: "Frontend-Tech-Design"
@@ -52,7 +52,7 @@ metadata:
 | 输入 | 作用 | 缺失处理 |
 |---|---|---|
 | `.spec/PRD/VN/`（先读 `PRD速查表.md` 建索引） | 需求基线 | ⛔ 阻塞，先要 |
-| `.spec/设计稿/`（**视觉主基准**，含 `design-system.md` token 源）、`.spec/原型/`（**结构基线**） | 页面结构与视觉的输入；页面清单/组件拆分必须与之对应（结构对原型、视觉对设计稿） | 设计稿缺 → 回退原型并**明示视觉基准降级**（术语见 `../../shared/baseline-terms.md`） |
+| `.spec/设计稿/`（**视觉主基准**，含 `design-system.md` token 源）、`.spec/原型/`（**结构基线**） | 页面结构与视觉的输入；页面清单/组件拆分必须与之对应（结构对原型、视觉对设计稿） | 设计稿缺 → **不得自行回退**：须先有用户批准的例外（EXC，规则见 `../../shared/product-workflow-contract.md` §5.1），回退时明示视觉基准降级并引用该 EXC，无 EXC 即停下报 `BLOCKED`（术语见 `../../shared/baseline-terms.md`） |
 | `.spec/TDD/VN/` | 请求封装与对接的**唯一依据** | ⛔ 阻塞，先要 |
 | `.spec/技术方案评审/任务清单.md` | 归本 skill 的 `已确认` 任务逐条纳入 | 无则跳过 |
 | `.spec/开源情报/`（OSS-Radar 同域调研报告） | **写方案前先看同类项目怎么做**：同域开源项目的前端架构/状态方案/组件库选型/测试基建发现（B 泳道三元组）反哺选型候选与组件设计 | 推荐有——缺失时建议先跑 `OSS-Radar`（项目泳道、按 PRD 关键词定向，可复用 ⑧ 轮报告补前端视角）；快速档或用户确认可跳过并留痕 |
