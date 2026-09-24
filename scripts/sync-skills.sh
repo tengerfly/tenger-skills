@@ -7,11 +7,9 @@
 #
 # 同步内容（按 git 追踪文件导出，不带 node_modules / __pycache__ / .venv）：
 #   1) 每个 skill 目录 → <目标>/<skill-name>/
-#   2) 仓库 shared/ 同时分发到三个层级，覆盖 skill 内出现的各种相对引用深度：
-#        <目标>/<skill>/shared       ← 裸 `shared/`、`../shared/`
-#        <目标>/shared               ← 嵌套 `../../../shared/`、`../../../../shared/`
-#        <目标>/../shared            ← 技能根 `../../shared/`
-#      只写 <目标>/shared 这类共享落点、不建额外的 skill 目录，不会污染技能列表。
+#   2) 仓库 shared/ 分发到三个层级，覆盖 skill 内出现的各种相对引用深度（已实测四端全解析）：
+#        <容器>/shared、<目标>/shared、<目标>/<skill>/shared
+#      这些是资源目录（无 SKILL.md），不会被宿主当成 skill 加载。
 #
 # 不做的事：不删除目标里的额外 skill、不用镜像删除覆盖安装目录（沿用使用手册口径）。
 # 目标里存在而源里没有的**文件**只报告为 stale，交人工判断，脚本不自动删；
@@ -190,10 +188,11 @@ for target in "${TARGETS[@]}"; do
     echo "   stale（源里没有、目标仍保留，请人工确认）:$stale_report"
   fi
 
-  # shared 的另外几个落点（不同引用深度上溯到不同位置，全部覆盖才能都解析）：
-  #   容器级 <container>/shared   ← 技能根的 ../../shared/
-  #   skills 级 <skills>/shared   ← 嵌套文件的 ../../../shared/ 与 ../../../../shared/
-  #   技能级 <skills>/<name>/shared ← 已在上面逐技能写入，供裸 shared/ 与 ../shared/ 解析
+  # shared 的三个落点（已实测：四端 298 处相对引用据此全部可解析）
+  #   <container>/shared      ← 技能根 `../../shared/` 与嵌套 `../../../shared/`：
+  #                             宿主比源仓多一层 skills/，所有 ../.. 形式都上溯到这里
+  #   <目标>/shared            ← 裸 `shared/xxx`（从 skills 根起算）
+  #   <目标>/<skill>/shared    ← 已在上面的循环里逐技能写入
   sync_shared_to "$(dirname "$target")/shared" 1 || true
   sync_shared_to "$target/shared" 1 || true
   echo
