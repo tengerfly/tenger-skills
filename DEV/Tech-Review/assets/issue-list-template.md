@@ -1,6 +1,6 @@
 # 技术方案评审任务清单 — {{需求名称}}
 
-> 结构基线：仓库根 `../../shared/templates/review-issue-list-template.md`（字段结构 / 状态机 / 复核轮次规范以公共版为准，改结构只改公共版）。本文件为本 skill 实例化参数：
+> 结构基线：仓库根 `../../../shared/templates/review-issue-list-template.md`（字段结构 / 状态机 / 复核轮次规范以公共版为准，改结构只改公共版）。本文件为本 skill 实例化参数：
 > - 评审名：技术方案评审（后端 / 前端双视角 + 前后端关联专项）
 > - 编号规则：沿用汇总报告 `SUM-xx`，可重编 `TECH-xx`（保证可追溯回汇总报告）
 > - 修改方枚举：`Backend-Tech-Design`（后端归因）/ `Frontend-Tech-Design`（前端归因）/ `双方`

@@ -25,7 +25,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 1. **只审不改**：不改原型与 PRD；唯一产出为 `.spec/原型评审/` 下报告与清单。
 2. **成因必写**：每条问题结合 PRD 与原型代码给成因（漏读章节、同名歧义、事件未监听、overflow 遮挡）；无法推导标「成因未明」，禁臆造。
 3. **方向明确**：每条给修改方向与建议修改方——原型问题 → `Prototype-Design`；PRD 自相矛盾 → `PRD-Design`；双方口径不一 → `双方协同`。
-4. **浏览器工具硬前置**：任一可用即用于截图存证（细则见 `references/browser-inspection-guide.md`）；**全部不可用 → 报错停止，不产出任何评审文档**（策略见 `../../shared/browser-policy.md`）。
+4. **浏览器工具硬前置**：任一可用即用于截图存证（细则见 `references/browser-inspection-guide.md`）；**全部不可用 → 报错停止，不产出任何评审文档**（策略见 `../../../shared/browser-policy.md`）。
 5. **单一事实源**：全量问题去重后只收口到 `.spec/原型评审/任务清单.md`，初始状态均为 `待确认`。
 
 **适用范围**：适用已生成的低保真原型对照 PRD 走查；不适用评审需求、设计稿、技术方案，也不查视觉精修。
@@ -61,15 +61,15 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - 每条自足可读（出处 + 现象 + 成因 + 修改方向，不依赖原文）、附**修复判据**、标注建议修改方；初始 `待确认`；
 - 逐条向用户确认裁决（要改 → `已确认`；不改 → `已忽略` + 理由；不理解即展开说明）；P0/P1 阻断、P2 由用户裁决；
 - 复核只验本轮已确认清单，不无限新增同级问题（新发现降 P2 留后续或经同意进下一轮）；
-- **双向沉淀判定**：放行后按 `../../shared/anti-deadloop.md` §五 判定（P0 双向必沉）——**A 防复发**：原型问题改 `Prototype-Design`、PRD 口径问题改 `PRD-Design`（记其 CONTEXT D-xx）；**B 检出力**：本 skill `references/known-issue-patterns.md` 按模板加一条（含「检出方法」）。改不了的落 `../../issue/<目标 skill>/<日期>/`（来源=评审闭环，写明双向落点）。判定结果记入汇总报告「沉淀判定」节；
+- **双向沉淀判定**：放行后按 `../../../shared/anti-deadloop.md` §五 判定（P0 双向必沉）——**A 防复发**：原型问题改 `Prototype-Design`、PRD 口径问题改 `PRD-Design`（记其 CONTEXT D-xx）；**B 检出力**：本 skill `references/known-issue-patterns.md` 按模板加一条（含「检出方法」）。改不了的落 `../../../issue/<目标 skill>/<日期>/`（来源=评审闭环，写明双向落点）。判定结果记入汇总报告「沉淀判定」节；
 - 交付总结明确剩余待裁决项。
-- **问题日志**：归档同时在项目 `.spec/问题日志.md` 台账追加一行索引（日期｜来源｜问题产物｜轮次｜状态｜反哺出口；格式见 skill 源仓库 `../../shared/templates/problem-log-template.md`）。
+- **问题日志**：归档同时在项目 `.spec/问题日志.md` 台账追加一行索引（日期｜来源｜问题产物｜轮次｜状态｜反哺出口；格式见 skill 源仓库 `../../../shared/templates/problem-log-template.md`）。
 
-> 门禁闭环、防评审死循环三招（含轮次上限 3：满 3 轮未收敛 → 强制清 P0 后放行、残留 P1 记遗留）、分级与沉淀的定义见仓库根 `../../shared/anti-deadloop.md`，本 skill 只保留流程参数，不重复定义。
+> 门禁闭环、防评审死循环三招（含轮次上限 3：满 3 轮未收敛 → 强制清 P0 后放行、残留 P1 记遗留）、分级与沉淀的定义见仓库根 `../../../shared/anti-deadloop.md`，本 skill 只保留流程参数，不重复定义。
 
 ## 四、评审规范
 
-**4.1 严重度分级（只标注，不设门禁）**——P0/P1/P2 定义与处理口径见 `../../shared/anti-deadloop.md` §三，下表为本域典型示例：
+**4.1 严重度分级（只标注，不设门禁）**——P0/P1/P2 定义与处理口径见 `../../../shared/anti-deadloop.md` §三，下表为本域典型示例：
 
 | 级别 | 定义 | 处理 | 典型 |
 |---|---|---|---|
@@ -98,9 +98,9 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - `references/known-issue-patterns.md`：评审方案例库（闭环沉淀的已知问题模式 + 检出方法）
 - `references/browser-inspection-guide.md`：浏览器走查与截图细则
 - `assets/dimension-review-template.md` / `summary-template.md` / `issue-list-template.md`
-- `../../shared/anti-deadloop.md`、`../../shared/browser-policy.md`（仓库根）：公共约定
+- `../../../shared/anti-deadloop.md`、`../../../shared/browser-policy.md`（仓库根）：公共约定
 - `.spec/原型评审/`：归档目录（含 `screenshots/`）
 
 ## 七、运行问题埋点
 
-收尾按 `../../Other/Skill-Optimizer/references/instrumentation-guide.md` 自查上报 `../../issue/Prototype-Review/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `../../Other/Skill-Optimizer/assets/issue-template.md`）。不确定不记，不打断主流程。
+收尾按 `../../Other/Skill-Optimizer/references/instrumentation-guide.md` 自查上报 `../../../issue/Prototype-Review/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `../../Other/Skill-Optimizer/assets/issue-template.md`）。不确定不记，不打断主流程。

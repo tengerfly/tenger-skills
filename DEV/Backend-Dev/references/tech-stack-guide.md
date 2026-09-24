@@ -43,7 +43,7 @@ repo/                              # 前后端同仓库（monorepo）
 │       │   └── tsconfig.json
 │       └── order-service/         # 微服务 B
 ├── libs/
-│   └── ../../shared/                    # 共享代码（单一事实源）
+│   └── ../../../shared/                    # 共享代码（单一事实源）
 │       ├── dto/                   # 共享 DTO（前后端复用）
 │       ├── enums/                 # 共享枚举/常量（状态值、错误码分段）
 │       ├── contracts/             # 服务间消息契约 / gRPC proto
@@ -202,7 +202,7 @@ app/
 ├── <service>/
 │   ├── src/main/java/...      # controller/service/impl/mapper/entity
 │   └── pom.xml
-├── ../../shared/                    # 共享模块
+├── ../../../shared/                    # 共享模块
 └── pom.xml（父）
 ```
 关键依赖：Spring Boot、Spring Cloud（Nacos/OpenFeign）、MyBatis-Plus/JPA、JUnit 5。
@@ -212,7 +212,7 @@ app/
 ```
 app/
 ├── services/<service>/        # controller/service/repository/model
-├── ../../shared/                    # 共享
+├── ../../../shared/                    # 共享
 └── requirements.txt
 ```
 关键依赖：FastAPI、SQLAlchemy、pydantic、pytest。

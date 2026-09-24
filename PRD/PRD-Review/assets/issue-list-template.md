@@ -1,6 +1,6 @@
 # 需求评审任务清单 — {{需求名称}}
 
-> 结构基线：仓库根 `../../shared/templates/review-issue-list-template.md`（字段结构 / 状态机 / 复核轮次规范以公共版为准，改结构只改公共版）。本文件为本 skill 实例化参数：
+> 结构基线：仓库根 `../../../shared/templates/review-issue-list-template.md`（字段结构 / 状态机 / 复核轮次规范以公共版为准，改结构只改公共版）。本文件为本 skill 实例化参数：
 > - 评审名：需求评审（前端 / 后端 / 测试三角色会审 + 产品专家总审）
 > - 编号规则：角色清单 `FE/BE/TE/PM-xx` → 汇总去重 `SUM-xx`（汇总报告 §3 行编号）→ 本清单沿用或重编 `REQ-xx`（评审任务编号，与 PRD 需求编号 `REQ-Mxx-nnn` 无关；重编时在「修改说明」注明原 SUM 编号）
 > - 修改方枚举：`PRD-Design`（PRD 缺陷唯一修改方）；节点放行由编排侧判定，本 skill 不设门禁

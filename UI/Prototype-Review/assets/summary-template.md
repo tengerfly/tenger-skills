@@ -1,6 +1,6 @@
 # 原型评审汇总报告
 
-> 结构基线：仓库根 `../../shared/templates/review-summary-template.md`（闭环要素[成因/修复判据/状态机]与字段口径以公共版为准；章节组织为本 skill 领域实例）。
+> 结构基线：仓库根 `../../../shared/templates/review-summary-template.md`（闭环要素[成因/修复判据/状态机]与字段口径以公共版为准；章节组织为本 skill 领域实例）。
 
 > 项目名称：[项目名称]  
 > 评审基线：PRD（[路径]） vs 原型（[路径]）  
@@ -69,4 +69,4 @@
 | A · 防复发 | `Prototype-Design`（原型问题）/ `PRD-Design`（PRD 口径问题） | 错误表加行 / references 清单 / Gate 预检项 | 待处理 / 已沉淀 / 入池 |
 | B · 检出力 | `Prototype-Review` | `references/known-issue-patterns.md` 加模式（含检出方法） | 待处理 / 已沉淀 / 入池 |
 
-> P0 双向必沉；当场改则记目标 skill `CONTEXT.md` D-xx，改不了落 `../../issue/<目标 skill>/<日期>/`（来源=评审闭环）。
+> P0 双向必沉；当场改则记目标 skill `CONTEXT.md` D-xx，改不了落 `../../../issue/<目标 skill>/<日期>/`（来源=评审闭环）。

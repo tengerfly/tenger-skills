@@ -212,7 +212,7 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
 |----|------|
 | 设计 token 来源 | 有设计稿：`.spec/设计稿/design-system.md` 为**视觉唯一来源**（色彩/字号阶梯/间距 4px 网格/圆角阴影）；无设计稿：按 `references/css-guide.md` 基线建 `src/styles/variables.scss`，先确认后开发 |
 | **token 搬运对账（方案必含）** | 设计稿是 HTML + Tailwind 类、实现是 CSS 变量，**载体不同必须对账**：开发期须把 `design-system.md` §7 Token 汇总逐条落 `src/styles/variables` 并核对**条数/值/命名**；本方案登记 §7 的 token 条数作为对账基线（如「§7 共 N 条」） |
-| 还原基准分工 | **结构对低保真原型、视觉对设计稿**（双基准定义见仓库根 `../../shared/baseline-terms.md`）；低保真原型**不承载视觉基准** |
+| 还原基准分工 | **结构对低保真原型、视觉对设计稿**（双基准定义见仓库根 `../../../shared/baseline-terms.md`）；低保真原型**不承载视觉基准** |
 | 界面状态清单 | 按「10 大 UI 状态」核对：Skeleton/Loading/Success/Empty/Error/Disabled/PermissionDenied/NetworkError（通用）+ Streaming/PartialData（涉 AI 生成功能时）；逐页面声明适用状态及处理方案，写入模块文档 §9 |
 | 状态视觉基准 | 状态呈现对齐设计稿状态稿（design-system §5.10）；无状态稿时按组件库标准态并在方案中注明 |
 

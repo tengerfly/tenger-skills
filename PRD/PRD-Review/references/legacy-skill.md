@@ -66,15 +66,15 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 **6. 任务清单 + 用户确认**：按 `assets/issue-list-template.md` 生成 `.spec/需求评审/任务清单.md`——逐条落清单（状态 `待确认`）、每条附**修复判据**、逐条向用户确认（要改 → `已确认`；不改 → `已忽略` + 理由）；P0/P1 阻断（未清零不进入收尾归档；节点放行由编排侧判定），P2 不阻塞；复核只验本轮已确认清单，新发现降 P2 或经同意进下一轮；编号链 `FE/BE/TE/PM-xx` → `SUM-xx` → `REQ-xx`（见 `assets/issue-list-template.md` 实例化参数）。确认后交 `PRD-Design` 修改并回填状态。
 
-**7. 双向沉淀判定**：放行后按 `../../shared/anti-deadloop.md` §五 判定（P0 双向必沉）——**A 防复发**：改产出方 skill `PRD-Design` 的防复发规则（记其 CONTEXT D-xx）；**B 检出力**：本 skill `references/known-issue-patterns.md` 按模板加一条（含「检出方法」）。改不了的落 `../../issue/PRD-Design/<日期>/`（来源=评审闭环，写明双向落点）。判定结果记入汇总报告「沉淀判定」节。
+**7. 双向沉淀判定**：放行后按 `../../../shared/anti-deadloop.md` §五 判定（P0 双向必沉）——**A 防复发**：改产出方 skill `PRD-Design` 的防复发规则（记其 CONTEXT D-xx）；**B 检出力**：本 skill `references/known-issue-patterns.md` 按模板加一条（含「检出方法」）。改不了的落 `../../../issue/PRD-Design/<日期>/`（来源=评审闭环，写明双向落点）。判定结果记入汇总报告「沉淀判定」节。
 
-**8. 归档**：四份评审 + 汇总 + 任务清单全部落盘 `.spec/需求评审/` 后交付。**问题日志**：归档同时在项目 `.spec/问题日志.md` 台账追加一行索引（日期｜来源｜问题产物｜轮次｜状态｜反哺出口；格式见 skill 源仓库 `../../shared/templates/problem-log-template.md`）。
+**8. 归档**：四份评审 + 汇总 + 任务清单全部落盘 `.spec/需求评审/` 后交付。**问题日志**：归档同时在项目 `.spec/问题日志.md` 台账追加一行索引（日期｜来源｜问题产物｜轮次｜状态｜反哺出口；格式见 skill 源仓库 `../../../shared/templates/problem-log-template.md`）。
 
-> 门禁闭环、防评审死循环三招（含轮次上限 3：满 3 轮未收敛 → 强制清 P0 后放行、残留 P1 记遗留）、分级与沉淀的定义见仓库根 `../../shared/anti-deadloop.md`，本 skill 只保留流程参数，不重复定义。
+> 门禁闭环、防评审死循环三招（含轮次上限 3：满 3 轮未收敛 → 强制清 P0 后放行、残留 P1 记遗留）、分级与沉淀的定义见仓库根 `../../../shared/anti-deadloop.md`，本 skill 只保留流程参数，不重复定义。
 
 ## 四、评审规范
 
-**4.1 严重度分级（只标注，不设门禁）**——P0/P1/P2 定义与处理口径见 `../../shared/anti-deadloop.md` §三，下表为本域典型示例：
+**4.1 严重度分级（只标注，不设门禁）**——P0/P1/P2 定义与处理口径见 `../../../shared/anti-deadloop.md` §三，下表为本域典型示例：
 
 | 级别 | 含义 | 典型 |
 |---|---|---|
@@ -111,9 +111,9 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - `references/product-checklist.md`：产品专家总审清单（核心必查 6 维 + 扩展档 PM-7 带触发条件 + 调度三角色问题 + 术语判定基准）
 - `references/known-issue-patterns.md`：评审方案例库（闭环沉淀的已知问题模式 + 检出方法）
 - `assets/role-review-template.md` / `summary-template.md` / `issue-list-template.md`
-- `../../shared/anti-deadloop.md`（仓库根）：门禁闭环 / 三招 / 分级 / 沉淀定义
+- `../../../shared/anti-deadloop.md`（仓库根）：门禁闭环 / 三招 / 分级 / 沉淀定义
 - `.spec/需求评审/`：归档目录
 
 ## 七、运行问题埋点
 
-收尾自查，将方法论问题、用户否定/认可信号、可复现产物问题上报至 `../../issue/PRD-Review/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签遵循 `../../Other/Skill-Optimizer/references/instrumentation-guide.md`，模板 `../../Other/Skill-Optimizer/assets/issue-template.md`）。不确定不记，不打断主流程。
+收尾自查，将方法论问题、用户否定/认可信号、可复现产物问题上报至 `../../../issue/PRD-Review/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签遵循 `../../Other/Skill-Optimizer/references/instrumentation-guide.md`，模板 `../../Other/Skill-Optimizer/assets/issue-template.md`）。不确定不记，不打断主流程。

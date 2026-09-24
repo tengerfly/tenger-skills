@@ -1,6 +1,6 @@
 # PRD 评审汇总报告 — {{需求名称}}
 
-> 结构基线：仓库根 `../../shared/templates/review-summary-template.md`（闭环要素[成因/修复判据/状态机]与字段口径以公共版为准；章节组织为本 skill 领域实例）。
+> 结构基线：仓库根 `../../../shared/templates/review-summary-template.md`（闭环要素[成因/修复判据/状态机]与字段口径以公共版为准；章节组织为本 skill 领域实例）。
 
 > 汇总前端 / 后端 / 测试三角色 + 产品专家总审结果，去重合并并标共性问题；产品专家调度归并的已有问题标原编号 + 命中角色，不重复编号。
 
@@ -36,4 +36,4 @@ P0/P1/P2 数量及阻塞说明。本 skill 不裁决，供用户决策。
 | A · 防复发 | `PRD-Design` | 错误表加行 / references 清单 / Gate 预检项 | 待处理 / 已沉淀 / 入池 |
 | B · 检出力 | `PRD-Review` | `references/known-issue-patterns.md` 加模式（含检出方法） | 待处理 / 已沉淀 / 入池 |
 
-> P0 双向必沉；当场改则记目标 skill `CONTEXT.md` D-xx，改不了落 `../../issue/PRD-Design/<日期>/`（来源=评审闭环）。
+> P0 双向必沉；当场改则记目标 skill `CONTEXT.md` D-xx，改不了落 `../../../issue/PRD-Design/<日期>/`（来源=评审闭环）。

@@ -1,6 +1,6 @@
 # 设计稿评审维度报告 —— [维度名称]
 
-> 结构基线：仓库根 `../../shared/templates/review-dimension-template.md`（闭环要素[成因/修复判据/状态机]与字段口径以公共版为准；章节组织为本 skill 领域实例）。
+> 结构基线：仓库根 `../../../shared/templates/review-dimension-template.md`（闭环要素[成因/修复判据/状态机]与字段口径以公共版为准；章节组织为本 skill 领域实例）。
 
 > 维度范围：[载体与结构零改动 / 文案与字段一致性 / 视觉规范一致性 / 视觉呈现与可交付质量]  
 > 评审基线：PRD（[PRD路径/版本]）+ 布局清单（[路径]）+ design-system（[路径]） vs 设计稿（[路径]）  

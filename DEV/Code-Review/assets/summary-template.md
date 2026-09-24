@@ -1,6 +1,6 @@
 # 代码评审汇总报告
 
-> 结构基线：仓库根 `../../shared/templates/review-summary-template.md`（闭环要素[成因/修复判据/状态机]与字段口径以公共版为准；章节组织为本 skill 领域实例）。
+> 结构基线：仓库根 `../../../shared/templates/review-summary-template.md`（闭环要素[成因/修复判据/状态机]与字段口径以公共版为准；章节组织为本 skill 领域实例）。
 
 > 合并后端/前端两份清单：去重 + 共性 + 统计。需求：{{}}；日期：{{}}。
 
@@ -33,4 +33,4 @@
 | A · 防复发 | `Backend-Dev` / `Frontend-Dev` | 错误表加行 / references 清单 / Gate 预检项 | 待处理 / 已沉淀 / 入池 |
 | B · 检出力 | `Code-Review` | `references/known-issue-patterns.md` 加模式（含检出方法） | 待处理 / 已沉淀 / 入池 |
 
-> P0 双向必沉；当场改则记目标 skill `CONTEXT.md` D-xx，改不了落 `../../issue/<目标 skill>/<日期>/`（来源=评审闭环）。⑬-前 还原度问题由 `Fidelity-Review` 出、交本 skill 统一执行沉淀判定（含其 `known-issue-patterns.md`）。
+> P0 双向必沉；当场改则记目标 skill `CONTEXT.md` D-xx，改不了落 `../../../issue/<目标 skill>/<日期>/`（来源=评审闭环）。⑬-前 还原度问题由 `Fidelity-Review` 出、交本 skill 统一执行沉淀判定（含其 `known-issue-patterns.md`）。

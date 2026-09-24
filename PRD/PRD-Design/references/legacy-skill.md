@@ -105,7 +105,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 **S6 全局 Pass Gate**：按 §4.4 执行，并做一致性专项——引用 / 命名对照术语表；速查表锚点可达；索引数 = 源文档实测数。放行条件：P0=0 且 P1(Open)=0。
 
-**S7 ◉ 终审与归档**：用户确认后归档 `.spec/PRD/VN/`（overview + 速查表 + NN_xxx + 验收结果详细说明），并回填任务清单——`已确认` 改 `已修复` + 写明改动位置，未处理条目保留原状态并说明原因；**回填后须触发 `PRD-Review` 复核，不得自判通过**（闭环与上限规则见 `../../shared/anti-deadloop.md` §一/§二）。
+**S7 ◉ 终审与归档**：用户确认后归档 `.spec/PRD/VN/`（overview + 速查表 + NN_xxx + 验收结果详细说明），并回填任务清单——`已确认` 改 `已修复` + 写明改动位置，未处理条目保留原状态并说明原因；**回填后须触发 `PRD-Review` 复核，不得自判通过**（闭环与上限规则见 `../../../shared/anti-deadloop.md` §一/§二）。
 
 **回炉**：模块划分错误（多切 / 漏切 / 错切）→ 冻结已展开的模块文档（暂停新增内容），只修订总纲与关联图 → 重过 S4 确认后再展开。
 
@@ -181,9 +181,9 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - `references/`：`prd-structure`、`mermaid-patterns`、`gherkin-guide`、`tech-feasibility-guide`、`socratic-grilling`
 - `references/case-library/`：方法论框架库（frameworks / prd-templates / zh-cases，按需加载）
 - `assets/`：`overview-template`、`module-template`、`quickref-template`、`eval-template`
-- `../../shared/anti-deadloop.md`、`../../shared/receiving-review.md`（仓库根）：门禁闭环与上限规则、接收评审纪律（先验证再实施、逐项测、禁感谢式回应）
+- `../../../shared/anti-deadloop.md`、`../../../shared/receiving-review.md`（仓库根）：门禁闭环与上限规则、接收评审纪律（先验证再实施、逐项测、禁感谢式回应）
 - `.spec/PRD/VN/`：产出目录
 
 ## 七、运行问题埋点
 
-收尾按 `../../Other/Skill-Optimizer/references/instrumentation-guide.md` 自查上报 `../../issue/PRD-Design/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `../../Other/Skill-Optimizer/assets/issue-template.md`）。不确定不记，不打断主流程。
+收尾按 `../../Other/Skill-Optimizer/references/instrumentation-guide.md` 自查上报 `../../../issue/PRD-Design/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `../../Other/Skill-Optimizer/assets/issue-template.md`）。不确定不记，不打断主流程。

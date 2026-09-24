@@ -61,7 +61,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 **5. ◉ 逻辑闭环检测 Gate（强制）**：按 `references/completeness-check.md` 自检 6 项（载体完整 / 防加戏 / 跳转闭环 / 状态覆盖 / 端类型匹配 / 假设标注），**全绿才落盘**。
 
-**6. 落盘归档 + 回写**：落盘 `.spec/原型/`（结构见 §4.3）；回填评审任务清单——归本 skill 的 `已确认` 任务改 `已修复` 并写修改说明，未处理项保留并注明原因；**回填后须触发 `Prototype-Review` 复核，不得自判通过**（闭环与上限规则见 `../../shared/anti-deadloop.md` §一/§二）。用户看原型后的调整 → 改原型并**同步回写布局清单**，两者保持一致。
+**6. 落盘归档 + 回写**：落盘 `.spec/原型/`（结构见 §4.3）；回填评审任务清单——归本 skill 的 `已确认` 任务改 `已修复` 并写修改说明，未处理项保留并注明原因；**回填后须触发 `Prototype-Review` 复核，不得自判通过**（闭环与上限规则见 `../../../shared/anti-deadloop.md` §一/§二）。用户看原型后的调整 → 改原型并**同步回写布局清单**，两者保持一致。
 
 ## 四、关键规范
 
@@ -113,9 +113,9 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - `references/html-spec.md` / `completeness-check.md` / `iteration-regression-guard.md`
 - `references/case-library/`：方法学（保真度分级 / 反模式 / 可用性 / AI 边界 / 生命周期状态）+ 工具 + 动作型范本（按需加载）
 - `assets/layout-inventory-template.md` / `prototype-readme-template.md`
-- `../../shared/anti-deadloop.md`、`../../shared/receiving-review.md`（仓库根）：门禁闭环与上限规则、接收评审纪律（先验证再实施、逐项测、禁感谢式回应）
+- `../../../shared/anti-deadloop.md`、`../../../shared/receiving-review.md`（仓库根）：门禁闭环与上限规则、接收评审纪律（先验证再实施、逐项测、禁感谢式回应）
 - `.spec/原型/`：产出目录
 
 ## 七、运行问题埋点
 
-收尾按 `../../Other/Skill-Optimizer/references/instrumentation-guide.md` 自查上报 `../../issue/Prototype-Design/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `../../Other/Skill-Optimizer/assets/issue-template.md`）。不确定不记，不打断主流程。
+收尾按 `../../Other/Skill-Optimizer/references/instrumentation-guide.md` 自查上报 `../../../issue/Prototype-Design/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `../../Other/Skill-Optimizer/assets/issue-template.md`）。不确定不记，不打断主流程。
