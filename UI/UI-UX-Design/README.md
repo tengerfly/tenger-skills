@@ -13,7 +13,7 @@
 | SKILL.md | 9 步 4 Gate / 双路径分工 / 迭代路由 / 额度红线 / 反 AI 味 12 条 |
 | CONTEXT.md | 术语 + 决策日志 D-xx |
 | assets/ | layout-inventory-contract / design-task-list / style-proposal / design-system（含 §0.5 YAML token 头）/ archive-readme |
-| references/ | superdesign-sop（A 路径）/ self-write-sop（B 路径）/ design-review-gate / motion-design-guide / open-source-design-systems / style-case-library / case-library/（总索引 + design-systems/layouts/components/interactions/flows/a11y）/ patterns/ |
+| references/ | superdesign-sop（A 路径）/ self-write-sop（B 路径）/ design-review-gate（A 门禁）/ self-write-review-gate（B 门禁，唯一检查记录）/ motion-design-guide / open-source-design-systems / style-case-library / case-library/（总索引 + design-systems/layouts/components/interactions/flows/a11y）/ patterns/ |
 
 ## 环境依赖
 
@@ -32,5 +32,6 @@ superdesign login
 - 布局零改动：只改好不好看，结构问题回 Prototype-Design。
 - 规范先行：design-system.md 未确认，不生成。
 - 第一版不算数：任何路径的初稿必过自检环 + pre-flight（B 路径见 self-write-sop）。
+- 跨页不变量必实测：多页交付的宽度档位与全局组件恒定，须逐页实测三值（A 门禁 §五 / B 门禁 §2）；design-system 里写了规范 ≠ 稿件已遵守，无测量值只能标「未验证」。
 - 额度即预算：变体/花钱动作由用户裁决；额度不足不是阻塞理由，转 B 路径；确定性修正走直编。
 - 双目录：〔A〕`.superdesign/` 工作目录；`.spec/设计稿/` 交付目录（〔B〕下即唯一事实源）。
