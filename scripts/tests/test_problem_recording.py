@@ -33,13 +33,13 @@ class ProblemRecordingContractTests(unittest.TestCase):
                     self.assertIn(obligation, section)
 
     def test_reporting_consumers_bind_to_project_index(self):
-        for name in ("Test/auto-test/SKILL.md", "DEV/Code-Review/SKILL.md",
-                     "Other/defect-triage/SKILL.md", "UI/Fidelity-Review/SKILL.md"):
+        for name in ("Test/auto-test/SKILL.md", "DEV/code-review/SKILL.md",
+                     "Other/defect-triage/SKILL.md", "UI/fidelity-review/SKILL.md"):
             with self.subTest(entry=name):
                 text = (ROOT / name).read_text(encoding="utf-8")
                 self.assertIn(".spec/问题日志.md", text)
                 self.assertIn("problem-recording.md", text)
-        review = (ROOT / "DEV/Code-Review/SKILL.md").read_text(encoding="utf-8")
+        review = (ROOT / "DEV/code-review/SKILL.md").read_text(encoding="utf-8")
         self.assertIn("唯一索引", review)
         self.assertIn("待合并", review)
         triage = (ROOT / "Other/defect-triage/SKILL.md").read_text(encoding="utf-8")
@@ -50,7 +50,7 @@ class ProblemRecordingContractTests(unittest.TestCase):
         for field in ("问题 ID/范围", "问题产物", "状态", "反哺出口", "下一安全节点",
                       "不重复追加", "恢复/交付前", "待授权反馈", "已修复不等于已复核"):
             self.assertIn(field, index)
-        detail = (ROOT / "Other/Skill-Optimizer/assets/issue-template.md").read_text(encoding="utf-8")
+        detail = (ROOT / "Other/skill-optimizer/assets/issue-template.md").read_text(encoding="utf-8")
         for field in ("原问题 ID", "脱敏证据", "责任方", "下一动作", "修复判据", "复核证据", "回退方式"):
             self.assertIn(field, detail)
 
@@ -59,11 +59,11 @@ class ProblemRecordingContractTests(unittest.TestCase):
         for boundary in ("下一安全节点", "未落盘", "根因", "恢复及最终交付前",
                          "不新建重复条目", "跨仓", "已修复", "已验证", "强制终止", "不是自动日志服务"):
             self.assertIn(boundary, policy)
-        guide = (ROOT / "Other/Skill-Optimizer/references/instrumentation-guide.md").read_text(encoding="utf-8")
+        guide = (ROOT / "Other/skill-optimizer/references/instrumentation-guide.md").read_text(encoding="utf-8")
         self.assertNotIn("不确定算不算问题 → 不记", guide)
         self.assertNotIn("不是执行中动作", guide)
         refs = re.findall(r"`([^`]*problem-recording\.md)`", guide)
-        self.assertTrue(any((ROOT / "Other/Skill-Optimizer/references" / ref).resolve() == POLICY.resolve()
+        self.assertTrue(any((ROOT / "Other/skill-optimizer/references" / ref).resolve() == POLICY.resolve()
                             for ref in refs))
         profile = (ROOT / "shared/execution-profiles.md").read_text(encoding="utf-8")
         self.assertIn("problem-recording.md", profile)

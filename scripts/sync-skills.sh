@@ -58,7 +58,7 @@ fi
 STAGE="$(mktemp -d)"
 trap 'rm -rf "$STAGE"' EXIT
 
-# 以 git 追踪路径为准（注意：索引里编排器目录是 Workflow/，磁盘上显示 WorkFlow/）；
+# 以 git 追踪路径为准（注意：索引里编排器目录是 workflow/，磁盘上显示 WorkFlow/）；
 # skill 目录既可能位于分类目录下（PRD/idea-intake），也可能是根级单目录（Workflow）。
 skill_rels=()
 while IFS= read -r p; do

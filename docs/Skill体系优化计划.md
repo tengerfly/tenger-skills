@@ -32,7 +32,7 @@
 | scripts 层 | 不存在，确定性检查均由 Agent 自然语言完成 |
 | verification/ | 不存在，未做过真实场景运行验证 |
 | asset-library/ | 不存在（资产仍分散在各 Skill 的 references/assets 中） |
-| 资产生成物污染 | 已确认 `DEV/Frontend-Dev/assets/frontend-template-vue3/` 下存在 node_modules/、coverage/、dist/ |
+| 资产生成物污染 | 已确认 `DEV/frontend-dev/assets/frontend-template-vue3/` 下存在 node_modules/、coverage/、dist/ |
 | 双副本 | 本仓库为源；`.zcode\skills` 安装副本需在每次改动后同步（既有约定） |
 
 ## 3. 优化点清单（路线图差距分析 → 计划任务）
@@ -48,7 +48,7 @@
 | O-07 | 真实评测体系缺失（scenarios/runs/reports） | P1 | Phase 3 |
 | O-08 | 资产中混入 node_modules/coverage/dist 生成物 | P1 | Phase 0 |
 | O-09 | 状态和生命周期标记不统一（完成/定稿/初版/无状态行） | P2 | Phase 0 建矩阵，Phase 1 落字段 |
-| O-10 | WorkFlow/Testing/Bug-Fix/Skill-Optimizer/Frontend-Dev 职责过重，需按模式拆分而非堆主文件 | P2 | Phase 1 试点、Phase 5 展开 |
+| O-10 | WorkFlow/Testing/bug-fix/skill-optimizer/Frontend-Dev 职责过重，需按模式拆分而非堆主文件 | P2 | Phase 1 试点、Phase 5 展开 |
 | O-11 | Skill 清单未升级为 Skill Graph（节点声明输入输出依赖门禁） | 体系 | Phase 1 契约、Phase 4 状态机 |
 | O-12 | 阶段间靠聊天上下文传递，未 Artifact First + manifest | 体系 | Phase 2 |
 | O-13 | 治理矩阵缺失（状态/契约/产物/缺口四张表） | 体系 | Phase 0 |
@@ -72,7 +72,7 @@
 | T0.3 | 建立契约矩阵与产物矩阵：Skill 触发条件、输入、输出、前置依赖、评审者、门禁、停止条件、回退方式、证据位置、已知风险；产物侧列 PRD/原型/设计稿/TDD/FTDD/评审报告/测试报告/PIPELINE 的生产者与消费者 | governance/SKILL-CONTRACT-MATRIX.md、governance/ARTIFACT-MATRIX.md |
 | T0.4 | 建立 Workflow 缺口清单：主链 14 节点中缺门禁、缺产物、缺停止条件的位置 | governance/WORKFLOW-GAP-LIST.md |
 | T0.5 | 盘点各 Skill 的 references/、assets/ 清单和外部依赖（Node/pnpm/浏览器工具等），登记进 registry | registry 附表 |
-| T0.6 | 清理生成物：`DEV/Frontend-Dev/assets/frontend-template-vue3/` 移除 node_modules/、coverage/、dist/，替换为锁版本清单（package.json + lockfile 说明）+ 可重复安装命令；同步检查 frontend-template-react；检查其余 assets 目录 | 清理后资产 + dependencies 清单 |
+| T0.6 | 清理生成物：`DEV/frontend-dev/assets/frontend-template-vue3/` 移除 node_modules/、coverage/、dist/，替换为锁版本清单（package.json + lockfile 说明）+ 可重复安装命令；同步检查 frontend-template-react；检查其余 assets 目录 | 清理后资产 + dependencies 清单 |
 | T0.7 | 脚本化起步：实现 `build_skill_registry` 与 `scan_generated_files` 两个校验脚本（scripts/ 只做确定性检查） | scripts/ |
 
 **验收**：任何人可通过矩阵回答任一 Skill 的触发条件、输入、输出、门禁和当前验证状态；核心资产中无生成物。
@@ -142,7 +142,7 @@
 | T5.2 | Pattern 增加适用条件、requires、provides、conflicts、ordering；Adapter 增加语言、框架、版本和运行依赖 | 首批 Pattern/Adapter 契约 |
 | T5.3 | 资产生命周期：Draft / Experimental / Validated / Stable / Deprecated / Retired | 生命周期规范 |
 | T5.4 | 优先沉淀 10~20 个高频、跨项目、已验证资产（从各 Skill assets/ 与真实项目中提炼），不追求一次建大库 | 首批分层资产 |
-| T5.5 | 复杂 Skill 按模式拆分评估：WorkFlow/Testing/Bug-Fix/Skill-Optimizer/Frontend-Dev 逐个判断——主 Skill 留路由与共同流程，模式细节进 references，确定性检查进 scripts；仅当职责、触发、输入输出、生命周期真正不同时才拆独立 Skill | 拆分评估结论 |
+| T5.5 | 复杂 Skill 按模式拆分评估：WorkFlow/Testing/bug-fix/skill-optimizer/Frontend-Dev 逐个判断——主 Skill 留路由与共同流程，模式细节进 references，确定性检查进 scripts；仅当职责、触发、输入输出、生命周期真正不同时才拆独立 Skill | 拆分评估结论 |
 
 **验收**：AI 先检索候选资产再说明选择理由；无候选时显式标记「需要新方案」，不把临时代码伪装成稳定资产。
 
@@ -214,7 +214,7 @@
 
 ```text
 第 1 周     Phase 0  基线：registry + 四矩阵 + 生成物清理 + 2 个脚本
-第 2~3 周   Phase 1  契约：schema + WorkFlow/Backend-Dev/Testing 三试点
+第 2~3 周   Phase 1  契约：schema + WorkFlow/backend-dev/Testing 三试点
 第 3~4 周   Phase 2  产物：六类 manifest + 下游消费规则
 第 5~6 周   Phase 3  验证：verification/ + 四个 Golden Scenario + 异常场景
 第 7~8 周   Phase 4  Workflow：稳定 ID + 13 态状态机 + validator

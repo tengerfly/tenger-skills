@@ -41,7 +41,7 @@ DEV/       technical design, implementation, and code review
 Test/      auto-test only; retired Testing resources are read-only
 Other/     defects, OSS research, release/operations, and Skill meta-work
 Skill/     portable skill-lifecycle package; copy independently
-Workflow/  root-level orchestration only
+workflow/  root-level orchestration only
 shared/    common contracts, templates, and evidence rules
 governance/ registries and schemas
 ```

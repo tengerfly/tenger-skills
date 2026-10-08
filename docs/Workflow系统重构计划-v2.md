@@ -195,7 +195,7 @@ refactor/workflow-system-v2
 创建分支前工作区已经存在用户未提交内容：
 
 - `README.md`：已修改
-- `Other/Essence-Distill/`：未跟踪
+- `Other/essence-distill/`：未跟踪
 
 这些内容不属于本轮重构的初始变更，不删除、不覆盖、不重置、不混入重构提交。后续每次提交前都要执行：
 

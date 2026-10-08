@@ -90,7 +90,7 @@ Envelope.authorization 的 grantedBy / grantedAt 必须与 decision 一致，不
 
 ## 问题记录接线回归
 
-`tests/test_problem_recording.py` 已纳入全量 unittest discover，检查活动本地 Skill 的共享记录引用、auto-test/Code-Review/Fidelity-Review/defect-triage 的索引职责，以及模板和关键边界。外部知识库注册项不是本地 Skill，不纳入此入口检查。
+`tests/test_problem_recording.py` 已纳入全量 unittest discover，检查活动本地 Skill 的共享记录引用、auto-test/code-review/fidelity-review/defect-triage 的索引职责，以及模板和关键边界。外部知识库注册项不是本地 Skill，不纳入此入口检查。
 
 它不验证 Agent 实际写文件、去重、恢复或视觉行为。修复结果和额外格式兼容限制见 `problem-recording-verification.md`；真实行为试跑见 `task-scope-regression.md`。
 

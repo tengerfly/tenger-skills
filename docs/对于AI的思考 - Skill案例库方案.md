@@ -999,7 +999,7 @@ Pattern
  ↓
 Solution
  ↓
-Skill/Workflow Evolution
+Skill/workflow Evolution
  ↓
 下一次执行
 ```

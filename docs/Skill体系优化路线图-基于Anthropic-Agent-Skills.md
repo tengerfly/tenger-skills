@@ -321,7 +321,7 @@ verification/
 
 ### 4.8 P1：资产中混入生成物和运行环境
 
-已发现 `DEV/Frontend-Dev/assets/frontend-template-vue3/` 下存在：
+已发现 `DEV/frontend-dev/assets/frontend-template-vue3/` 下存在：
 
 ```text
 node_modules/

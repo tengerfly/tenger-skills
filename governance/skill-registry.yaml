@@ -24,7 +24,7 @@ contract:
   pathCase: exact-git-path
 skills:
 - id: workflow
-  path: Workflow
+  path: workflow
   role: orchestrator
   status: active
   legacyAliases:
@@ -241,7 +241,7 @@ skills:
   - CHANGE
   - OPTIMIZE
 - id: competitive-analysis
-  path: PRD/Competitive-Analysis
+  path: PRD/competitive-analysis
   role: product-research
   status: active
   contractLevel: v1
@@ -252,7 +252,7 @@ skills:
   legacyAliases:
   - Competitive-Analysis
 - id: prd-design
-  path: PRD/PRD-Design
+  path: PRD/prd-design
   role: product-definition
   status: active
   contractLevel: v1
@@ -263,7 +263,7 @@ skills:
   legacyAliases:
   - PRD-Design
 - id: prd-review
-  path: PRD/PRD-Review
+  path: PRD/prd-review
   role: gate-review
   status: active
   contractLevel: v1
@@ -274,7 +274,7 @@ skills:
   legacyAliases:
   - PRD-Review
 - id: prototype-design
-  path: UI/Prototype-Design
+  path: UI/prototype-design
   role: product-design
   status: active
   contractLevel: v1
@@ -284,7 +284,7 @@ skills:
   legacyAliases:
   - Prototype-Design
 - id: prototype-review
-  path: UI/Prototype-Review
+  path: UI/prototype-review
   role: gate-review
   status: active
   contractLevel: v1
@@ -294,7 +294,7 @@ skills:
   legacyAliases:
   - Prototype-Review
 - id: ui-ux-design
-  path: UI/UI-UX-Design
+  path: UI/ui-ux-design
   role: experience-design
   status: active
   contractLevel: legacy-wrapper
@@ -305,7 +305,7 @@ skills:
   legacyAliases:
   - UI-UX-Design
 - id: ui-ux-review
-  path: UI/UI-UX-Review
+  path: UI/ui-ux-review
   role: gate-review
   status: active
   contractLevel: legacy-wrapper
@@ -316,7 +316,7 @@ skills:
   legacyAliases:
   - UI-UX-Review
 - id: backend-tech-design
-  path: DEV/Backend-Tech-Design
+  path: DEV/backend-tech-design
   role: technical-design
   status: active
   contractLevel: legacy-wrapper
@@ -330,7 +330,7 @@ skills:
   legacyAliases:
   - Backend-Tech-Design
 - id: frontend-tech-design
-  path: DEV/Frontend-Tech-Design
+  path: DEV/frontend-tech-design
   role: technical-design
   status: active
   contractLevel: legacy-wrapper
@@ -344,7 +344,7 @@ skills:
   legacyAliases:
   - Frontend-Tech-Design
 - id: backend-dev
-  path: DEV/Backend-Dev
+  path: DEV/backend-dev
   role: implementation
   status: active
   contractLevel: legacy-wrapper
@@ -358,7 +358,7 @@ skills:
   legacyAliases:
   - Backend-Dev
 - id: frontend-dev
-  path: DEV/Frontend-Dev
+  path: DEV/frontend-dev
   role: implementation
   status: active
   contractLevel: legacy-wrapper
@@ -372,7 +372,7 @@ skills:
   legacyAliases:
   - Frontend-Dev
 - id: code-review
-  path: DEV/Code-Review
+  path: DEV/code-review
   role: quality-gate
   status: active
   contractLevel: legacy-wrapper
@@ -401,7 +401,7 @@ skills:
   - INCIDENT
   - OPTIMIZE
 - id: bug-fix
-  path: Other/Bug-Fix
+  path: Other/bug-fix
   role: defect-remediation
   status: active
   contractLevel: legacy-wrapper
@@ -411,7 +411,7 @@ skills:
   legacyAliases:
   - Bug-Fix
 - id: oss-radar
-  path: Other/OSS-Radar
+  path: Other/oss-radar
   role: technical-research
   status: active
   contractLevel: legacy-wrapper
@@ -423,7 +423,7 @@ skills:
   legacyAliases:
   - OSS-Radar
 - id: skill-optimizer
-  path: Other/Skill-Optimizer
+  path: Other/skill-optimizer
   role: system-improvement
   status: active
   contractLevel: legacy-wrapper
@@ -433,7 +433,7 @@ skills:
   legacyAliases:
   - Skill-Optimizer
 - id: skill-evolver
-  path: Other/Skill-Evolver
+  path: Other/skill-evolver
   role: system-improvement
   status: active
   contractLevel: legacy-wrapper
@@ -454,7 +454,7 @@ skills:
   - INCIDENT
   - OPTIMIZE
 - id: tech-review
-  path: DEV/Tech-Review
+  path: DEV/tech-review
   role: specialist
   status: active
   contractLevel: legacy-adapter
@@ -469,7 +469,7 @@ skills:
   - INCIDENT
   - OPTIMIZE
 - id: essence-distill
-  path: Other/Essence-Distill
+  path: Other/essence-distill
   role: specialist
   status: active
   contractLevel: legacy-adapter
@@ -484,7 +484,7 @@ skills:
   - INCIDENT
   - OPTIMIZE
 - id: fact-check
-  path: Other/Fact-Check
+  path: Other/fact-check
   role: specialist
   status: active
   contractLevel: legacy-adapter
@@ -499,7 +499,7 @@ skills:
   - INCIDENT
   - OPTIMIZE
 - id: source-reading
-  path: Other/Source-Reading
+  path: Other/source-reading
   role: specialist
   status: active
   contractLevel: legacy-adapter
@@ -514,7 +514,7 @@ skills:
   - INCIDENT
   - OPTIMIZE
 - id: fidelity-review
-  path: UI/Fidelity-Review
+  path: UI/fidelity-review
   role: specialist
   status: active
   contractLevel: legacy-adapter

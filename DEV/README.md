@@ -4,7 +4,7 @@
 
 ## 主流程
 
-`Backend-Tech-Design` / `Frontend-Tech-Design` → `Backend-Dev` / `Frontend-Dev` → `Code-Review`；`Tech-Review` 为技术方案独立评审，OSS 调研由 `Other/OSS-Radar` 提供。
+`Backend-Tech-Design` / `Frontend-Tech-Design` → `Backend-Dev` / `Frontend-Dev` → `Code-Review`；`Tech-Review` 为技术方案独立评审，OSS 调研由 `Other/oss-radar` 提供。
 
 ## 边界
 
