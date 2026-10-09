@@ -113,3 +113,11 @@
 | 沉淀位置 | 执行日 2026-10-09（路径为目录统一到小写 id 之后的实名，本条上文 R1/R2/R3 写的 `WorkFlow/`、`Other/Skill-Optimizer/` 是改名前旧路径，行号不变）：① `workflow/SKILL.md:3`（description 改类别判据 + 开放示例）与 `workflow/SKILL.md:20`（`Trigger` 首段同步同一判据，防 L1/L2 口径漂移）；② `docs/task-scope-regression.md`「2026-10-08 入口触发网形态变体」节（5 行场景：应用／Agent 项目／知识库系统／平台 + 轻量对照，判据 4 条，n=1 禁标 ✅）并对原 09-23 表的「应用」行加注仅覆盖单一形态名词；③ `Other/skill-optimizer/references/known-issue-patterns.md` 模式 3（典型现象增第二载体、检出方法扩为 ①②③、修复方向禁「再补名词」）；④ 决策留痕 `workflow/CONTEXT.md` D-23、`Other/skill-optimizer/CONTEXT.md` D-39 |
 | 忽略理由 | 不适用 |
 | 未闭环项 | ① 首轮试跑已跑但未通过（5 命中／1 漏检），结果已回填 `docs/task-scope-regression.md` 该节「本轮结果」列并附 sessionId；② 新增根因 R4（入口命中概率性抖动）的修法 A/B/C 待用户裁决；③ 关闭条件改为「每形态 ≥2 次独立会话全命中 + 轻量对照仍走轻量档」，未达成前本条保持未关闭 |
+
+## 本轮修复结果（2026-10，用户裁决 A+B 后执行）
+
+- **方案 A（description 瘦身）**：`workflow/SKILL.md` frontmatter description 由 484 字压至 **184 字**，类别判据（「期望存在的软件能力」）前置、示例砍至 3 个（应用/Agent/知识库）、保留「未列举同判」开放句式；`Trigger` 首段与 description 同判据。YAML `safe_load` 通过，`name: workflow` 不变。
+- **方案 B（宿主全局兜底）**：写入 `~/.qoder-cn/memory/reference-entry-routing-guard.md`（入口路由兜底：描述期望能力→第一个动作先调 workflow；禁止三种反模式；含轻量对照不误伤），并索引进 `~/.qoder-cn/memory/MEMORY.md`。
+- **方案 C（命中率跟踪）**：`docs/task-scope-regression.md` 已含「每形态 ≥2 次独立会话」验收口径。
+- **全量校验**：`validate.ps1 -ProjectRoot` 退出 0，60 tests OK（skipped=1，符号链接权限）。
+- **仍未关闭**：A/B 已落地，关闭条件「每形态 ≥2 次独立会话全命中」需在 Qoder fresh 会话试跑后回填；源仓改动尚未 commit+sync，生效副本仍是旧版。
