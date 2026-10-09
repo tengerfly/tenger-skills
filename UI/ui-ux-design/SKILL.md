@@ -188,7 +188,7 @@ superdesign upload-asset <file> --project-id <id> --purpose brand|content|refere
 
 ## 七、运行问题埋点
 
-收尾按 `../../Other/skill-optimizer/references/instrumentation-guide.md` 自查上报 `../../issue/UI-UX-Design/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `../../Other/skill-optimizer/assets/issue-template.md`；含生成本体侧：A=Superdesign 云端额度/命令行为，B=自写质量与自检环）。归因未明先留事实，按共享记录规则处理；不为经验提炼阻塞主流程。
+收尾按 `../../shared/instrumentation-guide.md` 自查上报 `../../issue/UI-UX-Design/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `../../shared/templates/issue-template.md`；含生成本体侧：A=Superdesign 云端额度/命令行为，B=自写质量与自检环）。归因未明先留事实，按共享记录规则处理；不为经验提炼阻塞主流程。
 
 ## Contract Compatibility Layer
 

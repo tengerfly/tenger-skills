@@ -50,5 +50,5 @@
 
 ## 五、上下游
 
-Frontend-Tech-Design（施工图）、Backend-Tech-Design（接口契约源）、../../UI/prototype-design/UI-UX-Design（还原基准）、Backend-Dev（同域另一端）。
+Frontend-Tech-Design（施工图）、Backend-Tech-Design（接口契约源）、prototype-design 与 ui-ux-design（还原基准）、Backend-Dev（同域另一端）。
 下游：Code-Review（评审回退修改方，承接 `.spec/代码评审/任务清单.md`）、Testing（验收；UI 还原检查内嵌 Fidelity-Review）。

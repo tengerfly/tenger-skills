@@ -30,6 +30,6 @@
 
 | 字段 | 值 |
 |---|---|
-| 提炼落点 | （状态=已提炼 必填）目标 skill + 文件/位置，如 `../../../DEV/frontend-dev/SKILL.md 常见错误对照表` 新增行 / `references/xxx-guide.md` 新增章节 |
+| 提炼落点 | （状态=已提炼 必填）目标 skill + 文件/位置，如 `frontend-dev/SKILL.md 常见错误对照表` 新增行 / `references/xxx-guide.md` 新增章节 |
 | 决策记录 | 目标 skill CONTEXT.md D-xx |
 | 忽略理由 | （状态=已忽略 必填）为什么不提炼 |

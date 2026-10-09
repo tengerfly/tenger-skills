@@ -28,6 +28,17 @@ A local Skill must not redefine Gate values, lifecycle states, evidence labels, 
 
 遵循 `shared/workflow-visibility.md`：开工、恢复、阶段交接、等待决策、阻塞和收尾时向用户展示当前位置、当前 Skill、证据、待决定事项与下一步。正式状态以 workflow.yaml 为唯一来源；轻量复用任务摘要，不增加第二套状态或自动审批。
 
+## 1.4 Cross-skill references
+
+源仓布局是「`<分类>/<skill-id>/`」两层，安装副本布局是「`<skills 根>/<skill-id>/`」一层。同一条 `../` 相对路径不可能在两个视图同时成立（层数天然差一，跨分类时更甚）。跨 skill 引用只允许两种写法：
+
+1. **共享约定与模板**——归仓库根 `shared/`（模板放 `shared/templates/`），按当前文件到仓根的层数写 `../`：技能根内两级、`references/` 与 `assets/` 内三级，形如 `../`×n + `shared/<文件>.md`。副本侧由 `shared` 三落点（容器级、skills 根级、技能目录级）承接，两视图同一串均可达。某 skill 的私有资产被两个以上 skill 需要时提升进 `shared/`，不留副本。
+2. **指向其他 skill 的私有资产**——写逻辑引用 `<skill-id>/内部路径`（不带 `../`、不带分类层），按 registry id 定位，不做文件系统解析；只是路由或称呼时直接写 skill id。
+
+禁止写法：带分类层的相对路径（形如 `../`×n + `<分类>/<skill-id>/…`）与跨分类的 `../<兄弟skill>/`——副本扁平布局下必断。归档目录（未注册、不随宿主分发）只可写仓内路径并注明不分发，不得写成技能内相对路径。
+
+机器核验：`scripts/check-installed-refs.py`（副本视图可达性 + 禁用形式扫描），已接入 `scripts/validate-reference-integrity.ps1`。
+
 ## 2. SKILL.md frontmatter
 
 ```yaml

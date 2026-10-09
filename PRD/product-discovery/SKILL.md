@@ -66,7 +66,7 @@ PASS：核心问题和人群有足够直接证据；CONDITIONAL：假设有责�
 `CONDITIONAL` 必须记录例外、风险、责任人、截止时间、补证动作和 `allowDownstream`。AI 只能提出 Gate，不能替用户批准关键产品决策。
 
 ## Failure Route
-证据缺失回补研究；外部问题交 Competitive-Analysis；运行信号不明交 ../../Other/signal-triage/product-analytics。
+证据缺失回补研究；外部问题交 Competitive-Analysis；运行信号不明交 signal-triage 或 product-analytics。
 
 同一阻塞点反复 3 轮未收敛则请求裁决；新场景、新证据和不同问题可继续探索，不把三轮理解为整个 PRD 的访谈上限。不得为结束对话把 OPEN 改为已确认。
 

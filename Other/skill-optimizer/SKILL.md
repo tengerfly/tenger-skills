@@ -26,7 +26,7 @@ metadata:
 | ③ 优化 | 优化/精简/迭代 XX | 按八维优化并沉淀；含从 ../../bug-patterns/ 与**评审闭环沉淀项**提炼 | SKILL.md / references / CONTEXT 改动 |
 | ④ 体检 | 体检/检查 XX 自洽 | 七维自洽体检 | 问题清单 → 用户逐条裁决 |
 
-**标准先行**：每模式有固定标准——记录 `assets/issue-template.md`、挖掘 `assets/signal-checklist.md`、优化 `assets/optimize-checklist.md`、体检 `assets/self-audit-checklist.md`，编写规范 `assets/skill-writing-standard.md`。执行严格按标准，不凭感觉。
+**标准先行**：每模式有固定标准——记录 `../../shared/templates/issue-template.md`、挖掘 `assets/signal-checklist.md`、优化 `assets/optimize-checklist.md`、体检 `assets/self-audit-checklist.md`，编写规范 `assets/skill-writing-standard.md`。执行严格按标准，不凭感觉。
 
 **自我指涉**：本 skill 自身也是优化对象，问题（含六份标准的问题）记 `../../issue/Skill-Optimizer/`；**先优化自己（先修标准再干活），再优化其他 skill**。
 
@@ -146,7 +146,7 @@ metadata:
 1. **粒度 = 一类问题**：沉淀类别级通用判据/检查项/防复发规则，不是单点案例；单点只作附注。自问能否防「这一类」再犯。
 2. **双向 = 一个问题的两端**：门禁闭环沉淀必须同时给 **A 产出方 skill**（防复发）与 **B 评审 skill**（检出力 · `references/known-issue-patterns.md`）；只沉一端算未完成。P0 双向必沉。
 3. **落点 = 经确认的源仓与授权范围**：沉淀先核对真实源仓位置；业务项目执行不隐含修改源仓、外部知识库或安装副本的授权。缺权限保留本地待反馈记录。只有用户明确要求同步生效副本时才确认目标、比较差异并校验 hash；不默认使用历史硬编码路径、覆盖用户改动或外发问题池。
-4. **模板**：评审方案例库结构用 `../../shared/templates/known-issue-patterns-template.md`；issue 字段用 `assets/issue-template.md`。
+4. **模板**：评审方案例库结构用 `../../shared/templates/known-issue-patterns-template.md`；issue 字段用 `../../shared/templates/issue-template.md`。
 5. **外部参考吸收留痕**：吸收外部 skill 仓库（如 sanyuan-skills）时，**采纳与不采纳**的做法都记入 `assets/skill-writing-standard.md` §七（含理由），防后续重复讨论；吸收点按「标准层 → 元技能层 → 具体 skill 层」逐层落地，逐层记 D-xx。
 6. **落点分层（2026-09-16）**：用户要求「沉淀成标准流程 / 后续都按此执行 / 提高质量」时，改动必须落到目标 skill **主流程强制位**（SKILL.md 步骤内 REQUIRED/Gate/错误表行），案例库/references 只作承载正文的附件并在主流程标注引用点；仅落案例库 = 未完成。用户只要「记录下来」时才允许纯案例库落点。判据：问一句「下次不读这篇参考是否就会照旧做错」——是则必须进主流程。
 
@@ -183,15 +183,15 @@ metadata:
 
 ## 十、资源清单
 
-- `assets/issue-template.md`、`signal-checklist.md`、`skill-writing-standard.md`、`vibe-principles-mapping.md`、`optimize-checklist.md`、`self-audit-checklist.md`
-- `references/instrumentation-guide.md`
+- `../../shared/templates/issue-template.md`、`signal-checklist.md`、`skill-writing-standard.md`、`vibe-principles-mapping.md`、`optimize-checklist.md`、`self-audit-checklist.md`
+- `../../shared/instrumentation-guide.md`
 - `../../shared/templates/known-issue-patterns-template.md`（仓库根）：评审方案例库模板
 - `../../issue/`：skill 自身问题池（源仓库根，含来源=评审闭环项）；`../../bug-patterns/`：错误模式集中池（源仓库根，池规则 `../../bug-patterns/README.md`、案例卡模板 `../bug-fix/assets/pattern-card-template.md`）；`../../evolution/`：用户偏好与进化信号池（源仓库根，Skill-Evolver 维护）；`../../chats/`：待挖掘目录
 - 关联：`Skill-Evolver`（进化引擎——模式②偏好信号采集、模式③进化管线执行时内部调用）；`OSS-Radar`（外部情报输出口，反哺经本 skill 模式③）
 
 ## 十一、运行问题埋点
 
-收尾按 `references/instrumentation-guide.md` 自查上报 `../../issue/Skill-Optimizer/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `assets/issue-template.md`）。归因未明先留事实，按共享记录规则处理；不为经验提炼阻塞主流程。
+收尾按 `../../shared/instrumentation-guide.md` 自查上报 `../../issue/Skill-Optimizer/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `../../shared/templates/issue-template.md`）。归因未明先留事实，按共享记录规则处理；不为经验提炼阻塞主流程。
 
 ## Contract Compatibility Layer
 

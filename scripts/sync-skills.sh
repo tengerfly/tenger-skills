@@ -7,6 +7,8 @@
 #
 # 同步内容（按 git 追踪文件导出，不带 node_modules / __pycache__ / .venv）：
 #   1) 每个 skill 目录 → <目标>/<skill-name>/
+#      源仓目录名已统一到 registry id（小写 kebab，见 shared/skill-contract.md §1.4）；
+#      下面的 basename|tr 只是防御历史混合大小写写法，正常情况下不再改变目录名。
 #   2) 仓库 shared/ 分发到三个层级，覆盖 skill 内出现的各种相对引用深度（已实测四端全解析）：
 #        <容器>/shared、<目标>/shared、<目标>/<skill>/shared
 #      这些是资源目录（无 SKILL.md），不会被宿主当成 skill 加载。

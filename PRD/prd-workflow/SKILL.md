@@ -51,7 +51,7 @@ CREATE、CHANGE、OPTIMIZE 进入产品域，或运行反馈被判断为产品�
 4. 执行 Application Blueprint，冻结旅程、流程、异常、权限、状态和能力地图。
 5. 执行 Feature Decision：先向用户展示完整模块图，再分模块解释候选及取舍，等待明确版本的 MVP、Later、Reject、Defer 和行为边界确认；用户不清楚时先给调研信息/示例，不要求其自己补全全体系功能。
 6. 将批准范围交 PRD-Design；PRD-Review 只审不改，问题回正确上游。
-7. PRD 通过后交 ../../UI/prototype-design/Review；原型不得改变产品范围。
+7. PRD 通过后交 prototype-design（构建）与 prototype-review（评审）；原型不得改变产品范围。
 8. 输出 execution summary、manifest、decision、traceability 和下一 Workflow。
 
 ## Outputs

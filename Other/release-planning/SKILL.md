@@ -60,7 +60,7 @@ metadata:
 PASS：计划、权限、保护指标、回滚和验证齐全；CONDITIONAL：已登记例外且不得越过限制；BLOCKED：无授权、无回滚、P0/P1 未处理或版本范围不清。
 
 ## Failure Route
-测试失败转 defect-triage/对应开发节点修复，再由 ../../Test/auto-test 复测；迁移不兼容转 Tech-Design；运行高风险转 incident-response；无授权停止等待负责人。
+测试失败转 defect-triage/对应开发节点修复，再由 auto-test 复测；迁移不兼容转 Tech-Design；运行高风险转 incident-response；无授权停止等待负责人。
 
 ## Downstream Contract
 deployment-execution 只可执行计划中列出的版本、环境、命令、观察和回滚，不得自行扩大范围。

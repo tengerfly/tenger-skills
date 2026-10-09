@@ -186,4 +186,4 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ## 七、运行问题埋点
 
-收尾按 `../../../Other/skill-optimizer/references/instrumentation-guide.md` 自查上报 `../../../issue/PRD-Design/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `../../../Other/skill-optimizer/assets/issue-template.md`）。不确定不记，不打断主流程。
+收尾按 `../../../shared/instrumentation-guide.md` 自查上报 `../../../issue/PRD-Design/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `../../../shared/templates/issue-template.md`）。不确定不记，不打断主流程。

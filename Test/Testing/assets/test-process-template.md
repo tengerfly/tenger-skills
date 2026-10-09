@@ -63,7 +63,7 @@
 
 ### 阶段 2：环境准备
 - **本地启动**：按项目 README 安装依赖（`pnpm/npm install`）、起本地 dev server（`pnpm dev`）或构建后静态服务（`pnpm build` + `serve`）；确认能通过 `http://localhost:{{port}}` 访问；
-- **浏览器工具检测**（见 `references/browser-guide.md`）：检测 Playwright → browser-use → 其他（硬依赖链见 `references/browser-guide.md` 与仓库根 `../../shared/browser-policy.md`）；midscenejs 为样式视觉断言的可选增强（缺失降级并明示），不在检测链；
+- **浏览器工具检测**（见 `references/browser-guide.md`）：检测 Playwright → browser-use → 其他（硬依赖链见 `references/browser-guide.md` 与仓库根 `../../../shared/browser-policy.md`）；midscenejs 为样式视觉断言的可选增强（缺失降级并明示），不在检测链；
 - **样式测试环境（可选）**：若启用 midscenejs，安装 `@midscene/web` + 配置模型环境变量（见 `references/style-test-guide.md`）。
 
 ### 阶段 3：生成测试计划 + 测试用例

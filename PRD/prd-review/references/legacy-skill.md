@@ -116,4 +116,4 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ## 七、运行问题埋点
 
-收尾自查，将方法论问题、用户否定/认可信号、可复现产物问题上报至 `../../../issue/PRD-Review/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签遵循 `../../../Other/skill-optimizer/references/instrumentation-guide.md`，模板 `../../../Other/skill-optimizer/assets/issue-template.md`）。不确定不记，不打断主流程。
+收尾自查，将方法论问题、用户否定/认可信号、可复现产物问题上报至 `../../../issue/PRD-Review/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签遵循 `../../../shared/instrumentation-guide.md`，模板 `../../../shared/templates/issue-template.md`）。不确定不记，不打断主流程。
