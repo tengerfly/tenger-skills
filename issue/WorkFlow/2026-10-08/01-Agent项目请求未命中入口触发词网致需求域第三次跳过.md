@@ -120,4 +120,4 @@
 - **方案 B（宿主全局兜底）**：写入 `~/.qoder-cn/memory/reference-entry-routing-guard.md`（入口路由兜底：描述期望能力→第一个动作先调 workflow；禁止三种反模式；含轻量对照不误伤），并索引进 `~/.qoder-cn/memory/MEMORY.md`。
 - **方案 C（命中率跟踪）**：`docs/task-scope-regression.md` 已含「每形态 ≥2 次独立会话」验收口径。
 - **全量校验**：`validate.ps1 -ProjectRoot` 退出 0，60 tests OK（skipped=1，符号链接权限）。
-- **仍未关闭**：A/B 已落地，关闭条件「每形态 ≥2 次独立会话全命中」需在 Qoder fresh 会话试跑后回填；源仓改动尚未 commit+sync，生效副本仍是旧版。
+- **仍未关闭**：A/B 已落地并 commit+sync 到 zcode（`~/.zcode/skills`，副本 workflow description 已为新版 197 字），关闭条件「每形态 ≥2 次独立会话全命中 + 跨模型一致」需在 zcode fresh 会话试跑后回填。
