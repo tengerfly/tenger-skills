@@ -54,6 +54,8 @@
 
 | D-37 | 2026-09-19 | 模式②挖掘输入源补第三通道：运行期日志/监控问题记录（server-log / server-monitor / web-monitor 导出），标注为正向循环第二入口——与门禁评审闭环并列的问题来源 | 用户拍板：日志/监控记录的问题回流优化 skill 或对应项目 | ✅ |
 | D-38 | 10-08 | 两份共享约定提升出本 skill：`references/instrumentation-guide.md` → 仓库根 `shared/instrumentation-guide.md`、`assets/issue-template.md` → `shared/templates/issue-template.md`（二者被 16 个 skill 的埋点章节共用，留在私有目录时安装副本扁平布局下 `../` 解析必断）；SKILL.md「标准先行 / 沉淀约定 / 资源清单 / 埋点」四处引用同步改指 shared，README 目录说明更新；写法归一落 `shared/skill-contract.md` §1.4（只允许 shared 相对路径与 `<skill-id>/…` 逻辑引用，禁带分类层），门禁落 `scripts/check-installed-refs.py`（已接入 `validate-reference-integrity.ps1`）；`Skill/skill-lifecycle` 自带的同名 `assets/issue-template.md` 属其便携包私有，保持不动 | `issue/Skill-Optimizer/2026-10-08/01`（跨 skill 引用两视图互不成立；用户裁决统一到小写 id + 共享资产进 shared） | ✅ |
+| D-39 | 10-09 | **模式 3 补可执行检出方法（触发网脆弱专项）**：`references/known-issue-patterns.md` 模式 3 典型现象增第二种载体「description 用封闭名词枚举，用户换未列举形态名词即失配」；检出方法由 ① 扩为 ①②③——② 取各 skill `description`，对换形候选词（Agent／智能体／知识库／RAG／系统／平台／服务／后台／小程序／图谱）逐个 `grep -c`，判「穷举白名单」vs「类别判据 + 开放示例」，判据 = **命中与否是否取决于用户说出被列举的那个名词**，穷举即报「入口触发网脆弱」并关联 `issue/WorkFlow/2026-10-08/01`；③ 核对 `docs/task-scope-regression.md` 回归场景是否只锚定单一形态名词（只跑一种说法就标 ✅ = 假绿）；修复方向恒为改类别判据，**禁止用「再补几个名词」收口** | 09-23 的修复方式（往 description 里穷举形态名词）本身即 10-08 第三次复发的根因；本条为 B 方向（检出力）落点，A 方向落 `WorkFlow` D-23 | ✅ |
+
 ## 四、待决问题
 
 Q1 已完成（埋点已落地全部 skill，2026-09-09 体检确认）；Q2 已定（500 行红线）。
