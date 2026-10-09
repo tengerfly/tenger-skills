@@ -28,7 +28,7 @@ metadata:
 
 **标准先行**：每模式有固定标准——记录 `../../shared/templates/issue-template.md`、挖掘 `assets/signal-checklist.md`、优化 `assets/optimize-checklist.md`、体检 `assets/self-audit-checklist.md`，编写规范 `assets/skill-writing-standard.md`。执行严格按标准，不凭感觉。
 
-**自我指涉**：本 skill 自身也是优化对象，问题（含六份标准的问题）记 `../../issue/Skill-Optimizer/`；**先优化自己（先修标准再干活），再优化其他 skill**。
+**自我指涉**：本 skill 自身也是优化对象，问题（含五份标准的问题）记 `../../issue/Skill-Optimizer/`；**先优化自己（先修标准再干活），再优化其他 skill**。
 
 ## 二、双问题池
 
