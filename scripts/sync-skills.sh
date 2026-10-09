@@ -21,7 +21,10 @@
 #   bash scripts/sync-skills.sh                  # 同步到全部默认宿主
 #   bash scripts/sync-skills.sh --dry-run        # 只报告差异，不写入
 #   bash scripts/sync-skills.sh --target <目录>   # 自定义目标（可重复）
-#   bash scripts/sync-skills.sh --ref <git-ref>  # 指定源版本，默认 HEAD
+#   bash scripts/sync-skills.sh --ref <git-ref>   # 指定源版本，默认 HEAD
+#     注意：skill 路径列表取的是**当前工作树**（git ls-files），所以 --ref 只能用于
+#     目录结构相同的版本。跨「目录改名」的旧 ref 会 pathspec 不匹配 → 归档为空、tar 报错，
+#     此时不能用它做对照组，改用「往副本注入一行再 diff」来验证比对判据是否在工作。
 #   bash scripts/sync-skills.sh --list-targets   # 只打印默认目标
 set -euo pipefail
 
