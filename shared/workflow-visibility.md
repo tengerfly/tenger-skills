@@ -22,6 +22,8 @@
 
 正式流程同时展示 workflow.yaml 的 state、gate、allowDownstream；中文状态不得冒充注册状态。“产物已写”不等于“已批准”，“未执行/不适用”不等于“通过”。
 
+**状态卡是工作单元交付物（硬门禁）**：每完成一个可验收结果，必须输出一张状态卡（当前位置/本步产物/下一步/需你决定），**未输出不得开始下一个工作单元**。用户只回「继续」时，默认只做当前已声明单元的剩余部分，不得据此新开单元；任何一次静默的工作单元切换都视为流程偏离，应停下补卡并重新确认范围与终点。
+
 ## 持久化与单一事实源
 
 正式当前状态只以 `.spec/workflow.yaml` 为准，沿用 executionId、currentSkill、state、gate、allowDownstream、artifactRefs、evidenceRefs、decisionRefs、nextAction、revision、updatedAt。每次交接按合法状态转移同步，历史原因及阶段计划保存在本次 execution 摘要中；展示是这些记录的视图，不再维护第二套状态。
