@@ -8,7 +8,7 @@
 |---|---|
 | 等级 | P0 |
 | 标签 | `触发识别` / `流程缺陷` / `规则空转` |
-| 优化状态 | 规则已修（2026-10-09，R1/R2/R3 三处落点均已改并同步生效副本）；**未关闭**——关闭条件为三形态 fresh-agent 试跑全绿，见「修复方向 · 回归判据」与 `docs/task-scope-regression.md`「2026-10-08 入口触发网形态变体」节 |
+| 优化状态 | 规则已改 + **首轮 fresh-agent 试跑已跑（2026-10-09）：未通过**。命中率 5/6，Agent 形态同句重跑 3 次中漏 1 次（判据可达但**随机漏检**，非名词覆盖问题）。轻量对照未被误伤。台账保持未关闭，下一层修法待用户裁决（见「首轮试跑结果」节） |
 | 复发关联 | `issue/WorkFlow/2026-09-22/01-*.md`、`issue/WorkFlow/2026-09-23/01-*.md`（同根因第 3 次） |
 
 ## 现象
@@ -42,7 +42,7 @@
 - 证据：① 本会话第一轮助手输出原文（无 skill 调用、无状态卡）；② `WorkFlow/SKILL.md:3`（生效副本 `~/.qoder-cn/skills/workflow/SKILL.md:3` 与源仓逐字节一致，742 字节，已 cmp 验证）；③ `docs/task-scope-regression.md:67` 场景原句为「我想做一个 XX 应用」
 - 责任方 / 下一动作 / 修复判据：责任方 `WorkFlow` 入口层；下一动作见「修复方向」；修复判据见下
 - 根因与归属：已确认（可在仓库内直接观察，见下表）
-- 复核证据 / 未验证项：**已验证**（2026-10-09）——① `workflow/SKILL.md:3` 换形候选词逐个 `grep -c`：Agent／智能体／知识库／RAG／系统／平台／服务／后台／小程序／图谱 修复前均为 0，修复后均为 1，且 description 内显式写明「本列表只是示例不是白名单」；② YAML frontmatter 可正常解析（`yaml.safe_load` 通过，`name: workflow` 未变，无 ASCII `: ` 破坏标量）；③ `docs/task-scope-regression.md` 原 n=1 行已加注「仅覆盖『应用』一词」，新增形态变体节含轻量对照行；④ 门禁全绿：`validate_core registry/refs/skill-contract/system` 均 pass、`scripts/tests` 60 tests OK（skipped=1）、`check-installed-refs.py` PASS（checked=426，分类层写法/源仓不可达/副本不可达均为 0）。**未验证项**：模型的真实触发行为——静态改对 description 只证明判据可达，不证明 fresh 会话命中，必须按回归判据跑三形态
+- 复核证据 / 未验证项：**已验证**（2026-10-09）——① `workflow/SKILL.md:3` 换形候选词逐个 `grep -c`：Agent／智能体／知识库／RAG／系统／平台／服务／后台／小程序／图谱 修复前均为 0，修复后均为 1，且 description 内显式写明「本列表只是示例不是白名单」；② YAML frontmatter 可正常解析（`yaml.safe_load` 通过，`name: workflow` 未变，无 ASCII `: ` 破坏标量）；③ `docs/task-scope-regression.md` 原 n=1 行已加注「仅覆盖『应用』一词」，新增形态变体节含轻量对照行；④ 门禁全绿：`validate_core registry/refs/skill-contract/system` 均 pass、`scripts/tests` 60 tests OK（skipped=1）、`check-installed-refs.py` PASS（checked=426，分类层写法/源仓不可达/副本不可达均为 0）。**未验证项**：模型的真实触发行为——静态改对 description 只证明判据可达，不证明 fresh 会话命中；**同日已跑完首轮 fresh 会话试跑**（6 个独立子会话），结论见下「首轮试跑结果」节：判据可达成立、命中率 5/6，Agent 形态存在**随机漏检**（新增根因 R4），故本条不关闭。
 - 回退方式：`git revert` 本次修复提交即整体回退；或按文件手工回退三处——`workflow/SKILL.md` 的 `description` 与 `Trigger` 首段恢复为原封闭枚举句、`docs/task-scope-regression.md` 删除「2026-10-08 入口触发网形态变体」节并撤掉原行的加注、`Other/skill-optimizer/references/known-issue-patterns.md` 模式 3 检出方法收回 ②③。回退后须重跑一次 `sync-skills.sh` 让生效副本跟上，否则宿主仍读改后版本
 
 ## 根因定位（文件 / 行号）
@@ -65,6 +65,37 @@
 3. **`Other/Skill-Optimizer/references/known-issue-patterns.md` 模式 3 补检出方法（R3）**：检出动作 =  grep 各 skill `description` 中的名词枚举，判定其为「穷举白名单」还是「类别判据 + 示例」；穷举写法即报「入口触发网脆弱」，并关联本条 ID。
 4. **回归判据（关闭本条的条件）**：fresh-agent 用三种句式（应用 / Agent 项目 / 知识库系统）各开新会话试跑，首个动作均为 `Skill(workflow)` 且首轮澄清不出现技术选型问题；未达成前本条保持「待处理」，不标已沉淀。
 
+## 首轮试跑结果（2026-10-09，5 命中 / 1 漏检 → 未通过）
+
+执行方式：由修复会话用宿主子会话工具起 fresh 会话，每个会话输入只有**用户原话 + 目标目录事实**，不含「调用某 skill／走流程」的提示；判据取该会话工具调用序列的第一条输出（`Launching skill: workflow`），不取会话自述。逐条 sessionId 见 `docs/task-scope-regression.md` 同节表格。
+
+| 形态 | 结果 | 关键观察 |
+|---|---|---|
+| 应用 | ✅ | 首工具即 `Skill` → `Launching skill: workflow`，按 CREATE 读强度/可见性/intake 契约 |
+| Agent 项目（原话） | ❌ | 本轮**零工具调用**，回复「当前没有收到具体任务」并让用户自选任务，自选菜单里明写「用 Workflow 从想法推进到 PRD / 原型…」 |
+| 知识库系统 | ✅ | 回复原文「用户描述的是一个还不存在的软件能力（知识库系统），走 `workflow` 总入口」 |
+| 平台 | ✅ | 建档 `.spec/intake/INT-20261009-001.md`，三题为数据在哪／谁看／硬约束，明写技术选型不在本轮问 |
+| Agent 项目重跑 ×2 | ✅✅ | 同句两次都命中，其一逐字写「这是一个『还不存在的软件能力』…先加载 workflow 编排器」，并把用户给的 Neo4j 记为既有约束、声明「不会问你任何技术选型问题」 |
+| 轻量对照（合并 csv） | ✅ 未误伤 | 未调任何 skill，直接读目录→写脚本→实跑核验，轻量档仍可达 |
+
+**定性结论**：
+
+1. **R1 达成**——类别判据本身可达且被真实引用（4 个命中样本里 3 个逐字复述了判据），封闭枚举那个缺口确已修掉；轻量对照未误伤，说明放宽入口没有把小任务拖进流程。
+2. **暴露新缺口 R4：入口命中是概率性的，`description` 层无法保证 100%。** 漏检那次同句重跑两次均命中，故不是句式/名词覆盖问题，而是同一判据下的裁决抖动（本轮 1/6，Agent 形态 1/3）。
+3. **R4 的失效层比 skill 更靠前**：漏检发生在「本会话没有选中任何 skill」的那一刻，此时 `SKILL.md` 正文、`shared/*`、埋点规则**全部尚未加载**，所以任何写在 skill 内部的「防漏触发」规则对 R4 都无效（这正是模式 3 判据不可达的镜像形态）。能在该时刻生效的只有宿主级全局指令层。
+
+**下一层候选修法（待用户裁决，均为行为性改动）**：
+
+| 方案 | 落点 | 预期与代价 |
+|---|---|---|
+| A 入口文本瘦身 + 判据前置 | `workflow/SKILL.md:3`（现 471 字，示例句式占比高） | 把类别判据压进开头若干字、示例砍到 3 条，降低宿主目录截断与语义稀释；**只能提高命中率，不可能消除抖动** |
+| B 宿主级全局兜底 | 宿主用户级全局指令文件（本仓之外，跨项目生效） | 唯一能在「未选中任何 skill」时生效的层，写明「用户描述期望存在的软件能力（新建而非改码）⇒ 第一个动作先调 workflow」；**代价是动用户全局配置，且四家宿主各一份** |
+| C 接受概率 + 命中率长期跟踪 | 本节 + 模式 3 | 不改行为，把「漏触发」当可测指标按轮次记录，趋势恶化再升级；零风险但不解决问题 |
+
+建议 A + B：A 治可达性的余量，B 治抖动兜底；C 作为验收口径并入（试跑样本量按形态 ≥2 次，单形态 n=1 不再作为结论）。
+
+**本轮试验产物**：`D:/project/agent-project/kb-trial-{1,2,3,4,6}`、`csv-trial-5`（含子会话建的 `.spec/` 脚手架与 `merge-csv.mjs`），均在仓库外、不回收进本仓，验证完可整目录删除。
+
 ## 双向落点
 
 | 方向 | 目标 skill | 落点 |
@@ -81,4 +112,4 @@
 | 沉淀目标 | A 方向防复发：`workflow`（入口触发判据）；B 方向检出力：`skill-optimizer`（模式 3 检出方法）+ `docs/task-scope-regression.md`（回归口径） |
 | 沉淀位置 | 执行日 2026-10-09（路径为目录统一到小写 id 之后的实名，本条上文 R1/R2/R3 写的 `WorkFlow/`、`Other/Skill-Optimizer/` 是改名前旧路径，行号不变）：① `workflow/SKILL.md:3`（description 改类别判据 + 开放示例）与 `workflow/SKILL.md:20`（`Trigger` 首段同步同一判据，防 L1/L2 口径漂移）；② `docs/task-scope-regression.md`「2026-10-08 入口触发网形态变体」节（5 行场景：应用／Agent 项目／知识库系统／平台 + 轻量对照，判据 4 条，n=1 禁标 ✅）并对原 09-23 表的「应用」行加注仅覆盖单一形态名词；③ `Other/skill-optimizer/references/known-issue-patterns.md` 模式 3（典型现象增第二载体、检出方法扩为 ①②③、修复方向禁「再补名词」）；④ 决策留痕 `workflow/CONTEXT.md` D-23、`Other/skill-optimizer/CONTEXT.md` D-39 |
 | 忽略理由 | 不适用 |
-| 未闭环项 | 回归判据（三形态 fresh-agent 各起独立会话，首个动作均为 `Skill(workflow)` 且首轮不问技术选型；轻量对照仍走轻量档）**尚未试跑**，本条保持未关闭；试跑结果回填 `docs/task-scope-regression.md` 该节「本轮结果」列后再改本表 |
+| 未闭环项 | ① 首轮试跑已跑但未通过（5 命中／1 漏检），结果已回填 `docs/task-scope-regression.md` 该节「本轮结果」列并附 sessionId；② 新增根因 R4（入口命中概率性抖动）的修法 A/B/C 待用户裁决；③ 关闭条件改为「每形态 ≥2 次独立会话全命中 + 轻量对照仍走轻量档」，未达成前本条保持未关闭 |
