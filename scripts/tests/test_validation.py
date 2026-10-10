@@ -40,6 +40,26 @@ class ValidationTests(unittest.TestCase):
         with self.assertRaises(core.DuplicateKeyError):
             core.yaml.load("a: 1\na: 2\n", Loader=core.StrictLoader)
 
+    def test_sourceRefs_binding_rejects_superseded_baseline(self):
+        def entry(aid, status, sources=(), supersedes=None):
+            item = {"artifactId": aid, "type": "prd", "status": status, "sourceRefs": list(sources),
+                    "evidenceRefs": [], "decisionRefs": [aid + "-DEC"]}
+            if supersedes:
+                item["supersedes"] = supersedes
+            return item
+
+        by_id = {
+            "PRD-OLD": entry("PRD-OLD", "SUPERSEDED"),
+            "DESIGN-1": entry("DESIGN-1", "APPROVED", ["PRD-OLD"]),
+            "DESIGN-2": entry("DESIGN-2", "SUPERSEDED", ["PRD-OLD"]),
+            "REPL-1": entry("REPL-1", "APPROVED", ["PRD-OLD"], supersedes="PRD-OLD"),
+        }
+        with patch.object(core, "artifact_context", return_value=({"artifacts": []}, by_id, [])):
+            errors = core.check_artifact(Path("."))
+        # DESIGN-1 is current work bound to a retired baseline; DESIGN-2 is itself retired and
+        # REPL-1 declares supersedes, so neither may be reported as drift.
+        self.assertEqual({e.split(" ")[0] for e in errors if "superseded baseline" in e}, {"DESIGN-1"})
+
     def test_pass_rejects_p0_and_p1_but_allows_p2(self):
         evidence = {"EVID-1": {"type": "validation-report", "status": "REVIEW"}}
         for severity in ("P0", "P1", "P2"):

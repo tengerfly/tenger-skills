@@ -2,6 +2,27 @@
 
 > 适用：5 个链上评审类 skill 的汇总报告（Fidelity-Review 单报告无需汇总）。各 skill 的 summary 模板为本模板的领域实例：闭环要素与字段口径以本文件为准，章节组织可按 skill 领域定制。
 
+## 0. 上游闸门核对与本轮 Gate（硬性前置 · 缺本节不得记 `PASS`）
+
+> 口径：`../gate-policy.md` §6。开工前（评审输入解析时）填一次，出 Gate 时复核一次。领域实例可按本域上游条目改名行，但四字段判据不得改口径。
+
+| 上游 artifact | id | 当时版本 | 文件 mtime | `status` | `gate` | `allowDownstream` | 结论 |
+|---|---|---|---|---|---|---|---|
+| {{本批所依据的每个上游条目}} | {{ART-…}} | {{v…}} | {{YYYY-MM-DD HH:mm}} | APPROVED / SUPERSEDED | PASS / BLOCKED | true / false | 有效 / 已作废 / 已关闸 |
+
+**时序核查**：上游基线转 `SUPERSEDED`（或方向类 DEC 落盘）的时刻 vs 被审产物 mtime——被审产物晚于作废 ⇒ **基准漂移**，标失效并重判，不得在旧基线上出结论。
+
+**本轮 Gate（限定条件只落字段，不落注释）**：
+
+```yaml
+gate: PASS | CONDITIONAL | BLOCKED   # 上游 SUPERSEDED / gate 非 PASS / allowDownstream: false → 只能 BLOCKED
+allowDownstream: true | false
+blockedBy: []                        # 关闸时必填：owner / requiredInput / clearCondition
+reason: <一句话>
+```
+
+「判据全闭」是事实记录，不是放行结论；**不得**用注释或正文写「本 `PASS` 仅对旧基线成立」变相放行——下游只读 `gate` / `allowDownstream` 字段，读不到限定语。缺本节 ⇒ 本轮 Gate 只能记「未验证」。
+
 ## 1. 元数据
 
 | 字段 | 内容 |

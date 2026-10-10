@@ -45,6 +45,8 @@
 | D-15 | 09-17 | 体检修复（本次吸收后自检）：SKILL 两处「A~M 组」→「A~N 组」（步骤 3 / 资源清单），与 frontend-checklist 新增 N 节同步 | Skill-Optimizer 模式④体检（判据=全文件「A~M」清零） | ✅ |
 
 | D-16 | 2026-09-19 | §4.1.0「M6 资产与契约检查」→「外部 AI 知识库」：新增第⑥项「零冗余并列」（未检索/未适配即新建与库内既有资产并列重复的组件，防冗余硬性条件），冗余并列升 P0；补调度侧引用层与映射表指针（仓库根 ../../skill-knowledge/） | 用户拍板：AI 组件统一外部仓 skills-knowledge，防冗余为硬性条件 | ✅ |
+| D-17 | 2026-10-10 | 步骤 1「输入解析」加〔REQUIRED · 开工前闸门核对〕：逐条读上游（PRD／原型／TDD／FTDD）的 `status`、`version`、`gate`、`allowDownstream`，任一 `SUPERSEDED`／非 `PASS`／`false` ⇒ 不在作废基线上继续评审，**把关闸事实写入汇总 §0 并交回 Workflow 判停**（本 skill 铁律 5「不设门禁」保持不破：只报事实、不自判放行）；`assets/summary-template.md` 结构基线行加公共 §0 硬性小节指针。口径统一指 `../../shared/gate-policy.md` §6 | `issue/WorkFlow/2026-10-10/01`＋`issue/UI-UX-Review/2026-10-10/01` 对称补齐（评审节点承接位落差）；用户裁决「先要解决这些问题」 | ✅ 规则已改｜◐ 未经真实场景 fresh 复跑验证 |
+
 ## 四、待决问题
 
 无。

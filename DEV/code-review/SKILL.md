@@ -73,7 +73,7 @@ metadata:
 → 角色文档 → 汇总 → 任务清单 + 用户确认 → 闭环复核 + 双向沉淀 → 归档
 ```
 
-1. **输入解析**：定位本批次代码与 `libs/shared`、四类文档；抽取 AC 清单、TDD 接口清单、FTDD fetch 表、原型布局清单；代码量大按「大批量分批」先汇总范围。
+1. **输入解析**：定位本批次代码与 `libs/shared`、四类文档；抽取 AC 清单、TDD 接口清单、FTDD fetch 表、原型布局清单；代码量大按「大批量分批」先汇总范围。**〔REQUIRED · 开工前闸门核对〕**逐条读 `.spec/manifest.yaml` 中本批所依据上游（PRD／原型／TDD／FTDD）的 `status`、`version`、`gate`、`allowDownstream`：任一 `SUPERSEDED`／非 `PASS`／`false` ⇒ **不在作废基线上继续评审**，把关闸事实写入汇总 §0「上游闸门核对」表并交回 Workflow 判停（本 skill 不设门禁，见铁律 5，故只报事实、不自判放行）；限定条件只能落字段、不得写注释或正文（`../../shared/gate-policy.md` §6）。
 2. **静态验证（取证）**：本批次代码 `pnpm install → tsc --noEmit（或 build）→ test → lint`；跑不了 → 降级静态读码并在报告标「未取证（原因）」。只证伪可编译 / 可测试 / 可 lint，不做端到端冒烟（规程见 §4.4）。
 3. **视角评审**：后端批次按 `references/backend-checklist.md`、前端批次按 `references/frontend-checklist.md`（A~N 组）逐条执行；独立产出断点清单，独立上下文（subagent / 新会话）互不可见，不参考代码生成过程；条件允许可用不同模型交叉审查。另对照 `references/known-issue-patterns.md`（评审方案例库）逐条过一遍，命中即入本批次清单。
    **⑬-前 并行还原度**：同时启用 `Fidelity-Review`（代码评审场景模式）做页面还原度审查，两侧并行、互不可见；Fidelity-Review 按自身清单出问题（含截图），**问题合并进本批次清单**（标「来源=Fidelity-Review」）。

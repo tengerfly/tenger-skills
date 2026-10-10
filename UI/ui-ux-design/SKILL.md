@@ -73,7 +73,7 @@ metadata:
 
 **8. ◉ 质量门禁（A 路径，全绿才放行）**：按 `references/design-review-gate.md` 六查——① 布局零改动（多删改返工）② 规范一致性（规范外视觉值返工）③ 反 AI 味 12 条（§4.3 + 扩充机械项）④ 文案保真（与 PRD / 布局清单逐字一致、无杜撰）⑤ 布局基线与全站组件不变量 ⑥ 稿源同步核验（〔A〕云端稿 import 回传核验；〔B〕本地渲染核验）。
 
-**9. 落盘归档（A 路径；B 按独立 SOP §七）**：〔A〕`get-design --draft-id --output .spec/设计稿/<页面>.html`；〔B〕本地文件即交付物（核对路径与命名，无导出步骤）。按 `assets/archive-readme-template.md` 写 README（页面 / 〔A〕projectId + draftId 或〔B〕稿源=AI 自写 + git 版本 / 规范出处 / 端类型 / **§7 token 条数对账基线**）；回填评审任务清单（`已确认` → `已修复` + 修改说明）；**回填后须触发 `UI-UX-Review` 复核，不得自判通过**（闭环与上限规则见 `../../shared/anti-deadloop.md` §一/§二）；埋点收尾。
+**9. 落盘归档（A 路径；B 按独立 SOP §七）**：〔A〕`get-design --draft-id --output .spec/设计稿/<页面>.html`；〔B〕本地文件即交付物（核对路径与命名，无导出步骤）。按 `assets/archive-readme-template.md` 写 README（页面 / 〔A〕projectId + draftId 或〔B〕稿源=AI 自写 + git 版本 / 规范出处 / 端类型 / **§7 token 条数对账基线** / **上游基线指纹**）；**〔REQUIRED · 上游基线指纹〕**README 必须登记本批所依据的上游 artifact：`artifactId` + `version` + 该文件 mtime，并按 `../../shared/artifact-contract.md` §2 写入其 `sourceRefs`——只写「PRD v0.2 APPROVED」这类无 id、无 mtime 的松散说法不算登记。上游被覆盖式修订或转 `SUPERSEDED` 时，本批即基准失效，须重判而非沿用（口径 `../../shared/gate-policy.md` §6）；返工交付同理声明**返工当时**的上游版本与 mtime。**〔REQUIRED · 回填边界〕**回填评审任务清单**只允许动状态列与修复说明并标回填方**（`已确认` → `已修复` + 修改说明）；**Gate 结论、放行状态、轮次判定属评审方单一事实源，编写方一律不得自写**；**回填后须触发 `UI-UX-Review` 复核，不得自判通过**（闭环与上限规则见 `../../shared/anti-deadloop.md` §一/§二）；埋点收尾。
 
 > **下游交接口径**：`design-system.md` §7「CSS 变量 Token 汇总」是下游 Frontend-Tech-Design（§8.6 登记条数）与 Frontend-Dev（`styles/variables` 逐条对账）的**视觉唯一来源**；低保真原型不承载视觉基准（见 `../../shared/baseline-terms.md`）。
 
@@ -171,6 +171,8 @@ superdesign upload-asset <file> --project-id <id> --purpose brand|content|refere
 | 重复建项目 | `resume.json` / fetch 找回 |
 | import 用相对路径 | 只 `https` / `data:`，先 `upload-asset` |
 | 只改本地宣布完成 | 同一轮回传云端并核 version + 宿主链 + README |
+| README 只写「PRD v0.2 APPROVED」这类无 id / 无 mtime 的说法 | 步骤 9 REQUIRED 登记**上游基线指纹**（`artifactId` + `version` + mtime）并写 `sourceRefs`；上游转 `SUPERSEDED` 即基准失效、须重判 |
+| 修复方在评审任务清单里自写「第二轮 Gate：PASS」 | 回填**只动状态列 + 修复说明并标回填方**；Gate / 放行 / 轮次判定属评审方单一事实源，编写方不得自写（步骤 9 REQUIRED） |
 | 穿衣静态化：把原型可跳转/可展开结构降级为纯样式 hover（死按钮、无锚点行） | 交互结构随布局零改动一并冻结：原型中真实 <a>/按钮在设计稿用 <a href="#锚点"> 或等价触发保留 |
 | Tailwind 默认尺度直用（rounded-sm/shadow-md/0.5 步长间距/中间字重），未映射设计 token | 生成提示词与自检都按 token 对照表逐值映射；门禁 ② 用「规范外值全文扫描」兜底 |
 | 风格提案的动效档带入已收敛的归档规范（提案最低限编排 ≠ 规范无编排） | 步骤 5 规范落定后，生成约束语只引规范 §动效，不再引提案 |

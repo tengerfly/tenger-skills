@@ -12,6 +12,7 @@
 | **token 对账基线** | design-system §7 共 **{{N}}** 条 CSS 变量（下游 Frontend-Dev 的 `styles/variables` 须逐条对账：条数/值/命名） |
 | 生成本体与稿源 | 〔A〕Superdesign projectId `{{…}}` · 画布 URL `{{…}}` / 〔B〕AI 自写 · git 版本 `{{commit 短 hash 或 .v<n>}}` |
 | 输入来源 | PRD：`{{路径}}` · 布局清单：`{{路径}}` |
+| **上游基线指纹**（步骤 9 REQUIRED · 基准失效判据） | PRD：`{{artifactId}}` · `{{version}}` · mtime `{{YYYY-MM-DD HH:mm}}` ／ 布局清单+原型：`{{artifactId}}` · `{{version}}` · mtime `{{…}}`；同一批 id 须写入本产物在 `manifest.yaml` 的 `sourceRefs`（`../../../shared/artifact-contract.md` §2）。**上游转 `SUPERSEDED`、或当前版本/mtime 与本行不等 ⇒ 本批基准失效，重判后才是新交付；只写「PRD v0.2 APPROVED」这类无 id、无 mtime 的说法不算登记** |
 | 生成日期 / 版本 | {{V1 / V2…}} |
 
 ## 二、页面清单与稿源对照

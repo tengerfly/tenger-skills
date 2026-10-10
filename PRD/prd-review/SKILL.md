@@ -35,7 +35,7 @@ PRD 已形成并请求评审，或修订后需要复核；不是模糊想法的�
 不修改 PRD、补写业务规则、做竞品调研或批准新的 MVP；不以“我已修正”代替退回修订；不把自己的偏好当产品缺陷。
 
 ## Procedure
-1. 固定被审版本及输入版本，读取上轮未决问题。
+1. 固定被审版本及输入版本，读取上轮未决问题。**〔REQUIRED · 开工前闸门核对〕**逐条读 `.spec/manifest.yaml` 中本批上游条目（功能范围确认、蓝图、产品定义等）的 `status`、`version`、`gate`、`allowDownstream`：任一 `SUPERSEDED`／非 `PASS`／`false` ⇒ 本批只能 `BLOCKED`（命名缺失输入 + owner + 清除条件）；「本轮判据全闭」只作事实记录，限定条件只能落 `gate`/`allowDownstream`/`blockedBy` 字段、不得写进注释或正文（`../../shared/gate-policy.md` §6）；`APPROVED_SUPERSEDED` 这类枚举外状态词不得当作批准依据（`../../shared/artifact-contract.md` §2）；汇总报告须含公共基线 §0「上游闸门核对与本轮 Gate」与时序核查（`../../shared/templates/review-summary-template.md`），缺该节则本轮 Gate 只能记「未验证」，不得 `PASS`。
 2. 逐项对照范围表与需求 ID，检查漏项、越界、无来源规则与依赖断裂；竞品功能不等于必做项。
 3. 检查用户角色、主链、边界、异常/恢复、数据/权限、指标口径和验收标准。只有两问摘要、没有功能范围确认不能过正式 PRD Gate。
 4. 问题写证据位置、影响、归属节点、清除条件与复核方法；不直接编辑被审规格。按审查对象加载 `references/product-checklist.md`、`references/frontend-checklist.md`、`references/backend-checklist.md`、`references/test-checklist.md`；问题用 `assets/issue-list-template.md`，总结用 `assets/summary-template.md`。当前职责优先于 legacy-skill。

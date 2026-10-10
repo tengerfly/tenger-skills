@@ -41,6 +41,10 @@ artifacts:
 
 An artifact is not approved merely because its file exists. `APPROVED` requires a matching decision and Gate record.
 
+**Baseline binding.** Every downstream artifact registers the artifacts it is built on in `sourceRefs`, and this must include the governing baseline (PRD, prototype, design baseline, upstream technical design). `sourceRefs` is the only link a `SUPERSEDED` baseline can travel on: when a baseline entry becomes `SUPERSEDED`, every artifact citing it is built on a retired baseline, cannot carry a non-blocked Gate that cites it, and is re-judged before any downstream use. Record the exact baseline identity consumed at production time (`artifactId` + `version` + date) in the artifact header or README; "based on PRD v0.2" as loose prose is not a binding. No new manifest field is introduced for this.
+
+**Status vocabulary.** `status` takes only the registered values (`DRAFT | REVIEW | APPROVED | SUPERSEDED`). Business words found in legacy project files are not status values and must not be written into it: `REGISTERED` (logged, not yet reviewed) → `DRAFT`; `READY` (reviewed, awaiting approval) → `REVIEW`, or `APPROVED` only with a matching decision and Gate record; `APPROVED_SUPERSEDED` (approved, then retired) → `SUPERSEDED`, with the approval history carried by `decisionRefs` and the replacement by `supersedes`. A value that claims "approved" and "retired" at once lets downstream read only the first half. Review round counts (`round: n/3`) belong to the Gate record, never to `status`.
+
 ## 3. Traceability
 
 Claims that influence delivery must link to source, evidence, and when applicable a decision. `OPEN` and `ASSUMPTION` items must not be silently promoted to `DECISION`.

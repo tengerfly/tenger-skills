@@ -35,6 +35,8 @@ Use only `PASS`, `CONDITIONAL`, and `BLOCKED`.
 - `CONDITIONAL`: an authorized exception record is complete and explicitly sets `allowDownstream`.
 - `BLOCKED`: required evidence, authorization, upstream Gate, artifact, or safe handoff is missing; residual P0 is always blocked.
 
+A Gate is an execution precondition, not a log entry: before dispatching any downstream stage, read its upstream `status`, `version`, `gate`, and `allowDownstream`. A `SUPERSEDED` baseline, a non-`PASS` upstream, or `allowDownstream: false` stops that work, holds the state at the blocked point, and records the block with owner and clearance condition (see `../shared/gate-policy.md` §6).
+
 After three review-fix-review rounds, do not start a fourth round automatically. Residual P0 is `BLOCKED`; residual P1 is never `PASS` and requires an authorized `CONDITIONAL` if downstream use is approved.
 
 ## State and artifacts

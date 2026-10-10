@@ -195,6 +195,12 @@ def check_artifact(root):
                 errors.append(f"{aid}.evidenceRefs must point to evidence: {ref}")
         if a.get("type")!="decision" and a.get("status")=="APPROVED" and not items(a.get("decisionRefs")): add(errors,f"approved artifact requires decisionRefs: {aid}")
         if a.get("type")=="decision" and items(a.get("decisionRefs")): add(errors,f"decision artifact cannot self-authorize via decisionRefs: {aid}")
+        supersedes={str(x) for x in items(a.get("supersedes"))}
+        if a.get("status")!="SUPERSEDED":
+            for ref in items(a.get("sourceRefs")):
+                origin=by_id.get(str(ref))
+                if origin and origin.get("status")=="SUPERSEDED" and str(ref) not in supersedes:
+                    add(errors,f"{aid} is built on a superseded baseline via sourceRefs: {ref}")
         for ref in items(a.get("decisionRefs")):
             if ref in by_id and by_id[ref].get("type")!="decision": add(errors,f"{aid}.decisionRefs must point to decision artifacts: {ref}")
     return errors

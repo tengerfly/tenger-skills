@@ -35,6 +35,8 @@
 | D-08 | 09-15 | 全仓一致性纠偏：视角分工「标准」列补设计稿（视觉）；README 关联补「页面—设计稿」、流程改分端单批 8 步并补闭环复核与沉淀判定；role-review-template 补修复判据列；known-issue-patterns 补表头并修错别字「叠床架屋」 | 四代理并行七维体检 | ✅ |
 | D-09 | 09-17 | ⑩-前 关联专项升级三方对账：「FTDD 页面字段清单 ⇄ fetch ↔ TDD 出参」——双向一致查不出两端同时缺失；清单有 TDD 无 = 完备性缺口，FTDD 无清单 = 方案缺失；§二批次裁剪、§4.2 关联表、错误表、integration-checklist IT-6、known-issue-patterns #3、术语表同步 | 用户痛点：开发期才发现后端接口少字段（../../issue/Tech-Review/2026-09-17/01；联动 Frontend-Tech-Design D-20 / Frontend-Dev D-22） | ✅ |
 
+| D-10 | 2026-10-10 | 步骤 1「输入解析」加〔REQUIRED · 开工前闸门核对〕：逐条读上游（PRD／原型／设计稿／对面方案）的 `status`、`version`、`gate`、`allowDownstream`，任一 `SUPERSEDED`／非 `PASS`／`false` ⇒ 不在作废基线上出结论、本批只能 `BLOCKED`（命名缺失输入 + owner + 清除条件），「判据全闭」只作事实、限定条件只能落字段不得写注释；`assets/summary-template.md` 结构基线行加公共 §0「上游闸门核对与本轮 Gate」硬性小节指针（缺节则 Gate 只能记「未验证」，不得 `PASS`）。口径统一指 `../../shared/gate-policy.md` §6 | `issue/WorkFlow/2026-10-10/01`＋`issue/UI-UX-Review/2026-10-10/01` 的**对称补齐**：原仅 ⑦ UI-UX-Review 有核对表承接位，其余评审节点只继承 §6 文字判据 = 声明有、模板没承接的断头落差；用户裁决「先要解决这些问题」 | ✅ 规则已改｜◐ 未经真实场景 fresh 复跑验证 |
+
 ## 四、待决问题
 
 无。

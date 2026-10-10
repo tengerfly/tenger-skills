@@ -1,6 +1,6 @@
 # 原型评审汇总报告
 
-> 结构基线：仓库根 `../../../shared/templates/review-summary-template.md`（闭环要素[成因/修复判据/状态机]与字段口径以公共版为准；章节组织为本 skill 领域实例）。
+> 结构基线：仓库根 `../../../shared/templates/review-summary-template.md`（闭环要素[成因/修复判据/状态机]与字段口径以公共版为准；章节组织为本 skill 领域实例）。**公共 §0「上游闸门核对与本轮 Gate」为本报告硬性小节**（四字段判据口径同 `../../../shared/gate-policy.md` §6，不得改口径）：缺该节则本轮 Gate 只能记「未验证」，不得 `PASS`。
 
 > 项目名称：[项目名称]  
 > 评审基线：PRD（[路径]） vs 原型（[路径]）  

@@ -46,6 +46,8 @@
 | D-10 | 09-10 | **结构重构（统一骨架）**：章节 8 → 7——§一 定位与铁律（角色层级表 + 铁律 7 条）；§二 输入与前置（**评审基线唯一性检查从步骤 1 提升为前置必做项**，命中即 P0 阻断）；§三 主流程 8 步；§四 评审规范 4.1 严重度 + **4.2 产品专家总审与调度**（核心必查 / 扩展档 / 调度五动作 / 术语判定基准，从步骤 4 内联抽出）；§五 错误表 / §六 资源 / §七 埋点。old-vs-new 审计：原条目全部有归属，无功能丢失 | 用户要求：整理成顺畅流程（Skill-Optimizer 全量体检） | ✅ |
 | D-11 | 09-15 | 全仓一致性纠偏：CONTEXT 术语表轮次口径改「满 3 轮强制清 P0 后放行」；summary-template 补 §6 沉淀判定节（SKILL 承诺未落地）；README 流程补双向沉淀判定；严重度引用 §二→§三（README + product-checklist）；「模板参数卡」→assets/issue-list-template.md；双清单红线 4→3 | 四代理并行七维体检；与 ../../shared/anti-deadloop.md 对齐 | ✅ |
 
+| D-12 | 2026-10-10 | Procedure 步骤 1 加〔REQUIRED · 开工前闸门核对〕：逐条读上游条目（功能范围确认／蓝图／产品定义）的 `status`、`version`、`gate`、`allowDownstream`，任一 `SUPERSEDED`／非 `PASS`／`false` ⇒ 本批只能 `BLOCKED`；判据全闭只作事实、限定条件只能落 `gate`/`allowDownstream`/`blockedBy` 字段；并明确 **`APPROVED_SUPERSEDED` 这类枚举外状态词不得当批准依据**（`../../shared/artifact-contract.md` §2 状态词收编）；`assets/summary-template.md` 结构基线行加公共 §0 硬性小节指针。口径统一指 `../../shared/gate-policy.md` §6 | `issue/WorkFlow/2026-10-10/01`＋`issue/WorkFlow/2026-10-10/02`（业务项目实测出现 `status: APPROVED_SUPERSEDED` 枚举外值）＋ 对称补齐；用户裁决「先要解决这些问题」 | ✅ 规则已改｜◐ 未经真实场景 fresh 复跑验证 |
+
 ## 四、待决问题
 
 无。

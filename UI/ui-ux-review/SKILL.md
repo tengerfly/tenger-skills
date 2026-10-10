@@ -52,18 +52,19 @@ README 稿源为 AI 自写（B）时，先读 `../ui-ux-design/references/self-w
 | 布局清单（载体级） + **低保真原型 HTML（区块级）** | **结构基准**：布局清单定载体、原型定区块实物（结构真相源见 `../../shared/baseline-terms.md`） | ⛔ 停下提示 |
 | `.spec/设计稿/design-system.md`（**归档副本即交付基准**） | 视觉规范基准（`.superdesign/design-system.md` 为 CLI 工作源，仅追溯时对照） | ⛔ 停下提示 |
 | 设计稿工程（HTML + README） | 被审对象 | ⛔ 停下提示 |
+| **上游闸门有效性**（`manifest.yaml` 中 PRD / 原型 / design-system 各条的 `status`、`version`、`gate`、`allowDownstream`） | 输入必须是**现行批准版本**，不只是文件存在（`../../shared/gate-policy.md` §6） | 任一 `SUPERSEDED` / 非 `PASS` / `false` → ⛔ 停下，本周期不得出放行 Gate |
 | 浏览器工具（**硬依赖**） | 渲染截图 + 点击验证 | 全无 → 报错停止 |
 
-**输出**（`.spec/设计评审/`）：四份维度报告、`设计稿评审汇总报告.md`、`任务清单.md`（`待确认` → `已确认` → `已修复`/`已忽略`）、`screenshots/`（硬性）、**`跨页宽度实测表`**（多页交付硬性，逐页三值 + 宽屏两档，随第四维报告落盘；无此表则 §七 各条只能标「未验证」）。
+**输出**（`.spec/设计评审/`）：四份维度报告、`设计稿评审汇总报告.md`、`任务清单.md`（`待确认` → `已确认` → `已修复`/`已忽略`）、`screenshots/`（硬性）、**`跨页宽度实测表`**（多页交付硬性，逐页三值 + 宽屏两档，随第四维报告落盘；无此表则 §七 各条只能标「未验证」）、**`上游闸门核对表` + `时序核查`**（硬性，随汇总报告落盘；无此表则 Gate 只能记「未验证」，不得 `PASS`）。
 
 ## 三、主流程（8 步）
 
-1. **资产解析与浏览器预检**：读取上表输入，缺失即停；按铁律 4 预检并记录工具。
+1. **资产解析、上游闸门核对与浏览器预检**：读取上表输入，缺失即停。**〔REQUIRED · 开工前闸门核对〕**逐条读 `.spec/manifest.yaml` 中本评审的上游 artifact（PRD / 原型 / design-system）的 `status`、`version`、`gate`、`allowDownstream`、`blockedBy`：任一为 `SUPERSEDED`、`gate` 非 `PASS`、或 `allowDownstream: false` ⇒ 本周期 Gate **只能记 `BLOCKED`**（命名缺失输入 + owner + 清除条件）、`allowDownstream: false`、写 `blockedBy`；**「判据全闭」单独作为事实记录，不作为放行结论**，限定条件只能落字段、不得写进注释或正文（下游只读 `gate`/`allowDownstream`，读不到注释；口径 `../../shared/gate-policy.md` §6）。此步在开工前完成，避免在作废基线上跑完一轮才发现不能放行。再按铁律 4 预检并记录工具。
 2. **建立映射基准**：提取 PRD 页面 / 文案 / 跳转、布局清单载体划分、design-system token 速查；产出矩阵 `PRD 功能点 / 布局载体 ↔ 设计稿页面（draftId 版本）`。
 3. **渲染走查 + 静态源码审查**：静态服务渲染逐页截图（异常处截入 `screenshots/`）；逐入口点击验证；静态读 HTML 结构 / `<a>` / CSS token / 脚本作证据。**〔REQUIRED · 多页交付〕跨页宽度实测**：真实浏览器逐页量三值（顶栏内容行内缘 / 主内容列 x·width·中心 / 1440 与 1920 两档主列宽）并横向比对，按 `references/rendered-quality-checklist.md` §七 出「跨页宽度实测表」；没有这张表，该节各条一律标「未验证」，不得计入已查。两条通道独立完成、最后合并互证；**不参考生成过程，不轻信内部门禁**。
 4. **四维对照评审**：按 `references/layout-freeze-checklist.md`、`copywriting-consistency-checklist.md`、`visual-spec-consistency-checklist.md`、`rendered-quality-checklist.md` 逐条过筛（每份含**查漏 + 查多**）；**量测型检项（`rendered-quality-checklist.md` §七 跨页不变量）必须拿步骤 3 的实测表作证据，缺证据只能标「未验证」，不得判「已查」**；另对照 `references/known-issue-patterns.md`（评审方案例库）过一遍，命中即入相应维度清单。
 5. **四份维度报告**：按 `assets/dimension-review-template.md` 落盘四份报告。
-6. **汇总**：按 `assets/summary-template.md` 合并去重、归纳跨页面共性问题（如整批 token 偏差）、统计 P0/P1/P2。
+6. **汇总 + 出 Gate**：按 `assets/summary-template.md` 合并去重、归纳跨页面共性问题（如整批 token 偏差）、统计 P0/P1/P2。**汇总报告必含「上游闸门核对」表**（上游 artifact id｜当时版本｜mtime｜`gate`｜`allowDownstream`｜结论）**与「时序核查」节**（基线作废时刻 vs 被审产物 mtime）——缺此表本周期 Gate 只能记「未验证」，不得记 `PASS`。收口语固定：基线有效时写「本周期判据全闭（轮次 n/3），放行 <Gate>」；基线已作废或上游关闸时写「本周期判据全闭（轮次 n/3）；放行状态 `BLOCKED`，缺 <上游批准 + 增量>」，**不得留下裸 `PASS` 字样供下游截读**。
 7. **任务清单 + 归档**：按 `assets/issue-list-template.md` 生成任务清单——每条自足可读（出处 + 现象 + 成因 + 方向）、附修复判据、状态 `待确认`、标注修改方；P0/P1 阻断、P2 由用户裁决；逐条确认（要改 → `已确认`；不改 → `已忽略` + 理由）；复核只验本轮清单，不无限新增。**证据回勾自检（出报告前必做，防规则空转）**：把本轮引用的清单条目**逐条回勾**有无对应证据产物（截图 / 实测值 / 命令输出 / 实测表）；无证据的条目一律标「未验证」并计入交付边界，**不得计入「已查」**（案例库模式 5）。**问题日志**：归档同时在项目 `.spec/问题日志.md` 台账追加一行索引（日期｜来源｜问题产物｜轮次｜状态｜反哺出口；格式见 skill 源仓库 `../../shared/templates/problem-log-template.md`）。
 8. **双向沉淀判定**：放行后按 `../../shared/anti-deadloop.md` §五 执行——**A 防复发**：设计稿问题改 `UI-UX-Design`、布局 / 载体问题改 `Prototype-Design`、PRD 口径问题改 `PRD-Design`（记其 CONTEXT D-xx）；**B 检出力**：本 skill `references/known-issue-patterns.md` 按模板加一条（含「检出方法」）。改不了的落 `../../issue/<目标 skill>/<日期>/`（来源=评审闭环，写明双向落点）。判定结果记入汇总报告「沉淀判定」节。
 
@@ -95,6 +96,8 @@ README 稿源为 AI 自写（B）时，先读 `../ui-ux-design/references/self-w
 | 把业务逻辑 / 数据当设计问题 | 本 skill 只到结构级可点击性 |
 | 任务清单分散 | 单一事实源（铁律 5） |
 | 四份报告维度混写 | 一维一份，汇总再合并 |
+| 判据全闭就出 `PASS`（没读上游闸门） | 步骤 1 REQUIRED 先核上游 `status`/`version`/`gate`/`allowDownstream`；基线 `SUPERSEDED`／上游关闸 → 本周期只能 `BLOCKED`（步骤 6 收口语固定） |
+| 用注释或正文写「本 `PASS` 仅对旧基线成立」 | 限定只能落 `gate`/`allowDownstream`/`blockedBy` **字段**——下游读字段，读不到注释（`../../shared/gate-policy.md` §6） |
 | 闭环后不沉淀 | 步骤 8 双向沉淀判定，P0 必沉 |
 
 ## 六、资源清单

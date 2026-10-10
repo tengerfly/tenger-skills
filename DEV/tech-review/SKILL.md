@@ -59,7 +59,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 → 5 角色文档 → 6 汇总 → 7 任务清单 + 确认 → 8 闭环复核与沉淀判定 → 归档
 ```
 
-1. **输入解析**：优先读 `.spec/`——PRD（先读速查表）、原型、设计稿（有则）、`.spec/TDD/VN/`、`.spec/FTDD/VN/`；按批次裁剪输入；缺失回退用户路径 / 粘贴。
+1. **输入解析**：优先读 `.spec/`——PRD（先读速查表）、原型、设计稿（有则）、`.spec/TDD/VN/`、`.spec/FTDD/VN/`；按批次裁剪输入；缺失回退用户路径 / 粘贴。**〔REQUIRED · 开工前闸门核对〕**逐条读 `.spec/manifest.yaml` 中本批所依据上游（PRD／原型／设计稿／对面方案）的 `status`、`version`、`gate`、`allowDownstream`：任一 `SUPERSEDED`／非 `PASS`／`false` ⇒ **不在作废基线上出结论**，本批只能 `BLOCKED`（命名缺失输入 + owner + 清除条件）；「判据全闭」只作事实记录不作放行结论，限定条件只能落字段、不得写注释或正文（`../../shared/gate-policy.md` §6）；汇总报告须含公共基线 §0 的「上游闸门核对」表与「时序核查」。
 2. **浏览器工具检测**：软检测（见 §二）；任一可用则核验选型版本、弃用 API、官方最佳实践。
 3. **批次视角评审**：⑩-后 按 `references/backend-checklist.md`、⑩-前 按 `references/frontend-checklist.md` 逐条执行；独立上下文（subagent / 新会话）互不可见、不参考生成过程；条件允许可用不同模型交叉审查。另对照 `references/known-issue-patterns.md`（评审方案例库）过一遍，命中即入本批次清单。
 4. **关联专项**：按 `references/integration-checklist.md` 核查接口契约、数据模型、状态枚举、数据流、权限 / 错误处理；命中项归因后端 / 前端 / 双方。**⑩-后 只验后端侧自洽；⑩-前 做「FTDD 页面字段清单 ⇄ fetch ↔ TDD 出参」三方对账并收口**：「清单有、TDD 出参无」= 契约完备性缺口（两端文档一致地一起缺失，双向比对查不出），归因入任务清单；FTDD 模块 §5 无字段清单 = 方案缺失（该写没写）。

@@ -27,6 +27,7 @@ metadata:
 
 ## Preconditions
 - 上游输入可定位，OPEN/ASSUMPTION 不能被当作批准结论；
+- 上游输入的**批准状态现行有效**：逐条读 `.spec/manifest.yaml` 上游条目的 `status`、`version`、`gate`、`allowDownstream`，任一 `SUPERSEDED`／非 `PASS`／`false` ⇒ 本轮只能 `BLOCKED`（判据全闭只作事实；限定条件只能落字段，`../../shared/gate-policy.md` §6），汇总报告须含公共基线 §0 的上游闸门核对表；
 - 工作区边界已检查，不覆盖未提交内容；
 - 读取产品契约和 Gate 规则；
 - 评审类入口必须只审不改。

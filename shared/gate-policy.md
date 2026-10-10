@@ -74,3 +74,13 @@ nextAction: <explicit action or NONE>
 ```
 
 Do not invent `FAIL`, `APPROVED`, `FORCED_PASS`, `RELEASED`, or other local Gate values. They may appear only as historical text in a legacy reference.
+
+## 6. Gate enforcement
+
+A Gate is an execution precondition, not a log entry. Rules 1-3 are enforced before work starts, not after it is delivered.
+
+1. **Read upstream before starting.** Before any Skill runs or any formal state transition, read the manifest entries and Gate records it depends on: `status`, `version`, `gate`, `allowDownstream`, `blockedBy`.
+2. **Closed means closed.** If any upstream entry is `SUPERSEDED`, carries a `gate` other than `PASS`, or carries `allowDownstream: false`, the dependent work does not start. Record a block item naming `owner`, `requiredInput`, and `clearCondition`, and point `nextAction` at that owner.
+3. **No pointer may sit past a closed upstream.** `currentState` and `nextAction` cannot reference a stage downstream of an open block. Stay at the blocked point using a registered blocked state (for example `WORKFLOW_BLOCKED`); "finish the downstream work while the upstream catches up" is not a valid order, and a new state value is not required to enforce this.
+4. **Scope limits live in fields, never in comments.** `gate`, `allowDownstream`, and `blockedBy` carry the decision; prose and YAML comments only explain it. A qualifier written in a comment does not narrow a `PASS`, and `allowDownstream: true` never coexists with a superseded or unapproved baseline. Closing a review round on a retired baseline is `BLOCKED`, recorded as such, with the closed-criteria result kept as a separate fact.
+5. **Superseding a baseline triggers a sunk-work inventory.** When a decision retires an approved baseline, the same step lists every downstream artifact built on it and states each one's disposition (rewrite, incremental update, or discard). Discovery is not deferred to the next stage.

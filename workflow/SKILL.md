@@ -40,7 +40,7 @@ metadata:
 
 - 识别生命周期并建立执行记录；
 - 从已有产物推断可跳过的阶段，但只在证据和 Gate 足够时跳过；
-- 调度原子 Skill 和领域 Workflow；
+- 调度原子 Skill 和领域 Workflow，并在调度前执行上游闸门核对（`shared/gate-policy.md` §6）；
 - 验证产物元数据、追踪关系、状态转移和 Gate；
 - 在失败时按问题归属回退到正确上游；
 - 保留旧 `PIPELINE.md`/线性 15 节点链路的兼容读取能力。
@@ -50,6 +50,7 @@ metadata:
 - 不代替产品、技术、测试或发布 Skill 生成其领域产物；
 - 不绕过用户确认、授权、生产安全或发布 Gate；
 - 不把 GitHub 研究结论、现有代码行为或模型推断当成已批准需求；
+- 不在上游 `gate` 非 `PASS` 或 `allowDownstream: false`、或基线作废未清点时，把下游节点排进 `nextAction`；
 - 不自动修改外部 `web-monitor`、`server-log`、`server-monitor` 仓库。
 
 ## Procedure
@@ -63,7 +64,7 @@ metadata:
 按 `shared/execution-profiles.md` 选择轻量/标准/完整（输出强度须附命中判据条目，缺引用视为未判定；单次会话跨 3 模块/供应商替换/新增外部服务至少标准）；对用户只简述拟走路径、复用基线、修改边界和验收终点。默认完成用户要求的可验收结果，不默认执行发布/运维，也不每完成一小步都等待“继续”。「按你推荐的来 / 继续」只代理已摆出的选项之选择，不豁免阶段可见性、影响分析与 Gate 交接，也不扩大修改范围。用户只要分析/计划时不修改实现。
 
 - **轻量**：记录最小任务摘要，直接进入“确认验收点 → 相关实现/审查 → 针对性验证 → 结果说明”，复用同一摘要，不执行下面的正式阶段建档。发现风险或需要正式交接时按共享规则升级，保留实际工作与证据。
-- **标准/完整**：创建或更新 `.spec/workflow.yaml` 和执行记录，写明 `executionId`、项目、生命周期、状态、证据、产物和下一动作，再执行下面相关阶段。强度只记在任务说明/决策中，不新增状态或未注册 schema 字段。
+- **标准/完整**：创建或更新 `.spec/workflow.yaml` 和执行记录，写明 `executionId`、项目、生命周期、状态、证据、产物和下一动作，再执行下面相关阶段。强度只记在任务说明/决策中，不新增状态或未注册 schema 字段。**〔REQUIRED · 建档结构与量具可达〕**两份控制文件的根结构与字段名以 `../shared/templates/workflow.yaml`、`../shared/templates/project-manifest.yaml` 为准，`status`／`state` 取值以 `governance/` 注册表与 `../shared/artifact-contract.md` §2 为准（业务口径词如 `REGISTERED`／`READY`／`APPROVED_SUPERSEDED` 不得写入 `status`）；首次建档或改动后跑一次 `python scripts/validate_core.py system --project-root <项目>`（或 `scripts/validate.ps1`）——**解析失败或字段非法即停 `WORKFLOW_BLOCKED` 并如实报告，不得在「校验器读不通」的状态下继续正式交接**：闸门字段的机械检出者就是这个校验器，它不通则 §6 全部规则只剩执行方自觉（成因见仓库根 `issue/WorkFlow/2026-10-10/02`）。
 
 ### 2. 选择正式流程入口与基线（标准/完整）
 
@@ -106,6 +107,10 @@ CREATE 行的 `UI Design -> UI Review` 是**必经节点**（`ui-ux-design` → 
 ### 4. 守门与交接
 
 正式交接的每个 Skill 必须输出 `PASS`、`CONDITIONAL` 或 `BLOCKED`，并声明 `allowDownstream`。轻量仅报告完成内容、真实验证和剩余限制，不输出正式 Gate/状态，也不授予下游自动执行权限。只允许 `PASS` 或显式允许下游的 `CONDITIONAL` 交接；任何 P0/P1 未处理、证据缺失、未授权或产物不完整均停止推进。
+
+**开工前闸门核对（REQUIRED，先于任何节点调度与状态前移）**：调度任一专业 Skill 之前，先读该节点所依赖的上游 artifact 在 `.spec/manifest.yaml` / `.spec/gates/` 的 `status`、`version`、`gate`、`allowDownstream`、`blockedBy`（口径见 `shared/gate-policy.md` §6）。任一上游为 `SUPERSEDED`、`gate` 非 `PASS`、或 `allowDownstream: false` ⇒ ① 不启动该节点；② `currentState` 与 `nextAction` 不得指向关闸上游的下游，状态停在阻塞点并用已注册状态（如 `WORKFLOW_BLOCKED`），不为此新增状态名；③ 在 `workflow.yaml.blockedItems` 记 `BLK-*`（含 `owner`、`requiredInput`、`clearCondition`），`nextAction` 指回上游 owner。**禁止**以「下游先往前赶、上游慢慢补」「并行不空等」「先把能做的做了」越过未清阻塞：闸门既是数据也是检查点，不靠执行方自觉。
+
+**基线作废即清点沉没产出（REQUIRED）**：方向 / 基线类 DEC（如 `DEC-*-PRODUCT-DIRECTION`）把已批准基线转为 `SUPERSEDED` 的同一轮，必须输出「引用该基线的下游产物清单 + 逐项处置（回炉重写／增量更新／作废）」并登记，不得留到下游节点自己发现；清单靠下游产物按 `shared/artifact-contract.md` §2 登记的 `sourceRefs` 反查得到。
 
 **视觉基线准入**：CREATE 流程进入技术设计或前端开发前，须存在设计稿批准记录（`UI_APPROVED`，或已批准的 `.spec/设计稿/` + `design-system.md`）。缺失时只有经用户显式批准的例外（EXC）可放行；凡输入基线自称「设计稿：无」「本批不涉及视觉」「缺省回退低保真原型」而无 EXC 引用，判 `BLOCKED` 并停下报告，不得把缺失写成批次说明后继续推进（规则见 `shared/product-workflow-contract.md` §5.1）。
 

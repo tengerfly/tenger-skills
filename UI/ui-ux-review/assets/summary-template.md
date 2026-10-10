@@ -9,6 +9,37 @@
 
 ---
 
+## 〇、上游闸门核对与本轮 Gate（硬性前置 · 缺本节不得记 `PASS`）
+
+> 口径：`../../../shared/gate-policy.md` §6；本节是公共基线 `../../../shared/templates/review-summary-template.md` §0 的领域实例（行按本域上游条目定制，四字段判据口径一致不得改）。本表在**开工前**（SKILL 步骤 1）填一次并核对，出 Gate 时（步骤 6）复核一次；上游关闸或基线作废时，「判据全闭」只作事实记录，放行状态为 `BLOCKED`。
+
+| 上游 artifact | id | 当时版本 | 文件 mtime | `status` | `gate` | `allowDownstream` | 结论 |
+|---|---|---|---|---|---|---|---|
+| PRD | [PRD-YYYYMMDD-NNN] | [v0.x] | [YYYY-MM-DD HH:mm] | APPROVED / SUPERSEDED | PASS / BLOCKED | true / false | 有效 / 已作废 / 已关闸 |
+| 布局清单 + 低保真原型 | […] | […] | […] | […] | […] | […] | […] |
+| design-system | […] | […] | […] | […] | […] | […] | […] |
+
+**时序核查**（基线作废时刻 vs 被审产物 mtime，防「在作废基线上收口」）：
+
+| 事件 | 时刻 | 依据 |
+|---|---|---|
+| 上游基线转 `SUPERSEDED` / 方向类 DEC 落盘 | [时刻] | [manifest / `decisions/` 行 + mtime] |
+| 被审设计稿最后一次产出 | [时刻] | [文件 mtime] |
+| 判定 | [被审产物早于作废 = 旧周期合法；晚于作废 = 基准漂移，标失效并重判] | [另 grep 本轮判据引用的上游原文是否仍在，消失即判漂移] |
+
+**本轮 Gate（限定只落字段，不落注释）**：
+
+```yaml
+gate: PASS | CONDITIONAL | BLOCKED   # 上游 SUPERSEDED / gate 非 PASS / allowDownstream: false → 只能 BLOCKED
+allowDownstream: true | false
+blockedBy: []                        # 关闸时必填：owner / requiredInput / clearCondition
+reason: <一句话>
+```
+
+**收口语固定**：基线有效 → 「本周期判据全闭（轮次 n/3），放行 <Gate>」；基线作废或上游关闸 → 「本周期判据全闭（轮次 n/3）；放行状态 `BLOCKED`，缺 <上游批准 + 增量>」。**不得**用注释或正文写「本 `PASS` 仅对旧基线成立」来变相放行——下游只读 `gate` / `allowDownstream` 字段，读不到限定语。
+
+---
+
 ## 一、评审概览
 
 ### 1.1 总体结论
