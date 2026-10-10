@@ -21,7 +21,7 @@
 - [ ] 新增/修改行为有测试或明确缺口
 - [ ] API、数据迁移、依赖和关键旅程无未登记漂移
 - [ ] 不稳定测试已分类，不把环境失败当产品失败
-- [ ] `.spec/` 任务清单「状态」列与裁决记录、`workflow.yaml`、`manifest.yaml` 一致（防状态漂移，对账规则见 `shared/workflow-visibility.md`）
+- [ ] `.spec/` 任务清单「状态」列与裁决记录、`workflow.yaml`、`manifest.yaml` 一致（防状态漂移，对账规则见 `../../../shared/workflow-visibility.md`）
 
 ## D. 运行与发布
 

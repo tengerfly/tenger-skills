@@ -27,7 +27,7 @@
 ../skill-optimizer/
 ├── SKILL.md / CONTEXT.md / README.md
 ├── assets/（五份标准）
-仓库根：`shared/instrumentation-guide.md`（埋点规范）＋ `shared/templates/issue-template.md`（issue 模板）——被 16 个 skill 共用，已提升为共享约定，不留副本
+仓库根：`../../shared/instrumentation-guide.md`（埋点规范）＋ `../../shared/templates/issue-template.md`（issue 模板）——被 16 个 skill 共用，已提升为共享约定，不留副本
 ../../issue/ ../../bug-patterns/ ../../chats/   # 仓库根（../../bug-patterns/ 集中池）
 ```
 

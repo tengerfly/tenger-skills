@@ -6,7 +6,7 @@
 
 ## 一、先判断任务，而不是先选三套风格
 
-读取仓库根 `shared/execution-profiles.md` 与 `shared/requirements-context.md`；只加载本次相关的需求、结构与视觉基线。
+读取仓库根 `../../../shared/execution-profiles.md` 与 `../../../shared/requirements-context.md`；只加载本次相关的需求、结构与视觉基线。
 
 | 任务 | 处理方式 |
 |---|---|
