@@ -114,7 +114,13 @@
 | 忽略理由 | 不适用 |
 | 未闭环项 | ① 首轮试跑已跑但未通过（5 命中／1 漏检），结果已回填 `docs/task-scope-regression.md` 该节「本轮结果」列并附 sessionId；② 新增根因 R4（入口命中概率性抖动）的修法 A/B/C 待用户裁决；③ 关闭条件改为「每形态 ≥2 次独立会话全命中 + 轻量对照仍走轻量档」，未达成前本条保持未关闭 |
 
-## 本轮修复结果（2026-10，用户裁决 A+B 后执行）
+## 2026-10-10 新证据：R4 机制定位（不是「抖动」，是兜底触发描述覆盖不到请求类别）
+
+- **实测**：为验 `issue/WorkFlow/2026-10-10/01` 的闸门规则起 3 个 fresh 会话，原话是「后端技术方案还差三块，今天想把 TDD 补齐，然后排前端技术方案，请按现状继续推进」这类**续做请求**（不是「要一个新东西」）。结果 **2/3 未加载 `workflow`**（工具调用序列里没有 `Skill` 项），1/3 加载。
+- **机制定位（比 R4「裁决抖动」更具体）**：Qoder 侧兜底确实存在——auto-memory `reference-entry-routing-guard.md`，但**记忆索引行的 `description` 只写「用户描述『期望存在的软件能力』时…」**；续做类请求与该描述匹配不上 ⇒ 这条记忆不会被打开 ⇒ 兜底等于不存在。即兜底不是没写，是**触发描述没覆盖请求类别**，与模式 3②「判据不可达」同型，只是错层到了记忆索引层。
+- **后果放大**：闸门规则全写在 `workflow/SKILL.md` §4 与 `shared/gate-policy.md` §6，skill 未被选中 ⇒ 一行都读不到 ⇒ 上游 `gate: BLOCKED / allowDownstream: false` 时照样往下排。这正是 `2026-10-10/01` 那次事故的同一失效点。
+- **修法（扩类，不加名词）**：判据由「要不要新东西」改为「**这一步会不会跨阶段**」——把 TDD/FTDD 补齐、排下一个方案、继续开发、走某轮评审、按现状推进，一律先走 `workflow`；并显式写明「只做流程判断／只登记状态、不写码」**不构成轻量豁免**（它恰恰是编排器的活）。落点：`~/.qoder-cn/memory/reference-entry-routing-guard.md`（`description` + 正文两处）、`~/.zcode/AGENTS.md` 同一处；仓内留痕 `Other/skill-optimizer/CONTEXT.md` **D-42** + 案例库**模式 6**（试跑量具自污染，含「入口未命中不得计入被测规则结论」的判定前置）。
+- **仍未关闭**：关闭条件不变（每形态 ≥2 次独立会话全命中 + 跨模型一致）。本轮新增的「续做类」形态尚未按该口径复跑完；修正版试跑（锁 cwd、禁读源仓与 `issue/`、无 `Skill` 调用即判无效、一 fixture 一信号）正在进行，结果回填 `docs/task-scope-regression.md`。
 
 - **方案 A（description 瘦身）**：`workflow/SKILL.md` frontmatter description 由 484 字压至 **184 字**，类别判据（「期望存在的软件能力」）前置、示例砍至 3 个（应用/Agent/知识库）、保留「未列举同判」开放句式；`Trigger` 首段与 description 同判据。YAML `safe_load` 通过，`name: workflow` 不变。
 - **方案 B（宿主全局兜底）**：写入 `~/.qoder-cn/memory/reference-entry-routing-guard.md`（入口路由兜底：描述期望能力→第一个动作先调 workflow；禁止三种反模式；含轻量对照不误伤），并索引进 `~/.qoder-cn/memory/MEMORY.md`。
