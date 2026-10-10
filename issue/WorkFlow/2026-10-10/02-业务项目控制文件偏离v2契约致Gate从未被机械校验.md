@@ -51,7 +51,7 @@ gate validation failed: 2 error(s)
 
 ## 修复方向（本条只登记，改哪些文件待用户在源仓裁决）
 
-1. **主流程加 REQUIRED（A 方向主修）**：`workflow/SKILL.md` §1 与 §4 之间补一步——标准/完整流程首次建 `.spec/` 必须复制 `shared/templates/workflow.yaml` + `project-manifest.yaml` 结构，字段名与枚举以 `governance/schemas/*.schema.yaml` 为准；**每次正式交接前跑 `python scripts/validate_core.py system --project-root <项目>`（或 `scripts/validate.ps1`），解析失败或字段非法即停 `WORKFLOW_BLOCKED`，不得继续正式交接**。
+1. **主流程加 REQUIRED（A 方向主修）**：`workflow/SKILL.md` §1 与 §4 之间补一步——标准/完整流程首次建 `.spec/` 必须复制 `shared/templates/workflow.yaml` + `project-manifest.yaml` 结构，字段名与枚举以 `governance/schemas/*.schema.yaml` 为准；**每次正式交接前跑 `python scripts/validate_core.py gate --project-root <项目>` 与 `artifact --project-root <项目>`（业务项目用这两条；`system` 仅适用于本仓自检——它还要项目内另有 `governance/` 与 `.spec/traceability.yaml`，对外部项目会报无关红），解析失败或字段非法即停 `WORKFLOW_BLOCKED`，不得继续正式交接**。
 2. **业务状态词收编**：`shared/baseline-terms.md` 或 `artifact-contract.md` §2 加一张映射表，明确 `REGISTERED`/`READY`/`APPROVED_SUPERSEDED` 一律不得写入 `status`（各自的正确落点：批准状态 vs 评审轮次 vs `supersedes` 字段），防换形复发。
 3. **模板承接位**：各评审/产出 skill 的产物模板凡涉及 `.spec/` 登记，统一引用上述两份 yaml，不再各自简写。
 4. **项目侧迁移（需单独授权，不在本轮）**：`knowledge-bases/.spec/` 对齐 v2 的动作清单——
@@ -60,7 +60,7 @@ gate validation failed: 2 error(s)
    3. `status` 逐条映射（语义判级，**不得批量替换**）：`REGISTERED`→`DRAFT` 或 `REVIEW`（视是否已有评审记录）；`READY`→`REVIEW`/`APPROVED`（须有对应批准 DEC 才可 `APPROVED`）；`APPROVED_SUPERSEDED`→`SUPERSEDED`，批准历史改由 `decisionRefs` + `supersedes` 承载；把「已批准」读回来的风险全在这一步；
    4. 合并同一映射内重复的 `sourceRefs` 键；并按 §2（本轮新规则）把各下游产物的上游基线 id 补进 `sourceRefs`；
    5. `workflow.yaml`：去掉 `workflow:` 包裹，`currentState` → `state`，补顶层 `gate` / `allowDownstream` / `reason` / `nextAction`；
-   6. 验收：`validate_core.py gate` + `artifact` + `system` 三项可解析并全绿；
+   6. 验收：业务项目跑 `validate_core.py gate` + `artifact` 两项可解析（`system` 留本仓自检；已实测：对合成项目 `system` 会额外报 `governance/state-registry.yaml`、`traceability.yaml`、`shared/templates/task-envelope.yaml` 缺失共 10 条无关红）；
    7. **如实上报第一次机械判出的结果**：对齐后该项目很可能立刻冒出若干 `BLOCKED`（例如 13 条枚举外状态背后的批准记录缺失），这是暴露真实状态，不是迁移失败；
    8. 回退：迁移前对 `.spec/` 做一次带时间戳的副本（或单独一次 commit），只回退结构不回退结论。
 
@@ -69,7 +69,7 @@ gate validation failed: 2 error(s)
 - 原问题 ID / 来源项目：本仓直接建档，稳定标识 = `issue/WorkFlow/2026-10-10/02`；相关项目 `knowledge-bases`（`.spec/manifest.yaml`、`.spec/workflow.yaml`）
 - 发现时间 / 相关步骤：2026-10-10 16:0x，Skill-Optimizer 模式③ 落地 `shared/gate-policy.md` §6 时的验收实测；步骤=正式交接建档与 Gate 校验
 - 脱敏证据：上方命令与三行输出原文；计数由 `grep -c` 得出（`artifactId` 0 次、`- id:` 24 条、`REGISTERED` 5、`READY` 6、`APPROVED_SUPERSEDED` 2、`sourceRefs` 13 行含重复键）；契约口径见 `governance/schemas/artifact-manifest.schema.yaml`、`shared/templates/project-manifest.yaml`、`shared/templates/workflow.yaml`
-- 责任方 / 下一动作 / 修复判据：`WorkFlow` + `shared/`（规则）；用户单独授权后由业务项目侧执行迁移 4-1~4-8。判据＝① 对该项目跑 `validate_core.py system` 从「cannot parse YAML」变为可解析并给出错误/通过清单；② 构造一条「缺 `owner`/`producedAt`」的产物，校验器必须报错（阳性对照，防校验器空转）
+- 责任方 / 下一动作 / 修复判据：`WorkFlow` + `shared/`（规则）；用户单独授权后由业务项目侧执行迁移 4-1~4-8。判据＝① 对该项目跑 `validate_core.py gate` 与 `artifact`，从「cannot parse YAML」变为可解析并给出错误/通过清单；② **已实测的阳性对照**：合成项目 `s2-superseded`（下游 `sourceRefs` 绑 `SUPERSEDED` 基线）→ `artifact` 报 `TDD-20261010-001 is built on a superseded baseline via sourceRefs: PRD-20261009-001`；对照组 `s1-blocked`（无作废基线）→ 通过，不虚报
 - 根因与归属：已确认（建档无模板锚点 + 状态词双轨 + 无「量具可达」前置闸）；归属 `WorkFlow` 主流程与 `shared/` 契约层，**非某个业务项目的个例脏数据**
 - 复核证据 / 未验证项：**未验证**——本条为静态取证，未跑第 4 项迁移、未起 fresh 会话复测「编排器在不可解析项目上是否真的停下」；本轮 §6 规则落地后也尚未经历一次真实「上游关闸」场景复跑
 - 回退方式：规则改动单列一次提交（`shared/gate-policy.md` §6 与 `artifact-contract.md` §2 属同族闸门规则，可与本条修复分开）；项目侧迁移按 4-8 副本回退

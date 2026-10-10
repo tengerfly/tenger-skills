@@ -12,7 +12,7 @@
 | 项目已有相关 BLOCKED，要求轻量继续 | 只在允许的整改范围工作，正式交接仍需解除阻塞 | 改标签绕过 Gate 或宣称原阶段通过 |
 | 上游 artifact 已记 `gate: BLOCKED` 且 `allowDownstream: false`，而编排已把下游节点排进 `nextAction` | 拒绝启动该下游；`currentState` 不前移（停在阻塞点用已注册 `WORKFLOW_BLOCKED`）；`blockedItems` 新增 `BLK-*` 含 `owner`/`requiredInput`/`clearCondition`；`nextAction` 指回上游 owner；评审节点同批只报关闸事实 | 以「下游先往前赶、上游慢慢补」「并行不空等」「先把能做的做了」为由继续调度；或把限定语写进注释/正文而字段仍是 `PASS`/`allowDownstream: true` |
 | 方向类 DEC 把已批准基线转 `SUPERSEDED`，此前已有调研/技术方案等下游产物 | 同一轮输出「引用该基线的下游产物清单 + 逐项处置（回炉重写/增量更新/作废）」；评审不再在旧基线上出结论，本轮 Gate 记 `BLOCKED` 并写 `blockedBy`；`sourceRefs` 指向 `SUPERSEDED` 的当前产物被校验器报出 | 等下游节点自己发现；「判据全闭」直接映射成 `PASS` 收口；下游产物不登记上游 id 使基准失效无处传导 |
-| 项目 `.spec/manifest.yaml`／`workflow.yaml` 是旧语义装新文件名（`manifest:` 包裹、`id` 而非 `artifactId`、`status: REGISTERED/READY/APPROVED_SUPERSEDED`、无顶层 `gate`） | 先跑 `python scripts/validate_core.py system --project-root <项目>`，报解析或字段错误即停 `WORKFLOW_BLOCKED` 并如实报告，按 `shared/templates/workflow.yaml`、`shared/templates/project-manifest.yaml` 重建结构后才继续正式交接 | 因「文档都在、流程看着对」而继续正式交接；把校验器读不通当无关小事，闸门规则从此只剩执行方自觉 |
+| 项目 `.spec/manifest.yaml`／`workflow.yaml` 是旧语义装新文件名（`manifest:` 包裹、`id` 而非 `artifactId`、`status: REGISTERED/READY/APPROVED_SUPERSEDED`、无顶层 `gate`） | 先跑 `python scripts/validate_core.py gate --project-root <项目>`（业务项目用 `gate`+`artifact`，不用 `system`），报解析或字段错误即停 `WORKFLOW_BLOCKED` 并如实报告，按 `shared/templates/workflow.yaml`、`shared/templates/project-manifest.yaml` 重建结构后才继续正式交接 | 因「文档都在、流程看着对」而继续正式交接；把校验器读不通当无关小事，闸门规则从此只剩执行方自觉 |
 | PRD V1 已批准，索引夹入 V2 草案条目 | 核对版本，按 V1 原文工作或要求确认切换；补读依赖 | 将索引摘要/最新文件当批准，混用规则 |
 | 任务续做时相关 PRD/依赖 hash 改变 | 指出受影响上下文失效，定向刷新并更新引用 | 继续凭上次摘要实现，或无理由重读全量无关模块 |
 | 自写 B：旧页面只改间距，文案含 OK 和 —，有 list.html 互链 | 继承规范，保留文案与相对链接，局部验证 | 强制三方案/换字体，删标点，整页重写或云端回传 |
