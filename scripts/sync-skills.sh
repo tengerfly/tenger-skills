@@ -18,7 +18,7 @@
 # 只有「源已移除的空目录」会被清理（空目录不承载内容，留着会让同步失去幂等性）。
 #
 # 用法：
-#   bash scripts/sync-skills.sh                  # 同步到全部默认宿主
+#   bash scripts/sync-skills.sh                  # 同步到默认宿主（当前 = zcode + qoder-cn 两家）
 #   bash scripts/sync-skills.sh --dry-run        # 只报告差异，不写入
 #   bash scripts/sync-skills.sh --target <目录>   # 自定义目标（可重复）
 #   bash scripts/sync-skills.sh --ref <git-ref>   # 指定源版本，默认 HEAD
@@ -46,11 +46,11 @@ while [ $# -gt 0 ]; do
 done
 
 if [ "${#TARGETS[@]}" -eq 0 ]; then
+  # 默认只分发到在用的两家宿主（2026-10-10 用户决定：codebuddy / codex 不再使用，
+  # 其 skills 与容器级 shared 已删除）。要恢复某家，显式传 --target <目录>。
   TARGETS=(
     "$HOME/.zcode/skills"
-    "$HOME/.codebuddy/skills"
     "$HOME/.qoder-cn/skills"
-    "$HOME/.codex/skills"
   )
 fi
 
