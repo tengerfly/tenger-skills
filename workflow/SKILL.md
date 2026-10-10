@@ -19,7 +19,7 @@ metadata:
 
 当用户提出新建、迭代、Bug、事故、重构、性能/成本优化、发布、上线后问题或项目巡检时触发。**「新建」按类别判，不按形态名词判**：用户描述的是「期望存在的软件能力」即属新建，无论称它应用、系统、平台、服务、后台、小程序、Agent、智能体、知识库、RAG、图谱还是别的说法，未列举的同判；请求听起来模糊也不是拒绝理由，模糊正是入口。先判断目标、范围与风险，不要求用户选择 Skill 或理解流程字段。明确的独立任务可直接调用原子 Skill，不强制经过本编排器。
 
-**澄清分层（硬约束）**：需求方向确认阶段的澄清只允许落在业务范围、目标用户、使用场景、数据语义与验收预期层；语言、框架、数据库、存储真相源、渲染库、部署形态等技术决策不得在此阶段提问，须留到 Tech Design 节点按 `shared/oss-research-policy.md` 展开。不得用「只澄清关键问题」为由把选型问题充当需求澄清，也不得把 AI 自己可查证、可推断的认知转成用户的填空题（判据见 `shared/product-workflow-contract.md` §2.2）。
+**澄清分层（硬约束）**：需求方向确认阶段的澄清只允许落在业务范围、目标用户、使用场景、数据语义与验收预期层；语言、框架、数据库、存储真相源、渲染库、部署形态等技术决策不得在此阶段提问，须留到 Tech Design 节点按 `../shared/oss-research-policy.md` 展开。不得用「只澄清关键问题」为由把选型问题充当需求澄清，也不得把 AI 自己可查证、可推断的认知转成用户的填空题（判据见 `../shared/product-workflow-contract.md` §2.2）。
 
 ## Inputs
 
@@ -31,16 +31,16 @@ metadata:
 ## Preconditions
 
 1. 检查当前目录、分支和未提交变更，不重置、不覆盖；
-2. 先读 `shared/execution-profiles.md` 判执行强度；正式交接再加载 Skill/artifact/Gate/lifecycle 契约与相关注册项，不默认通读全部注册表；
+2. 先读 `../shared/execution-profiles.md` 判执行强度；正式交接再加载 Skill/artifact/Gate/lifecycle 契约与相关注册项，不默认通读全部注册表；
 3. 轻量任务只盘点相关代码、规则和测试；标准/完整缺少必要基线时调用 `project-onboarding`，不因少一份形式文档强迫小任务全量接管项目；
 4. 所有事实、推断、假设和未知项带统一证据标签；
-5. 消费 PRD 时按 `shared/requirements-context.md` 固定版本、先索引后读相关原文/依赖；新增选型或高风险技术设计按 `shared/oss-research-policy.md` 研究，既有栈局部修改不强制研究。
+5. 消费 PRD 时按 `../shared/requirements-context.md` 固定版本、先索引后读相关原文/依赖；新增选型或高风险技术设计按 `../shared/oss-research-policy.md` 研究，既有栈局部修改不强制研究。
 
 ## Responsibilities
 
 - 识别生命周期并建立执行记录；
 - 从已有产物推断可跳过的阶段，但只在证据和 Gate 足够时跳过；
-- 调度原子 Skill 和领域 Workflow，并在调度前执行上游闸门核对（`shared/gate-policy.md` §6）；
+- 调度原子 Skill 和领域 Workflow，并在调度前执行上游闸门核对（`../shared/gate-policy.md` §6）；
 - 验证产物元数据、追踪关系、状态转移和 Gate；
 - 在失败时按问题归属回退到正确上游；
 - 保留旧 `PIPELINE.md`/线性 15 节点链路的兼容读取能力。
@@ -61,14 +61,14 @@ metadata:
 
 ### 1. 判断强度与终点
 
-按 `shared/execution-profiles.md` 选择轻量/标准/完整（输出强度须附命中判据条目，缺引用视为未判定；单次会话跨 3 模块/供应商替换/新增外部服务至少标准）；对用户只简述拟走路径、复用基线、修改边界和验收终点。默认完成用户要求的可验收结果，不默认执行发布/运维，也不每完成一小步都等待“继续”。「按你推荐的来 / 继续」只代理已摆出的选项之选择，不豁免阶段可见性、影响分析与 Gate 交接，也不扩大修改范围。用户只要分析/计划时不修改实现。
+按 `../shared/execution-profiles.md` 选择轻量/标准/完整（输出强度须附命中判据条目，缺引用视为未判定；单次会话跨 3 模块/供应商替换/新增外部服务至少标准）；对用户只简述拟走路径、复用基线、修改边界和验收终点。默认完成用户要求的可验收结果，不默认执行发布/运维，也不每完成一小步都等待“继续”。「按你推荐的来 / 继续」只代理已摆出的选项之选择，不豁免阶段可见性、影响分析与 Gate 交接，也不扩大修改范围。用户只要分析/计划时不修改实现。
 
 - **轻量**：记录最小任务摘要，直接进入“确认验收点 → 相关实现/审查 → 针对性验证 → 结果说明”，复用同一摘要，不执行下面的正式阶段建档。发现风险或需要正式交接时按共享规则升级，保留实际工作与证据。
 - **标准/完整**：创建或更新 `.spec/workflow.yaml` 和执行记录，写明 `executionId`、项目、生命周期、状态、证据、产物和下一动作，再执行下面相关阶段。强度只记在任务说明/决策中，不新增状态或未注册 schema 字段。**〔REQUIRED · 建档结构与量具可达〕**两份控制文件的根结构与字段名以 `../shared/templates/workflow.yaml`、`../shared/templates/project-manifest.yaml` 为准，`status`／`state` 取值以 `governance/` 注册表与 `../shared/artifact-contract.md` §2 为准（业务口径词如 `REGISTERED`／`READY`／`APPROVED_SUPERSEDED` 不得写入 `status`）；首次建档或改动后各跑一次 `python scripts/validate_core.py gate --project-root <项目>` 与 `artifact --project-root <项目>`（**业务项目用这两条**；`system` 需项目内另有 `governance/` 与 `traceability.yaml`，对本仓之外的项目会报一堆无关红，只在本仓自检时用）——**解析失败或字段非法即停 `WORKFLOW_BLOCKED` 并如实报告，不得在「校验器读不通」的状态下继续正式交接**：闸门字段的机械检出者就是这个校验器，它不通则 §6 全部规则只剩执行方自觉（成因见仓库根 `issue/WorkFlow/2026-10-10/02`）。
 
 ### 2. 选择正式流程入口与基线（标准/完整）
 
-- **先判产品意图（最高优先）**：目标目录为空、无 `.spec/`、无已有实现，且请求含产品意图（目标用户、功能、形态）⇒ 归 CREATE 并进入需求域（`idea-intake`），强度按 `shared/execution-profiles.md` 落到标准/完整档。此时禁止从探查兄弟项目工程栈、盘点技术栈或抛技术选型问题开始；起点由该判据决定，不由执行方自行发挥。对标应用与从零新应用共用本判据；
+- **先判产品意图（最高优先）**：目标目录为空、无 `.spec/`、无已有实现，且请求含产品意图（目标用户、功能、形态）⇒ 归 CREATE 并进入需求域（`idea-intake`），强度按 `../shared/execution-profiles.md` 落到标准/完整档。此时禁止从探查兄弟项目工程栈、盘点技术栈或抛技术选型问题开始；起点由该判据决定，不由执行方自行发挥。对标应用与从零新应用共用本判据；
 - 新项目或陌生旧项目：`project-onboarding`；
 - “旧项目按现在体系重跑/接入新流程/工程流程补齐”：先 `project-onboarding` 产出阶段缺口矩阵，再让用户确认补齐范围；不是自动 REFACTOR，也不是只跑测试。仅补工程基线按 CHANGE 记录，若实际目标是重构/缺陷/优化则按相应生命周期；不新增迁移状态、不重写旧 PIPELINE、不默认改代码或发布；
 - “全流程测试/全量回归”仅测试已有实现：直接 `auto-test`，缺失基准如实列出，不扩成需求重做；
@@ -102,17 +102,17 @@ CREATE 行的 `UI Design -> UI Review` 是**必经节点**（`ui-ux-design` → 
 - 启动前向用户简述「查什么范围、大概什么代价、回来后给你什么」，由用户决定是否现在投入——用户是资源裁决者；
 - 与用户确定需求的正确抓手，是先陈述 AI 理解的需求方向供其改写，而不是抛选择题、或自行调研代替这一步。
 
-后台研究未回传期间，本轮交付物只能是「已登记事实 + 当前在等什么 + 回来后给你什么」，不得同时向用户追加索取答案依赖该研究的题目；用户可见的交付顺序必须与研究的交付顺序一致。提问本身的合法性判据（只问只有用户能回答的题）见 `shared/product-workflow-contract.md` §2.2，本处不另立规则。
+后台研究未回传期间，本轮交付物只能是「已登记事实 + 当前在等什么 + 回来后给你什么」，不得同时向用户追加索取答案依赖该研究的题目；用户可见的交付顺序必须与研究的交付顺序一致。提问本身的合法性判据（只问只有用户能回答的题）见 `../shared/product-workflow-contract.md` §2.2，本处不另立规则。
 
 ### 4. 守门与交接
 
 正式交接的每个 Skill 必须输出 `PASS`、`CONDITIONAL` 或 `BLOCKED`，并声明 `allowDownstream`。轻量仅报告完成内容、真实验证和剩余限制，不输出正式 Gate/状态，也不授予下游自动执行权限。只允许 `PASS` 或显式允许下游的 `CONDITIONAL` 交接；任何 P0/P1 未处理、证据缺失、未授权或产物不完整均停止推进。
 
-**开工前闸门核对（REQUIRED，先于任何节点调度与状态前移）**：调度任一专业 Skill 之前，先读该节点所依赖的上游 artifact 在 `.spec/manifest.yaml` / `.spec/gates/` 的 `status`、`version`、`gate`、`allowDownstream`、`blockedBy`（口径见 `shared/gate-policy.md` §6）。任一上游为 `SUPERSEDED`、`gate` 非 `PASS`、或 `allowDownstream: false` ⇒ ① 不启动该节点；② `currentState` 与 `nextAction` 不得指向关闸上游的下游，状态停在阻塞点并用已注册状态（如 `WORKFLOW_BLOCKED`），不为此新增状态名；③ 在 `workflow.yaml.blockedItems` 记 `BLK-*`（含 `owner`、`requiredInput`、`clearCondition`），`nextAction` 指回上游 owner。**禁止**以「下游先往前赶、上游慢慢补」「并行不空等」「先把能做的做了」越过未清阻塞：闸门既是数据也是检查点，不靠执行方自觉。
+**开工前闸门核对（REQUIRED，先于任何节点调度与状态前移）**：调度任一专业 Skill 之前，先读该节点所依赖的上游 artifact 在 `.spec/manifest.yaml` / `.spec/gates/` 的 `status`、`version`、`gate`、`allowDownstream`、`blockedBy`（口径见 `../shared/gate-policy.md` §6）。任一上游为 `SUPERSEDED`、`gate` 非 `PASS`、或 `allowDownstream: false` ⇒ ① 不启动该节点；② `currentState` 与 `nextAction` 不得指向关闸上游的下游，状态停在阻塞点并用已注册状态（如 `WORKFLOW_BLOCKED`），不为此新增状态名；③ 在 `workflow.yaml.blockedItems` 记 `BLK-*`（含 `owner`、`requiredInput`、`clearCondition`），`nextAction` 指回上游 owner。**禁止**以「下游先往前赶、上游慢慢补」「并行不空等」「先把能做的做了」越过未清阻塞：闸门既是数据也是检查点，不靠执行方自觉。
 
-**基线作废即清点沉没产出（REQUIRED）**：方向 / 基线类 DEC（如 `DEC-*-PRODUCT-DIRECTION`）把已批准基线转为 `SUPERSEDED` 的同一轮，必须输出「引用该基线的下游产物清单 + 逐项处置（回炉重写／增量更新／作废）」并登记，不得留到下游节点自己发现；清单靠下游产物按 `shared/artifact-contract.md` §2 登记的 `sourceRefs` 反查得到。
+**基线作废即清点沉没产出（REQUIRED）**：方向 / 基线类 DEC（如 `DEC-*-PRODUCT-DIRECTION`）把已批准基线转为 `SUPERSEDED` 的同一轮，必须输出「引用该基线的下游产物清单 + 逐项处置（回炉重写／增量更新／作废）」并登记，不得留到下游节点自己发现；清单靠下游产物按 `../shared/artifact-contract.md` §2 登记的 `sourceRefs` 反查得到。
 
-**视觉基线准入**：CREATE 流程进入技术设计或前端开发前，须存在设计稿批准记录（`UI_APPROVED`，或已批准的 `.spec/设计稿/` + `design-system.md`）。缺失时只有经用户显式批准的例外（EXC）可放行；凡输入基线自称「设计稿：无」「本批不涉及视觉」「缺省回退低保真原型」而无 EXC 引用，判 `BLOCKED` 并停下报告，不得把缺失写成批次说明后继续推进（规则见 `shared/product-workflow-contract.md` §5.1）。
+**视觉基线准入**：CREATE 流程进入技术设计或前端开发前，须存在设计稿批准记录（`UI_APPROVED`，或已批准的 `.spec/设计稿/` + `design-system.md`）。缺失时只有经用户显式批准的例外（EXC）可放行；凡输入基线自称「设计稿：无」「本批不涉及视觉」「缺省回退低保真原型」而无 EXC 引用，判 `BLOCKED` 并停下报告，不得把缺失写成批次说明后继续推进（规则见 `../shared/product-workflow-contract.md` §5.1）。
 
 ### 5. 失败回退
 
@@ -189,10 +189,10 @@ ONBOARDING_REQUESTED | INTAKE_REQUESTED -> DISCOVERY_IN_PROGRESS
 -> DEV_IN_PROGRESS | INCIDENT_ROUTED | INSPECTION_RECORDED | COMPLETED
 ```
 
-详细旧版节点与脚本兼容规则见 `references/legacy-pipeline.md`；通用契约见仓库根目录 `shared/`。
+详细旧版节点与脚本兼容规则见 `references/legacy-pipeline.md`；通用契约见仓库根目录 `../shared/`。
 ## Execution Envelope（正式交接 required）
 
-标准/完整流程中的 Skill 调用及任何正式状态转换前必须创建或更新 `task-envelope.yaml` 的实例。低风险独立调用按 `shared/execution-profiles.md` 使用任务摘要，不要求 Envelope，也不能写入正式批准或状态。Envelope 是执行边界，不是普通说明文档；至少声明 `taskId`、`projectId`、`executionId`、`lifecycle`、`currentState`、允许/禁止路径、输入/产物/证据/决策引用、授权、期望输出、Gate 和 `nextAction`。正式执行缺少 Envelope、授权或路径范围时，必须停在 `WORKFLOW_BLOCKED`，不能以轻量名义继续正式转换或下游执行。
+标准/完整流程中的 Skill 调用及任何正式状态转换前必须创建或更新 `task-envelope.yaml` 的实例。低风险独立调用按 `../shared/execution-profiles.md` 使用任务摘要，不要求 Envelope，也不能写入正式批准或状态。Envelope 是执行边界，不是普通说明文档；至少声明 `taskId`、`projectId`、`executionId`、`lifecycle`、`currentState`、允许/禁止路径、输入/产物/证据/决策引用、授权、期望输出、Gate 和 `nextAction`。正式执行缺少 Envelope、授权或路径范围时，必须停在 `WORKFLOW_BLOCKED`，不能以轻量名义继续正式转换或下游执行。
 
 正式流程的 Skill 完成后只允许通过 Envelope 交接：写入实际产物引用、证据引用、决策引用、Gate outcome 和下一状态。`PASS` / `CONDITIONAL` / `BLOCKED` 是 Gate outcome；`PRD_APPROVED`、`TEST_PASSED` 等是状态/里程碑，不能混用。
 

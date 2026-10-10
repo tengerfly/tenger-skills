@@ -124,6 +124,13 @@ for target in "${TARGETS[@]}"; do
     dest="$target/$name"
     src="$STAGE/$rel"
 
+    if [ -L "$dest" ]; then
+      # junction（link-skills.sh 挂的）：真身就是仓库，改完即生效，同步反而会往仓库里写内嵌 shared
+      echo "   [linked] $name（junction，跳过）"
+      same_n=$((same_n + 1))
+      continue
+    fi
+
     if [ ! -d "$dest" ]; then
       if [ "$DRY_RUN" -eq 0 ]; then
         mkdir -p "$dest"

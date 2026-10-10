@@ -1,4 +1,4 @@
-> LEGACY COMPATIBILITY NOTICE: This file preserves historical material. The active Skill, Gate, state, artifact, and evidence rules are defined by `shared/skill-contract.md`, `shared/gate-policy.md`, `shared/anti-deadloop.md`, `shared/artifact-contract.md`, `governance/`, and `.spec/workflow.yaml`.
+> LEGACY COMPATIBILITY NOTICE: This file preserves historical material. The active Skill, Gate, state, artifact, and evidence rules are defined by `../../shared/skill-contract.md`, `../../shared/gate-policy.md`, `../../shared/anti-deadloop.md`, `../../shared/artifact-contract.md`, `governance/`, and `.spec/workflow.yaml`.
 
 ﻿---
 name: Workflow
@@ -28,7 +28,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 → ⑭ 测试
 ```
 
-- `⇄` = **门禁闭环**：产物 → 评审 → 修复 → 复核，P0/P1 清零才进下行；满 3 轮清 P0 后强制放行（定义见仓库根 `shared/anti-deadloop.md`）。
+- `⇄` = **门禁闭环**：产物 → 评审 → 修复 → 复核，P0/P1 清零才进下行；满 3 轮清 P0 后强制放行（定义见仓库根 `../../shared/anti-deadloop.md`）。
 - `∥` = **并行评审**：⑬-前 由 Code-Review（前端视角）与 Fidelity-Review 并行审，问题合并进同一份任务清单、共用循环与轮次。
 - ⑩ 与 ⑬ 按端拆两批执行（写一个审一个）：⑧ 清零才起 ⑨；⑨ 清零才起 ⑪；⑪ 清零才起 ⑫；⑫ 清零才起 ⑭。
 - **⑧⑨ 前置调研步（OSS-Radar）**：写技术方案前先跑 `OSS-Radar`（项目泳道，按 PRD 关键词定向同域开源项目，看同类项目怎么做）→ 产出 `.spec/开源情报/` → 再写 TDD/FTDD；⑨ 复用 ⑧ 轮报告或按前端视角补一轮；快速档或用户明确跳过时留痕放行。
@@ -43,7 +43,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ## 二、节点速查
 
-前置缺失即阻塞。环境依赖（级别与动作）：⑤⑦⑨⑫ 与 ⑬-前（还原度审查）**硬依赖**（全无报错停），⑭（auto-test）**分层依赖**——L0/L1 确定性门禁与契约冒烟无浏览器可跑，L2 视觉 E2E 硬依赖浏览器；⑧⑩ **软检测**；检测顺序、两级行为与报错文案见仓库根 `shared/browser-policy.md`，此处不重复定义。⑥ UI/UX 设计 = Superdesign 底座**硬依赖**（CLI + 授权 + SOP 可读，缺一阻塞，浏览器仅为截图可选增强）。
+前置缺失即阻塞。环境依赖（级别与动作）：⑤⑦⑨⑫ 与 ⑬-前（还原度审查）**硬依赖**（全无报错停），⑭（auto-test）**分层依赖**——L0/L1 确定性门禁与契约冒烟无浏览器可跑，L2 视觉 E2E 硬依赖浏览器；⑧⑩ **软检测**；检测顺序、两级行为与报错文案见仓库根 `../../shared/browser-policy.md`，此处不重复定义。⑥ UI/UX 设计 = Superdesign 底座**硬依赖**（CLI + 授权 + SOP 可读，缺一阻塞，浏览器仅为截图可选增强）。
 
 | # | 节点 | 调用 | 前置（缺失阻塞） | 产出 |
 |---|---|---|---|---|
@@ -114,7 +114,7 @@ PIPELINE：<路径>
 
 ## 五、门禁闭环与放行（③⑤⑦⑩⑬）
 
-评审 skill 只审不改、不设门禁；**循环推进与放行判定由本编排负责**，规则定义见仓库根 `shared/anti-deadloop.md`（§一 门禁闭环 / §二 上限 3 / §五 沉淀）。
+评审 skill 只审不改、不设门禁；**循环推进与放行判定由本编排负责**，规则定义见仓库根 `../../shared/anti-deadloop.md`（§一 门禁闭环 / §二 上限 3 / §五 沉淀）。
 
 **闭环模型**：
 
@@ -150,11 +150,11 @@ PIPELINE：<路径>
 **分端与并行**：
 
 - ⑩-后 放行 → 才起 ⑨；⑩-前 放行 → 才起 ⑪；⑬-后 放行 → 才起 ⑫；⑬-前 放行 → 才起 ⑭。
-- ⑬-前 内：Code-Review（前端视角）与 Fidelity-Review **并行**，两侧问题合并进**同一份** `.spec/代码评审/任务清单.md`（还原度问题标「来源=Fidelity-Review」），共用轮次计数与放行判定；回退方统一为 Frontend-Dev。**还原度判定基准：视觉以设计稿为唯一应然、结构对原型**（双基准见 `shared/baseline-terms.md`）；有设计稿却只与原型比对视觉 = 无效还原结论。
+- ⑬-前 内：Code-Review（前端视角）与 Fidelity-Review **并行**，两侧问题合并进**同一份** `.spec/代码评审/任务清单.md`（还原度问题标「来源=Fidelity-Review」），共用轮次计数与放行判定；回退方统一为 Frontend-Dev。**还原度判定基准：视觉以设计稿为唯一应然、结构对原型**（双基准见 `../../shared/baseline-terms.md`）；有设计稿却只与原型比对视觉 = 无效还原结论。
 - **并行派发四要素**（同一响应内发多个调用 = 并行）：① 具体范围 ② 明确目标 ③ 约束（不得改范围外） ④ 期望产出。范围过宽、无上下文、无约束、产出含糊 = 派发无效。
-- **并行结果必须收口验证**：读每份产出 → 查**冲突**（是否改了同一处 / 结论互斥）→ 跑一次**全量**复核 → **抽查**（并行评审者会犯系统性错误，不能全量采信；结论须主线独立复核，见 `shared/evidence-before-claims.md`）。
+- **并行结果必须收口验证**：读每份产出 → 查**冲突**（是否改了同一处 / 结论互斥）→ 跑一次**全量**复核 → **抽查**（并行评审者会犯系统性错误，不能全量采信；结论须主线独立复核，见 `../../shared/evidence-before-claims.md`）。
 
-**沉淀反哺（双向）**：门禁放行后按 `shared/anti-deadloop.md` §五 判定（**P0 双向必沉**）——**A 防复发**：改产出方 skill 的防复发规则（错误表加行 / references / Gate 预检项），记其 CONTEXT D-xx；**B 检出力**：改发现问题的那一个评审 skill 的 `references/known-issue-patterns.md` 加一条（含「检出方法」）。**当场沉淀优先**（成因明确、改动增量 → 直接改 A/B 两个 skill + 同步部署副本）；改不了的落 `issue/<目标 skill>/<日期>/`（来源=评审闭环，写明双向落点）交 Skill-Optimizer 提炼。PIPELINE 记沉淀痕迹（A 落点 + B 落点 + 入池路径）。
+**沉淀反哺（双向）**：门禁放行后按 `../../shared/anti-deadloop.md` §五 判定（**P0 双向必沉**）——**A 防复发**：改产出方 skill 的防复发规则（错误表加行 / references / Gate 预检项），记其 CONTEXT D-xx；**B 检出力**：改发现问题的那一个评审 skill 的 `references/known-issue-patterns.md` 加一条（含「检出方法」）。**当场沉淀优先**（成因明确、改动增量 → 直接改 A/B 两个 skill + 同步部署副本）；改不了的落 `issue/<目标 skill>/<日期>/`（来源=评审闭环，写明双向落点）交 Skill-Optimizer 提炼。PIPELINE 记沉淀痕迹（A 落点 + B 落点 + 入池路径）。
 
 **运行期信号（正向循环第二入口）**：已接入日志/监控基建的项目（server-log 统一日志 / server-monitor 后端监控 / web-monitor 前端监控）在开发与运行中记录的问题，是评审闭环之外的问题来源——回流路径：**日志/监控记录 → `Bug-Fix` 诊断（根因 Gate → 委托方案/开发/回归修复闭环）→ 有预防价值的错误模式沉淀 `bug-patterns/` 池 / skill 方法论问题入 `issue/` 池 → `Skill-Optimizer` 模式③提炼反哺 skill 或对应项目修复**。两类入口（门禁评审 / 运行日志监控）最终汇入同一组池，构成「开发 → 记录 → 修复 → 沉淀 → skill 进化 → 下一项目受益」的正向循环。
 
@@ -179,7 +179,7 @@ PIPELINE：<路径>
 | TDD/FTDD 或前后端并行 | 写一个审一个：⑧ 清零起 ⑨、⑪ 清零起 ⑫ |
 | ⑩⑬ 合并一次性审 | 分端两批：⑩-后/⑩-前、⑬-后/⑬-前 |
 | 前端代码评审漏还原度 | ⑬-前 = Code-Review（前端）∥ Fidelity-Review |
-| 有设计稿却按原型判视觉还原 | 视觉唯一应然 = 设计稿；原型只判结构（`shared/baseline-terms.md`） |
+| 有设计稿却按原型判视觉还原 | 视觉唯一应然 = 设计稿；原型只判结构（`../../shared/baseline-terms.md`） |
 | 并行结果直接采信 | 收口验证：查冲突 + 跑全量 + 抽查 |
 | 闭环问题不沉淀 | 每闭环做沉淀判定，P0 双向必沉 |
 | 未调研同类项目直接写方案 | ⑧ 前先跑 OSS-Radar（快速档/用户确认可跳过须留痕） |
@@ -194,10 +194,10 @@ PIPELINE：<路径>
 - `assets/pipeline-template.md`
 - 同级子 skill：Competitive-Analysis、PRD-Design、PRD-Review、Prototype-Design、Prototype-Review、UI-UX-Design、UI-UX-Review、OSS-Radar（⑧⑨ 前置同域调研）、Backend-Tech-Design、Frontend-Tech-Design、Tech-Review、Backend-Dev、Frontend-Dev、Code-Review、auto-test（⑭ 测试节点）
 - 链外（不入主链编号，独立触发）：`Fidelity-Review`（还原验收；⑭ auto-test L2 内嵌 + ⑬-前 并行）、`Bug-Fix`（修复闭环，承接 ⑭ 发现的可运行性问题与运行期日志/监控信号）、`Testing`（传统项目测试·人工走查备用，源码保留，主链测试节点已由 auto-test 接替）
-- 公共约定：`shared/anti-deadloop.md`（门禁闭环 / 上限 3 / 分级 / 沉淀）、`shared/browser-policy.md`（浏览器两级策略 / 检测顺序 / 报错文案）、`shared/baseline-terms.md`（双基准术语）、`shared/evidence-before-claims.md`（取证口径）
+- 公共约定：`../../shared/anti-deadloop.md`（门禁闭环 / 上限 3 / 分级 / 沉淀）、`../../shared/browser-policy.md`（浏览器两级策略 / 检测顺序 / 报错文案）、`../../shared/baseline-terms.md`（双基准术语）、`../../shared/evidence-before-claims.md`（取证口径）
 - 产物归档：被开发项目 `.spec/`；竞品分析产物 `.spec/<主题>竞品分析/`
 
 ## 九、运行问题埋点
 
-收尾按 `shared/instrumentation-guide.md` 自查上报 `issue/WorkFlow/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `shared/templates/issue-template.md`mplates/issue-template.md`；调度/守门/PIPELINE 状态侧）。不确定不记，不打断主流程。
+收尾按 `../../shared/instrumentation-guide.md` 自查上报 `issue/WorkFlow/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `../../shared/templates/issue-template.md`mplates/issue-template.md`；调度/守门/PIPELINE 状态侧）。不确定不记，不打断主流程。
 
