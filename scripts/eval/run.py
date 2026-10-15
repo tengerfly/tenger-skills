@@ -129,6 +129,17 @@ def _workdir(case_id: str) -> Path:
     return path
 
 
+def _question_lines(text: str) -> list:
+    """Lines the agent actually puts to the user (ends with a question mark).
+
+    Two real codex runs of the same case produced a 状态卡 with `待你决定：` and a numbered
+    question list, so anchoring this rule on a section title was guaranteed to flap. The rule
+    governs *what gets asked*, and a question line is the form-independent unit: the deferral
+    sentence ("数据库留到 Tech Design 再定") is not a question, so it can no longer be misjudged.
+    """
+    return [line.strip() for line in text.splitlines() if re.search(r"[?？]\s*$", line.strip())]
+
+
 def run_behaviour(case: dict, spec: dict) -> dict:
     from eval import engine as agent_engine
     chosen = case.get("engine") or spec.get("engine") or "codex"
@@ -169,18 +180,26 @@ def run_behaviour(case: dict, spec: dict) -> dict:
         banned = case.get("expect", {}).get("mustNotContain")
         if banned:
             scope_name = case["expect"].get("banInSection")
-            scope = _section_body(judged, scope_name) if scope_name else judged
-            if scope is None:
-                return {"id": case["id"], "status": "error", "tokens": tokens, "evidence": evidence,
-                        "reason": f"找不到分节 /{scope_name}/，判据无法成立（不许退化成全文匹配）"}
+            if case["expect"].get("banInQuestions"):
+                lines = _question_lines(judged)
+                if not lines:
+                    return {"id": case["id"], "status": "error", "tokens": tokens, "evidence": evidence,
+                            "reason": "回答里没有任何问句，这条规则无法判（记 error，不许当通过）"}
+                scope, label = "\n".join(lines), f"{len(lines)} 条问句"
+            elif scope_name:
+                scope, label = _section_body(judged, scope_name), f"「{scope_name}」节"
+                if scope is None:
+                    return {"id": case["id"], "status": "error", "tokens": tokens, "evidence": evidence,
+                            "reason": f"找不到分节 /{scope_name}/，判据无法成立（不许退化成全文匹配）"}
+            else:
+                scope, label = judged, "全文"
             hit = re.search(banned, scope, re.S | re.I)
             if hit:
-                note = "（已改分节匹配，避免把「留到后面再定」判成违规）" if scope_name else "（全文匹配）"
                 return {"id": case["id"], "status": "failed", "tokens": tokens, "evidence": evidence,
-                        "reason": f"「{scope_name}」节内出现禁止内容 /{banned}/ {note}",
+                        "reason": f"{label}内出现禁止内容 /{banned}/",
                         "peek": scope[max(0, hit.start() - 120):hit.end() + 160]}
-        return {"id": case["id"], "status": "passed", "tokens": tokens, "evidence": evidence,
-                "reason": f"引擎 {chosen}"}
+            return {"id": case["id"], "status": "passed", "tokens": tokens, "evidence": evidence,
+                    "reason": f"引擎 {chosen}；判据范围 {label}"}
     except (ValueError, OSError) as exc:
         return {"id": case["id"], "status": "error", "reason": f"{type(exc).__name__}: {exc}"}
     finally:

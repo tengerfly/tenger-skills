@@ -131,5 +131,44 @@ class CostMeteringTests(unittest.TestCase):
         self.assertEqual((None, None), engine.usage_tokens('{"type":"turn.started"}'))
 
 
+class QuestionScopeJudgingTests(unittest.TestCase):
+    """判据范围=问句行。形状取自 2026-10-15 两次真跑的同一条用例（一次状态卡、一次编号清单），
+    引擎用 stub 顶掉：单测不许花钱，但判据分支必须真的走一遍。"""
+
+    BANNED = "数据库|用什么框架|技术选型|选 React|Postgres|Elasticsearch|语言是|向量库"
+    STATUS_CARD = ("状态卡\n待你决定：① 需求方向是否符合你本意 ② 三个只有你能回答的问题\n"
+                   "下一步：确认方向后再定\n"
+                   "1. 你打算往里放什么——网页剪藏、PDF，还是随手笔记？\n"
+                   "语言、框架、数据库这类技术选型留到 Tech Design 节点，现在我不问。\n")
+    NUMBERED = ("先登记需求。下面三件只有你能答：\n"
+                "1. 库的边界：只放自己写的笔记，还是也收网页剪藏？\n"
+                "2. 「问」的边界：只根据你的资料回答并给出处，还是也接受通用知识兜底？\n"
+                "本步不碰技术方案，语言、数据库都不在这一阶段问。\n")
+
+    def _judge(self, output):
+        from unittest.mock import patch
+        from eval import engine
+        case = {"id": "EV-Q", "layer": "behaviour", "engine": "codex",
+                "given": "evals/gate/fixtures/ledger-clean", "skillFiles": [],
+                "prompt": "p", "tokenBudget": 999999,
+                "expect": {"banInQuestions": True, "mustNotContain": self.BANNED}}
+        ran = {"ok": True, "exit": 0, "tokens": 1000, "output": output, "transcript": output}
+        with patch.object(engine, "available", return_value=["codex"]), patch.object(engine, "run", return_value=ran):
+            return evaluator.run_behaviour(case, {})
+
+    def test_both_real_answer_forms_pass_without_misjudging_the_deferral(self):
+        for text in (self.STATUS_CARD, self.NUMBERED):
+            result = self._judge(text)
+            self.assertEqual("passed", result["status"], result["reason"])
+            self.assertIn("问句", result["reason"])
+
+    def test_technical_question_asked_to_user_is_a_real_violation(self):
+        self.assertEqual("failed", self._judge("1. 数据库用 Postgres 还是向量库？")["status"])
+
+    def test_zero_questions_is_error_not_a_free_pass(self):
+        # 一条问句都没有＝规则无从成立，记 error 逼人回看，不给"绿"
+        self.assertEqual("error", self._judge("我已经把 intake 落盘了，无需你补充。")["status"])
+
+
 if __name__ == "__main__":
     unittest.main()
