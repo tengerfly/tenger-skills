@@ -1,0 +1,29 @@
+schema: tenger.eval/v1
+skill: backend-tech-design
+cases:
+  - id: EV-TDD-001
+    name: 合规 TDD 总文档判绿
+    layer: structure
+    given: evals/tech-design/fixtures/tdd-clean
+    expect: {validator: sections, outcome: green}
+  - id: EV-TDD-002
+    name: 架构图章节被删必须判红
+    layer: structure
+    given: evals/tech-design/fixtures/tdd-clean
+    tamper:
+      file: .spec/TDD/V3/整体技术框架.md
+      replace: {from: "## §3 进程与服务清单、系统架构图", to: "## §3 进程与服务清单"}
+    expect: {validator: sections, outcome: red, mustContain: 系统架构图}
+  - id: EV-TDD-003
+    name: 正文被改而摘要未重签必须判红
+    layer: structure
+    given: evals/tech-design/fixtures/tdd-clean
+    tamper:
+      file: .spec/TDD/V3/整体技术框架.md
+      append: "## §14 事后偷偷加的一节"
+    expect: {validator: artifact, outcome: red, mustContain: contentDigest mismatch}
+  - id: EV-TDD-101
+    name: TDD 是否做到开发期零技术决策（需 agent 引擎）
+    layer: behaviour
+    given: evals/tech-design/fixtures/tdd-clean
+    expect: {validator: artifact, outcome: red}

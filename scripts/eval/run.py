@@ -24,6 +24,17 @@ CHECKS = {"artifact": core.check_artifact, "gate": core.check_gate, "trace": cor
           "registry": core.check_registry, "refs": core.check_refs}
 
 
+def findings_for(project: Path, validator: str) -> list:
+    """Validators return error strings; the section judge returns its own finding list."""
+    if validator == "sections":
+        from obs import score
+        return score.d1_contract(project).get("failures", [])
+    if validator not in CHECKS:
+        raise ValueError(f"unknown validator: {validator}")
+    return CHECKS[validator](project)
+    return CHECKS[validator](project)
+
+
 def load_eval(path: Path) -> dict:
     try:
         spec = yaml.safe_load(path.read_text(encoding="utf-8"))
@@ -67,7 +78,7 @@ def run_case(case: dict) -> dict:
         shutil.copytree(fixture, project)
         if case.get("tamper"):
             _apply_tamper(project, case["tamper"])
-        errors = CHECKS[case["expect"]["validator"]](project)
+        errors = findings_for(project, case["expect"]["validator"])
         expect = case["expect"]
         matched = [error for error in errors if expect["mustContain"] in error] if expect.get("mustContain") else errors
         outcome = "red" if errors else "green"

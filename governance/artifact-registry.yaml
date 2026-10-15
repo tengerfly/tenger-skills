@@ -82,6 +82,10 @@ artifacts:
   - APPROVED
   - SUPERSEDED
 - type: tech-design
+  documentSections:
+  - match: "*.md"
+    note: 关键词取自模板与 knowledge-bases 真实 TDD 总文档的双侧交集（§1 文档元数据 / §2 技术选型总览 / §3 …系统架构图 / §4 模块划分、边界）；未取的章节因两侧写法不同暂不判，避免误罚
+    sections: [文档元数据, 技术选型总览, 系统架构图, 边界]
   required:
   - artifactId
   - type

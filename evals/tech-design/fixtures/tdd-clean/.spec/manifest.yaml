@@ -1,0 +1,14 @@
+projectId: eval-tdd
+artifacts:
+- artifactId: TDD-V3
+  type: tech-design
+  path: .spec/TDD/V3/整体技术框架.md
+  lifecycle: CREATE
+  owner: backend
+  status: REVIEW
+  producedBy: backend-tech-design
+  producedAt: '2026-10-15T10:00:00+08:00'
+  sourceRefs: []
+  evidenceRefs: []
+  decisionRefs: []
+  contentDigest: f86ca9e2abefd7d87380016f3ee059731587a3e6391c76387303bd56f6a857a9
