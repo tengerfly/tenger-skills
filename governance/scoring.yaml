@@ -1,0 +1,22 @@
+version: 1
+# 总分只用于看趋势，不是放行依据：红线仍由 validate_core 判红，分数高低不得替代 Gate。
+updatedAt: '2026-10-15'
+dimensions:
+  D1: {name: 契约合规, weight: 25, source: "manifest + artifact-registry documentSections"}
+  D2: {name: 需求承接, weight: 20, source: "traceability 引用可解析率"}
+  D3: {name: 检出力, weight: 15, source: "selfcheck 注入反证通过率"}
+  D4: {name: 一次通过/返工, weight: 15, source: "run-log rework_rate"}
+  D5: {name: 语义质量, weight: 20, source: "agent_judge（B 类评测未接）"}
+  D6: {name: 成本体积, weight: 5, source: "产物字节相对基线漂移"}
+redLines:
+  - 上游关闸却记 PASS/allowDownstream
+  - 声明摘要与磁盘字节不一致
+  - 必需章节缺失（APPROVED）
+  - 轨迹节点名未在 obs-registry 注册
+comparability:
+  bind: [skillRevision, casesVersion, engine, model, judgeVersion, scoringVersion]
+  rule: 锚任一项变化即开新基线，禁止跨锚比总分
+  holdoutShare: 0.15
+antiGaming:
+  - 逐维 delta 必须与总分同时呈现（一维崩一维涨会伪装成持平）
+  - 体系级取中位数与红线命中数，不取平均

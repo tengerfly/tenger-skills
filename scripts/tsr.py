@@ -165,6 +165,18 @@ def cmd_host(args) -> int:
     return 0
 
 
+def cmd_score(args) -> int:
+    from obs import score
+    root = _project(args)
+    result = score.score_project(root)
+    text = score.render(result)
+    target = root / ".spec/观测/打分.md"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(text, encoding="utf-8")
+    print(text)
+    return 1 if result["redLines"] else 0
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(prog="tsr", description="tenger.trace/v1 run log")
     parser.add_argument("--project-root", default=".")
@@ -200,6 +212,8 @@ def main(argv=None) -> int:
     host.add_argument("--project-slug", default="")
     host.add_argument("--sample", type=int, default=20)
     host.set_defaults(handler=cmd_host)
+
+    sub.add_parser("score").set_defaults(handler=cmd_score)
 
     args = parser.parse_args(argv)
     try:

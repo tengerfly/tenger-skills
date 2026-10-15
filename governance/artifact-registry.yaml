@@ -33,6 +33,10 @@ artifacts:
   - APPROVED
   - SUPERSEDED
 - type: prd
+  documentSections:
+  - match: "*/overview.md"
+    note: 判据取自 PRD 总纲实有章节的关键词子串（真实文档写"1. 元数据与变更记录"，精确标题匹配会误罚）
+    sections: [元数据, 背景痛点, 用户画像, 模块清单]
   required:
   - artifactId
   - type
