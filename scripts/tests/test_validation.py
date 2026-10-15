@@ -448,6 +448,52 @@ class ContentDigestEnforcementTests(unittest.TestCase):
         errors = self.check(by_id)
         self.assertTrue(any("subjectDigests mismatch" in e for e in errors), errors)
 
+    def test_superseded_attestation_is_not_reported_as_drift(self):
+        """KB 事故复盘：153 条"漂移"里 140 条只是更早一次审查的快照被后续合法改动超越。
+        subjectDigests 的定义是"当时看到的字节"，只有最新一条才是对当下的承诺。"""
+        v1 = b"# subject v1\n"
+        v2 = b"# subject v2 re-approved later\n"
+        self.write_body("PRD-1", v2)
+        self.write_body("EVID-OLD", b"# old review\n")
+        self.write_body("EVID-NEW", b"# new review\n")
+        by_id = {
+            "PRD-1": self.artifact(status="APPROVED", contentDigest=digest(v2)),
+            "EVID-OLD": self.artifact("EVID-OLD", produced_at="2026-10-11T09:00:00+08:00",
+                                      subjectDigests={"PRD-1": digest(v1)}),
+            "EVID-NEW": self.artifact("EVID-NEW", produced_at="2026-10-12T09:00:00+08:00",
+                                      subjectDigests={"PRD-1": digest(v2)}),
+        }
+        errors = self.check(by_id)
+        self.assertFalse([e for e in errors if "subjectDigests mismatch" in e], errors)
+
+    def test_newest_attestation_survives_mixed_timestamp_styles(self):
+        # 台账混用 "2026-10-12 09:34" 与 "2026-10-12T09:33"；纯字符串排序里空格排在 T 前面，
+        # 会把更早的那条当成最新，于是合规台账被误判成漂移
+        current = b"# subject now\n"
+        self.write_body("PRD-1", current)
+        self.write_body("EVID-A", b"# a\n")
+        self.write_body("EVID-B", b"# b\n")
+        by_id = {
+            "PRD-1": self.artifact(status="APPROVED", contentDigest=digest(current)),
+            "EVID-A": self.artifact("EVID-A", produced_at="2026-10-12 09:34:00+08:00",
+                                    subjectDigests={"PRD-1": digest(current)}),
+            "EVID-B": self.artifact("EVID-B", produced_at="2026-10-12T09:33:00+08:00",
+                                    subjectDigests={"PRD-1": digest(b"# stale\n")}),
+        }
+        errors = self.check(by_id)
+        self.assertFalse([e for e in errors if "subjectDigests mismatch" in e], errors)
+
+    def test_drift_queue_lists_the_re_sign_candidates(self):
+        current = b"# subject now\n"
+        self.write_body("PRD-1", current)
+        self.write_body("EVID-A", b"# a\n")
+        by_id = {"PRD-1": self.artifact(status="APPROVED", contentDigest=digest(current)),
+                 "EVID-A": self.artifact("EVID-A", subjectDigests={"PRD-1": digest(b"# was\n")})}
+        with patch.object(core, "artifact_context", return_value=({"artifacts": []}, by_id, [])):
+            rows, structural = core.attestation_drift(self.root)
+        self.assertEqual([], structural)
+        self.assertEqual(["PRD-1"], [row["subject"] for row in rows])
+
     def test_traversal_path_is_refused_not_hashed(self):
         outside = self.root.parent / "outside-baseline.md"
         outside.write_bytes(b"# outside\n")

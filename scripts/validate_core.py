@@ -93,6 +93,30 @@ def check_digests(root, by_id):
             continue
         if actual != str(declared).removeprefix("sha256:"):
             add(errors, f"{aid} contentDigest mismatch with file on disk: {item.get('path')}")
+    bindings, structural = subject_bindings(root, by_id)
+    errors.extend(structural)
+    for ref, rows in sorted(bindings.items()):
+        latest = max(rows, key=lambda row: row[0])
+        if latest[2] != latest[3]:
+            add(errors, f"{ref}.subjectDigests mismatch for {latest[1]}: baseline drifted after approval"
+                        f"（最新绑定时间 {latest[0]}，正文改后台账未重签）")
+    return errors
+
+def attested_at(value):
+    """Normalise producedAt to a 14-digit key; the ledger mixes '…T09:34:00' and '… 09:34:00',
+    and raw string ordering picks the wrong latest attestation (space sorts before 'T')."""
+    return re.sub(r"[^0-9]", "", str(value or ""))[:14].ljust(14, "0")
+
+def subject_bindings(root, by_id):
+    """Every subjectDigests attestation resolved against today's bytes: ref -> [(time, evidence, declared, actual)].
+
+    An attestation means "these are the bytes I reviewed at that moment" (see
+    governance/schemas/artifact-manifest.schema.yaml). Only the newest one per subject is a
+    promise about the present; older snapshots necessarily stop matching once the artifact
+    legitimately evolves, so reporting them as drift turns 13 real findings into 153 noises.
+    """
+    bindings = defaultdict(list)
+    errors = []
     for aid, item in by_id.items():
         subjects = item.get("subjectDigests")
         if subjects is None:
@@ -117,9 +141,30 @@ def check_digests(root, by_id):
             except OSError as exc:
                 add(errors, f"{aid}.subjectDigests cannot read {ref}: {exc}")
                 continue
-            if actual != str(declared).removeprefix("sha256:"):
-                add(errors, f"{aid}.subjectDigests mismatch for {ref}: baseline drifted after approval")
-    return errors
+            bindings[str(ref)].append((attested_at(item.get("producedAt") or item.get("approvedAt")),
+                                       aid, str(declared).removeprefix("sha256:"), actual))
+    return bindings, errors
+
+def attestation_drift(root):
+    """Subjects whose newest attestation no longer matches disk — the re-sign queue.
+
+    Read-only by design: re-signing is an approval act, so tooling lists the candidates and
+    never rewrites the ledger (that would launder "changed after approval" into "approved").
+    """
+    manifest, by_id, errors = artifact_context(root)
+    if not by_id:
+        return [], errors
+    bindings, structural = subject_bindings(root, by_id)
+    rows = []
+    for ref, bindings_for_ref in sorted(bindings.items()):
+        latest = max(bindings_for_ref, key=lambda row: row[0])
+        if latest[2] == latest[3]:
+            continue
+        subject = by_id.get(ref) or {}
+        rows.append({"subject": ref, "path": subject.get("path"), "status": subject.get("status"),
+                     "evidence": latest[1], "attestedAt": latest[0], "declared": latest[2], "actual": latest[3],
+                     "supersededBindings": sum(1 for row in bindings_for_ref if row[2] != row[3]) - 1})
+    return rows, structural
 
 def frontmatter(path):
     text = path.read_text(encoding="utf-8-sig")
@@ -750,11 +795,15 @@ def check_system(root, skip_fixtures=False, skip_knowledge=False, strict=False):
     return errors
 
 def main(argv=None):
+    if hasattr(sys.stdout, "reconfigure"):
+        # Windows 控制台默认 GBK，中文判据会被打成乱码，读报告的人只能猜
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
     parser = argparse.ArgumentParser()
     commands = {"registry": check_registry, "artifact": check_artifact, "trace": check_trace,
                 "refs": check_refs, "gate": check_gate, "transition": check_transitions,
                 "graph": check_graph, "task": check_task}
-    parser.add_argument("command", choices=[*commands, "skill-contract", "knowledge", "system"])
+    parser.add_argument("command", choices=[*commands, "skill-contract", "knowledge", "system", "drift"])
     parser.add_argument("--project-root", default=".")
     parser.add_argument("--include-legacy", action="store_true")
     parser.add_argument("--strict", action="store_true")
@@ -765,6 +814,18 @@ def main(argv=None):
     try:
         if args.command in commands:
             errors = commands[args.command](root)
+        elif args.command == "drift":
+            rows, structural = attestation_drift(root)
+            for error in structural:
+                print(error, file=sys.stderr)
+            print("| subject | status | 最新绑定证据 | 绑定时间 | 磁盘 | 已被取代的旧绑定 |")
+            print("| --- | --- | --- | --- | --- | --- |")
+            for row in rows:
+                print(f"| {row['subject']} | {row['status']} | {row['evidence']} | {row['attestedAt']} "
+                      f"| {row['actual'][:12]}… | {row['supersededBindings']} |")
+            print(f"待重签 {len(rows)} 条 ｜ 台账结构错误 {len(structural)} 条"
+                  f" ｜ 重签需人工批准（decisionRefs），本命令不改写台账")
+            return 1 if (rows or structural) else 0
         elif args.command == "skill-contract":
             errors = check_skill_contract(root, args.include_legacy)
         elif args.command == "knowledge":
