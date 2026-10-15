@@ -232,14 +232,16 @@ class TaskPreflightTests(unittest.TestCase):
             content = ("synthetic approved baseline: " + typ).encode()
             location = f".spec/{typ}.md"
             self.write_bytes(location, content)
+            digests[aid] = digest(content)
             self.product_artifacts.append({
                 "artifactId": aid, "type": typ, "path": location, "lifecycle": "CHANGE",
                 "owner": "reviewer", "status": "APPROVED", "producedBy": typ,
                 "producedAt": self.decision["approvedAt"], "sourceRefs": [], "evidenceRefs": ["EVID-1"],
                 "decisionRefs": ["DEC-1"],
+                # an APPROVED ledger must be falsifiable against the bytes it approves
+                "contentDigest": digests[aid],
             })
             subjects.append(aid)
-            digests[aid] = digest(content)
         self.decision["scope"]["artifactIds"] = subjects.copy()
         self.task["inputRefs"] = subjects
         self.evidence.update(subjectRefs=subjects.copy(), subjectDigests=digests)
@@ -381,6 +383,78 @@ class TaskPreflightTests(unittest.TestCase):
         self.assertEqual(result, 0)
         self.assertIn('"stateChanged": false', output.getvalue())
         self.assertEqual(before, (self.root / ".spec/workflow.yaml").read_bytes())
+
+
+class ContentDigestEnforcementTests(unittest.TestCase):
+    """Injection probes: a green ledger must be falsifiable against the bytes on disk."""
+
+    def setUp(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        self.root = Path(tmp.name)
+
+    def body(self, aid="PRD-1"):
+        return self.root / ".spec" / "prd" / f"{aid}.md"
+
+    def write_body(self, aid, data):
+        target = self.body(aid)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(data)
+
+    def artifact(self, aid="PRD-1", status="REVIEW", produced_at="2026-10-20", **extra):
+        item = {"artifactId": aid, "type": "prd", "status": status, "producedAt": produced_at,
+                "path": f".spec/prd/{aid}.md", "decisionRefs": [f"{aid}-DEC"]}
+        item.update(extra)
+        return item
+
+    def check(self, by_id):
+        with patch.object(core, "artifact_context", return_value=({"artifacts": []}, by_id, [])):
+            return core.check_artifact(self.root)
+
+    def test_tampered_body_with_stale_digest_is_detected(self):
+        approved = b"# approved baseline\n"
+        self.write_body("PRD-1", approved)
+        item = self.artifact(status="APPROVED", contentDigest=digest(approved))
+        self.write_body("PRD-1", approved + b"# sneakily rewritten without approval\n")
+        errors = self.check({"PRD-1": item})
+        self.assertTrue(any("contentDigest mismatch" in e for e in errors), errors)
+
+    def test_matching_digest_adds_no_digest_error(self):
+        data = b"# approved baseline\n"
+        self.write_body("PRD-1", data)
+        errors = self.check({"PRD-1": self.artifact(status="APPROVED", contentDigest=digest(data))})
+        self.assertFalse([e for e in errors if "igest" in e], errors)
+
+    def test_fresh_approval_must_declare_digest(self):
+        self.write_body("PRD-1", b"# new baseline\n")
+        errors = self.check({"PRD-1": self.artifact(status="APPROVED", produced_at="2026-10-20")})
+        self.assertTrue(any("requires contentDigest" in e for e in errors), errors)
+
+    def test_pre_cutoff_approval_is_not_rewritten_as_regression(self):
+        self.write_body("PRD-1", b"# old baseline\n")
+        errors = self.check({"PRD-1": self.artifact(status="APPROVED", produced_at="2026-01-05")})
+        self.assertFalse([e for e in errors if "requires contentDigest" in e], errors)
+
+    def test_subject_digest_drift_is_detected(self):
+        subject = b"# subject v1\n"
+        self.write_body("PRD-1", subject)
+        self.write_body("TECH-1", b"# tech v1\n")
+        by_id = {
+            "PRD-1": self.artifact("PRD-1", status="APPROVED", contentDigest=digest(subject)),
+            "TECH-1": self.artifact("TECH-1", status="APPROVED", contentDigest=digest(b"# tech v1\n"),
+                                    subjectDigests={"PRD-1": digest(subject)}),
+        }
+        self.write_body("PRD-1", b"# subject silently reworded\n")
+        errors = self.check(by_id)
+        self.assertTrue(any("subjectDigests mismatch" in e for e in errors), errors)
+
+    def test_traversal_path_is_refused_not_hashed(self):
+        outside = self.root.parent / "outside-baseline.md"
+        outside.write_bytes(b"# outside\n")
+        self.addCleanup(outside.unlink, missing_ok=True)
+        item = self.artifact(status="APPROVED", path="../" + outside.name, contentDigest=digest(b"# outside\n"))
+        errors = self.check({"PRD-1": item})
+        self.assertTrue(any("without traversal" in e or "escapes project root" in e for e in errors), errors)
 
 
 if __name__ == "__main__":

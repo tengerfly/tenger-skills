@@ -1,5 +1,5 @@
 from __future__ import annotations
-import argparse, os, re, sys
+import argparse, hashlib, os, re, sys
 from datetime import datetime, timezone
 from collections import defaultdict, deque
 from pathlib import Path, PureWindowsPath
@@ -38,6 +38,88 @@ def items(value): return [] if value is None else (value if isinstance(value, li
 def add(errors, text): errors.append(text)
 def file_exists(path): return path.is_file()
 def rel_dir(root, path): return path.relative_to(root).parent.as_posix()
+
+def project_path(root, value):
+    """Resolve a manifest `path` inside the project root; refuse traversal and symlink escape."""
+    if not isinstance(value, str) or not value.strip():
+        return None, "path must be a non-empty project-relative string"
+    portable = value.replace("\\", "/")
+    candidate = Path(portable)
+    if candidate.is_absolute() or PureWindowsPath(value).drive or ".." in candidate.parts or ":" in portable:
+        return None, f"path must be project-relative without traversal: {value}"
+    target = (root / candidate).resolve()
+    if not target.is_relative_to(root.resolve()):
+        return None, f"path escapes project root: {value}"
+    return target, None
+
+def sha256_file(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+def check_digests(root, by_id):
+    """Mechanical enforcement of declared content digests.
+
+    A ledger that says a baseline is APPROVED must be falsifiable against the bytes on disk:
+    tampering with an artifact body while leaving the ledger untouched is the failure mode
+    this exists to catch, so declared digests are always compared and never trusted.
+    Requiring digests only applies from `requiredAfter` onward, so pre-existing unbound
+    approvals surface as migration debt instead of masquerading as fresh regressions.
+    """
+    errors = []
+    schema = load_yaml(Path(__file__).resolve().parents[1] / "governance/schemas/artifact-manifest.schema.yaml")
+    digest_spec = schema.get("digestFields", {}) if isinstance(schema, dict) else {}
+    required_status = str(digest_spec.get("requiredForStatus", "APPROVED"))
+    required_after = str(digest_spec.get("requiredAfter", ""))
+    for aid, item in by_id.items():
+        if item.get("type") == "decision":
+            continue
+        declared = item.get("contentDigest")
+        target, path_error = project_path(root, item.get("path"))
+        if declared is None:
+            approved = item.get("status") == required_status
+            produced_at = str(item.get("producedAt") or item.get("approvedAt") or "")[:10]
+            if approved and required_after and produced_at and produced_at >= required_after:
+                add(errors, f"{aid} {required_status} artifact requires contentDigest (required since {required_after})")
+            continue
+        if path_error:
+            add(errors, f"{aid} contentDigest cannot be verified: {path_error}")
+            continue
+        if not target.is_file():
+            add(errors, f"{aid} contentDigest cannot be verified: file missing {item.get('path')}")
+            continue
+        try:
+            actual = sha256_file(target)
+        except OSError as exc:
+            add(errors, f"{aid} contentDigest unreadable: {exc}")
+            continue
+        if actual != str(declared).removeprefix("sha256:"):
+            add(errors, f"{aid} contentDigest mismatch with file on disk: {item.get('path')}")
+    for aid, item in by_id.items():
+        subjects = item.get("subjectDigests")
+        if subjects is None:
+            continue
+        if not isinstance(subjects, dict):
+            add(errors, f"{aid}.subjectDigests must be a mapping of artifactId to sha256")
+            continue
+        for ref, declared in subjects.items():
+            subject = by_id.get(str(ref))
+            if not subject:
+                add(errors, f"{aid}.subjectDigests references unknown artifact: {ref}")
+                continue
+            target, path_error = project_path(root, subject.get("path"))
+            if path_error:
+                add(errors, f"{aid}.subjectDigests cannot verify {ref}: {path_error}")
+                continue
+            if not target.is_file():
+                add(errors, f"{aid}.subjectDigests cannot verify {ref}: file missing {subject.get('path')}")
+                continue
+            try:
+                actual = sha256_file(target)
+            except OSError as exc:
+                add(errors, f"{aid}.subjectDigests cannot read {ref}: {exc}")
+                continue
+            if actual != str(declared).removeprefix("sha256:"):
+                add(errors, f"{aid}.subjectDigests mismatch for {ref}: baseline drifted after approval")
+    return errors
 
 def frontmatter(path):
     text = path.read_text(encoding="utf-8-sig")
@@ -203,6 +285,7 @@ def check_artifact(root):
                     add(errors,f"{aid} is built on a superseded baseline via sourceRefs: {ref}")
         for ref in items(a.get("decisionRefs")):
             if ref in by_id and by_id[ref].get("type")!="decision": add(errors,f"{aid}.decisionRefs must point to decision artifacts: {ref}")
+    errors.extend(check_digests(root, by_id))
     return errors
 
 def check_trace(root):
@@ -410,6 +493,9 @@ def check_gate(root):
             if not any(not approval_errors(ref, "approve-artifact", decisions, context, artifact_id=aid)
                        for ref in items(item.get("decisionRefs"))):
                 errors.append(f"approved artifact lacks valid scoped approval: {aid}")
+    # Pre-handoff checkpoint must be falsifiable against bytes on disk: reviewers read `gate`,
+    # so digest drift has to fail here too, not only in `artifact`.
+    errors.extend(check_digests(root, by_id))
     return errors
 
 def check_transitions(root):
@@ -644,9 +730,15 @@ def check_system(root, skip_fixtures=False, skip_knowledge=False, strict=False):
         errors.extend(f"knowledge: {e}" for e in knowledge_errors)
         for warning in warnings:
             print("WARNING: " + warning, file=sys.stderr)
+    seen_messages = set()
     for name, fn in checks:
         try:
-            errors.extend(f"{name}: {e}" for e in fn())
+            for error in fn():
+                # gate and artifact both enforce digests; a doubled line buries the real findings
+                if error in seen_messages:
+                    continue
+                seen_messages.add(error)
+                errors.append(f"{name}: {error}")
         except (ValueError, OSError, KeyError, TypeError, AttributeError) as exc:
             errors.append(f"{name}: invalid document: {exc}")
     if not skip_fixtures:

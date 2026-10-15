@@ -3,3 +3,10 @@ requiredRoot: [artifacts]
 requiredArtifactFields: [artifactId, type, path, lifecycle, owner, status, producedBy, producedAt]
 allowedLifecycle: [CREATE, CHANGE, DEFECT, REFACTOR, INCIDENT, OPTIMIZE]
 allowedStatus: [DRAFT, REVIEW, APPROVED, SUPERSEDED]
+digestFields:
+  contentDigest: sha256 of the bytes at `path`; written by tooling, never hand-authored
+  subjectDigests: mapping of artifactId to the sha256 of that artifact's file at review time
+  binding: declared digests are always recomputed against disk; a mismatch means the baseline drifted after approval
+  requiredForStatus: APPROVED
+  requiredAfter: '2026-10-15'
+  legacyPolicy: approvals produced before requiredAfter are migration debt, not regressions, so they are not reported
