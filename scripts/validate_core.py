@@ -337,6 +337,11 @@ def check_trace(root):
     errors=[]
     try: t=load_yaml(root/".spec/traceability.yaml")
     except ValueError as exc: return [str(exc)]
+    body = t.get("traceability") if isinstance(t.get("traceability"), dict) else {}
+    if not t.get("links") and not t.get("projectId") and body.get("requirements"):
+        # knowledge-bases 交的是 REQ/AC 索引，与链路台账同名不同物。报三条"结构不合契约"
+        # 会把人引去改索引文件，实际缺的是另一份台账 —— 判据要说清缺哪一份
+        return ["traceability.yaml 是 REQ/AC 索引（requirements），不是链路台账：链路台账缺失（需 projectId + links）"]
     if not t.get("projectId"): add(errors,"traceability.projectId is required")
     schema = load_yaml(Path(__file__).resolve().parents[1] / "governance/schemas/traceability.schema.yaml")
     if not isinstance(t.get("links"), list):
