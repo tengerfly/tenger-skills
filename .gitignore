@@ -17,4 +17,6 @@ __pycache__/
 # 注意 .spec/obs/run.jsonl 是自记轨真相源，必须入库，不在忽略之列
 .spec/obs/eval-report.json
 .spec/obs/detection.json
+.spec/obs/behaviour/
+.tmp-eval/
 .spec/观测/

@@ -29,7 +29,8 @@ cases:
     given: evals/tech-design/fixtures/tdd-clean
     skillFiles:
       - DEV/backend-tech-design/SKILL.md
-    tokenBudget: 90000
+    # 预算口径 = 非缓存输入 + 输出（实测同一条用例 4–11 万量级，且两次结果不同 ⇒ 不进默认回归）
+    tokenBudget: 150000
     timeout: 180
     prompt: |
       场景：已有 PRD 和原型，要写后端技术方案。用户还没说档位和技术栈。

@@ -16,11 +16,18 @@ layers:
     validators: [artifact, gate, trace, registry, refs]
     assertionRule: 断言 mustContain 而非只看退出码——否则"因无关原因失败"会被当成回归通过
   behaviour:
-    what: 给定 prompt 夹具 → 真跑 skill → 判输出
-    cost: 需要 agent 引擎 + provider 授权 + 花费
-    status: 待授权。当前明示 blocked（不是 skipped），本机实测无 qodercli 引擎、
-            skill-up 的 Windows full-agent evals 官方指向 WSL2、未装 Go
-    rule: 未经批准不得为了"跑通评测"引入第三方二进制或产生 API 花费
+    what: 给定 prompt 夹具 → 真跑 skill → 判模型自己的最终回答（不是整条 transcript）
+    engine: codex + DeepSeek（用户现有 provider，零配置改动，2026-10-15 定案）
+    engineRejected: claude 路线搁置——本机 Claude Code 不剥 cc-switch 拼在模型名后的 [1m]
+            上下文规格后缀，直接判 unrecognized_model；要通必须改用户的 provider 配置，
+            那不是评测该动的手
+    cost: 一条用例实测 106,325 token（口径＝非缓存输入＋输出；同轮缓存输入 1,570,432 不计价）
+          ／数分钟，且同一条用例两次结果不同 ⇒ 只在 TSR_ALLOW_ENGINE=1 时采样跑，不进默认回归
+    metering: 引擎取不到 token 用量即判 error，不许静默跳过预算闸（无计量＝无成本约束）
+    evidence: 每次真跑把 transcript 落 .spec/obs/behaviour/（派生物不入库），失败能回查原文
+    workspace: 夹具工作区建在仓内 .tmp-eval/；建在 %TEMP% 会被 codex 沙箱判不可写，
+            agent 全程只读 ⇒ 把量具故障误记成 skill 违规
+    rule: 禁词只在规则所管的节内查（标题或"待你决定："标签行）；节找不到判 error，不退化全文
 
 caseTiers:
   L0: 每个 skill ≥1 条「最小输入 → 必需产物存在且 Gate 合法」；红即阻断

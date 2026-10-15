@@ -72,5 +72,49 @@ class SectionScopeTests(unittest.TestCase):
         self.assertIsNone(evaluator._section_body(self.COMPLIANT, "根本不存在的节"))
 
 
+class StatusCardSectionTests(unittest.TestCase):
+    """2026-10-15 真跑 codex 的 GATE 回答用的是状态卡标签行（待你决定：① …），不是 markdown 标题。
+    只认标题会让一条合规回答被判成"节缺失"，判据必须认它实际长什么样。"""
+
+    STATUS_CARD = (
+        "## 结论先行\n\n"
+        "```text\n"
+        "状态卡\n"
+        "待你决定：① 需求方向是否符合你本意 ② 三个只有你能回答的问题\n"
+        "本步产物与证据：intake 草稿见下\n"
+        "下一步：确认方向后再决定要不要开一轮调研\n"
+        "```\n"
+    )
+
+    def test_label_line_section_is_found_without_eating_later_labels(self):
+        body = evaluator._section_body(self.STATUS_CARD, "待你决定|需要你回答")
+        self.assertIsNotNone(body)
+        self.assertIn("需求方向", body)
+        self.assertNotIn("本步产物与证据", body)
+        self.assertNotIn("向量库", body)
+
+    def test_label_line_section_still_catches_a_real_violation(self):
+        text = self.STATUS_CARD.replace("① 需求方向是否符合你本意", "① 数据库选 Postgres 还是向量库")
+        self.assertRegex(evaluator._section_body(text, "待你决定"), "Postgres|向量库")
+
+
+class EngineTranscriptTests(unittest.TestCase):
+    """判据只能吃模型自己的回答：transcript 里含注入的 SKILL.md 原文和 GBK 乱码工具回显，
+    全文匹配既会误杀技能自己的条款，也会因乱码漏判。"""
+
+    def test_agent_messages_pick_replies_and_drop_tool_echoes(self):
+        from eval import engine
+        stream = "\n".join([
+            '{"type":"item.completed","item":{"type":"agent_message","text":"待你决定：① 方向对不对"}}',
+            '{"type":"item.completed","item":{"type":"command_output",'
+            '"text":"数据库 技术选型 向量库 —— 这是工具回显，不该进判据"}}',
+        ])
+        self.assertEqual(["待你决定：① 方向对不对"], engine._agent_messages(stream))
+
+    def test_non_jsonl_stream_yields_no_answers_so_judging_refuses_to_degrade(self):
+        from eval import engine
+        self.assertEqual([], engine._agent_messages("prose with no jsonl events at all"))
+
+
 if __name__ == "__main__":
     unittest.main()

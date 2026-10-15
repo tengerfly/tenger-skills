@@ -10,7 +10,7 @@ Cases assert on findings, not on exit codes alone, so a checker that fails for a
 reason cannot be mistaken for a passing regression.
 """
 from __future__ import annotations
-import json, re, shutil, subprocess, sys, tempfile
+import json, os, re, shutil, sys, tempfile, time
 from datetime import datetime
 from pathlib import Path
 
@@ -31,7 +31,6 @@ def findings_for(project: Path, validator: str) -> list:
         return score.d1_contract(project).get("failures", [])
     if validator not in CHECKS:
         raise ValueError(f"unknown validator: {validator}")
-    return CHECKS[validator](project)
     return CHECKS[validator](project)
 
 
@@ -72,40 +71,62 @@ def _apply_tamper(project: Path, tamper: dict) -> None:
         raise ValueError("tamper needs append or replace")
 
 
-def _section_of(text: str, heading_pattern: str) -> str:
-    """Body under the first matching heading, up to the next heading.
-
-    Whole-output ban-word matching yields false positives: an agent that writes
-    "技术决策全部留到 Tech Design，现在我不问" is compliant yet contains every banned word.
-    Scoping the ban to the section the rule governs is the mechanically sound form.
-    """
-    lines = text.splitlines()
-    start = None
-    for index, line in enumerate(lines):
-        if start is None and re.match(rf"^#{{1,6}}\s*.*({heading_pattern})", line.strip(), re.I):
-            start = index + 1
-        elif start is not None and line.strip().startswith("#"):
-            return "\n".join(lines[start:index])
-    return "\n".join(lines[start:]) if start is not None else ""
-
-
 def _section_body(text: str, pattern: str):
-    """Return the body under the heading matching `pattern`, or None when the heading is absent.
+    """Return the body of the section named `pattern`, or None when that section is absent.
 
-    A ban-word match over the whole answer is not evidence of a rule violation: a compliant
-    agent may write "技术决策留到 Tech Design，现在我不问" and still contain every banned word.
-    Scoping to the section the rule governs is the only mechanically sound form.
+    Two forms occur in real answers: a markdown heading, and a status-card label line
+    (`待你决定：① …`, often inside a fenced block). Accepting only headings made a compliant
+    answer fail as "节标题找不到". The section ends at the next heading, the next label line,
+    or a blank line — never at the end of the document, so a ban stays scoped to one section.
     """
     lines = text.splitlines()
-    heading = re.compile(rf"^\s*(?:#{{1,4}}\s*|\*\*)\s*.*{pattern}", re.I)
-    next_heading = re.compile(r"^\s*(?:#{1,4}\s*|\*\*)\s*\S", re.I)
-    start = None
+    label = re.compile(rf"^\s*(?:[-*]\s*)?\*{{0,2}}\s*({pattern})\s*\*{{0,2}}\s*[:：]\s*(.*)$", re.I)
+    heading = re.compile(rf"^\s*#{{1,4}}\s*.*{pattern}", re.I)
+    boundary = re.compile(r"^\s*(?:#{1,4}\s*|(?:[-*]\s*)?\*{0,2}\s*[^\s:：*|]{1,24}\s*\*{0,2}\s*[:：])", re.I)
     for index, line in enumerate(lines):
-        if start is None and heading.search(line):
-            start = index + 1
-        elif start is not None and index > start and next_heading.search(line) and line.strip() != "":
-            return "\n".join(lines[start:index])
-    return "\n".join(lines[start:]) if start is not None else None
+        hit = label.match(line)
+        is_heading = hit is None and bool(heading.match(line))
+        if not hit and not is_heading:
+            continue
+        body = [hit.group(2)] if hit else []
+        for follow in lines[index + 1:]:
+            if not follow.strip():
+                break
+            if body and boundary.match(follow):
+                break
+            body.append(follow)
+        return "\n".join(body).strip()
+    return None
+
+
+def _write_evidence(case_id: str, engine_name: str, ran: dict, prompt: str) -> str:
+    """Persist the raw engine transcript so a verdict can be re-read, not re-guessed.
+
+    Behaviour runs are non-deterministic and cost real tokens; without the原文, a failed
+    predicate can only be argued about. Derived output, so it stays out of git.
+    """
+    stamp = datetime.now().astimezone().strftime("%Y%m%d-%H%M%S")
+    folder = ROOT / ".spec/obs/behaviour"
+    folder.mkdir(parents=True, exist_ok=True)
+    header = (f"# 行为层证据 {case_id} ｜ 引擎 {engine_name} ｜ ok={ran.get('ok')} "
+              f"｜ exit={ran.get('exit')} ｜ tokens={ran.get('tokens')} ｜ timedOut={ran.get('timedOut', False)}\n"
+              f"# 记录时间 {datetime.now().astimezone().isoformat(timespec='seconds')}\n"
+              f"# 判定: {ran.get('reason') or '(exit 0)'}\n\n--- PROMPT ---\n{prompt}\n\n--- OUTPUT ---\n")
+    path = folder / f"{case_id}-{stamp}.log"
+    path.write_text(header + str(ran.get("transcript") or ran.get("output") or "(引擎无输出)"), encoding="utf-8")
+    return path.relative_to(ROOT).as_posix()
+
+
+def _workdir(case_id: str) -> Path:
+    """Scratch project for a behaviour run, kept inside the repo.
+
+    %TEMP% paths got `Access is denied` from the codex sandbox on this host, so the agent ran
+    the whole case read-only and could not produce any artifact — a false failure of the skill
+    rather than of the harness.
+    """
+    path = ROOT / ".tmp-eval" / f"{case_id}-{os.getpid()}-{int(time.time())}"
+    path.mkdir(parents=True, exist_ok=True)
+    return path
 
 
 def run_behaviour(case: dict, spec: dict) -> dict:
@@ -117,23 +138,29 @@ def run_behaviour(case: dict, spec: dict) -> dict:
     fixture = ROOT / str(case["given"]).replace("\\", "/")
     if not fixture.is_dir():
         return {"id": case["id"], "status": "error", "reason": f"夹具不存在: {case['given']}"}
-    workspace = Path(tempfile.mkdtemp(prefix="behav-"))
+    workspace = _workdir(case["id"])
     try:
         project = workspace / "project"
         agent_engine.materialise(fixture, project, case.get("skillFiles") or [], ROOT)
         ran = agent_engine.run(chosen, project, case["prompt"], timeout=case.get("timeout", 240))
         if ran.get("blocked"):
             return {"id": case["id"], "status": "blocked", "reason": ran["reason"]}
+        evidence = _write_evidence(case["id"], chosen, ran, case["prompt"])
         if not ran["ok"]:
-            return {"id": case["id"], "status": "failed", "reason": ran["reason"], "tokens": ran.get("tokens")}
+            return {"id": case["id"], "status": "failed", "reason": ran["reason"],
+                    "tokens": ran.get("tokens"), "evidence": evidence}
         budget = case.get("tokenBudget")
         tokens = ran.get("tokens")
-        if budget and tokens and tokens > budget:
-            return {"id": case["id"], "status": "failed", "tokens": tokens,
+        if tokens is None:
+            # 没有计量就无法证明没超预算；把"取不到成本"判成 error，比静默跳过预算闸诚实
+            return {"id": case["id"], "status": "error", "evidence": evidence,
+                    "reason": f"引擎未回报 token 用量，预算闸无法生效（声明预算 {budget}）"}
+        if budget and tokens > budget:
+            return {"id": case["id"], "status": "failed", "tokens": tokens, "evidence": evidence,
                     "reason": f"超预算：{tokens} > {budget}（行为层必须带预算闸，否则跑一次不知道烧了多少）"}
         for pattern in case.get("expect", {}).get("produces") or []:
             if not list(project.glob(pattern)):
-                return {"id": case["id"], "status": "failed", "tokens": tokens,
+                return {"id": case["id"], "status": "failed", "tokens": tokens, "evidence": evidence,
                         "reason": f"未产出约定文件: {pattern}"}
         judged = ran["output"] + "\n" + "\n".join(
             path.read_text(encoding="utf-8", errors="replace")
@@ -144,15 +171,16 @@ def run_behaviour(case: dict, spec: dict) -> dict:
             scope_name = case["expect"].get("banInSection")
             scope = _section_body(judged, scope_name) if scope_name else judged
             if scope is None:
-                return {"id": case["id"], "status": "error", "tokens": tokens,
+                return {"id": case["id"], "status": "error", "tokens": tokens, "evidence": evidence,
                         "reason": f"找不到分节 /{scope_name}/，判据无法成立（不许退化成全文匹配）"}
             hit = re.search(banned, scope, re.S | re.I)
             if hit:
                 note = "（已改分节匹配，避免把「留到后面再定」判成违规）" if scope_name else "（全文匹配）"
-                return {"id": case["id"], "status": "failed", "tokens": tokens,
+                return {"id": case["id"], "status": "failed", "tokens": tokens, "evidence": evidence,
                         "reason": f"「{scope_name}」节内出现禁止内容 /{banned}/ {note}",
                         "peek": scope[max(0, hit.start() - 120):hit.end() + 160]}
-        return {"id": case["id"], "status": "passed", "tokens": tokens, "reason": f"引擎 {chosen}"}
+        return {"id": case["id"], "status": "passed", "tokens": tokens, "evidence": evidence,
+                "reason": f"引擎 {chosen}"}
     except (ValueError, OSError) as exc:
         return {"id": case["id"], "status": "error", "reason": f"{type(exc).__name__}: {exc}"}
     finally:
@@ -198,6 +226,10 @@ def run_all(eval_path: Path) -> dict:
 
 
 def main(argv=None) -> int:
+    if hasattr(sys.stdout, "reconfigure"):
+        # Windows 控制台默认 GBK，报告里的 ✅/⛔ 会直接抛 UnicodeEncodeError 把评测搞成"没跑"
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
     targets = [Path(item) for item in (argv or [])] or sorted(ROOT.glob("evals/*/eval.yaml"))
     if not targets:
         print("no eval sets found under evals/*/eval.yaml", file=sys.stderr)
@@ -218,6 +250,8 @@ def main(argv=None) -> int:
             print(f"  {mark} {report['skill']}/{result['id']} {result['status']}{cost} {result['reason']}")
             if result.get("peek"):
                 print("     原文摘录:", " ".join(str(result["peek"]).split())[:220])
+            if result.get("evidence"):
+                print(f"     证据 → {result['evidence']}")
     out = ROOT / ".spec/obs/eval-report.json"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(reports, ensure_ascii=False, indent=2), encoding="utf-8")

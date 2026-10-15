@@ -79,7 +79,8 @@ cases:
       - workflow/SKILL.md
       - shared/product-workflow-contract.md
       - shared/execution-profiles.md
-    tokenBudget: 90000
+    # 预算口径 = 非缓存输入 + 输出（codex turn.completed.usage；2026-10-15 实测 106,325，缓存输入 1,570,432 不计价）
+    tokenBudget: 150000
     timeout: 420
     prompt: |
       用户请求：「帮我做一个个人用的知识库应用，能存能搜能问。」
