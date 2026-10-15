@@ -177,6 +177,33 @@ def cmd_score(args) -> int:
     return 1 if result["redLines"] else 0
 
 
+def cmd_audit(args) -> int:
+    """Cross-check declared work against what actually landed; report, never auto-fix."""
+    from obs import anomaly, gitlog
+    root = _project(args)
+    events = schema.read_events(root)
+    opened, closed = {}, set()
+    for event in events:
+        key = (event.get("executionId"), event.get("node"))
+        if event["event"] == "node-start":
+            opened[key] = event.get("ts")
+        elif event["event"] == "node-end":
+            closed.add(key)
+    unclosed = {key: ts for key, ts in opened.items() if key not in closed}
+    findings = gitlog.find_gaps(root, unclosed, max_age_hours=args.max_age_hours)
+    if not findings:
+        print("audit: 无未收口节点，无超时未提交改动")
+        return 0
+    for finding in findings:
+        print(f"  [{finding['kind']}] {finding['detail']} ｜ 证据 {finding['evidence']}")
+    if args.write:
+        result = anomaly.upsert(root, findings)
+        print(f"问题卡 → 新增 {len(result['created'])} 条，已存在 {len(result['unchanged'])} 条（不重复建条目）")
+    else:
+        print("  （只报告不落盘；要建档加 --write）")
+    return 0
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(prog="tsr", description="tenger.trace/v1 run log")
     parser.add_argument("--project-root", default=".")
@@ -214,6 +241,11 @@ def main(argv=None) -> int:
     host.set_defaults(handler=cmd_host)
 
     sub.add_parser("score").set_defaults(handler=cmd_score)
+
+    audit = sub.add_parser("audit")
+    audit.add_argument("--write", action="store_true", help="persist findings as problem cards")
+    audit.add_argument("--max-age-hours", type=float, default=4.0)
+    audit.set_defaults(handler=cmd_audit)
 
     args = parser.parse_args(argv)
     try:
