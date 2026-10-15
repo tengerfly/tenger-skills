@@ -141,13 +141,37 @@ def cmd_report(args) -> int:
     return 0
 
 
+def cmd_host(args) -> int:
+    """Read-only host probe: what can this host actually prove, and where does it stop."""
+    from obs import host_spec
+    home = Path(args.home).expanduser().resolve()
+    if not home.is_dir():
+        print(f"tsr: host home not found: {home}", file=sys.stderr)
+        return 1
+    spec = host_spec.load(args.host)
+    found = host_spec.discover(spec, home, args.project_slug or "")
+    if not found:
+        print(f"tsr: no {args.host} trace files matched for {args.project_slug or '(any project)'}", file=sys.stderr)
+        return 1
+    spans = host_spec.read_spans(spec, found[:args.sample])
+    report = host_spec.verify_capabilities(spec, spans)
+    print(f"host={args.host} files={len(found)} sampled={len(spans)}")
+    for name in sorted(report):
+        info = report[name]
+        print(f"  {'GRANTED' if info['granted'] else 'denied '} {name}" + (f" — {info['reason']}" if info["reason"] else ""))
+    attribution = host_spec.attribute(spans, _project(args))
+    print(f"  writes={attribution['writes']} attributed={attribution['byNode']} unattributed={attribution['unattributed']}")
+    print("  note: 宿主数据只富化，真相是 .spec/obs/run.jsonl；unattributed 不靠猜补")
+    return 0
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(prog="tsr", description="tenger.trace/v1 run log")
     parser.add_argument("--project-root", default=".")
     parser.add_argument("--project-id")
-    parser.add_argument("--execution-id", required=True)
-    parser.add_argument("--node", required=True)
-    parser.add_argument("--skill", required=True)
+    parser.add_argument("--execution-id")
+    parser.add_argument("--node")
+    parser.add_argument("--skill")
     parser.add_argument("--role", default="produce", choices=sorted(schema.ROLES))
     parser.add_argument("--actor", default="main", choices=sorted(schema.ACTORS))
     parser.add_argument("--parent-execution")
@@ -169,6 +193,13 @@ def main(argv=None) -> int:
 
     sub.add_parser("verify").set_defaults(handler=cmd_verify)
     sub.add_parser("report").set_defaults(handler=cmd_report)
+
+    host = sub.add_parser("host")
+    host.add_argument("--host", required=True)
+    host.add_argument("--home", required=True)
+    host.add_argument("--project-slug", default="")
+    host.add_argument("--sample", type=int, default=20)
+    host.set_defaults(handler=cmd_host)
 
     args = parser.parse_args(argv)
     try:

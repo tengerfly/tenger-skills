@@ -1,0 +1,54 @@
+version: 1
+host: qoder
+# 宿主轨迹的自描述文件。适配器只读本文件，不内置任何宿主的目录结构或字段名：
+# 换宿主 = 新增一份 spec，核心层与指标层代码不动。
+# 字段事实来自本机实测（638 个段文件 / 22,979 条 tool.requested），不是文档转述。
+discovery:
+  layout: "logs/sessions/*/*/segments/*.jsonl"
+  sessionKey: {from: path, pattern: "logs/sessions/(?P<project>[^/]+)/(?P<session>[0-9a-f-]{36})/"}
+fields:
+  timestamp: ts
+  sequence: seq
+  kind: type
+  tool: data.tool_name
+  arguments: data.args
+  turn: turn_id
+  loop: loop_id
+kinds:
+  toolCall: tool.requested
+  toolResult: tool.execution.finished
+  loopEnd: loop.iteration.finished
+capabilities:
+  - id: WALL_CLOCK
+    requires: {fields: [ts]}
+  - id: TOOL_EVENTS
+    requires: {fields: [data.tool_name]}
+    notes: 主信号是 Bash 10,249 / Edit 4,490 / Read 3,041，不是 Read 优先
+  - id: ARTIFACT_WRITES
+    requires: {fields: [data.tool_name, data.args.file_path]}
+    toolFilter: [Write, Edit]
+    pathField: data.args.file_path
+  - id: LOOP_COUNTS
+    requires: {types: [loop.iteration.finished]}
+    countField: data.tool_use_count
+  - id: TOOL_ERRORS
+    requires: {types: [loop.iteration.finished]}
+    countField: data.error_tool_result_count
+    caveat: 426/11,827 条 loop.iteration.finished 缺该字段，计数必须先 guard
+  - id: MODEL_ID
+    requires: {types: [model.response.completed]}
+    field: data.model
+absent:
+  - id: TOKENS
+    reason: >
+      model.response.completed 里 input_tokens/output_tokens/cache_* 实测全为 0；
+      transcript 侧根本没有这些键。声明为不可用，禁止用字节数冒充 token。
+limits:
+  retention: >
+    宿主日志保留策略在二进制内部，未见轮转文件但不可依赖；宿主侧数据只用于富化，
+    真相是仓内 run-log（跟 git 走）。
+  joinKey: >
+    segments 事件顶层无 session_id，只能取所在目录名；projects/*.jsonl transcript
+    实测只覆盖 76/566 个 session。关联主键一律用 run-log 的 executionId，
+    宿主标识只作外键；匹配不上就判 N/A，不允许靠时间窗猜成同一件事。
+  skillEvents: 'tool_name:"Skill" 全库仅 114 条，只能作旁证，不能作节点归属主键'
