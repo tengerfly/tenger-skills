@@ -1,0 +1,14 @@
+projectId: eval-design-review
+artifacts:
+- artifactId: UIX-REVIEW-SUMMARY-1
+  type: validation-report
+  path: .spec/设计评审/批次1-设计稿评审汇总报告.md
+  lifecycle: CREATE
+  owner: reviewer
+  status: REVIEW
+  producedBy: ui-ux-review
+  producedAt: '2026-10-15T19:00:00+08:00'
+  sourceRefs: []
+  evidenceRefs: []
+  decisionRefs: []
+  contentDigest: 77e599ed08f99c43d8ba80165577cb62241712b04700224b11e3a6cec9263fcb

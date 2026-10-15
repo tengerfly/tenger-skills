@@ -1,0 +1,41 @@
+schema: tenger.eval/v1
+skill: ui-ux-review
+cases:
+  - id: EV-DR-001
+    name: 合规设计评审汇总报告判绿
+    layer: structure
+    given: evals/design-review/fixtures/review-clean
+    expect: {validator: sections, outcome: green}
+
+  - id: EV-DR-002
+    name: 上游闸门核对表标题被改写必须判红
+    layer: structure
+    given: evals/design-review/fixtures/review-clean
+    tamper:
+      file: .spec/设计评审/批次1-设计稿评审汇总报告.md
+      replace: {from: "## 上游闸门核对表（REQUIRED）", to: "## 闸门情况"}
+    expect: {validator: sections, outcome: red, mustContain: 上游闸门核对}
+
+  - id: EV-DR-003
+    name: 时序核查整节被删必须判红
+    layer: structure
+    given: evals/design-review/fixtures/review-clean
+    tamper:
+      file: .spec/设计评审/批次1-设计稿评审汇总报告.md
+      replace: {from: "## 时序核查", to: "## 分级计数（重复占位）"}
+    expect: {validator: sections, outcome: red, mustContain: 时序核查}
+
+  - id: EV-DR-005
+    name: 合规夹具台账与磁盘一致（判据不靠假摘要）
+    layer: structure
+    given: evals/design-review/fixtures/review-clean
+    expect: {validator: artifact, outcome: green}
+
+  - id: EV-DR-004
+    name: 批准后正文被改而摘要未重签必须判红
+    layer: structure
+    given: evals/design-review/fixtures/review-clean
+    tamper:
+      file: .spec/设计评审/批次1-设计稿评审汇总报告.md
+      append: "## §9 事后偷偷加的一节"
+    expect: {validator: artifact, outcome: red, mustContain: contentDigest mismatch}

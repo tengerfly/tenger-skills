@@ -437,6 +437,10 @@ artifacts:
   - APPROVED
   - SUPERSEDED
 - type: validation-report
+  documentSections:
+  - match: ".spec/设计评审/*汇总报告*.md"
+    note: 关键词取自 ui-ux-review 的「硬性产出」与 knowledge-bases 真实汇总报告标题的双侧交集（上游闸门核对表 / 时序核查）；维度报告与任务清单两侧写法不一致，暂不判，避免用猜的标题罚合规产物
+    sections: [上游闸门核对, 时序核查]
   required:
   - artifactId
   - type
