@@ -116,5 +116,20 @@ class EngineTranscriptTests(unittest.TestCase):
         self.assertEqual([], engine._agent_messages("prose with no jsonl events at all"))
 
 
+class CostMeteringTests(unittest.TestCase):
+    """2026-10-15 实测：codex --json 不再打印 "tokens used"，成本退回 None，
+    而 `if budget and tokens and tokens > budget` 会静默跳过预算闸 —— 无计量的"通过"不算数。"""
+
+    def test_usage_tokens_excludes_cached_input(self):
+        from eval import engine
+        line = ('{"type":"turn.completed","usage":{"input_tokens":1637521,'
+                '"cached_input_tokens":1570432,"output_tokens":39236}}')
+        self.assertEqual((106325, 1570432), engine.usage_tokens(line))
+
+    def test_missing_usage_reported_as_absent_not_zero(self):
+        from eval import engine
+        self.assertEqual((None, None), engine.usage_tokens('{"type":"turn.started"}'))
+
+
 if __name__ == "__main__":
     unittest.main()
