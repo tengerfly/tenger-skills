@@ -12,3 +12,9 @@ vibe Coding 高效能秘籍/
 .venv/
 __pycache__/
 *.py[cod]
+
+# 派生观测产物：tsr/selfcheck 随时可重算，不入库
+# 注意 .spec/obs/run.jsonl 是自记轨真相源，必须入库，不在忽略之列
+.spec/obs/eval-report.json
+.spec/obs/detection.json
+.spec/观测/
