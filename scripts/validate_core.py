@@ -161,8 +161,13 @@ def attestation_drift(root):
         if latest[2] == latest[3]:
             continue
         subject = by_id.get(ref) or {}
+        head = str(subject.get("sha256Head") or "")
+        target, _ = project_path(root, subject.get("path"))
+        disk = sha256_file(target) if target and target.is_file() else ""
+        head_state = "head 也不一致" if head and not disk.startswith(head) else ("head 已跟新" if head else "无 head 字段")
         rows.append({"subject": ref, "path": subject.get("path"), "status": subject.get("status"),
                      "evidence": latest[1], "attestedAt": latest[0], "declared": latest[2], "actual": latest[3],
+                     "headState": head_state,
                      "supersededBindings": sum(1 for row in bindings_for_ref if row[2] != row[3]) - 1})
     return rows, structural
 
@@ -823,11 +828,11 @@ def main(argv=None):
             rows, structural = attestation_drift(root)
             for error in structural:
                 print(error, file=sys.stderr)
-            print("| subject | status | 最新绑定证据 | 绑定时间 | 磁盘 | 已被取代的旧绑定 |")
-            print("| --- | --- | --- | --- | --- | --- |")
+            print("| subject | status | 最新绑定证据 | 绑定时间 | 磁盘 | 台账 head | 已被取代的旧绑定 |")
+            print("| --- | --- | --- | --- | --- | --- | --- |")
             for row in rows:
                 print(f"| {row['subject']} | {row['status']} | {row['evidence']} | {row['attestedAt']} "
-                      f"| {row['actual'][:12]}… | {row['supersededBindings']} |")
+                      f"| {row['actual'][:12]}… | {row['headState']} | {row['supersededBindings']} |")
             print(f"待重签 {len(rows)} 条 ｜ 台账结构错误 {len(structural)} 条"
                   f" ｜ 重签需人工批准（decisionRefs），本命令不改写台账")
             return 1 if (rows or structural) else 0

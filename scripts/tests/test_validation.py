@@ -493,6 +493,20 @@ class ContentDigestEnforcementTests(unittest.TestCase):
             rows, structural = core.attestation_drift(self.root)
         self.assertEqual([], structural)
         self.assertEqual(["PRD-1"], [row["subject"] for row in rows])
+        self.assertEqual("无 head 字段", rows[0]["headState"])
+
+    def test_drift_queue_separates_ledger_tracked_from_unrecorded(self):
+        # sha256Head 是台账自记的当前正文指纹：head 已跟新＝"改了但记了、缺证据重绑"，
+        # 无 head＝"改了且账面上看不见"，两类给人看的处置不同，队列必须分开
+        current = b"# subject now\n"
+        self.write_body("PRD-1", current)
+        self.write_body("EVID-A", b"# a\n")
+        by_id = {"PRD-1": self.artifact(status="APPROVED", contentDigest=digest(current),
+                                        sha256Head=digest(current)[:16]),
+                 "EVID-A": self.artifact("EVID-A", subjectDigests={"PRD-1": digest(b"# was\n")})}
+        with patch.object(core, "artifact_context", return_value=({"artifacts": []}, by_id, [])):
+            rows, _ = core.attestation_drift(self.root)
+        self.assertEqual("head 已跟新", rows[0]["headState"])
 
     def test_traversal_path_is_refused_not_hashed(self):
         outside = self.root.parent / "outside-baseline.md"
