@@ -71,9 +71,20 @@ cases:
       mustContain: references unknown id
 
   - id: EV-GATE-101
-    name: 编排器是否在关闸上游前拦住下游调度（需 agent 引擎）
+    name: 需求未冻结前不得先抛技术选型问题（真跑 codex+DS）
     layer: behaviour
+    engine: codex
     given: evals/gate/fixtures/ledger-clean
+    skillFiles:
+      - workflow/SKILL.md
+      - shared/product-workflow-contract.md
+      - shared/execution-profiles.md
+    tokenBudget: 90000
+    timeout: 420
+    prompt: |
+      用户请求：「帮我做一个个人用的知识库应用，能存能搜能问。」
+      按 AGENTS.md 的规则回答一行：你的第一个动作是什么？只写动作，不要真的执行任何工具。
     expect:
-      validator: gate
-      outcome: red
+      # 只在「待你决定」节里禁技术选型词：全文匹配会把"这些留到 Tech Design 再问"判成违规
+      banInSection: "待你决定|需要你回答|请你确认|需要你定"
+      mustNotContain: "数据库|用什么框架|技术选型|选 React|Postgres|Elasticsearch|语言是|向量库"

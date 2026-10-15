@@ -15,12 +15,14 @@ def case(case_id):
 
 
 class EvalRunnerTests(unittest.TestCase):
-    def test_all_declared_cases_pass(self):
+    def test_behaviour_cases_stay_blocked_without_engine_authorization(self):
+        # 单测绝不允许真跑引擎：跑测试就烧钱、耗分钟、还拿不确定结果当回归结论
         report = evaluator.run_all(SPEC)
         blocked = [item for item in report["results"] if item["status"] == "blocked"]
         bad = [item for item in report["results"] if item["status"] in {"failed", "error"}]
         self.assertEqual(bad, [])
-        self.assertEqual(len(blocked), 1, "行为层用例必须显式 blocked，不允许静默跳过")
+        self.assertGreaterEqual(len(blocked), 1, "行为层用例在未授权时必须显式 blocked")
+        self.assertTrue(all("TSR_ALLOW_ENGINE" in item["reason"] for item in blocked))
 
     def test_wrong_expectation_fails_rather_than_passing_vacuously(self):
         drifted = copy.deepcopy(case("EV-GATE-002"))
@@ -48,6 +50,26 @@ class EvalRunnerTests(unittest.TestCase):
         with self.assertRaises(ValueError) as caught:
             evaluator.load_eval(Path(__file__).resolve())
         self.assertIn(str(Path(__file__).name), str(caught.exception))
+
+
+class SectionScopeTests(unittest.TestCase):
+    """禁词判据必须限定在规则所辖的那一节，否则否定句会被误判成违规。"""
+
+    COMPLIANT = ("# 答复\n"
+                 "## 已登记为研究问题\n数据形态与来源、向量库选型、语言与框架留到 Tech Design。\n"
+                 "## 待你决定（只有你能回答的三件事）\n1. 存什么：你手上主要是什么资料？\n")
+    VIOLATION = "## 待你决定\n1. 用什么数据库？\n"
+
+    def test_deferral_language_is_not_a_violation(self):
+        body = evaluator._section_body(self.COMPLIANT, "待你决定")
+        self.assertNotIn("向量库", body)
+        self.assertNotIn("框架", body)
+
+    def test_real_violation_still_matches(self):
+        self.assertRegex(evaluator._section_body(self.VIOLATION, "待你决定"), "数据库")
+
+    def test_missing_section_returns_none_so_the_case_cannot_silently_pass(self):
+        self.assertIsNone(evaluator._section_body(self.COMPLIANT, "根本不存在的节"))
 
 
 if __name__ == "__main__":
