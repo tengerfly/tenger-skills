@@ -106,7 +106,7 @@ CREATE 行的 `UI Design -> UI Review` 是**必经节点**（`ui-ux-design` → 
 
 ### 4. 守门与交接
 
-正式交接的每个 Skill 必须输出 `PASS`、`CONDITIONAL` 或 `BLOCKED`，并声明 `allowDownstream`。轻量仅报告完成内容、真实验证和剩余限制，不输出正式 Gate/状态，也不授予下游自动执行权限。只允许 `PASS` 或显式允许下游的 `CONDITIONAL` 交接；任何 P0/P1 未处理、证据缺失、未授权或产物不完整均停止推进。
+正式交接的每个 Skill 必须输出 `PASS`、`CONDITIONAL` 或 `BLOCKED`，并声明 `allowDownstream`。**〔REQUIRED · 交接留轨〕**标准/完整流程每个节点开工前跑 `python scripts/tsr.py --project-root <项目> --execution-id <E> --node <节点> --skill <skill> --role <produce|fix|review|recheck> [--round n --batch n] node-start`，交接时同参数跑 `node-end --gate … --allow-downstream … --artifact <产物路径> [--upstream <id>:<gate>]`；时钟、序号、产物摘要由脚本生成，不得手写（口径 `../shared/gate-policy.md` §6 第 7 条，`verify` 复算不过即视同交接未完成）。轻量任务不要求正式 Envelope，但同样不因此获得下游执行权限。轻量仅报告完成内容、真实验证和剩余限制，不输出正式 Gate/状态，也不授予下游自动执行权限。只允许 `PASS` 或显式允许下游的 `CONDITIONAL` 交接；任何 P0/P1 未处理、证据缺失、未授权或产物不完整均停止推进。
 
 **开工前闸门核对（REQUIRED，先于任何节点调度与状态前移）**：调度任一专业 Skill 之前，先读该节点所依赖的上游 artifact 在 `.spec/manifest.yaml` / `.spec/gates/` 的 `status`、`version`、`gate`、`allowDownstream`、`blockedBy`（口径见 `../shared/gate-policy.md` §6）。任一上游为 `SUPERSEDED`、`gate` 非 `PASS`、或 `allowDownstream: false` ⇒ ① 不启动该节点；② `currentState` 与 `nextAction` 不得指向关闸上游的下游，状态停在阻塞点并用已注册状态（如 `WORKFLOW_BLOCKED`），不为此新增状态名；③ 在 `workflow.yaml.blockedItems` 记 `BLK-*`（含 `owner`、`requiredInput`、`clearCondition`），`nextAction` 指回上游 owner。**禁止**以「下游先往前赶、上游慢慢补」「并行不空等」「先把能做的做了」越过未清阻塞：闸门既是数据也是检查点，不靠执行方自觉。
 
