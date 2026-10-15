@@ -1,0 +1,79 @@
+# 结构层评测集 · 闸门执法（workflow / validate_core）
+#
+# 判据来自 2026-10 真实事故：knowledge-bases 上「改正文不动台账」在字段层完全隐形，
+# 153 条摘要漂移里 112 条是 status/version/gate 全绿时发生的。这里把这几类坏法固定成
+# 回归用例——结构层零成本、零依赖、每次改动后可跑。
+# 注意：本文件是 YAML，不能用 markdown 引用块（> 在 YAML 里是 block scalar）。
+
+schema: tenger.eval/v1
+skill: workflow
+cases:
+  - id: EV-GATE-001
+    name: 合规台账必须判绿
+    layer: structure
+    given: evals/gate/fixtures/ledger-clean
+    expect:
+      validator: artifact
+      outcome: green
+
+  - id: EV-GATE-002
+    name: 批准后正文被改（台账不动）必须判红
+    layer: structure
+    given: evals/gate/fixtures/ledger-clean
+    tamper:
+      file: .spec/prd/PRD-G-001.md
+      append: "\n> 批准后被人偷偷补了一段，没有重签摘要\n"
+    expect:
+      validator: artifact
+      outcome: red
+      mustContain: contentDigest mismatch
+
+  - id: EV-GATE-003
+    name: 摘要被写成占位值必须判红
+    layer: structure
+    given: evals/gate/fixtures/ledger-clean
+    tamper:
+      file: .spec/manifest.yaml
+      replace:
+        from: "29b44fb5ef917b25505297a6ca0d5cc8d760131dd7144bc83adef22f322942ec"
+        to: "0000000000000000000000000000000000000000000000000000000000000000"
+    expect:
+      validator: artifact
+      outcome: red
+      mustContain: contentDigest mismatch
+
+  - id: EV-GATE-004
+    name: 升为 APPROVED 却无批准记录必须判红
+    layer: structure
+    given: evals/gate/fixtures/ledger-clean
+    tamper:
+      file: .spec/manifest.yaml
+      replace:
+        from: "status: REVIEW"
+        to: "status: APPROVED"
+    expect:
+      validator: artifact
+      outcome: red
+      mustContain: requires decisionRefs
+
+  - id: EV-GATE-005
+    name: 链路断到不存在的产物必须判红
+    layer: structure
+    given: evals/gate/fixtures/ledger-clean
+    tamper:
+      file: .spec/manifest.yaml
+      replace:
+        from: "sourceRefs: []"
+        to: "sourceRefs: [GHOST-BASELINE]"
+    expect:
+      validator: artifact
+      outcome: red
+      mustContain: references unknown id
+
+  - id: EV-GATE-101
+    name: 编排器是否在关闸上游前拦住下游调度（需 agent 引擎）
+    layer: behaviour
+    given: evals/gate/fixtures/ledger-clean
+    expect:
+      validator: gate
+      outcome: red

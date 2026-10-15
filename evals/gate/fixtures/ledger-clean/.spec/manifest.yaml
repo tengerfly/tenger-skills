@@ -1,0 +1,14 @@
+projectId: eval-gate
+artifacts:
+- artifactId: PRD-G-001
+  type: prd
+  path: .spec/prd/PRD-G-001.md
+  lifecycle: CREATE
+  owner: pm
+  status: REVIEW
+  producedBy: prd-design
+  producedAt: '2026-10-15T10:00:00+08:00'
+  sourceRefs: []
+  evidenceRefs: []
+  decisionRefs: []
+  contentDigest: 29b44fb5ef917b25505297a6ca0d5cc8d760131dd7144bc83adef22f322942ec

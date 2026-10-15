@@ -275,10 +275,10 @@ governance/obs-registry.yaml      节点↔产物路径↔skill 映射表（节�
 | P0 执法先行 | ✅ 已交付并验证 | `44123be`：`check_digests` + gate-policy §6-6 + 6 条注入反证；KB 实测 153 条真漂移 |
 | P1 真相轨落地 | ✅ 已交付 | `b661f2b`：`tenger.trace/v1` + `tsr`；9 条用例 |
 | P2 指标可见 | ✅ 已交付 | `3cb8f02` 指标与看板 + `e071b4c` 声明式宿主适配器（真日志验过：147 session，能力按实测授予，TOKENS 判不可用） |
-| P3 评测完备 | 🟡 部分 | ✅ B5 量具自验 `a5be65e`（7 探针 + 干净对照）；✅ B6 两级打分 `4c91325`；✅ C1 台账效果证据 `86c694d`；⬜ B2 evals 目录规范、⬜ B3 judge 路由 |
-| P4 行为评测上引擎 | ⬜ 未开始 | 前置风险已知：本机无 `qodercli` 引擎、skill-up Windows 官方指 WSL2、未装 Go。先做可行性实验再动工 |
+| P3 评测完备 | ✅ 已交付 | B1 余下（生效日进 schema 单源）· B2/B3 `governance/eval-spec.yaml` + `scripts/eval/run.py` + `evals/gate/`（5 条结构层用例 + 1 条显式 blocked）· B5 `a5be65e` · B6 `4c91325` · C1 `86c694d` |
+| P4 行为评测上引擎 | ⏸ 待授权 | 阻塞点是授权不是技术：本机无 `qodercli` 引擎、skill-up Windows 官方指 WSL2、未装 Go，且真跑 agent 要 provider 花费。结构层评测已先跑通并可当回归门禁 |
 | P5 闭环接线 | 🟡 部分 | ✅ C1；⬜ C2 无人值守边界（且 cron 禁跑 agent_judge，尚未接线） |
-| 撤回的当期范围 | — | **A3 git 轨、A5 快照固化**：真相源改为仓内 run-log 后，"宿主日志被驱逐"不再威胁观测，两者推迟到接更多宿主时再评估 |
+| 范围修正 | — | **A3 git 轨已回补** `a98db84`：本仓出现"三天前完成却没提交"的事故，而那批活儿早于 tsr 存在，run-log 结构性看不见它——"有改动无提交"只有 git 轨能检出。**A5 快照固化仍延后**：真相源已是仓内 run-log，宿主日志被驱逐不再威胁观测 |
 
 **当前能立刻用的三件事**：`validate_core gate/artifact`（摘要复算判红）、`tsr`（节点轨迹 + verify + report + score）、`obs/selfcheck.py`（量具检出力）。
 **还差一口气的地方**：真实项目里还没有一份 run-log——需要在一个实际执行的节点上跑 `tsr`，指标与打分的 D4 才会有真值（现在 KB 的 D4 是 N/A，这是实情而非缺陷）。

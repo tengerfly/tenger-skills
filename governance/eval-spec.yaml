@@ -1,0 +1,55 @@
+version: 1
+updatedAt: '2026-10-15'
+
+schema: tenger.eval/v1
+layout: |
+  <skill-or-domain>/evals/
+    eval.yaml           # 声明 skill、用例清单、评分策略
+    fixtures/           # 输入与台账快照（结构层用完整项目树）
+  scripts/eval/run.py   # 唯一执行器；平台无关，无第三方依赖
+
+layers:
+  structure:
+    what: 给定项目夹具 → 跑真实校验器 → 断言**具体判据文本**出现且红/绿符合预期
+    cost: 秒级、零 token、零依赖 ⇒ 每次改动必跑，可当 pre-commit
+    runner: scripts/eval/run.py
+    validators: [artifact, gate, trace, registry, refs]
+    assertionRule: 断言 mustContain 而非只看退出码——否则"因无关原因失败"会被当成回归通过
+  behaviour:
+    what: 给定 prompt 夹具 → 真跑 skill → 判输出
+    cost: 需要 agent 引擎 + provider 授权 + 花费
+    status: 待授权。当前明示 blocked（不是 skipped），本机实测无 qodercli 引擎、
+            skill-up 的 Windows full-agent evals 官方指向 WSL2、未装 Go
+    rule: 未经批准不得为了"跑通评测"引入第三方二进制或产生 API 花费
+
+caseTiers:
+  L0: 每个 skill ≥1 条「最小输入 → 必需产物存在且 Gate 合法」；红即阻断
+  L1: 每个 skill 3–5 条，覆盖 Procedure 的关键分支；红进 issue 不阻断
+  L2: issue/ 每个 P0/P1 闭环后必须回流成 1 条；未回流不得标闭环
+  L3: 改 shared/ 或合并 skill 前全量；红阻断合并
+
+judgeRouting:
+  rule_based: 硬约束（必含章节、必引用某文件、禁用术语、digest 一致）——默认选择
+  script:     结构校验，直接调用 validate_core/tsr 的检查函数返回 0-1
+  agent_judge: 仅语义判断（方案是否闭环、还原度、澄清是否问到该问的），必须附 rubric 与反例
+  budgetRule: 单套 case 里 agent_judge 占比 ≤30%；量具能算出的一律不交给模型
+
+comparability:
+  baseline: 每套 eval 首次通过的 result 快照存 evals/<set>/baseline/
+  bind: [skillRevision, casesVersion, engine, model, judgeVersion, scoringVersion]
+  rule: 锚任一项变化即开新基线；禁止跨锚比总分
+  holdout: 保留 10–20% 用例不参与优化，仅在验收时跑；总分不降而 holdout 降 ⇒ 判过拟合
+
+verificationOfTheHarness:
+  # 评测自己先要可信，否则它只是另一个自述
+  negativeControls:
+    - 把期望从 red 改成 green，必须报 failed
+    - 合规夹具被改坏后仍期望 green，必须报 failed
+    - mustContain 写成不存在的判据文本，必须报 failed
+  detectionRateSource: scripts/obs/selfcheck.py 的 7 探针 + 1 干净对照 → detection.json → 打分 D3
+
+antiPatterns:
+  - 用 agent_judge 评 agent 产物却不给 rubric（错误会自我强化）
+  - 同一会话改完自评（必须 fresh-agent）
+  - 无人值守定时任务跑 agent_judge（污染被观测语料且需 Full Access）
+  - 把"覆盖率高"当质量：判据未核实的类型宁可不声明，覆盖 0.5% 也要如实显示
