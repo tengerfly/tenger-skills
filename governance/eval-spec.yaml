@@ -21,8 +21,10 @@ layers:
     engineRejected: claude 路线搁置——本机 Claude Code 不剥 cc-switch 拼在模型名后的 [1m]
             上下文规格后缀，直接判 unrecognized_model；要通必须改用户的 provider 配置，
             那不是评测该动的手
-    cost: 一条用例实测 106,325 token（口径＝非缓存输入＋输出；同轮缓存输入 1,570,432 不计价）
-          ／数分钟，且同一条用例两次结果不同 ⇒ 只在 TSR_ALLOW_ENGINE=1 时采样跑，不进默认回归
+    cost: 同一条用例三次真跑实测 32,357 ／ 58,691 ／ 106,325 token
+          （口径＝非缓存输入＋输出；同轮缓存输入最高 1,570,432 不计价）／1–5 分钟，
+          且同一条两次结果不同 ⇒ 只在 TSR_ALLOW_ENGINE=1 时采样跑，不进默认回归；
+          预算闸按最高值上浮设 150,000
     metering: 引擎取不到 token 用量即判 error，不许静默跳过预算闸（无计量＝无成本约束）
     evidence: 每次真跑把 transcript 落 .spec/obs/behaviour/（派生物不入库），失败能回查原文
     workspace: 夹具工作区建在仓内 .tmp-eval/；建在 %TEMP% 会被 codex 沙箱判不可写，
