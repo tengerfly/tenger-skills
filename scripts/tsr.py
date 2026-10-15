@@ -10,7 +10,7 @@ import argparse, json, sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from obs import schema
+from obs import metrics, schema
 
 
 def _project(args) -> Path:
@@ -75,11 +75,14 @@ def verify(root: Path) -> list:
     events = schema.read_events(root)
     if not events:
         return ["no run-log events: observability is not wired for this project"]
+    registered = metrics.load_registry()
     last_seq, last_ts = 0, ""
     opened = set()
     for index, event in enumerate(events, 1):
         where = f"{schema.RUN_LOG}#{event.get('seq', index)}"
         errors.extend(f"{where}: {error}" for error in schema.validate(event))
+        if event.get("node") not in registered:
+            errors.append(f"{where}: node is not registered in governance/obs-registry.yaml: {event.get('node')}")
         seq = event.get("seq")
         if not isinstance(seq, int) or seq <= last_seq:
             errors.append(f"{where}: seq must increase strictly (out-of-order writes break replay)")
@@ -120,6 +123,24 @@ def cmd_verify(args) -> int:
     return 0
 
 
+def cmd_report(args) -> int:
+    root = _project(args)
+    problems = verify(root)
+    events = schema.read_events(root)
+    registered = metrics.load_registry()
+    node_errors = sorted({str(event.get("node")) for event in events
+                          if event.get("node") not in registered})
+    text = metrics.render(metrics.summarize(events), node_errors, problems)
+    target = root / ".spec/观测/看板.md"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(text, encoding="utf-8")
+    print(f"看板 → {target.relative_to(root).as_posix()}")
+    if node_errors:
+        print(f"unregistered nodes: {node_errors}", file=sys.stderr)
+        return 1
+    return 0
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(prog="tsr", description="tenger.trace/v1 run log")
     parser.add_argument("--project-root", default=".")
@@ -147,6 +168,7 @@ def main(argv=None) -> int:
     end.set_defaults(handler=cmd_end)
 
     sub.add_parser("verify").set_defaults(handler=cmd_verify)
+    sub.add_parser("report").set_defaults(handler=cmd_report)
 
     args = parser.parse_args(argv)
     try:

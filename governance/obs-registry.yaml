@@ -1,0 +1,28 @@
+version: 1
+purpose: >
+  Single source for node identity. A run-log event naming an unregistered node is a
+  defect, not a data point: invented node ids silently break every per-node metric.
+# paths = 该节点的产物落盘位置；适配器据此把宿主侧写盘事件归属到节点（主判据，
+# 实测 qoder 的 Skill 调用事件只有 114 条，撑不起节点归属）。
+nodes:
+  - {id: idea-intake, skill: idea-intake, paths: [".spec/intake/**"]}
+  - {id: product-discovery, skill: product-discovery, paths: [".spec/research/**", ".spec/discovery/**"]}
+  - {id: competitive-analysis, skill: competitive-analysis, paths: [".spec/research/**"]}
+  - {id: product-definition, skill: product-definition, paths: [".spec/decisions/**"]}
+  - {id: application-blueprint, skill: application-blueprint, paths: [".spec/blueprint/**"]}
+  - {id: feature-decision, skill: feature-decision, paths: [".spec/features/**"]}
+  - {id: prd-design, skill: prd-design, paths: [".spec/prd/**"]}
+  - {id: prd-review, skill: prd-review, paths: [".spec/需求评审/**"]}
+  - {id: prototype-design, skill: prototype-design, paths: [".spec/原型/**"]}
+  - {id: prototype-review, skill: prototype-review, paths: [".spec/原型评审/**"]}
+  - {id: ui-ux-design, skill: ui-ux-design, paths: [".spec/设计稿/**"]}
+  - {id: ui-ux-review, skill: ui-ux-review, paths: [".spec/设计评审/**"]}
+  - {id: oss-radar, skill: oss-radar, paths: [".spec/开源情报/**", ".spec/技术方案前置/**"]}
+  - {id: backend-tech-design, skill: backend-tech-design, paths: [".spec/TDD/**"]}
+  - {id: frontend-tech-design, skill: frontend-tech-design, paths: [".spec/FTDD/**"]}
+  - {id: tech-review, skill: tech-review, paths: [".spec/技术方案评审/**"]}
+  - {id: backend-dev, skill: backend-dev, paths: ["src/backend/**", "apps/**"]}
+  - {id: frontend-dev, skill: frontend-dev, paths: ["src/frontend/**", "web/**"]}
+  - {id: code-review, skill: code-review, paths: [".spec/代码评审/**"]}
+  - {id: fidelity-review, skill: fidelity-review, paths: [".spec/页面还原评审/**"]}
+  - {id: auto-test, skill: auto-test, paths: [".spec/测试/**", ".spec/evidence/**"]}

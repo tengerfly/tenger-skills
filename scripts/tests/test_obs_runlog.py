@@ -6,6 +6,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import tsr
+from obs import metrics as tsr_metrics
 from obs import schema
 
 BASE = ["--project-root", "", "--execution-id", "EXEC-1", "--node", "prd-design", "--skill", "prd-design"]
@@ -89,6 +90,68 @@ class RunLogTests(unittest.TestCase):
         self.finish()
         lines = (self.root / schema.RUN_LOG).read_text(encoding="utf-8").splitlines()
         self.assertTrue(all(json.loads(line)["schema"] == schema.SCHEMA for line in lines))
+
+
+class MetricsTests(unittest.TestCase):
+    """Synthetic run logs only — real numbers must come from real node executions."""
+
+    def setUp(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        self.root = Path(tmp.name)
+
+    def record(self, node, skill, role="produce", gate="PASS", artifacts=None, round_=None, upstream=None):
+        common = ["--project-root", str(self.root), "--execution-id", "EXEC-1", "--node", node, "--skill", skill, "--role", role]
+        if round_ is not None:
+            common += ["--round", str(round_), "--batch", "1"]
+        self.assertEqual(tsr.main(common + ["node-start"]), 0)
+        extra = []
+        for path in artifacts or []:
+            target = self.root / path
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(b"payload\n")
+            extra += ["--artifact", path]
+        for ref in upstream or []:
+            extra += ["--upstream", ref]
+        self.assertEqual(tsr.main(common + ["node-end", "--gate", gate, "--allow-downstream",
+                                            "true" if gate == "PASS" else "false", *extra]), 0)
+
+    def test_per_node_totals_come_from_bound_artifacts(self):
+        self.record("prd-design", "prd-design", artifacts=[".spec/prd/overview.md", ".spec/prd/M01.md"])
+        report = tsr_metrics.summarize(schema.read_events(self.root))
+        node = report["nodes"]["prd-design"]
+        self.assertEqual((node["artifacts"], node["ends"], node["starts"]), (2, 1, 1))
+        self.assertEqual(node["bytes"], 16)
+        self.assertGreaterEqual(node["elapsed"], 0)
+
+    def test_rework_rate_counts_review_rounds_above_one(self):
+        self.record("prd-review", "prd-review", role="review", round_=1)
+        self.record("prd-review", "prd-review", role="review", round_=2)
+        report = tsr_metrics.summarize(schema.read_events(self.root))
+        self.assertEqual(report["review_rounds"], 2)
+        self.assertEqual(report["rework_rate"], 0.5)
+        self.assertEqual(report["nodes"]["prd-review"]["max_round"], 2)
+
+    def test_blocked_handoff_is_counted_and_open_node_is_visible(self):
+        self.record("tech-review", "tech-review", role="review", round_=1, gate="BLOCKED")
+        report = tsr_metrics.summarize(schema.read_events(self.root))
+        self.assertEqual(report["blocked_ends"], 1)
+        self.assertEqual(report["open_nodes"], [])
+
+    def test_unregistered_node_fails_verification_and_report(self):
+        self.record("made-up-node", "made-up-node")
+        errors = tsr.verify(self.root)
+        self.assertTrue(any("not registered" in e for e in errors), errors)
+        self.assertEqual(tsr.main(["--project-root", str(self.root), "--execution-id", "EXEC-1",
+                                   "--node", "prd-design", "--skill", "prd-design", "report"]), 1)
+
+    def test_dashboard_states_what_cannot_be_measured(self):
+        self.record("prd-design", "prd-design", artifacts=[".spec/prd/overview.md"])
+        self.assertEqual(tsr.main(["--project-root", str(self.root), "--execution-id", "EXEC-1",
+                                   "--node", "prd-design", "--skill", "prd-design", "report"]), 0)
+        board = (self.root / ".spec/观测/看板.md").read_text(encoding="utf-8")
+        self.assertIn("N/A", board)
+        self.assertIn("prd-design", board)
 
 
 if __name__ == "__main__":
