@@ -1,0 +1,161 @@
+"""tsr — the only runtime entry point the skills touch for observability.
+
+Contract: the caller passes semantics (node, skill, role, gate, round, refs) and this
+tool stamps time, assigns the sequence number and hashes artifacts. A hand-written
+timestamp or digest is therefore not expressible through this CLI, which is the point —
+ledger fields must be falsifiable against the machine and the disk.
+"""
+from __future__ import annotations
+import argparse, json, sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from obs import schema
+
+
+def _project(args) -> Path:
+    return Path(args.project_root).resolve()
+
+
+def _bool(value: str) -> bool:
+    lowered = str(value).strip().lower()
+    if lowered not in {"true", "false"}:
+        raise argparse.ArgumentTypeError("allow-downstream must be true or false")
+    return lowered == "true"
+
+
+def _event(args, name: str) -> dict:
+    return {
+        "schema": schema.SCHEMA, "event": name,
+        "project": args.project_id or _project(args).name,
+        "executionId": args.execution_id, "node": args.node, "skill": args.skill,
+        "role": args.role, "actor": args.actor, "origin": "self",
+        "parentExecution": args.parent_execution,
+        "round": args.round, "batch": args.batch, "state": args.state,
+        "reqRefs": args.req or [], "artifacts": [], "upstream": [],
+    }
+
+
+def cmd_start(args) -> int:
+    event = _event(args, "node-start")
+    schema.append_event(_project(args), event)
+    print(json.dumps(event, ensure_ascii=False, separators=(",", ":")))
+    return 0
+
+
+def cmd_end(args) -> int:
+    root = _project(args)
+    event = _event(args, "node-end")
+    event["gate"] = args.gate
+    event["allowDownstream"] = args.allow_downstream
+    for raw in args.artifact or []:
+        path = (root / raw.replace("\\", "/")).resolve()
+        if not path.is_relative_to(root):
+            print(f"artifact escapes project root: {raw}", file=sys.stderr)
+            return 1
+        if not path.is_file():
+            print(f"declared artifact does not exist: {raw}", file=sys.stderr)
+            return 1
+        bound = schema.digest(path)  # hash the resolved absolute path; record the portable form
+        bound["path"] = raw.replace("\\", "/")
+        event["artifacts"].append(bound)
+    for raw in args.upstream or []:
+        artifact, _, gate = raw.partition(":")
+        event["upstream"].append({"artifact": artifact, "gate": gate or "PASS"})
+    if args.sunk_of:
+        event["sunkOf"] = args.sunk_of
+    schema.append_event(root, event)
+    print(json.dumps(event, ensure_ascii=False, separators=(",", ":")))
+    return 0
+
+
+def verify(root: Path) -> list:
+    """Re-derive facts from disk and the log itself; trust nothing the caller asserted."""
+    errors = []
+    events = schema.read_events(root)
+    if not events:
+        return ["no run-log events: observability is not wired for this project"]
+    last_seq, last_ts = 0, ""
+    opened = set()
+    for index, event in enumerate(events, 1):
+        where = f"{schema.RUN_LOG}#{event.get('seq', index)}"
+        errors.extend(f"{where}: {error}" for error in schema.validate(event))
+        seq = event.get("seq")
+        if not isinstance(seq, int) or seq <= last_seq:
+            errors.append(f"{where}: seq must increase strictly (out-of-order writes break replay)")
+        last_seq = seq if isinstance(seq, int) else last_seq
+        ts = str(event.get("ts", ""))
+        if ts < last_ts:
+            errors.append(f"{where}: ts goes backwards ({last_ts} -> {ts})")
+        last_ts = max(last_ts, ts)
+        key = (event.get("executionId"), event.get("node"), event.get("actor"))
+        if event["event"] == "node-start":
+            opened.add(key)
+        elif event["event"] == "node-end":
+            if key not in opened:
+                errors.append(f"{where}: node-end without matching node-start for {key[0]}/{key[1]}")
+            for artifact in event.get("artifacts") or []:
+                path = root / str(artifact.get("path", "")).replace("\\", "/")
+                if not path.is_file():
+                    errors.append(f"{where}: artifact vanished: {artifact.get('path')}")
+                    continue
+                fresh = schema.digest(path)
+                if fresh["sha256"] != artifact.get("sha256"):
+                    errors.append(f"{where}: artifact edited after node-end: {artifact.get('path')}")
+            if event.get("gate") == "PASS" and event.get("allowDownstream"):
+                closed = [u["artifact"] for u in event.get("upstream") or [] if u.get("gate") != "PASS"]
+                if closed:
+                    errors.append(f"{where}: PASS with allowDownstream while upstream is closed: {closed}")
+    return errors
+
+
+def cmd_verify(args) -> int:
+    errors = verify(_project(args))
+    for error in errors:
+        print(error, file=sys.stderr)
+    if errors:
+        print(f"run-log verification failed: {len(errors)} error(s)", file=sys.stderr)
+        return 1
+    print("run-log verification passed")
+    return 0
+
+
+def main(argv=None) -> int:
+    parser = argparse.ArgumentParser(prog="tsr", description="tenger.trace/v1 run log")
+    parser.add_argument("--project-root", default=".")
+    parser.add_argument("--project-id")
+    parser.add_argument("--execution-id", required=True)
+    parser.add_argument("--node", required=True)
+    parser.add_argument("--skill", required=True)
+    parser.add_argument("--role", default="produce", choices=sorted(schema.ROLES))
+    parser.add_argument("--actor", default="main", choices=sorted(schema.ACTORS))
+    parser.add_argument("--parent-execution")
+    parser.add_argument("--round", type=int, dest="round", default=None)
+    parser.add_argument("--batch", type=int, default=None)
+    parser.add_argument("--state")
+    parser.add_argument("--req", action="append")
+    sub = parser.add_subparsers(dest="command", required=True)
+
+    sub.add_parser("node-start").set_defaults(handler=cmd_start)
+
+    end = sub.add_parser("node-end")
+    end.add_argument("--gate", required=True, choices=sorted(schema.GATES))
+    end.add_argument("--allow-downstream", required=True, type=_bool)
+    end.add_argument("--artifact", action="append", help="project-relative path; hashed by this tool")
+    end.add_argument("--upstream", action="append", help="artifactId:gate of an upstream baseline")
+    end.add_argument("--sunk-of", action="append", help="decision id that retired the baseline this work sank")
+    end.set_defaults(handler=cmd_end)
+
+    sub.add_parser("verify").set_defaults(handler=cmd_verify)
+
+    args = parser.parse_args(argv)
+    try:
+        return args.handler(args)
+    except (ValueError, OSError) as exc:
+        # never claim a write happened when it did not
+        print(f"tsr: {exc}", file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
