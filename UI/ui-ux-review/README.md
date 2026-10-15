@@ -16,7 +16,7 @@
 | 载体与结构零改动 | layout-freeze-checklist | 防漏 + 防加戏 |
 | 文案与字段一致性 | copywriting-consistency-checklist | 逐字比对 + 多余文案排查 |
 | 视觉规范一致性 | visual-spec-consistency-checklist | 视觉值出 token；反 AI 味 |
-| 视觉呈现与可交付 | rendered-quality-checklist | 渲染/死链/遮挡/资源 404 + 结构级可点击 + 跨页不变量（§七 逐页宽度实测三值表）+ Nielsen 启发式 |
+| 视觉呈现与可交付 | rendered-quality-checklist | 渲染/死链/遮挡/资源 404 + 结构级可点击 + 跨页不变量（§七 导航外壳跨页全等与页内标题栏对齐实测表）+ 可见层内部语扫描（§八）+ Nielsen 启发式 |
 | 浏览器工具 | browser-inspection-guide | 全无报错停 |
 
 ## 三、闭环
