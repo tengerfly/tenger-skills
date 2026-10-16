@@ -24,6 +24,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import validate_core as core
 
 ROOT = Path(__file__).resolve().parents[2]
+# 行为层追加台账：append-only 真相源，与 eval-report.json（每次整份覆写的派生物）分轨。
+# 实测教训：2026-10-15 三次真跑的成本与 pass/fail 只活在报告里，被一次未授权跑覆写抹干净，
+# D5 因此永久失明。台账只追加、永不覆写，且入库（见 .gitignore 的反向豁免注释）。
+BEHAVIOUR_LEDGER = ".spec/obs/behaviour-runs.jsonl"
 CHECKS = {"artifact": core.check_artifact, "gate": core.check_gate, "trace": core.check_trace,
           "registry": core.check_registry, "refs": core.check_refs,
           "transition": core.check_transitions, "graph": core.check_graph}
@@ -145,9 +149,47 @@ def _question_lines(text: str) -> list:
     return [line.strip() for line in text.splitlines() if re.search(r"[?？]\s*$", line.strip())]
 
 
+def _chosen_engine(case: dict, spec: dict) -> str:
+    """行为层用哪个引擎：用例指定 > 评测集默认 > codex（与 run_behaviour 的选择规则同源）。"""
+    return str(case.get("engine") or spec.get("engine") or "codex")
+
+
+def behaviour_ledger_records(skill: str, spec: dict, results: list, ran_at: str) -> list:
+    """为行为层判定构造台账记录（纯函数，不落盘；结构层结果一律不产记录）。
+
+    未计量的成本必须显式 null——填 0 会把「没计量」洗成「没花钱」，这正是本仓被
+    编辑器宿主 token=0 骗过的那类错误。blocked 也产记录：「这次没跑」同样是需要留痕的事实。
+    """
+    declared = {str(case.get("id")): case for case in (spec.get("cases") or [])
+                if case.get("layer") == "behaviour"}
+    records = []
+    for item in results:
+        case = declared.get(str(item.get("id")))
+        if case is None:
+            continue
+        records.append({"caseId": str(item["id"]), "skill": skill, "engine": _chosen_engine(case, spec),
+                        "status": str(item.get("status") or "?"),
+                        "tokens": item.get("tokens"), "cachedTokens": item.get("cachedTokens"),
+                        "ranAt": ran_at, "evidence": item.get("evidence"),
+                        "reason": str(item.get("reason") or "")})
+    return records
+
+
+def append_behaviour_ledger(root: Path, records: list) -> int:
+    """把行为层判定逐条追加进台账；只 open("a")，任何路径都不得覆写既有行。"""
+    if not records:
+        return 0
+    path = Path(root) / BEHAVIOUR_LEDGER
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8", newline="\n") as handle:
+        for record in records:
+            handle.write(json.dumps(record, ensure_ascii=False) + "\n")
+    return len(records)
+
+
 def run_behaviour(case: dict, spec: dict) -> dict:
     from eval import engine as agent_engine
-    chosen = case.get("engine") or spec.get("engine") or "codex"
+    chosen = _chosen_engine(case, spec)
     if chosen not in agent_engine.available():
         return {"id": case["id"], "status": "blocked",
                 "reason": f"引擎 {chosen!r} 本机不可用（可用: {agent_engine.available()}）"}
@@ -164,46 +206,55 @@ def run_behaviour(case: dict, spec: dict) -> dict:
         evidence = _write_evidence(case["id"], chosen, ran, case["prompt"])
         if not ran["ok"]:
             return {"id": case["id"], "status": "failed", "reason": ran["reason"],
-                    "tokens": ran.get("tokens"), "evidence": evidence}
+                    "tokens": ran.get("tokens"), "cachedTokens": ran.get("cachedTokens"),
+                    "evidence": evidence}
         budget = case.get("tokenBudget")
         tokens = ran.get("tokens")
         if tokens is None:
             # 没有计量就无法证明没超预算；把"取不到成本"判成 error，比静默跳过预算闸诚实
             return {"id": case["id"], "status": "error", "evidence": evidence,
+                    "cachedTokens": ran.get("cachedTokens"),
                     "reason": f"引擎未回报 token 用量，预算闸无法生效（声明预算 {budget}）"}
         if budget and tokens > budget:
-            return {"id": case["id"], "status": "failed", "tokens": tokens, "evidence": evidence,
+            return {"id": case["id"], "status": "failed", "tokens": tokens,
+                    "cachedTokens": ran.get("cachedTokens"), "evidence": evidence,
                     "reason": f"超预算：{tokens} > {budget}（行为层必须带预算闸，否则跑一次不知道烧了多少）"}
         for pattern in case.get("expect", {}).get("produces") or []:
             if not list(project.glob(pattern)):
-                return {"id": case["id"], "status": "failed", "tokens": tokens, "evidence": evidence,
+                return {"id": case["id"], "status": "failed", "tokens": tokens,
+                        "cachedTokens": ran.get("cachedTokens"), "evidence": evidence,
                         "reason": f"未产出约定文件: {pattern}"}
         judged = ran["output"] + "\n" + "\n".join(
             path.read_text(encoding="utf-8", errors="replace")
             for pattern in case.get("expect", {}).get("produces") or []
             for path in project.glob(pattern))
         banned = case.get("expect", {}).get("mustNotContain")
+        cached = ran.get("cachedTokens")
         if banned:
             scope_name = case["expect"].get("banInSection")
             if case["expect"].get("banInQuestions"):
                 lines = _question_lines(judged)
                 if not lines:
-                    return {"id": case["id"], "status": "error", "tokens": tokens, "evidence": evidence,
+                    return {"id": case["id"], "status": "error", "tokens": tokens, "cachedTokens": cached,
+                            "evidence": evidence,
                             "reason": "回答里没有任何问句，这条规则无法判（记 error，不许当通过）"}
                 scope, label = "\n".join(lines), f"{len(lines)} 条问句"
             elif scope_name:
                 scope, label = _section_body(judged, scope_name), f"「{scope_name}」节"
                 if scope is None:
-                    return {"id": case["id"], "status": "error", "tokens": tokens, "evidence": evidence,
+                    return {"id": case["id"], "status": "error", "tokens": tokens, "cachedTokens": cached,
+                            "evidence": evidence,
                             "reason": f"找不到分节 /{scope_name}/，判据无法成立（不许退化成全文匹配）"}
             else:
                 scope, label = judged, "全文"
             hit = re.search(banned, scope, re.S | re.I)
             if hit:
-                return {"id": case["id"], "status": "failed", "tokens": tokens, "evidence": evidence,
+                return {"id": case["id"], "status": "failed", "tokens": tokens, "cachedTokens": cached,
+                        "evidence": evidence,
                         "reason": f"{label}内出现禁止内容 /{banned}/",
                         "peek": scope[max(0, hit.start() - 120):hit.end() + 160]}
-            return {"id": case["id"], "status": "passed", "tokens": tokens, "evidence": evidence,
+            return {"id": case["id"], "status": "passed", "tokens": tokens, "cachedTokens": cached,
+                    "evidence": evidence,
                     "reason": f"引擎 {chosen}；判据范围 {label}"}
     except (ValueError, OSError) as exc:
         return {"id": case["id"], "status": "error", "reason": f"{type(exc).__name__}: {exc}"}
@@ -313,6 +364,7 @@ def main(argv=None) -> int:
         return 1
     reports = []
     load_errors = 0
+    appended = 0
     for target in targets:
         try:
             report = run_all(target)
@@ -321,6 +373,10 @@ def main(argv=None) -> int:
             load_errors += 1
             continue
         reports.append(report)
+        # 台账追加只挂在 CLI 入口：run_all 是被单测/基线快照当库调用的，判定归判定、留痕归留痕；
+        # 而每一次真实评测运行的行为层判定（含 blocked）都必须逐条落进不可覆写的真相里。
+        appended += append_behaviour_ledger(ROOT, behaviour_ledger_records(
+            report["skill"], load_eval(target), report["results"], report["ranAt"]))
         for result in report["results"]:
             mark = {"passed": "✅", "failed": "⛔", "blocked": "⏸", "error": "💥"}[result["status"]]
             cost = f" [token {result['tokens']}]" if result.get("tokens") else ""
@@ -341,6 +397,8 @@ def main(argv=None) -> int:
           + (f" ｜ 评测集加载失败 {load_errors} 套" if load_errors else ""))
     _print_relay_status()
     print(f"报告 → {out.relative_to(ROOT).as_posix()}")
+    if appended:
+        print(f"行为层台账追加 {appended} 条 → {BEHAVIOUR_LEDGER}（append-only 真相，入库；报告覆写抹不掉它）")
     return 1 if (counts["failed"] or counts["error"] or load_errors) else 0
 
 

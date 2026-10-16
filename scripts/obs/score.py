@@ -15,6 +15,15 @@ ROOT_DIR = Path(__file__).resolve().parents[2]
 SCORING = ROOT_DIR / "governance/scoring.yaml"
 REGISTRY = ROOT_DIR / "governance/artifact-registry.yaml"
 BASELINE = ".spec/obs/score-baseline.json"
+EVAL_REPORT = ".spec/obs/eval-report.json"
+# 行为层追加台账（append-only 真相源，入库）：eval-report.json 每次评测被整份覆写，
+# 历史实跑的成本与 pass/fail 只有台账保得住。D5 优先读台账，台账拿不到才回退报告。
+BEHAVIOUR_LEDGER = ".spec/obs/behaviour-runs.jsonl"
+# 台账里"发生了实跑"的状态集：blocked/error 一律不算通过；blocked 连实跑都不算，
+# 但它必须出现在未实跑计数里——"这次没跑"同样是需要留痕的事实。
+RUN_STATUSES = {"passed", "failed", "error"}
+# 本仓规矩：单条通过只能说"该条通过"。低于此实跑数时读数照给，但必须自带"样本不足"标注。
+MIN_SAMPLE = 3
 REDLINE_PATTERNS = (
     ("上游关闸却放行", "upstream is closed"),
     ("摘要与磁盘不一致", "contentDigest mismatch"),
@@ -158,6 +167,164 @@ def d4_rework(root: Path, summary: dict) -> dict:
             "detail": f"评审交接 {summary['review_rounds']} 次，返工率 {rate:.0%}"}
 
 
+def _behaviour_records(report: list) -> list:
+    """Pick behaviour-layer results out of an eval report, and justify the identification test.
+
+    `run.py` stamps every structure-layer verdict with `outcome` (green/red); behaviour records
+    are the ones that carry no outcome. Keying on `outcome` rather than on the engine-only
+    fields (`tokens`/`evidence`) is the one-sided error we want: a structure record that errored
+    before setting an outcome gets counted as an unmeasured behaviour entry, which can only push
+    coverage down. The opposite test would drop a missing behaviour run out of the denominator
+    altogether and show full coverage for a suite that never ran.
+    """
+    records = []
+    for entry in report if isinstance(report, list) else []:
+        skill = str(entry.get("skill") or "?") if isinstance(entry, dict) else "?"
+        for item in (entry.get("results") or []) if isinstance(entry, dict) else []:
+            if isinstance(item, dict) and "outcome" not in item:
+                records.append((skill, item))
+    return records
+
+
+def _cost_readout(records: list) -> str:
+    """Engine token cost, or N/A.
+
+    Two precedents set this rule: the editor host was measured to report token 0 for every
+    event, and `run.py` already escalates a missing meter to `error`. So only a positive token
+    count is a measurement — 0 and absent both mean "not metered", and bytes may never stand in.
+    """
+    metered = []
+    for _skill, item in records:
+        tokens = item.get("tokens")
+        if isinstance(tokens, (int, float)) and not isinstance(tokens, bool) and tokens > 0:
+            metered.append(int(tokens))
+    if not metered:
+        return "成本 N/A (报告未记录 token)"
+    return (f"成本 token 合计 {sum(metered):,}（{len(metered)}/{len(records)} 条有计量，"
+            f"均值 {sum(metered) // len(metered):,}）")
+
+
+def d5_behaviour(root: Path) -> dict:
+    """Behaviour layer as a *countable coverage* reading, never as a manufactured quality score.
+
+    Data source priority: the append-only ledger `.spec/obs/behaviour-runs.jsonl` (committed
+    truth; a real run's verdict and cost survive forever), falling back to the derived
+    `eval-report.json` only when no ledger exists yet — and the detail always names which
+    source produced the reading, because "the report says X" and "the ledger says X" are not
+    the same claim (the report is overwritten wholesale on every run; that is the very data
+    loss this ledger was built to end).
+    Repo discipline: one passing case only proves that case passed. So this dimension reports
+    how many behaviour records actually ran and how many of them passed, and keeps blocked
+    (unauthorized) and error (no cost metering / predicate could not hold) entries out of the
+    numerator — never a pass. Nothing here may convert "never measured" into "no problem":
+    an all-unmeasured ledger is N/A, and the reason distinguishes a missing ledger from a
+    ledger whose behaviour layer never ran.
+    """
+    if (root / BEHAVIOUR_LEDGER).is_file():
+        return _d5_from_ledger(root)
+    return _d5_from_report(root)
+
+
+def _ledger_rows(root: Path):
+    """Parse the JSONL ledger; returns (rows, error-detail) — a broken truth file is never
+    silently demoted to the fallback report, because that would let ledger corruption
+    masquerade as "no data" instead of "fix me". """
+    path = root / BEHAVIOUR_LEDGER
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except OSError as exc:
+        return None, f"N/A (追加台账 {BEHAVIOUR_LEDGER} 读不动：{type(exc).__name__}；不回退 eval-report，先修台账)"
+    rows = []
+    for number, line in enumerate(lines, start=1):
+        if not line.strip():
+            continue
+        try:
+            row = json.loads(line)
+        except ValueError:
+            return None, (f"N/A (追加台账 {BEHAVIOUR_LEDGER} 第 {number} 行不是合法 JSON；追加式真相坏了一行也必须"
+                          f"点名，不回退 eval-report、不静默丢弃)")
+        if not isinstance(row, dict):
+            return None, f"N/A (追加台账 {BEHAVIOUR_LEDGER} 第 {number} 行不是记录对象；台账口径已变)"
+        rows.append(row)
+    return rows, None
+
+
+def _d5_from_ledger(root: Path) -> dict:
+    ledger_source = f"｜数据源=追加台账 {BEHAVIOUR_LEDGER}"
+    rows, error = _ledger_rows(root)
+    if error:
+        return {"value": None, "detail": error}
+    if not rows:
+        return {"value": None,
+                "detail": f"N/A (追加台账存在但还没有任何行为层判定被记入：评测未跑或台账刚建档)" + ledger_source}
+    runs = [row for row in rows if str(row.get("status")) in RUN_STATUSES]
+    passed = [row for row in runs if str(row.get("status")) == "passed"]
+    unrun = {}
+    for row in rows:
+        if str(row.get("status")) not in RUN_STATUSES:
+            unrun[str(row.get("status"))] = unrun.get(str(row.get("status")), 0) + 1
+    failures = [f"{row.get('skill', '?')}/{row.get('caseId', '?')}: {row.get('status')} {row.get('reason', '')}"
+                for row in rows if str(row.get("status")) != "passed"]
+    if not runs:
+        breakdown = "／".join(f"{status} {count}" for status, count in sorted(unrun.items()))
+        return {"value": None,
+                "detail": f"N/A (行为层 {len(rows)} 条全部未实跑：{breakdown}；"
+                          f"blocked=未授权、error=成本或判据无法成立，两者一律不算通过)" + ledger_source,
+                "failures": failures}
+    note = ("" if len(runs) >= MIN_SAMPLE
+            else f"（样本 n={len(runs)} < {MIN_SAMPLE}：单条通过只说明该条通过，不得当质量结论）")
+    return {"value": 100.0 * len(passed) / len(runs),
+            "detail": f"行为层 {len(passed)}/{len(runs)} 条实跑且通过"
+                      f"（实跑 {len(runs)}：过 {len(passed)}｜败/错 {len(runs) - len(passed)}；"
+                      f"未实跑记录 {sum(unrun.values())}）｜读数为覆盖率、非质量分{note}｜"
+                      f"{_cost_readout([('', row) for row in runs])}｜"
+                      f"覆盖率分母＝实跑过的条数（台账是事件史：blocked 留痕条数随未授权重跑增长，"
+                      f"放进分母会让同一个『没跑』被计很多次而没有任何新事实）" + ledger_source,
+            "failures": failures}
+
+
+def _d5_from_report(root: Path) -> dict:
+    fallback_source = f"｜数据源=eval-report.json（回退：追加台账 {BEHAVIOUR_LEDGER} 不存在）"
+    path = root / EVAL_REPORT
+    if not path.is_file():
+        return {"value": None, "detail": f"N/A ({EVAL_REPORT} 不存在，评测未跑)" + fallback_source}
+    try:
+        report = json.loads(path.read_text(encoding="utf-8"))
+    except (ValueError, OSError) as exc:
+        # a corrupt derived file is not "unmeasured by choice": name the failure so it cannot
+        # be mistaken for a clean N/A next run
+        return {"value": None, "detail": f"N/A ({EVAL_REPORT} 读不动：{type(exc).__name__})" + fallback_source}
+    if not isinstance(report, list):
+        # 口径变了就要说出来，不能把"读不懂"降级成"行为层没跑"
+        return {"value": None, "detail": f"N/A ({EVAL_REPORT} 顶层不是评测集列表，run.py 落盘口径已变)" + fallback_source}
+    records = _behaviour_records(report)
+    if not records:
+        return {"value": None, "detail": f"N/A (报告里没有任何行为层结果，只有结构层：行为层未跑)" + fallback_source}
+    rows = [(skill, str(item.get("id")), str(item.get("status") or "?"), item) for skill, item in records]
+    ran = [row for row in rows if row[2] in {"passed", "failed"}]
+    if not ran:
+        unrun = {}
+        for _skill, _cid, status, _item in rows:
+            unrun[status] = unrun.get(status, 0) + 1
+        breakdown = "／".join(f"{status} {count}" for status, count in sorted(unrun.items()))
+        return {"value": None,
+                "detail": f"N/A (行为层 {len(rows)} 条全部未实跑：{breakdown}；"
+                          f"blocked=未授权、error=成本或判据无法成立，两者一律不算通过)" + fallback_source,
+                "failures": [f"{skill}/{cid}: {status} {item.get('reason', '')}"
+                             for skill, cid, status, item in rows]}
+    passed = [row for row in rows if row[2] == "passed"]
+    failures = [f"{skill}/{cid}: {status} {item.get('reason', '')}"
+                for skill, cid, status, item in rows if status != "passed"]
+    note = ("" if len(ran) >= MIN_SAMPLE
+            else f"（样本 n={len(ran)} < {MIN_SAMPLE}：单条通过只说明该条通过，不得当质量结论）")
+    return {"value": 100.0 * len(passed) / len(rows),
+            "detail": f"行为层 {len(passed)}/{len(rows)} 条实跑且通过"
+                      f"（实跑 {len(ran)}：过 {len(passed)}｜败 {len(ran) - len(passed)}；"
+                      f"未实跑 {len(rows) - len(ran)}）｜读数为覆盖率、非质量分{note}｜{_cost_readout(records)}"
+                      + fallback_source,
+            "failures": failures}
+
+
 def d6_cost(root: Path, summary: dict) -> dict:
     baseline_path = root / BASELINE
     if not baseline_path.is_file():
@@ -195,7 +362,7 @@ def score_project(root: Path) -> dict:
     if events:
         problems.extend(tsr.verify(root))
     dims = {"D1": d1_contract(root), "D2": d2_traceability(root), "D3": d3_detection(root),
-            "D4": d4_rework(root, summary), "D5": {"value": None, "detail": "N/A (B 类评测未接)"},
+            "D4": d4_rework(root, summary), "D5": d5_behaviour(root),
             "D6": d6_cost(root, summary)}
     table = weights()
     scored = {key: dim["value"] for key, dim in dims.items() if dim.get("value") is not None}

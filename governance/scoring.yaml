@@ -1,12 +1,19 @@
 version: 1
 # 总分只用于看趋势，不是放行依据：红线仍由 validate_core 判红，分数高低不得替代 Gate。
-updatedAt: '2026-10-15'
+updatedAt: '2026-10-16'
 dimensions:
   D1: {name: 契约合规, weight: 25, source: "manifest + artifact-registry documentSections"}
   D2: {name: 需求承接, weight: 20, source: "traceability 引用可解析率"}
   D3: {name: 检出力, weight: 15, source: "selfcheck 注入反证通过率"}
   D4: {name: 一次通过/返工, weight: 15, source: "run-log rework_rate"}
-  D5: {name: 语义质量, weight: 20, source: "agent_judge（B 类评测未接）"}
+  # D5 只报行为层实跑覆盖率，不折算语义质量分：单条通过只能证明该条通过。
+  # 数据源优先级：.spec/obs/behaviour-runs.jsonl 追加台账（append-only 真相、入库）＞ eval-report.json（派生、每次覆写，仅作回退）；
+  # detail 必须注明用的是哪个数据源。台账口径：覆盖率分母＝实跑过的条数（passed/failed/error 记录），
+  # blocked 记录只计入"未实跑留痕"、不进分母——台账是事件史，同一条未授权重跑会留多条 blocked，
+  # 若按声明条数做分母，同一个"没跑"会被重复计罚而没有任何新事实；blocked/error 一律不算通过。
+  # 全未实跑则整维 N/A 并写明原因（缺台账与台账全 blocked 的原因必须可区分）；样本 n<3 必须带样本不足警示；
+  # 成本读数只取引擎回报的 token，缺失（含 0）即 N/A，禁以字节冒充。
+  D5: {name: 行为层覆盖率, weight: 20, source: "behaviour-runs.jsonl 追加台账：实跑记录中 passed／实跑过的条数（台账缺失才回退 eval-report，未实跑即 N/A）"}
   D6: {name: 成本体积, weight: 5, source: "产物字节相对基线漂移"}
 redLines:
   - 上游关闸却记 PASS/allowDownstream
