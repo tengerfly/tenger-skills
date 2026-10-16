@@ -12,6 +12,9 @@ metadata:
 
 发现失败、阻塞或用户纠正时，在下一安全节点按 `../../shared/problem-recording.md` 记录；根因未明不丢事实。恢复/交付前核对未决项，沿用已有详情与唯一索引。此规则优先于旧的仅收尾埋点/不确定不记表述，不增加轻量任务的正式建档要求。
 
+**闭环回流（L2）**：P0/P1 条目要标「已沉淀」前，必须先回流 1 条评测用例，并在该用例声明里用 `issueRef` 指回本条问题（值＝本条问题的仓库相对路径，形如 issue/<skill>/<日期>/<NN>-<标题>.md）；没有这条用例就按「未验证」处理，优化状态停在待处理/处理中，不得写「已沉淀」。
+判据与字段口径的单一来源是仓库根 `governance/eval-spec.yaml`（`caseTiers.L2` + `issueRef` 节），机械核对由 `scripts/eval/relay.py` 执行；本节只承接义务，不复述其条文。
+
 ## Task scope & context
 
 按 `../../shared/execution-profiles.md` 判强度，按 `../../shared/requirements-context.md` 固定需求版本，按 `../../shared/product-workflow-contract.md` 守职责边界。轻量只处理已确认的局部范围；正式交接遵守 manifest、Gate、决策与状态契约。旧 references/assets 按需复用，不执行旧版跨域流程。

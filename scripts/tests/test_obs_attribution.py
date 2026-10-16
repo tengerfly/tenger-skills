@@ -17,6 +17,10 @@
    锚点与 needle 同时命中 ⇒ 两处并列全部列出，仍走「多归属，需人裁决」。
 ⑩ 防刷分闸（`concentration`）：10 张卡全归到同一条条款 ⇒ 必须报「承接集中度异常」并标注命中率
    不可当质量结论使用；同样 10 张卡分散到两条条款 ⇒ 不得报异常；阈值/最小样本改注册表必须改变结论。
+⑪ 承接段的**义务措辞**必须机械可查（本格补的真缺口：判据有执法者 relay.py、正文无承接）：11 个受影响 skill
+   的承接段正文若没写全「回流 1 条评测用例／用 `issueRef` 指回／未回流只能标『未验证』不得标『已沉淀』」⇒ 红；
+   夹具退回「有承接章节、正文没写义务」（改之前的真实状态）⇒ 同一判据必须红，补上义务 ⇒ 转绿；
+   只写「回流」二字但没有字段与状态口径同样判红（防空话蒙过判据）。判据词表仍取自注册表，不写在代码里。
 """
 from __future__ import annotations
 import copy, re, sys, tempfile, unittest
@@ -33,6 +37,10 @@ REGISTRY = yaml.safe_load(REGISTRY_FILE.read_text(encoding="utf-8"))
 POL = REGISTRY["attribution"]
 VERDICTS = POL["verdicts"]
 KIND = "缺回流用例"
+# 11 个受影响 skill 的承接章节标题（逐字）；义务三要素：用什么字段／不满足时状态怎么标
+CARRIER_HEADING = "## 问题记录与恢复（执行必需）"
+NEEDLES = tuple(str(item) for item in POL["kinds"][KIND]["needles"])
+OBLIGATION_TOKENS = ("issueRef", "已沉淀", "未验证")
 
 SKILL_MD = """# Probe-Skill
 
@@ -89,6 +97,38 @@ def card(kind=KIND, path="issue/Probe-Self/2026-01-01/01-x.md", node=None, surfa
             "artifacts": [{"path": path, "recorded": None, "disk": None, "bytes": 1,
                            "ref": "", "note": ""}],
             "na": [], "boundary": "", "attribution": None}
+
+
+def heading_line(root: Path, relative: str, heading: str) -> int:
+    """按真实文件算出该标题所在行号：证明卡上的行号指针不是编的。"""
+    for number, line in enumerate((root / relative).read_text(
+            encoding="utf-8", errors="replace").splitlines(), 1):
+        if line.strip() == heading:
+            return number
+    raise AssertionError(f"{relative} 里没有标题行「{heading}」")
+
+
+def carrier_clauses(root: Path, directory: str, relative: str, pol: dict) -> tuple:
+    """站在该 skill 的 issue 池路径上归因，取回**它自己承接章节**上的条款证据（可能多种 match）。
+
+    一段只出一行证据、needle-body 优先于标题锚点，所以「承接段被认成 heading-anchor」＝正文没写判据，
+    「被认成 needle-body」＝义务措辞确实落进了那段正文。
+    """
+    result = attribution.attribute_card(root, card(path=f"issue/{directory}/2026-09-07/01-x.md"), pol)
+    return result, [row for row in result["clauses"]
+                    if row["file"] == relative and row["heading"] == CARRIER_HEADING]
+
+
+def obligation_gaps(clauses: list) -> list:
+    """承接段没把义务写全的缺口清单；空清单＝义务已落进正文。判据词表取自注册表（NEEDLES）。"""
+    bodies = [row for row in clauses if row["match"] == "needle-body"]
+    if not bodies:
+        return ["承接段只有标题锚点、正文没有注册表 needle（%s）⇒ 有章节不等于有判据" % "／".join(NEEDLES)]
+    text = "\n".join(str(row["text"]) for row in bodies)
+    gaps = [f"承接段正文缺「{token}」" for token in OBLIGATION_TOKENS if token not in text]
+    if "eval-spec.yaml" not in text:
+        gaps.append("承接段没指向单一来源 governance/eval-spec.yaml")
+    return gaps
 
 
 class FixtureMixin(unittest.TestCase):
@@ -453,14 +493,10 @@ class RealCorpusTests(unittest.TestCase):
     }
 
     def _heading_line(self, root: Path, relative: str, heading: str) -> int:
-        """按真实文件算出该标题所在行号：证明卡上的行号指针不是编的。"""
-        for number, line in enumerate((root / relative).read_text(
-                encoding="utf-8", errors="replace").splitlines(), 1):
-            if line.strip() == heading:
-                return number
-        raise AssertionError(f"{relative} 里没有标题行「{heading}」")
+        return heading_line(root, relative, heading)
 
     def test_real_issue_path_lists_both_carrier_section_and_shared_clause(self):
+        """义务落进正文后的真实结论：承接段由标题锚点升级为正文 needle 命中，锚点只剩「运行问题埋点」段。"""
         root = ROOT
         pol = attribution.policy(root)
         result = attribution.attribute_card(
@@ -469,38 +505,48 @@ class RealCorpusTests(unittest.TestCase):
         self.assertEqual([row["skill"] for row in result["routes"]], ["backend-tech-design"])
         self.assertIn("governance/skill-registry.yaml:", result["routes"][0]["evidence"])
         self.assertEqual(result["verdict"], VERDICTS["multiple"], result["why"])
-        anchors = [row for row in result["clauses"] if row["match"] == "heading-anchor"]
         bodies = [row for row in result["clauses"] if row["match"] == "needle-body"]
-        self.assertTrue(anchors, f"该 skill 的承接章节没被认出来：{result['clauses']}")
-        carrier = anchors[0]
-        self.assertEqual(carrier["file"], "DEV/backend-tech-design/SKILL.md")
-        self.assertEqual(carrier["heading"], "## 问题记录与恢复（执行必需）")
-        self.assertEqual(carrier["startLine"],
-                         self._heading_line(root, carrier["file"], carrier["heading"]))
-        self.assertEqual(carrier["anchor"], "问题记录与恢复")
-        self.assertEqual([row["file"] for row in bodies], ["shared/problem-recording.md"])
-        self.assertIn("反哺记录包括来源", bodies[0]["text"])
-        self.assertGreaterEqual(bodies[0]["startLine"], 1)
+        anchors = [row for row in result["clauses"] if row["match"] == "heading-anchor"]
+        carrier = [row for row in bodies if row["file"] == "DEV/backend-tech-design/SKILL.md"]
+        self.assertEqual(len(carrier), 1, f"该 skill 承接段的正文条款应唯一：{bodies}")
+        self.assertEqual(carrier[0]["heading"], CARRIER_HEADING)
+        self.assertEqual(carrier[0]["startLine"],
+                         self._heading_line(root, carrier[0]["file"], CARRIER_HEADING))
+        self.assertEqual(carrier[0]["needle"], "回流")            # 注册表 needle 逐字落进正文，不是标题冒充
+        self.assertIn(POL["headingAnchors"]["needleEvidence"], carrier[0]["evidenceClass"])
+        self.assertEqual([row["heading"] for row in anchors], ["## 七、运行问题埋点"],
+                         "承接段已被更强的正文证据取代，剩下的标题锚点只应是埋点段")
+        self.assertEqual(anchors[0]["anchor"], "运行问题埋点")
+        shared_bodies = [row for row in bodies if row["file"] == "shared/problem-recording.md"]
+        self.assertEqual([row["file"] for row in shared_bodies], ["shared/problem-recording.md"])
+        self.assertIn("反哺记录包括来源", shared_bodies[0]["text"])
+        self.assertGreaterEqual(shared_bodies[0]["startLine"], 1)
 
     def test_every_affected_skill_has_its_own_carrier_section(self):
-        """第 1 步那条「各 skill 正文没有承接条款」的结论必须可机械复核：11/11 有承接章节 ⇒ 量具故障。"""
+        """第 1 步那条「各 skill 正文没有承接条款」的结论必须可机械复核：11/11 要被认出承接章节。
+
+        承接段被认出的证据有两种（heading-anchor＝只有标题像承接，needle-body＝正文写了判据词）；
+        义务措辞是否写全由 `CarrierObligationTests` 把关，这里只复核「章节认得出、行号点得回去」。
+        """
         root, pol = ROOT, attribution.policy(ROOT)
         rows, missing = [], []
         for directory, (skill, relative) in sorted(self.AFFECTED.items()):
-            result = attribution.attribute_card(
-                root, card(path=f"issue/{directory}/2026-09-07/01-x.md"), pol)
+            result, clauses = carrier_clauses(root, directory, relative, pol)
             self.assertEqual([row["skill"] for row in result["routes"]], [skill],
                              f"{directory} 的目录段反查不到 {skill}（注册表别名变了先查路由，别改判据）")
-            owned = [row for row in result["clauses"]
-                     if row["match"] == "heading-anchor" and row["file"] == relative]
-            if not owned:
+            if not clauses:
                 missing.append(skill)
             rows.append(f"{skill:22s} {relative:38s} "
-                        + "｜".join(f'{row["heading"]}@{row["startLine"]}' for row in owned))
+                        + "｜".join(f'{row["match"]}:{row["heading"]}@{row["startLine"]}' for row in clauses))
         self.assertEqual(missing, [], f"这些 skill 的 SKILL.md 确实没有逐字命中的承接章节：{missing}")
         self.assertEqual(len(rows), len(self.AFFECTED))
         for row in rows:
-            self.assertIn("## 问题记录与恢复（执行必需）", row, row)
+            self.assertIn(CARRIER_HEADING, row, row)
+        for directory, (skill, relative) in sorted(self.AFFECTED.items()):
+            _, clauses = carrier_clauses(root, directory, relative, pol)
+            for clause in clauses:      # 卡面行号必须能点回真实标题行，不是编出来的
+                self.assertEqual(clause["startLine"], self._heading_line(root, relative, CARRIER_HEADING),
+                                 f"{skill} 承接段行号指针与真实文件不符")
 
     def test_declared_anchor_words_exist_verbatim_in_real_skill_headings(self):
         """锚点词必须是真实 `## ` 标题里的逐字片段：编一个「看起来像」的锚点就是判据过宽。"""
@@ -552,6 +598,69 @@ class RealCorpusTests(unittest.TestCase):
         file_part, _, key = rule.partition(":")
         text = (ROOT / file_part).read_text(encoding="utf-8")
         self.assertIn(f"{key.rpartition('.')[2]}:", text, f"{rule} 在原文里逐字找不到")
+
+
+class CarrierObligationTests(FixtureMixin):
+    """⑪ 承接段的义务措辞必须机械可查（补的是「判据有执法者、正文无承接」这格真缺口）。
+
+    改之前的真实状态：11 个 skill 的承接段只写了「记录」义务，L2 回流义务全仓 45 份正文里只有
+    `Other/bug-fix` 提过——执行方只读 skill 正文时不知道该义务存在，relay.py 的红没人能在正文里对上。
+    所以判据做成三向对照：
+    ① 真实 11 份 ⇒ 承接段正文必须有 needle 命中且三要素齐（字段／未回流时的状态／禁止的状态）；
+    ② 夹具退回「有承接章节、正文没写义务」⇒ 同一判据必须红；把义务补进同一段 ⇒ 必须转绿；
+    ③ 只写「回流」二字但没有字段与状态口径 ⇒ 同样判红（防空话把判据糊过去）。
+    needle 词表取自注册表 `kinds[缺回流用例].needles`，代码里没有第二份词表。
+    """
+
+    def test_every_affected_carrier_section_states_the_relay_obligation(self):
+        root, pol = ROOT, attribution.policy(ROOT)
+        report, failed = [], []
+        for directory, (skill, relative) in sorted(RealCorpusTests.AFFECTED.items()):
+            _, clauses = carrier_clauses(root, directory, relative, pol)
+            gaps = obligation_gaps(clauses)
+            if gaps:
+                failed.append(f"{skill} ← {gaps}")
+                continue
+            text = "\n".join(str(row["text"]) for row in clauses if row["match"] == "needle-body")
+            # 防重复沉淀：义务只写执行必需的最小表述并指向单一来源，不得把 eval-spec 的 L2 原文抄进正文
+            self.assertNotIn("闭环后必须回流成 1 条", text, f"{skill} 抄了判据原文，违反单一来源")
+            self.assertIn("relay.py", text, f"{skill} 没写出机械核对是谁在执行")
+            report.append(f"{skill:22s} {relative:38s} L{clauses[0]['startLine']} needle={clauses[0]['needle']}")
+        self.assertEqual(failed, [], f"这些 skill 的承接段没把 L2 回流义务写全：{failed}")
+        self.assertEqual(len(report), len(RealCorpusTests.AFFECTED), report)
+        self.assertEqual({line.split("needle=")[1] for line in report}, {"回流"},
+                         "义务词应当是注册表 needle 里的「回流」，换成别的词说明判据口径漂了")
+
+    def test_judge_is_red_when_the_obligation_is_missing_and_green_once_written(self):
+        # 反向对照用 CARRIER_MD：它就是改之前真实承接段的形状（标题是锚点、正文没有判据词）
+        root, pol = self.make(skill_md=CARRIER_MD, shared=None, needles=NEEDLES,
+                              anchors=("问题记录与恢复",))
+        _, clauses = carrier_clauses(root, "Probe-Self", "Probe/SKILL.md", pol)
+        self.assertEqual([row["match"] for row in clauses], ["heading-anchor"], clauses)
+        self.assertTrue(obligation_gaps(clauses), "正文没写义务却判成已承接 ⇒ 判据形同虚设")
+
+        # 阳性对照：同一份正文、只把义务写进承接段 ⇒ 同一判据必须转绿（红确实是缺义务造成的）
+        fixed = CARRIER_MD.replace(
+            "此段正文没有判据 operative 词。",
+            "此段正文没有判据 operative 词。\n\n**闭环回流（L2）**：P0/P1 条目要标「已沉淀」前，必须先回流 1 条"
+            "评测用例，并在该用例声明里用 `issueRef` 指回本条问题；没有这条用例就按「未验证」处理，不得写「已沉淀」。"
+            "判据与字段口径的单一来源是仓库根 `governance/eval-spec.yaml`，机械核对由 `scripts/eval/relay.py` 执行。")
+        self.assertNotEqual(fixed, CARRIER_MD)
+        root2, pol2 = self.make(skill_md=fixed, shared=None, needles=NEEDLES, anchors=("问题记录与恢复",))
+        _, clauses2 = carrier_clauses(root2, "Probe-Self", "Probe/SKILL.md", pol2)
+        self.assertEqual([row["match"] for row in clauses2], ["needle-body"], clauses2)
+        self.assertEqual(obligation_gaps(clauses2), [], clauses2)
+
+    def test_bare_needle_word_without_field_and_status_is_not_treated_as_carried(self):
+        hollow = CARRIER_MD.replace("此段正文没有判据 operative 词。", "收尾时记得把问题回流一下。")
+        root, pol = self.make(skill_md=hollow, shared=None, needles=NEEDLES, anchors=("问题记录与恢复",))
+        _, clauses = carrier_clauses(root, "Probe-Self", "Probe/SKILL.md", pol)
+        self.assertEqual([row["match"] for row in clauses], ["needle-body"], clauses)
+        gaps = obligation_gaps(clauses)
+        self.assertEqual(len(gaps), len(OBLIGATION_TOKENS) + 1, gaps)   # 三个要素＋单一来源指针全缺
+        for token in OBLIGATION_TOKENS:
+            self.assertIn(f"承接段正文缺「{token}」", gaps)
+        self.assertTrue(any("eval-spec.yaml" in item for item in gaps), gaps)
 
 
 if __name__ == "__main__":

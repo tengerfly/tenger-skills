@@ -291,7 +291,7 @@ attribution:
       # 锚点词 = 45 份 SKILL.md 里逐字存在的二级标题（不是本仓编的词）：
       # `## 问题记录与恢复（执行必需）` 45/45、`## …、运行问题埋点` 16/45。
       anchors: ["问题记录与恢复", "运行问题埋点"]
-      anchorsBasis: "锚点承接的是「记录→反哺」义务族本身；实测全仓 45 份正文里「回流/回归用例」只出现 1 次（bug-fix）"
+      anchorsBasis: "锚点承接的是「记录→反哺」义务族本身；实测全仓 45 份正文里「回流/回归用例」改前只出现 1 次（bug-fix）"
       anchorsLimit: "⇒ 锚点命中只证明「该 skill 有自己承接的章节」，不证明 L2 回流判据落进了正文；判据仍只在 eval-spec.yaml + relay.py"
       basis: "判据原文（governance/eval-spec.yaml:caseTiers.L2「闭环后必须回流成 1 条；未回流不得标闭环」）"
       ruleSource: "governance/eval-spec.yaml:caseTiers.L2"
