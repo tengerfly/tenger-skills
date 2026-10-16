@@ -21,7 +21,8 @@ import validate_core as core
 
 ROOT = Path(__file__).resolve().parents[2]
 CHECKS = {"artifact": core.check_artifact, "gate": core.check_gate, "trace": core.check_trace,
-          "registry": core.check_registry, "refs": core.check_refs}
+          "registry": core.check_registry, "refs": core.check_refs,
+          "transition": core.check_transitions, "graph": core.check_graph}
 
 
 def findings_for(project: Path, validator: str) -> list:

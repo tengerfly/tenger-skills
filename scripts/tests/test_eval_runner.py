@@ -7,10 +7,16 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from eval import run as evaluator
 
 SPEC = Path(__file__).resolve().parents[2] / "evals/gate/eval.yaml"
+WF_SPEC = Path(__file__).resolve().parents[2] / "evals/workflow-graph/eval.yaml"
 
 
 def case(case_id):
     spec = evaluator.load_eval(SPEC)
+    return next(item for item in spec["cases"] if item["id"] == case_id)
+
+
+def wf_case(case_id):
+    spec = evaluator.load_eval(WF_SPEC)
     return next(item for item in spec["cases"] if item["id"] == case_id)
 
 
@@ -168,6 +174,75 @@ class QuestionScopeJudgingTests(unittest.TestCase):
     def test_zero_questions_is_error_not_a_free_pass(self):
         # 一条问句都没有＝规则无从成立，记 error 逼人回看，不给"绿"
         self.assertEqual("error", self._judge("我已经把 intake 落盘了，无需你补充。")["status"])
+
+
+class WorkflowGraphEvalTests(unittest.TestCase):
+    """§4.3 第 3 条「故意让 skill 跳步 → 评测必须失败」的反向对照。
+
+    check_transitions / check_graph 接进 CHECKS 只是把判据入口打开；入口本身也会腐烂——
+    夹具被改写、tamper 落不到字、期望值被人调绿，都会让一条"红用例"退化成假通过。
+    所以这里先把量具测红一遍，才允许它去测别人。判据来自 validate_core 的真实实现：
+    这两个校验器读 <project>/governance/{state,artifact,skill,workflow}-registry.yaml。
+    """
+
+    RED_CASES = ("EV-WF-003", "EV-WF-004", "EV-WF-005", "EV-WF-006")
+
+    def test_transition_and_graph_are_wired_into_the_judge(self):
+        # 判据入口没接进 CHECKS 时，eval.yaml 里的 validator 会在 findings_for 抛 unknown validator
+        self.assertIn("transition", evaluator.CHECKS)
+        self.assertIn("graph", evaluator.CHECKS)
+
+    def test_whole_set_is_green_and_costs_no_engine(self):
+        report = evaluator.run_all(WF_SPEC)
+        self.assertEqual(report["counts"]["failed"], 0)
+        self.assertEqual(report["counts"]["error"], 0)
+        self.assertEqual(report["counts"]["blocked"], 0, "本套全是结构层，不该出现待引擎用例")
+        self.assertTrue(report["green"])
+
+    def test_red_case_flipped_to_green_reports_failed(self):
+        # 期望从 red 改成 green 必须报 failed，否则"跳步判据"其实一直没在执法
+        for case_id in self.RED_CASES:
+            drifted = copy.deepcopy(wf_case(case_id))
+            self.assertEqual(drifted["expect"]["outcome"], "red")
+            drifted["expect"]["outcome"] = "green"
+            result = evaluator.run_case(drifted)
+            self.assertEqual(result["status"], "failed", f"{case_id} 的 red 期望可以随便调绿")
+
+    def test_clean_fixture_broken_while_still_expected_green_reports_failed(self):
+        # 合规夹具被改坏后仍期望 green，必须报 failed（判绿用例不是"跑不出异常"的另一种写法）
+        broken = copy.deepcopy(wf_case("EV-WF-001"))
+        broken["tamper"] = copy.deepcopy(wf_case("EV-WF-003")["tamper"])
+        result = evaluator.run_case(broken)
+        self.assertEqual(result["status"], "failed")
+        self.assertEqual(result["outcome"], "red")
+
+    def test_absent_finding_text_cannot_borrow_an_unrelated_failure(self):
+        # 只看红/绿会把"因无关原因失败"当成回归通过：判据文本必须真的命中
+        for case_id in self.RED_CASES:
+            weak = copy.deepcopy(wf_case(case_id))
+            weak["expect"]["mustContain"] = "这段判据文本不存在"
+            self.assertEqual(evaluator.run_case(weak)["status"], "failed",
+                             f"{case_id} 去掉 mustContain 后仍可借别的错通过")
+
+    def test_missing_fixture_is_error_not_green(self):
+        broken = copy.deepcopy(wf_case("EV-WF-002"))
+        broken["given"] = "evals/workflow-graph/fixtures/does-not-exist"
+        self.assertEqual(evaluator.run_case(broken)["status"], "error")
+
+    def test_missing_tamper_target_is_error_not_silent_red(self):
+        broken = copy.deepcopy(wf_case("EV-WF-004"))
+        broken["tamper"]["file"] = "governance/ghost-registry.yaml"
+        result = evaluator.run_case(broken)
+        self.assertEqual(result["status"], "error")
+        self.assertIn("tamper target missing", result["reason"])
+
+    def test_tamper_that_no_longer_bites_is_error_not_pass(self):
+        # 夹具被重写导致 tamper 找不到原文时，必须炸出来；静默改不动＝红用例悄悄变绿
+        drifted = copy.deepcopy(wf_case("EV-WF-005"))
+        drifted["tamper"]["replace"]["from"] = "to: A_STATE_NOT_IN_THIS_FILE"
+        result = evaluator.run_case(drifted)
+        self.assertEqual(result["status"], "error")
+        self.assertIn("tamper 'from' not found", result["reason"])
 
 
 if __name__ == "__main__":

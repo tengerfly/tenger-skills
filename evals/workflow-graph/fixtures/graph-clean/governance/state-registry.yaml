@@ -1,0 +1,163 @@
+# 结构层评测夹具 · state-registry（主链最小子集）
+#
+# 这份台账是 evals/workflow-graph 的判据入口：check_transitions / check_graph 只读
+# <project>/governance/{state,artifact,skill,workflow}-registry.yaml（不是 .spec/workflow.yaml），
+# 字段照 validate_core.py 的真实取用写，不凭想象补。
+#
+# 覆盖的是"跳步"判据赖以成立的那段主链：
+#   START → DEV_IN_PROGRESS → CODE_REVIEW_PASSED → TEST_IN_PROGRESS → TEST_PASSED
+#         → RELEASE_PLANNING_IN_PROGRESS → DEPLOYMENT_IN_PROGRESS → COMPLETED
+# 每条状态都必须能抵达 COMPLETED、每个必经节点都必须被上游边唯一承接，否则 graph 判红。
+version: 2
+registry: state-registry
+updatedAt: '2026-10-16'
+lifecycleModes:
+- CREATE
+- CHANGE
+- DEFECT
+- REFACTOR
+- INCIDENT
+- OPTIMIZE
+states:
+- id: START
+  terminal: false
+  lifecycle: &all
+  - CREATE
+  - CHANGE
+  - DEFECT
+  - REFACTOR
+  - INCIDENT
+  - OPTIMIZE
+- id: DEV_IN_PROGRESS
+  terminal: false
+  lifecycle: *all
+- id: CODE_REVIEW_PASSED
+  terminal: false
+  lifecycle: *all
+- id: TEST_IN_PROGRESS
+  terminal: false
+  lifecycle: *all
+- id: TEST_PASSED
+  terminal: false
+  lifecycle: *all
+- id: RELEASE_PLANNING_IN_PROGRESS
+  terminal: false
+  lifecycle: *all
+- id: DEPLOYMENT_IN_PROGRESS
+  terminal: false
+  lifecycle: *all
+- id: COMPLETED
+  terminal: true
+  lifecycle: *all
+transitions:
+- id: TR-101
+  from: START
+  to: DEV_IN_PROGRESS
+  lifecycle: *all
+  actor: workflow
+  requiredArtifacts: [tech-design]
+  requiredEvidence: [tech-review]
+  requiredOutcome: PASS
+  allowDownstream: true
+  failureRoute: NONE
+  reversible: true
+  timeoutHours: 24
+- id: TR-102
+  from: DEV_IN_PROGRESS
+  to: CODE_REVIEW_PASSED
+  lifecycle: *all
+  actor: code-review
+  requiredArtifacts: [code-change]
+  requiredEvidence: [code-review]
+  requiredOutcome: PASS
+  allowDownstream: true
+  failureRoute: NONE
+  reversible: true
+  timeoutHours: 24
+- id: TR-103
+  from: CODE_REVIEW_PASSED
+  to: TEST_IN_PROGRESS
+  lifecycle: *all
+  actor: workflow
+  requiredArtifacts: [code-change]
+  requiredEvidence: [code-review]
+  requiredOutcome: PASS
+  allowDownstream: true
+  failureRoute: NONE
+  reversible: true
+  timeoutHours: 24
+- id: TR-104
+  from: TEST_IN_PROGRESS
+  to: TEST_PASSED
+  lifecycle: *all
+  actor: auto-test
+  requiredArtifacts: [code-change, test-report]
+  requiredEvidence: [code-review, test-run]
+  requiredOutcome: PASS
+  allowDownstream: true
+  failureRoute: NONE
+  reversible: true
+  timeoutHours: 24
+- id: TR-105
+  from: TEST_PASSED
+  to: RELEASE_PLANNING_IN_PROGRESS
+  lifecycle: *all
+  actor: workflow
+  requiredArtifacts: [test-report]
+  requiredEvidence: [code-review, test-run]
+  requiredOutcome: PASS
+  allowDownstream: true
+  failureRoute: NONE
+  reversible: true
+  timeoutHours: 24
+- id: TR-106
+  from: RELEASE_PLANNING_IN_PROGRESS
+  to: DEPLOYMENT_IN_PROGRESS
+  lifecycle: *all
+  actor: workflow
+  requiredArtifacts: [release-plan, test-report]
+  requiredEvidence: [code-review, test-run]
+  requiresAuthorization: deploy
+  requiredOutcome: PASS
+  allowDownstream: true
+  failureRoute: NONE
+  reversible: true
+  timeoutHours: 24
+- id: TR-107
+  from: DEPLOYMENT_IN_PROGRESS
+  to: COMPLETED
+  lifecycle: *all
+  actor: workflow
+  requiredArtifacts: []
+  requiredEvidence: []
+  requiredOutcome: PASS
+  allowDownstream: false
+  failureRoute: NONE
+  reversible: false
+  timeoutHours: 24
+gateOutcomes:
+- PASS
+- CONDITIONAL
+- BLOCKED
+milestones:
+- CODE_REVIEW_PASSED
+- TEST_PASSED
+- DEPLOYMENT_IN_PROGRESS
+entryStates:
+  CREATE:
+  - START
+  CHANGE:
+  - START
+  DEFECT:
+  - START
+  REFACTOR:
+  - START
+  INCIDENT:
+  - START
+  OPTIMIZE:
+  - START
+evidenceRoles:
+- code-review
+- tech-review
+- test-run
+- release-verification

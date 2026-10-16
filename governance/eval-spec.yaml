@@ -13,7 +13,7 @@ layers:
     what: 给定项目夹具 → 跑真实校验器 → 断言**具体判据文本**出现且红/绿符合预期
     cost: 秒级、零 token、零依赖 ⇒ 每次改动必跑，可当 pre-commit
     runner: scripts/eval/run.py
-    validators: [artifact, gate, trace, registry, refs]
+    validators: [artifact, gate, trace, registry, refs, transition, graph]
     assertionRule: 断言 mustContain 而非只看退出码——否则"因无关原因失败"会被当成回归通过
   behaviour:
     what: 给定 prompt 夹具 → 真跑 skill → 判模型自己的最终回答（不是整条 transcript）

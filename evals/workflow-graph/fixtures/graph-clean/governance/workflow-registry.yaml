@@ -1,0 +1,48 @@
+# 结构层评测夹具 · workflow-registry
+# check_graph 只核两件事：workflow 不许用 exitGate，且 exitState 必须是已登记状态。
+version: 2
+registry: workflow-registry
+updatedAt: '2026-10-16'
+workflows:
+- id: workflow
+  name: PEOS 总编排 Workflow（夹具主链）
+  status: active
+  entrySkills:
+  - workflow
+  skills:
+  - code-review
+  - auto-test
+  lifecycle:
+  - CREATE
+  - CHANGE
+  - DEFECT
+  - REFACTOR
+  - INCIDENT
+  - OPTIMIZE
+  exitState: COMPLETED
+- id: dev-workflow
+  name: 开发 Workflow（夹具主链，出口必须是被评审通过的代码）
+  status: active
+  skills:
+  - code-review
+  entryLifecycle:
+  - CREATE
+  - CHANGE
+  - DEFECT
+  - REFACTOR
+  - INCIDENT
+  - OPTIMIZE
+  exitState: CODE_REVIEW_PASSED
+- id: testing-workflow
+  name: 自动化测试 Workflow（夹具主链，唯一出口 auto-test）
+  status: active
+  skills:
+  - auto-test
+  entryLifecycle:
+  - CREATE
+  - CHANGE
+  - DEFECT
+  - REFACTOR
+  - INCIDENT
+  - OPTIMIZE
+  exitState: TEST_PASSED

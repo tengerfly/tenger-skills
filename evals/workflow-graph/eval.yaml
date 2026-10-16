@@ -1,0 +1,96 @@
+# 结构层评测集 · 状态迁移语义与工作流图（workflow / validate_core transition+graph）
+#
+# 闭合 docs/observability-evaluation-plan-v2.md §4.3 第 3 条「故意让 skill 跳步 → 评测必须失败」：
+# 以前 check_transitions / check_graph 没接进评测器，跳步既没有判据入口也没有夹具用例。
+#
+# 判据入口是真实实现，不是想象：validate_core.check_transitions/check_graph 读的是
+#   <project>/governance/state-registry.yaml     状态 + 迁移 + entryStates + evidenceRoles
+#   <project>/governance/artifact-registry.yaml  requiredArtifacts 引用的类型是否登记
+#   <project>/governance/skill-registry.yaml     actor 是否登记、是否支持该 lifecycle
+#   <project>/governance/workflow-registry.yaml  exitState 必须是已登记状态、不许用 exitGate
+# （不是 .spec/workflow.yaml —— 那份是闸门/引用类校验器读的）。所以夹具只需要 governance/，
+# 内容是被主链判据真实约束的 7 条边：START → DEV → CODE_REVIEW → TEST_IN_PROGRESS →
+# TEST_PASSED → RELEASE_PLANNING → DEPLOYMENT → COMPLETED。
+# 红用例一律用 tamper 在干净夹具上做最小破坏，断言的是具体判据文本（mustContain），
+# 不是退出码——否则"因无关原因失败"会被当成回归通过。
+# 注意：本文件是 YAML，不能用 markdown 引用块（> 在 YAML 里是 block scalar）。
+
+schema: tenger.eval/v1
+skill: workflow
+cases:
+  - id: EV-WF-001
+    name: 合规状态机（迁移语义）必须判绿
+    layer: structure
+    given: evals/workflow-graph/fixtures/graph-clean
+    expect:
+      validator: transition
+      outcome: green
+
+  - id: EV-WF-002
+    name: 合规工作流图（可达 + 无绕闸 + 出口登记）必须判绿
+    layer: structure
+    given: evals/workflow-graph/fixtures/graph-clean
+    expect:
+      validator: graph
+      outcome: green
+
+  - id: EV-WF-003
+    name: 技术方案未评审就进开发（跳步）必须判红
+    layer: structure
+    given: evals/workflow-graph/fixtures/graph-clean
+    # 把 TR-101 进入 DEV_IN_PROGRESS 的必经前置摘空：⑩-⑪ 技术方案批准节点被跳过
+    tamper:
+      file: governance/state-registry.yaml
+      replace:
+        from: "requiredArtifacts: [tech-design]"
+        to: "requiredArtifacts: []"
+    expect:
+      validator: transition
+      outcome: red
+      mustContain: entering DEV_IN_PROGRESS must require tech-design
+
+  - id: EV-WF-004
+    name: 测试没过就排发布（绕过必经节点）必须判红
+    layer: structure
+    given: evals/workflow-graph/fixtures/graph-clean
+    # 把 TR-105 的起点从 TEST_PASSED 挪到 CODE_REVIEW_PASSED：TEST_PASSED 这个必经闸
+    # 在图上被绕过，且 TEST_IN_PROGRESS/TEST_PASSED 再也到不了 COMPLETED
+    tamper:
+      file: governance/state-registry.yaml
+      replace:
+        from: "from: TEST_PASSED"
+        to: "from: CODE_REVIEW_PASSED"
+    expect:
+      validator: graph
+      outcome: red
+      mustContain: can bypass TEST_PASSED before release
+
+  - id: EV-WF-005
+    name: 迁移指向未登记状态（悬空引用）必须判红
+    layer: structure
+    given: evals/workflow-graph/fixtures/graph-clean
+    # TR-107 的终点改成没有登记的 DEPLOYMENT_VERIFIED：边挂空，COMPLETED 也随之失联
+    tamper:
+      file: governance/state-registry.yaml
+      replace:
+        from: "to: COMPLETED"
+        to: "to: DEPLOYMENT_VERIFIED"
+    expect:
+      validator: graph
+      outcome: red
+      mustContain: references unknown state
+
+  - id: EV-WF-006
+    name: 必经节点失去全部入边（图断裂）必须判红
+    layer: structure
+    given: evals/workflow-graph/fixtures/graph-clean
+    # TR-102 终点由 CODE_REVIEW_PASSED 直连 TEST_PASSED：Code-Review 与测试节点从图上断开
+    tamper:
+      file: governance/state-registry.yaml
+      replace:
+        from: "to: CODE_REVIEW_PASSED"
+        to: "to: TEST_PASSED"
+    expect:
+      validator: graph
+      outcome: red
+      mustContain: state unreachable in every lifecycle

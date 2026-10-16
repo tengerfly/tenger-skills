@@ -1,0 +1,43 @@
+# 结构层评测夹具 · skill-registry（迁移 actor 的合法性来源）
+# check_transitions 用 skills[].id 判定 actor 是否登记，再用 skills[].lifecycle 判定
+# 该 actor 是否支持这条迁移的每个 lifecycle——所以这里必须带 lifecycle 字段。
+version: 2
+registry: skill-registry
+updatedAt: '2026-10-16'
+skills:
+- id: workflow
+  path: workflow
+  role: orchestrator
+  status: active
+  contractLevel: v1
+  lifecycle:
+  - CREATE
+  - CHANGE
+  - DEFECT
+  - REFACTOR
+  - INCIDENT
+  - OPTIMIZE
+- id: code-review
+  path: Skill/Code-Review
+  role: reviewer
+  status: active
+  contractLevel: v1
+  lifecycle:
+  - CREATE
+  - CHANGE
+  - DEFECT
+  - REFACTOR
+  - INCIDENT
+  - OPTIMIZE
+- id: auto-test
+  path: Skill/Auto-Test
+  role: verifier
+  status: active
+  contractLevel: v1
+  lifecycle:
+  - CREATE
+  - CHANGE
+  - DEFECT
+  - REFACTOR
+  - INCIDENT
+  - OPTIMIZE

@@ -1,0 +1,66 @@
+# 结构层评测夹具 · artifact-registry（只留主链迁移引用的类型）
+# check_transitions 取的是 artifacts[].type 集合：requiredArtifacts 里出现未登记类型即判红。
+version: 1
+registry: artifact-registry
+updatedAt: '2026-10-16'
+artifacts:
+- type: tech-design
+  required:
+  - artifactId
+  - type
+  - path
+  - lifecycle
+  - owner
+  - status
+  - producedBy
+  - producedAt
+  statuses:
+  - DRAFT
+  - REVIEW
+  - APPROVED
+  - SUPERSEDED
+- type: code-change
+  required:
+  - artifactId
+  - type
+  - path
+  - lifecycle
+  - owner
+  - status
+  - producedBy
+  - producedAt
+  statuses:
+  - DRAFT
+  - REVIEW
+  - APPROVED
+  - SUPERSEDED
+- type: test-report
+  required:
+  - artifactId
+  - type
+  - path
+  - lifecycle
+  - owner
+  - status
+  - producedBy
+  - producedAt
+  statuses:
+  - DRAFT
+  - REVIEW
+  - APPROVED
+  - SUPERSEDED
+- type: release-plan
+  required:
+  - artifactId
+  - type
+  - path
+  - lifecycle
+  - owner
+  - status
+  - producedBy
+  - producedAt
+  statuses:
+  - DRAFT
+  - REVIEW
+  - APPROVED
+  - SUPERSEDED
