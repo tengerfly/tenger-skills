@@ -413,3 +413,32 @@ evolutionLedger:
     honestUnverified: "写「未验证」的诚实态（判绿，不要求指标）"
     silent: "未声称生效也无判定值（不判、如实报数，不当成已通过）"
     unknownVerdict: "判定值在枚举外（不判红但如实报数，等人来分诊）"
+
+# ── 目标收益：「skill 正文该不该精简」的数据依据（排序第 6 项的 ☑ 硬判据）。
+# 三读数缺一个就不许开口；集中度过阈值时机械禁止给删减结论——本仓踩过的那类错：
+# 把「量具只在那一条款上认得出证据」读成「各 skill 都承接得好」，反过来就会读成「可以删」。
+slimAdvice:
+  version: 1
+  label: "精简建议"
+  readings:
+    ruleHitRate: "规则命中率（下界口径：轨迹里没证据 ≠ 条款无价值，宿主注入正文不留日志）"
+    clauseEvidenceCoverage: "条款证据覆盖率（候选卡里带逐字条款证据的比例）"
+    attributionConcentration: "承接集中度（同一条款承担的证据占比，过阈值即报警）"
+  requiredReadings: ["ruleHitRate", "clauseEvidenceCoverage", "attributionConcentration"]
+  caliber:
+    sample: 0
+    projectSlug: "knowledge-bases"
+    since: "2026-09-01T00:00:00+08:00"
+    until: "2026-10-16T23:59:59+08:00"
+    rule: "固定口径＝全量（--sample 0）＋--project-slug 限定被观测项目＋ISO 时间切点；三者任一不符 ⇒ 命中率读数标「口径未固定」，不得据以定删减阈值"
+    unfixedLabel: "口径未固定"
+  gate:
+    missingReading: "任一读数取不到 ⇒ 本轮不出删减建议，只报「依据不足」并写明缺在哪一环（N/A 不是 0，也不等于没问题）"
+    concentrationAlarm: "承接集中度过阈值 ⇒ 禁止给删减结论：证据全压在同一条款上是量具覆盖面窄，不是各 skill 承接得好，此刻任何「可删」都是拿量具故障当产品结论"
+    zeroHitOnly: "禁止仅凭单条命中数为 0 判「可删」：低命中只说明被采到的轨迹里没有读取/引用证据，属下界"
+    watchListLabel: "观察名单（待验证，不是删除清单）"
+    lowHitShare: 0.10
+  output:
+    file: ".spec/观测/精简建议.md"
+    recompute: "./.venv/Scripts/python.exe scripts/tsr.py --project-root . slim --host qoder --home ~/.qoder-cn"
+  boundary: "精简建议不参与打分、不是放行依据；删正文属人的决定，本命令只把三个读数摆到同一张纸上"

@@ -11,6 +11,7 @@ plan v2 §3 里唯一没落地的智能化指标。用途是把「哪些 skill �
 """
 from __future__ import annotations
 import re
+from datetime import datetime
 from pathlib import Path
 
 import yaml
@@ -199,17 +200,57 @@ def cite_hits(records: list, corpus: dict) -> tuple:
     return hits, text_events
 
 
+def _moment(value):
+    """只认带时区的 ISO-8601 时刻：naive 字符串要猜时区，猜了就把别处的事件算进本窗口。"""
+    if value is None:
+        return None
+    try:
+        parsed = datetime.fromisoformat(str(value).strip().replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    return parsed if parsed.tzinfo is not None else None
+
+
+def apply_window(spans: list, since=None, until=None) -> dict:
+    """按时间切点收窄证据面（固定口径的第三条腿：全量＋slug＋切点）。
+
+    没有 ts 或 ts 读不懂的事件一律排除并单独计数：无法证明它落在窗口内，就不能把它算进分子。
+    """
+    if since and _moment(since) is None:
+        raise ValueError(f"--since `{since}` 不是带时区的 ISO-8601 时刻 ⇒ 不猜时区，窗口拒绝生效")
+    if until and _moment(until) is None:
+        raise ValueError(f"--until `{until}` 不是带时区的 ISO-8601 时刻 ⇒ 不猜时区，窗口拒绝生效")
+    low, high = _moment(since), _moment(until)
+    kept, outside, unusable = [], 0, 0
+    for span in spans:
+        moment = _moment(span.get("ts"))
+        if moment is None:
+            unusable += 1
+            continue
+        if (low is not None and moment < low) or (high is not None and moment > high):
+            outside += 1
+            continue
+        kept.append(span)
+    return {"spans": kept, "since": str(since or ""), "until": str(until or ""),
+            "total": len(spans), "outside": outside, "unusable": unusable}
+
+
 def measure(root: Path, spec: dict, spans: list, skills=None, capabilities: dict = None,
-            metric_id: str = "rule_hit_rate") -> dict:
+            metric_id: str = "rule_hit_rate", window: dict = None, params: dict = None) -> dict:
     """Compute the hit rate for one host's spans, degrading to N/A whenever a field is missing."""
     metric = metric_spec(metric_id)
+    if window:
+        spans = window["spans"]
     caps = capabilities if capabilities is not None else host_spec.verify_capabilities(spec, spans)
     report = {"metric": metric_id, "name": str(metric.get("name", metric_id)),
               "definition": str(metric.get("definition", "")).strip(),
               "use": str(metric.get("use", "")).strip(), "value": None, "reason": "",
               "declared": 0, "hits": 0, "readHits": 0, "citeHits": 0,
               "files": [], "misses": [], "channels": {}, "evidence": {}, "caveats": [],
-              "capabilities": caps, "scope": {"skills": sorted(skills) if skills else "全部注册 skill"}}
+              "capabilities": caps, "scope": {"skills": sorted(skills) if skills else "全部注册 skill"},
+              "window": ({key: value for key, value in window.items() if key != "spans"}
+                         | {"kept": len(spans)} if window else None),
+              "params": dict(params or {})}
     for cap in (metric.get("capabilities") or {}).get("required") or []:
         info = caps.get(cap) or {}
         if not info.get("granted"):
@@ -292,6 +333,12 @@ def render(report: dict, top: int = 12) -> str:
     evidence = report.get("evidence") or {}
     if evidence:
         lines.append("- 证据面：" + "，".join(f"{key} {count}" for key, count in sorted(evidence.items())))
+    window = report.get("window")
+    if window:
+        lines.append(f"- 时间切点：`{window['since'] or 'N/A（未设）'}` → `{window['until'] or 'N/A（未设）'}`"
+                     f"｜窗口内 {window['kept']} / 共 {window['total']} 条事件"
+                     f"（窗口外排除 {window['outside']}，无 ts 或读不懂 ts 而排除 {window['unusable']}——"
+                     f"证明不了落在窗口内就不算进分子）")
     if report.get("sources"):
         lines.append("- 语料来源：" + "；".join(report["sources"]))
     channels = report.get("channels") or {}
@@ -299,7 +346,10 @@ def render(report: dict, top: int = 12) -> str:
         lines.append("- 通道：" + "；".join(
             f"{name} {'参与' if info['granted'] else info['reason']}" for name, info in channels.items()))
     lines.append("- ⚠ 下界口径：只统计被采到的 session，未采到的语料按未命中计；禁止当上界引用。")
-    lines += ["", "## 命中率最低的文件（精简候选，需人工确认后再动）",
+    lines += ["", "## 命中率最低的文件（单读数观察名单，不构成删减依据）",
+              "",
+              "本表只有一个读数＝规则命中率。删减结论必须由 `tsr slim` 同时给出三个读数"
+              "（规则命中率＋条款证据覆盖率＋承接集中度）才允许开口，且集中度过阈值时它会机械拒绝。",
               "", "| 文件 | skill | 条款 | 读取 | 引用 | 命中率 |", "|---|---|---|---|---|---|"]
     ranked = sorted(report.get("files") or [], key=lambda item: (item["rate"], -item["clauses"]))
     for entry in ranked[:top]:

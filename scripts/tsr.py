@@ -253,7 +253,10 @@ def cmd_rules(args) -> int:
         print(f"tsr: no {args.host} trace files matched for {args.project_slug or '(any project)'}", file=sys.stderr)
         return 1
     spans = host_spec.read_spans(spec, found[:args.sample] if args.sample else found)
-    report = rules.measure(root, spec, spans, skills=args.skill)
+    window = rules.apply_window(spans, args.since, args.until) if (args.since or args.until) else None
+    report = rules.measure(root, spec, spans, skills=args.skill, window=window,
+                           params={"sample": args.sample, "slug": args.project_slug,
+                                   "since": args.since, "until": args.until})
     text = rules.render(report)
     print(text)
     if args.write:
@@ -262,6 +265,46 @@ def cmd_rules(args) -> int:
         target.write_text(text, encoding="utf-8")
         print(f"规则命中率 → {target.relative_to(root).as_posix()}")
     # N/A 是诚实降级，不是命令失败：拔掉适配器只让指标少一维，不该把观测链路判红
+    return 0
+
+
+def cmd_slim(args) -> int:
+    """精简建议（plan v2 §0 的目标收益）：三读数齐了才允许开口，集中度过阈值机械禁止给删减结论。
+
+    默认就跑注册表钉死的固定口径（全量＋slug＋时间切点）；任一参数被改写 ⇒ slim 自己把该读数
+    标成「口径未固定」并拒绝出名单。退出码恒为 0：依据不足是如实降级，不是命令失败。
+    """
+    from obs import candidates, host_spec, rules, slim
+    root = _project(args)
+    pol = slim.spec(root)
+    cal = pol["caliber"]
+    sample = args.sample if args.sample is not None else int(cal["sample"])
+    slug = args.project_slug if args.project_slug is not None else str(cal["projectSlug"])
+    since = args.since or str(cal["since"])
+    until = args.until or str(cal["until"])
+    home = Path(args.home).expanduser().resolve()
+    if not home.is_dir():
+        print(f"tsr: host home not found: {home}", file=sys.stderr)
+        return 1
+    spec = host_spec.load(args.host)
+    found = host_spec.discover(spec, home, slug)
+    if not found:
+        print(f"tsr: no {args.host} trace files matched for {slug or '(any project)'}", file=sys.stderr)
+        return 1
+    spans = host_spec.read_spans(spec, found[:sample] if sample else found)
+    window = rules.apply_window(spans, since, until)
+    hit = rules.measure(root, spec, spans, window=window,
+                        params={"sample": sample, "slug": slug, "since": since, "until": until})
+    collected = candidates.collect(root, max_age_hours=args.max_age_hours)
+    advice = slim.advise(root, hit, collected.get("attribution"), pol)
+    print(slim.render(advice))
+    print(f"- 本轮候选 {len(collected['cards'])} 张｜命中率读数 {hit.get('value') if hit.get('value') is not None else 'N/A'}"
+          f"｜blocked 由闸门判：{len(advice['blocked'])} 条")
+    if args.write:
+        target = root / str(pol["output"]["file"])
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(slim.render(advice), encoding="utf-8")
+        print(f"精简建议 → {target.relative_to(root).as_posix()}")
     return 0
 
 
@@ -403,8 +446,22 @@ def main(argv=None) -> int:
     rules.add_argument("--project-slug", default="")
     rules.add_argument("--sample", type=int, default=0, help="只采前 N 个段文件；0=全部（宿主日志会被驱逐，够用就好）")
     rules.add_argument("--skill", action="append", help="把 SKILL.md 语料收窄到某个 skill（可重复；shared 仍整体计入分母）")
+    rules.add_argument("--since", default="", help="ISO-8601 带时区起始切点；不填＝不设窗口（口径未固定）")
+    rules.add_argument("--until", default="", help="ISO-8601 带时区截止切点；不填＝不设窗口（口径未固定）")
     rules.add_argument("--write", action="store_true", help="落 .spec/观测/规则命中率.md（默认只打印）")
     rules.set_defaults(handler=cmd_rules)
+
+    slim = sub.add_parser("slim", help="精简建议（三读数齐了才开口；默认按注册表的固定口径跑）")
+    slim.add_argument("--host", default="qoder")
+    slim.add_argument("--home", default="~/.qoder-cn", help="宿主日志根目录")
+    slim.add_argument("--project-slug", default=None, help="缺省＝注册表 caliber.projectSlug")
+    slim.add_argument("--sample", type=int, default=None, help="缺省＝注册表 caliber.sample（0=全量）")
+    slim.add_argument("--since", default="", help="缺省＝注册表 caliber.since")
+    slim.add_argument("--until", default="", help="缺省＝注册表 caliber.until")
+    slim.add_argument("--max-age-hours", type=float, default=4.0, help="候选卡巡检里「改动未提交」的阈值")
+    slim.add_argument("--write", action="store_true",
+                      help=f"落 slimAdvice.output.file（默认只打印；派生物，不入库）")
+    slim.set_defaults(handler=cmd_slim)
 
     audit = sub.add_parser("audit")
     audit.add_argument("--write", action="store_true", help="persist findings as problem cards")
