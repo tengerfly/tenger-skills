@@ -25,7 +25,11 @@ import yaml
 
 EXCL = ('.git', '.spec', '.codebuddy', '.zcode', '.codex', '.messages', 'node_modules', '.venv',
         'dist', 'coverage', '__pycache__', '.qoder-cn', 'qoder-knowledge',
-        'issue', 'chats', 'evolution', 'bug-patterns')
+        'issue', 'chats', 'evolution', 'bug-patterns',
+        # 评测夹具与用例正文是被测数据，不是宿主会加载的 skill 正文：
+        # 红用例必须故意写坏路径（例如指一个不存在的规范文件），把它们当真引用扫就等于自己抓自己。
+        # 与既有豁免 `*/tests/`、`scripts/tests/` 同一类；代价是 evals/ 里的真断链不会被这面量具抓到。
+        'evals')
 TEXT_EXT = ('.md', '.markdown', '.py', '.ps1', '.sh', '.yaml', '.yml', '.txt')
 REF = re.compile(r'(?<![\w./-])((?:\.\./)+(?:[A-Za-z0-9_.-]+/)*?[A-Za-z0-9_.-]+\.'
                  r'(?:md|markdown|py|mjs|cjs|js|ts|json|ya?ml|ps1|sh|html|txt))')
@@ -37,7 +41,8 @@ POOLS = ('issue', 'chats', 'evolution', 'bug-patterns', 'docs', 'governance', 's
 
 
 def load_entries(root):
-    reg = yaml.safe_load(open(os.path.join(root, 'governance', 'skill-registry.yaml'), encoding='utf-8'))
+    with open(os.path.join(root, 'governance', 'skill-registry.yaml'), encoding='utf-8') as handle:
+        reg = yaml.safe_load(handle)
     out = []
 
     def walk(o):
@@ -66,12 +71,11 @@ def is_placeholder(ref):
     return any(seg in PLACEHOLDER_SEGS for seg in ref.split('/')[:-1] + [ref.split('/')[-1].split('.')[0]])
 
 
-def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument('--project-root', default=os.getcwd())
-    ap.add_argument('--quiet', action='store_true')
-    args = ap.parse_args()
-    root = os.path.abspath(args.project_root)
+def audit(root: str) -> dict:
+    """跑 §1.4 的三件事，只返回结构化结果：不打印、不退出。
+
+    ps1 门禁、`validate_core` 校验器与评测层都消费这一份，判据不另写第二套。
+    """
     entries = load_entries(root)
     by_path = {p: i for i, p in entries}
     id2path = {i: p for i, p in entries}
@@ -120,7 +124,8 @@ def main():
             rel = os.path.relpath(full, root).replace(os.sep, '/')
             if '/tests/' in '/%s/' % rel or rel.startswith('scripts/tests/'):
                 continue
-            text = open(full, encoding='utf-8', errors='ignore').read()
+            with open(full, encoding='utf-8', errors='ignore') as handle:
+                text = handle.read()
             for m in LAYER.findall(text):
                 bad_layer.append((rel, m))
             base = copy_base(rel)
@@ -141,13 +146,38 @@ def main():
                 if not ok:
                     bad_copy.append((rel, ref, '%s  [%s]' % (tgt, why)))
 
+    return {"root": root, "layer": bad_layer, "repo": bad_repo, "copy": bad_copy,
+            "counts": {"checked": checked, "layer": len(bad_layer), "repo": len(bad_repo),
+                       "copy": len(bad_copy), "pool": pool_refs, "skills": len(entries)}}
+
+
+def findings(result: dict, limit: int = 0) -> list:
+    """把三视口的违规点成一句句可断言的判据文本；limit=0＝全量（校验器不许截断藏红点）。"""
+    def take(rows):
+        return rows if not limit else rows[:limit]
+    out = ["禁用写法（带分类层的跨 skill 相对路径）: %s -> %s" % (rel, ref)
+           for rel, ref in take(result["layer"])]
+    out += ["源仓不可达: %s -> %s   -> %s" % (rel, ref, target)
+            for rel, ref, target in take(result["repo"])]
+    out += ["副本不可达: %s -> %s   [%s]" % (rel, ref, why)
+            for rel, ref, why in take(result["copy"])]
+    return out
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--project-root', default=os.getcwd())
+    ap.add_argument('--quiet', action='store_true')
+    args = ap.parse_args()
+    result = audit(os.path.abspath(args.project_root))
+    counts = result["counts"]
     print('checked=%d  分类层写法=%d  源仓不可达=%d  副本不可达=%d'
-          % (checked, len(bad_layer), len(bad_repo), len(bad_copy)))
+          % (counts["checked"], counts["layer"], counts["repo"], counts["copy"]))
     if not args.quiet:
-        for title, lst in (('分类层', bad_layer), ('源仓', bad_repo), ('副本', bad_copy)):
+        for title, lst in (('分类层', result["layer"]), ('源仓', result["repo"]), ('副本', result["copy"])):
             for row in lst[:20]:
                 print('  [%s] %s\n        %s%s' % (title, row[0], row[1], ('   -> ' + row[2]) if len(row) > 2 else ''))
-    bad = len(bad_layer) + len(bad_repo) + len(bad_copy)
+    bad = counts["layer"] + counts["repo"] + counts["copy"]
     print('RESULT: %s' % ('PASS' if bad == 0 else 'FAIL(%d)' % bad))
     return 0 if bad == 0 else 1
 

@@ -1,0 +1,73 @@
+# 结构层评测套 · 跨 skill 引用的两视图可达性（仓库级 / shared/skill-contract.md §1.4）
+#
+# 回流 issue/Skill-Optimizer/2026-10-08/01-跨skill引用副本视图断链与共享资产提升.md（P0｜已沉淀）。
+# 该条的修复判据原文：「判据 = scripts/check-installed-refs.py 三项归零并已接入 validate-reference-integrity.ps1」——
+# 三项＝①禁用写法（带分类层的跨 skill 相对路径）②源仓视图可达 ③安装副本视图可达。
+# 问题是：这把尺子只挂在 ps1 脚本里，既不在 `validate_core system` 也不在评测器 CHECKS，
+# 所以夜间无人值守链路从不检它——本轮接线（判据一处实现：CHECKS 经 core.check_crossrefs 调同一脚本的 audit/findings）。
+#
+# 接线当场就抓到一条真断链（不是构造出来的）：`UI/ui-ux-review/CONTEXT.md` 第 52 行写
+# `../../ui-ux-design/SKILL.md`，在源仓解析成仓根的 `ui-ux-design/SKILL.md`（不存在），
+# 在副本视图落点也不在 skills/shared 体系内——2026-10-12 起就存在，无人检出。本轮改为 §1.4 允许的
+# 逻辑引用 `ui-ux-design/SKILL.md`，真仓三项归零（checked=512／0／0／0）。
+#
+# 夹具是源仓两层布局的迷你复刻；红用例一律在合规夹具上做最小破坏并断言具体判据文本，不看退出码。
+
+schema: tenger.eval/v1
+skill: skill-optimizer
+cases:
+  - id: EV-XREF-001
+    name: 两种合法写法（shared 相对路径＋逻辑引用）必须判绿，占位写法不算违规
+    layer: structure
+    given: evals/crossrefs/fixtures/crossrefs-clean
+    expect:
+      validator: crossrefs
+      outcome: green
+
+  - id: EV-XREF-002
+    name: 带分类层的跨 skill 相对路径必须判红（副本扁平布局下必断）
+    layer: structure
+    given: evals/crossrefs/fixtures/crossrefs-clean
+    tamper:
+      file: PRD/probe-a/SKILL.md
+      append: "错误写法示例：判据源 `../../UI/probe-b/references/x.md`。"
+    expect:
+      validator: crossrefs
+      outcome: red
+      mustContain: "禁用写法（带分类层的跨 skill 相对路径）"
+    issueRef: issue/Skill-Optimizer/2026-10-08/01-跨skill引用副本视图断链与共享资产提升.md
+
+  - id: EV-XREF-003
+    name: 回退层数写错（源仓就不可达）必须判红
+    layer: structure
+    given: evals/crossrefs/fixtures/crossrefs-clean
+    # 技能根内两级 `../` 被写成三级：源仓解析跑到仓根外面，正是该条现象表里「两视图都不可达」那一类
+    tamper:
+      file: PRD/probe-a/SKILL.md
+      replace:
+        from: "../../shared/problem-recording.md"
+        to: "../../../shared/problem-recording.md"
+    expect:
+      validator: crossrefs
+      outcome: red
+      mustContain: "源仓不可达"
+
+  - id: EV-XREF-004
+    name: 源仓可达但副本落点不是 skill id 必须判红（两视图不对称才是本条根因）
+    layer: structure
+    given: evals/crossrefs/fixtures/crossrefs-clean
+    # `../PRD/probe-a/SKILL.md` 在源仓解析成立（shared/../PRD/... = PRD/probe-a/SKILL.md），
+    # 但副本是 skills/probe-a 一层，落点二级目录变成分类名 PRD ⇒ 宿主读不到。
+    # 这一类只有「按 registry 模拟副本视图」才检得出来，正是该条当初 25 处的形态。
+    tamper:
+      file: shared/probe-notes.md
+      append: "错误写法示例：入口见 `../PRD/probe-a/SKILL.md`。"
+    expect:
+      validator: crossrefs
+      outcome: red
+      mustContain: "不是 skill id"
+    # 部分覆盖声明：issue/UI-UX-Design/2026-10-08/01 的修复判据是「旧口径全仓 grep 清零 ＋ 跨 skill 引用层级实测可达」两句，
+    # 本条只等价覆盖后一句。前一句实测不能机械化——`全部 token 化` 今天仍出现在
+    # UI/ui-ux-design/references/motion-design-guide.md:48（动效值语境，与宽度档位口径无关），
+    # 照字面 grep 清零会把合规内容罚红 ⇒ 判据不等价，不声称覆盖。
+    issueRef: issue/UI-UX-Design/2026-10-08/01-七维体检13项未闭环.md

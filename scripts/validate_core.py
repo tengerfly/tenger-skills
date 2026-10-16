@@ -1411,11 +1411,35 @@ def check_recording(root):
     return errors
 
 
+CROSSREFS_SCRIPT = "scripts/check-installed-refs.py"
+
+
+def check_crossrefs(root):
+    """跨 skill 引用的两视图可达性：判据在 `shared/skill-contract.md` §1.4，实现只有一份。
+
+    本函数只是适配器——按路径加载 `scripts/check-installed-refs.py` 并取它的 findings()，
+    不在这里复写第二套路径解析/视图模拟规则（复写就会出现「单测绿、ps1 门禁红」那类分裂口径）。
+    尺子取随仓发布的那一份：被测项目（评测夹具）只带 governance/，不带 scripts/，
+    要求「被测目录里有这把尺子」会让所有红用例静默变绿——本仓真就这么错过一次。
+    脚本或 registry 取不到 ⇒ 该项目不适用本检查，返回空；「量具缺失」由调用方如实标注，不读成通过。
+    """
+    script = Path(root) / CROSSREFS_SCRIPT
+    if not script.is_file():
+        script = Path(__file__).resolve().parents[1] / CROSSREFS_SCRIPT
+    if not script.is_file() or not (Path(root) / "governance/skill-registry.yaml").is_file():
+        return []
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("check_installed_refs_adapter", script)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.findings(module.audit(str(Path(root).resolve())))
+
+
 def check_system(root, skip_fixtures=False, skip_knowledge=False, strict=False):
     errors=[]
     for p in (".spec/manifest.yaml",".spec/traceability.yaml",".spec/workflow.yaml"):
         if not file_exists(root/p): add(errors,f"root self-spec is required: {p}")
-    checks=[("registry",lambda:check_registry(root)),("skill-contract",lambda:check_skill_contract(root,True)),("graph",lambda:check_graph(root)),("transition",lambda:check_transitions(root)),("artifact",lambda:check_artifact(root)),("trace",lambda:check_trace(root)),("refs",lambda:check_refs(root)),("gate",lambda:check_gate(root)),("task",lambda:check_task(root)),("evolution",lambda:check_evolution(root)),("goalplan",lambda:check_goalplan(root)),("recording",lambda:check_recording(root))]
+    checks=[("registry",lambda:check_registry(root)),("skill-contract",lambda:check_skill_contract(root,True)),("graph",lambda:check_graph(root)),("transition",lambda:check_transitions(root)),("artifact",lambda:check_artifact(root)),("trace",lambda:check_trace(root)),("refs",lambda:check_refs(root)),("gate",lambda:check_gate(root)),("task",lambda:check_task(root)),("evolution",lambda:check_evolution(root)),("goalplan",lambda:check_goalplan(root)),("recording",lambda:check_recording(root)),("crossrefs",lambda:check_crossrefs(root))]
     if not skip_knowledge:
         knowledge_errors, warnings = check_knowledge(root, strict)
         errors.extend(f"knowledge: {e}" for e in knowledge_errors)
@@ -1448,7 +1472,8 @@ def main(argv=None):
     parser = argparse.ArgumentParser()
     commands = {"registry": check_registry, "artifact": check_artifact, "trace": check_trace,
                 "refs": check_refs, "gate": check_gate, "transition": check_transitions,
-                "graph": check_graph, "task": check_task, "recording": check_recording}
+                "graph": check_graph, "task": check_task, "recording": check_recording,
+                "crossrefs": check_crossrefs}
     parser.add_argument("command", choices=[*commands, "skill-contract", "knowledge", "system", "drift",
                                             "evolution", "goalplan"])
     parser.add_argument("--project-root", default=".")

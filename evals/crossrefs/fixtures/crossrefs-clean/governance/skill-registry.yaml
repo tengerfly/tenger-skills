@@ -1,0 +1,12 @@
+version: 1
+# 评测夹具：源仓两层布局「<分类>/<skill-id>/」＋安装副本一层「<skills 根>/<skill-id>/」的迷你复刻。
+# 判据源 shared/skill-contract.md §1.4，检出手 scripts/check-installed-refs.py（本套不重写解析规则）。
+skills:
+  - id: probe-a
+    name: probe-a
+    path: PRD/probe-a
+    status: active
+  - id: probe-b
+    name: probe-b
+    path: UI/probe-b
+    status: active

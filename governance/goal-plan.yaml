@@ -34,8 +34,8 @@ nextRules:
   ledgerMustQuoteTask: "台账「下一格」那一行必须逐字抄 next.task 原文 ⇒ 指针有两份抄本就一定会漂（本仓已漂过两轮），以本文件为源"
 next:
   cell: loop-l2
-  task: "排序第 3 格续做（台账第 6 项④用例回流）：缺回流已由 10 降到 9，把剩余 9 条再找得出等价机械判据就继续压；找不到就按停下条件 c 把本格收口成硬阻塞并转写原因"
-  why: "剩余 9 条的共性是必含式判据（须附／须含／须播报）或检出者绑宿主安装视图（硬约束 A 不许绑）；本轮已把唯一不等价的现成判据（各 skill 承接节）从单测层提成校验器接进 CHECKS，其余逐条判定写在 docs/L2回流机械化判定清单.md"
+  task: "排序第 3 格续做（台账第 6 项④用例回流）：缺回流已由 9 降到 7，剩下 7 条经复读确认仓内没有等价判据可接（要 agent_judge、要有真实文档证据的 documentSections、或行为层真跑需用户授权）；下一轮这格若仍无新增，就按停下条件 c 收口并转评停下条件 b（①⑤两格已写明硬阻塞）"
+  why: "「判据已存在、只是没接线」这一类已清完（#14 承接节、#17/#19 两视图引用可达）；剩余 7 条的共性是必含式或纯语义判据"
   notDo: "不为降数字声明不等价 issueRef；不把「需真跑」硬塞成结构层断言；不新增 documentSections 去罚合规产物"
   stopWhen: "11 项全部 ☑，或剩余项全部已在本文件 blockedBy 写明属【不许自行解除】的硬阻塞——除此之外不得停下向用户提问"
 goals:
@@ -111,9 +111,10 @@ goals:
     criteria: "relay.py 缺回流数下降，且每条新增用例都有反向对照；不可机械化者留在清单里写明原因"
     notDo: "不为降数字声明不等价 issueRef；不把「需真跑」硬塞成结构层断言"
     basis:
-      commits: [a8f7ac6, 43aa723]
-      files: ["scripts/eval/relay.py:1", "docs/L2回流机械化判定清单.md:1", "evals/recording/eval.yaml:1"]
-    blockedBy: "剩 9 条缺口：#2/#5/#6/#11/#12/#16/#20 是必含式或语义判据（结构层无等价入口、行为层要真跑且需用户授权引擎），#17/#19 的现成检出者绑宿主安装视图（硬约束 A 不许绑进核心）；逐条判定与不声明原因写在 docs/L2回流机械化判定清单.md"
+      commits: [a8f7ac6, 43aa723, e64fd1a]
+      files: ["scripts/eval/relay.py:1", "docs/L2回流机械化判定清单.md:1", "evals/recording/eval.yaml:1",
+              "evals/crossrefs/eval.yaml:1", "scripts/validate_core.py:1"]
+    blockedBy: "剩 7 条缺口（#2/#5/#6/#11/#12/#16/#20）：全是必含式或纯语义判据——结构层没有等价判据入口，行为层要真跑且需用户授权引擎，或要有真实文档证据才能新增 documentSections（铁律 4 不许凭声明罚合规产物）。上一版这里写的「#17/#19 检出者绑宿主安装视图 ⇒ 撞硬约束 A」是未核实的转述，本轮读代码已推翻并把这两条接进 CHECKS"
   - id: loop-sink
     ledgerRow: 7
     order: 5
