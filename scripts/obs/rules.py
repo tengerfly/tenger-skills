@@ -213,7 +213,9 @@ def measure(root: Path, spec: dict, spans: list, skills=None, capabilities: dict
     for cap in (metric.get("capabilities") or {}).get("required") or []:
         info = caps.get(cap) or {}
         if not info.get("granted"):
-            report["reason"] = f"N/A (适配器未授予 {cap}：{info.get('reason') or '宿主 spec 未声明该能力'})"
+            report["reason"] = (f"N/A (未授予 {cap}：{info.get('reason') or '宿主 spec 未声明该能力'}。"
+                                f"若本次带了 --sample，先分清是抽样窗口内没出现该字段，还是宿主真不提供——"
+                                f"用 --sample 0 复算再下结论)")
             return report
     corpus = build_corpus(root, metric, skills)
     report["caveats"] = [str(metric.get("bias", "")).strip()]
