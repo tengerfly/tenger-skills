@@ -212,6 +212,36 @@ candidates:
     artifactGone: "产物已从磁盘消失"
     contract: "run-log 契约违规"
     noObservability: "观测未接入"
+  # ── 闭环中间段：候选卡 → **人的确认**（plan v2 §5 的人在环关口；夜间自主会话不得代填）。
+  # 确认记录落在 confirmation.dir，与派生区分开：`.spec/obs/candidates/` 被 .gitignore 忽略、
+  # 四个检出面随时可重算；确认是「这个问题到底成不成立」的判定证据，不可重算、必须入库可回查。
+  # 生成器**永不写**这个目录（落点由 _assert_allowed 机械兜底），人只填三个字段就能出闭环率。
+  confirmation:
+    version: 1
+    dir: ".spec/obs/confirmations"
+    fileName: "{id}.yaml"
+    schema: "tenger.confirm/v1"
+    fieldNames: {actor: "确认人", time: "确认时间", conclusion: "结论"}
+    unconfirmed: "未确认（属人判定，生成器不得代填）"
+    conclusions:
+      成立: "问题成立 ⇒ 进入闭环：由人升级为正式问题卡并定级，修复后带回归指针"
+      不成立: "检测面误报 ⇒ 交量具侧修正（归因段/skill-optimizer），不改被观测对象"
+      待定: "证据不足 ⇒ 与未确认同等待遇，不计入闭环率"
+    excludedConclusions: ["待定"]
+    closureConclusion: "成立"
+    commitPattern: '\b[0-9a-f]{7,40}\b'
+    autoActors: ["main", "agent", "generator", "tsr", "autonomous-night", "ai", "auto"]
+    closureFieldNames: {issue: "升级为", commit: "回归"}
+    rules:
+      protocol: "确认协议（人在环）：确认人／确认时间／结论三字段缺一不可，未填即计「未确认」"
+      noSelfConfirm: "自动执行者不得代填确认：确认人命中 candidates.confirmation.autoActors ⇒ 判非人确认，该卡计「无效」"
+      unconfirmedNotCounted: "未确认不计入闭环率：分子分母都只算「已确认且结论=成立」的卡；未确认／待定／无效单独报数"
+      emptyDenominator: "已确认成立的卡为 0 ⇒ 闭环率 N/A：空集不判通过，不得把 0/0 写成 0% 或 100%"
+      timestamp: "确认时间必须是 ISO-8601 带时区时刻且不晚于本机时钟：格式不合法或未来时刻判「无效」，不拿文件 mtime 冒充确认时刻"
+      closedNeeds: "闭环＝结论「成立」＋`升级为` 指向的正式问题卡文件真实存在＋`回归` 指针经 git cat-file 验真；缺一即计未闭环（只认机器查得到的，不认文字声称）"
+      shape: "确认文件必须是 YAML 映射且含声明字段：读不动／不是映射／缺字段一律判「无效」并写明原因，不当没确认糊过去"
+      naSection: "确认协议：N/A —— 本轮没有读取确认文件（collect 未附确认段）⇒ 没读取不等于未确认，更不等于已确认"
+      splitStorage: "确认记录与派生区分开存放：派生区被 .gitignore 忽略、四个检出面随时可重算，而判定证据不可重算 ⇒ 必须入库可回查，重算候选卡不会覆盖人的判定"
 # ── 闭环后段①：候选卡 → 具体 skill 的具体条款（plan v2 §5「归因到具体 skill 的具体条款（读轨迹原文）」）。
 # 归因只走注册表反查：每一跳都要能点回原文核对。找不到可证据化条款就落「未归因」，禁止猜、
 # 禁止把「最像的那段」当成责任条款；多命中全部列出并交人裁决。

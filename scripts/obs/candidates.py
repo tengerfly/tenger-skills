@@ -13,6 +13,11 @@
 4. 同 `kind + evidence` 只出一张卡（种子公式与 `obs/anomaly.py:finding_id` 一致），重跑不叠卡；
    不再命中的旧卡只报不删——候选卡是镜像，不是真相。
 
+5. 人在环关口：每张卡带**确认协议**（`candidates.confirmation`），三个字段确认人／确认时间／结论
+   由人填在 `confirmation.dir`（生成器只读、永不写，且落点检查会拒绝与派生区重叠）；
+   闭环率的分子分母都只算「已确认且结论＝`closureConclusion`」的卡，未确认／待定／无效单独报数，
+   分母为空一律 N/A。自动执行者当「确认人」判非人确认——夜间自主会话不得自行确认候选卡。
+
 判据文案、落点、N/A 原因全部在 `governance/obs-registry.yaml` 的 `candidates` 节，代码只执行。
 """
 from __future__ import annotations
@@ -50,7 +55,7 @@ def policy(root: Path | None = None) -> dict:
     section = data.get("candidates")
     if not isinstance(section, dict) or not section.get("outputDir"):
         raise ValueError(f"{path.as_posix()} 未声明 candidates.outputDir ⇒ 判据缺失，不猜落点")
-    missing = [key for key in ("label", "gradeValue", "naReasons", "surfaces", "kinds")
+    missing = [key for key in ("label", "gradeValue", "naReasons", "surfaces", "kinds", "confirmation")
                if not section.get(key)]
     if missing:
         raise ValueError(f"{path.as_posix()} 的 candidates 节缺必需键 {missing} ⇒ 拒绝用默认值冒充实装")
@@ -61,6 +66,165 @@ def card_id(pol: dict, kind: str, evidence: str) -> str:
     """种子公式与 obs/anomaly.py:finding_id 同构（kind|evidence），两处写手不会各造一套 id。"""
     seed = f"{kind}|{evidence}"
     return str(pol.get("idPrefix", "CAND-")) + hashlib.sha256(seed.encode("utf-8")).hexdigest()[:10].upper()
+
+
+# ── 闭环中间段：候选卡 → 人的确认（plan v2 §5 的人在环关口）。
+# 生成器**只读**确认记录，任何字段都不代填；「无效」与「未确认」分开报——
+# 前者是有人声称确认了但机器不认（下一步是修确认记录），后者是还没人看（下一步是找人看）。
+CONFIRMATION_KEYS = ("dir", "fileName", "schema", "fieldNames", "unconfirmed", "conclusions",
+                     "excludedConclusions", "closureConclusion", "commitPattern", "autoActors",
+                     "closureFieldNames", "rules")
+CONFIRMATION_RULES = ("protocol", "noSelfConfirm", "unconfirmedNotCounted", "emptyDenominator",
+                      "timestamp", "closedNeeds", "shape", "naSection", "splitStorage")
+BLANK_VALUES = ("", "-", "n/a", "na", "无", "留空", "待定填")
+
+
+def confirmation_policy(pol: dict) -> dict:
+    """确认协议判据全在注册表；缺键就报错，不退回默认值（同 policy() / attribution.policy() 的先例）。"""
+    conf = pol.get("confirmation")
+    if not isinstance(conf, dict):
+        raise ValueError("governance/obs-registry.yaml 未声明 candidates.confirmation ⇒ 不猜确认协议落点与字段")
+    missing = [key for key in CONFIRMATION_KEYS if not conf.get(key)]
+    if missing:
+        raise ValueError(f"candidates.confirmation 缺必需判据键 {missing} ⇒ 拒绝用默认值冒充实装")
+    rules = conf["rules"] if isinstance(conf["rules"], dict) else {}
+    missing_rules = [name for name in CONFIRMATION_RULES if not rules.get(name)]
+    if missing_rules:
+        raise ValueError(f"candidates.confirmation.rules 缺判据文案 {missing_rules} ⇒ 拒绝执行没有凭据的红口")
+    for key, roles in (("fieldNames", ("actor", "time", "conclusion")),
+                       ("closureFieldNames", ("issue", "commit"))):
+        absent = [role for role in roles if not (conf.get(key) or {}).get(role)]
+        if absent:
+            raise ValueError(f"candidates.confirmation.{key} 缺字段角色 {absent} ⇒ 代码不猜中文字段名")
+    return conf
+
+
+def confirmation_path(root: Path, pol: dict, candidate_id: str) -> Path:
+    conf = confirmation_policy(pol)
+    return (Path(root) / str(conf["dir"])).resolve() / str(conf["fileName"]).format(id=candidate_id)
+
+
+def _is_blank(value, conf: dict) -> bool:
+    """空值判定：占位文案、`未确认*` 前缀、以及注册表认可的留空写法都算没填（不是没填的声称）。"""
+    text = str(value or "").strip()
+    return (not text or text == str(conf["unconfirmed"]) or text.startswith("未确认")
+            or text.casefold() in BLANK_VALUES)
+
+
+def _instant(value: str):
+    """只认带时区的 ISO-8601 时刻：naive 字符串要猜时区，猜了就等于把别处的确认算进本时区。"""
+    try:
+        moment = datetime.fromisoformat(str(value).strip().replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    return moment if moment.tzinfo is not None else None
+
+
+def read_confirmation(root: Path, pol: dict, candidate_id: str) -> dict:
+    """读一张候选卡的人写确认记录 ⇒ {state: 未确认|已确认|无效, conclusion, closed, problems, ...}。"""
+    conf = confirmation_policy(pol)
+    rules, names = conf["rules"], conf["fieldNames"]
+    path = confirmation_path(root, pol, candidate_id)
+    try:
+        shown = path.relative_to(Path(root).resolve()).as_posix()   # 卡面指针一律仓相对，绝对路径换台机器就失效
+    except ValueError:
+        shown = path.as_posix()
+    info = {"id": candidate_id, "path": shown, "dir": str(conf["dir"]), "state": "未确认",
+            "actor": None, "at": None, "conclusion": None, "counts": False, "closed": False,
+            "closure": [], "problems": [f"{rules['protocol']}：`{conf['dir']}/` 下没有 `{path.name}`"]}
+    if not path.is_file():
+        return info
+    try:
+        raw = yaml.safe_load(path.read_text(encoding="utf-8-sig"))
+    except (OSError, yaml.YAMLError) as exc:
+        info.update(state="无效", problems=[f"{rules['shape']}：读不动 `{path.as_posix()}`（{exc}）"])
+        return info
+    if not isinstance(raw, dict):
+        info.update(state="无效", problems=[f"{rules['shape']}：`{path.as_posix()}` 不是 YAML 映射"])
+        return info
+    values = {role: str(raw.get(names[role]) or "").strip() for role in names}
+    blank = [names[role] for role in ("actor", "time", "conclusion") if _is_blank(values[role], conf)]
+    if blank:
+        info["problems"] = [f"{rules['protocol']}：缺 {'、'.join(blank)} ⇒ 计未确认（生成器不得代填）"]
+        return info
+    # 三字段都齐了才回显文件里写的人/时刻/结论：判「无效」时更要让人看见到底是谁声称确认过
+    info.update(actor=values["actor"], at=values["time"], conclusion=values["conclusion"])
+    if values["actor"].casefold() in {str(actor).casefold() for actor in conf["autoActors"]}:
+        info.update(state="无效", problems=[f"{rules['noSelfConfirm']}（确认人 `{values['actor']}`）"])
+        return info
+    if values["conclusion"] not in conf["conclusions"]:
+        info.update(state="无效",
+                    problems=[f"{rules['shape']}：结论 `{values['conclusion']}` 不在注册表枚举 "
+                              f"{sorted(conf['conclusions'])} 内 ⇒ 判无效，不当已确认"])
+        return info
+    moment = _instant(values["time"])
+    if moment is None:
+        info.update(state="无效", problems=[f"{rules['timestamp']}：确认时间 `{values['time']}` 不合法"])
+        return info
+    if moment > datetime.now(timezone.utc):
+        info.update(state="无效", problems=[f"{rules['timestamp']}：确认时间 `{values['time']}` 晚于本机时钟"])
+        return info
+    info.update(state="已确认", problems=[])
+    excluded = [str(item) for item in conf["excludedConclusions"]]
+    if values["conclusion"] in excluded:
+        info["problems"] = [f"结论「{values['conclusion']}」与未确认同等待遇：{rules['unconfirmedNotCounted']}"]
+    elif values["conclusion"] == str(conf["closureConclusion"]):
+        info["counts"] = True
+        _fill_closure(root, conf, raw, info)
+    return info
+
+
+def _fill_closure(root: Path, conf: dict, raw: dict, info: dict) -> None:
+    """闭环两要件全部机器查：升级后的正式卡文件真实存在＋回归 commit 经 git cat-file 验真。"""
+    names, rules = conf["closureFieldNames"], conf["rules"]
+    issue_token = str(raw.get(names["issue"]) or "").strip().strip("`'\" ")
+    commit_text = str(raw.get(names["commit"]) or "").strip()
+    issue_ok = commit_ok = False
+    if _is_blank(issue_token, conf):
+        info["closure"].append(f"{names['issue']}：N/A —— 没填 ⇒ {rules['closedNeeds']}")
+    else:
+        target = (Path(root) / issue_token.replace("\\", "/")).resolve()
+        if target.is_file() and Path(root).resolve() in target.parents:
+            issue_ok = True
+            info["closure"].append(f"{names['issue']} ✓ `{issue_token}` 文件真实存在")
+        else:
+            info["closure"].append(f"{names['issue']} ✗ `{issue_token}` 在仓内查不到该文件"
+                                   " ⇒ 写了路径不等于升级 occurred，判未闭环")
+    pointers = re.findall(str(conf["commitPattern"]), commit_text)
+    if not pointers:
+        info["closure"].append(f"{names['commit']}：N/A —— 没有可验真的 commit 指针 ⇒ {rules['closedNeeds']}")
+    else:
+        import validate_core as core
+        state = core.commit_exists(core.git_repos(root), pointers[0])
+        if state is True:
+            commit_ok = True
+            info["closure"].append(f"{names['commit']} ✓ `{pointers[0]}` git cat-file 验真通过")
+        elif state is None:
+            info["closure"].append(f"{names['commit']} ? `{pointers[0]}` git 查不动（没装 git 或不在仓）"
+                                   " ⇒ 判未闭环，不判通过")
+        else:
+            info["closure"].append(f"{names['commit']} ✗ `{pointers[0]}` 在该仓不存在 ⇒ 判未闭环")
+    info["closed"] = bool(issue_ok and commit_ok)
+
+
+def closure_audit(root: Path, pol: dict, cards: list) -> dict:
+    """闭环率：分子分母都只算「已确认且结论=closureConclusion」的卡；未确认/待定/无效单独报数。"""
+    conf = confirmation_policy(pol)
+    unconfirmed, invalid, confirmed = [], [], {}
+    for card in cards:
+        info = card.get("confirmation") or read_confirmation(root, pol, card["id"])
+        if info["state"] == "未确认":
+            unconfirmed.append(info)
+        elif info["state"] == "无效":
+            invalid.append(info)
+        else:
+            confirmed.setdefault(info["conclusion"], []).append(info)
+    pool = confirmed.get(str(conf["closureConclusion"]), [])
+    closed = [info for info in pool if info.get("closed")]
+    return {"policy": conf, "cards": len(cards), "unconfirmed": unconfirmed, "invalid": invalid,
+            "confirmed": confirmed, "pool": pool, "closed": closed,
+            "rate": f"{len(closed) / len(pool):.0%}" if pool else "N/A",
+            "excluded": [str(item) for item in conf["excludedConclusions"]]}
 
 
 def _disk(root: Path, relative: str) -> dict:
@@ -443,6 +607,8 @@ def collect(root: Path, max_age_hours: float = 4.0) -> dict:
                 known["window"] = card["window"]
     for card in cards.values():
         card["na"] = _na_fields(pol, card)
+        # 确认段与卡面同批读取：卡是派生物、确认记录属人，二者分开存放所以重算永不覆盖人的判定
+        card["confirmation"] = read_confirmation(root, pol, card["id"])
     # 闭环后段：归因到具体条款（plan v2 §5）。注册表没声明判据就如实报「这没跑」，不静默跳过。
     attribution_summary = None
     try:
@@ -500,11 +666,67 @@ def render(card: dict, pol: dict) -> str:
     if card.get("boundary"):
         lines += ["## 边界", f"- {card['boundary']}", ""]
     lines += [_attribution_section(card), ""]
+    lines += [_confirmation_section(card, pol), ""]
     lines += ["## 下一步（属人的判定）",
-              "- 确认这条是否成立：成立才由人升级为正式问题卡并定级（P0/P1）；不成立就删掉本卡。",
+              "- 确认这条是否成立：成立才由人升级为正式问题卡并定级（P0/P1）；不成立就删掉本卡。"
+              f"确认只写在 `{_confirmation_target(card, pol)}`，卡正文每次重算都会被覆写。",
               f"- 复算命令（1 条 CLI 调用）：`{pol['recompute']}`",
               f"- {pol.get('boundary', '')}"]
     return "\n".join(lines) + "\n"
+
+
+def _confirmation_target(card: dict, pol: dict) -> str:
+    """确认记录路径：优先用已读取的确认段，没读过就按注册表现算（不落盘，只是指路）。"""
+    info = card.get("confirmation")
+    if info:
+        return info["path"]
+    try:
+        return confirmation_path(Path.cwd(), pol, card["id"]).as_posix()
+    except ValueError:
+        return f"{pol.get('confirmation', {}).get('dir', 'N/A')}/{card['id']}.yaml"
+
+
+def _confirmation_section(card: dict, pol: dict) -> str:
+    """卡面的确认协议段：摆出三个人在环字段，并如实回显当前确认状态（没确认就写没确认）。"""
+    conf = confirmation_policy(pol)
+    rules, names = conf["rules"], conf["fieldNames"]
+    closure_names = conf["closureFieldNames"]
+    placeholder = str(conf["unconfirmed"])
+    lines = ["## 确认协议（人在环）", ""]
+    info = card.get("confirmation")
+    if not info:
+        lines.append(rules["naSection"])
+    else:
+        lines.append(f"- 当前状态：**{info['state']}**")
+        lines.append(f"- {names['actor']}：`{info.get('actor') or placeholder}`"
+                     f" ｜ {names['time']}：`{info.get('at') or placeholder}`"
+                     f" ｜ {names['conclusion']}：`{info.get('conclusion') or placeholder}`")
+        lines.append(f"- 确认记录（人手写、生成器永不写这个文件）：`{info['path']}`")
+        if info["problems"]:
+            lines.append("- 为什么不认：")
+            lines += [f"  - {item}" for item in info["problems"]]
+        if info["closure"]:
+            lines.append(f"- 闭环两要件核对（结论＝{conf['closureConclusion']} 时才有意义）：")
+            lines += [f"  - {item}" for item in info["closure"]]
+        lines.append(f"- 已闭环：**{'是' if info.get('closed') else '否'}**")
+    lines.append(f"- 判据：{rules['protocol']}")
+    lines.append(f"- 判据：{rules['unconfirmedNotCounted']}")
+    lines.append(f"- 判据：{rules['noSelfConfirm']}")
+    lines.append("")
+    lines.append(f"填写方式：在 `{conf['dir']}/` 下按候选 ID 建 "
+                 f"`{str(conf['fileName']).format(id=card['id'])}`，形如（尖括号是占位，不是已填）：")
+    lines += ["```yaml",
+              f"schema: {conf['schema']}",
+              f"候选: {card['id']}",
+              f"{names['actor']}: <真人姓名>",
+              f"{names['time']}: \"<ISO-8601 带时区时刻>\"",
+              f"{names['conclusion']}: <{' | '.join(sorted(conf['conclusions']))}>",
+              f"{closure_names['issue']}: <结论＝{conf['closureConclusion']} 时填：升级后的正式问题卡路径>",
+              f"{closure_names['commit']}: <结论＝{conf['closureConclusion']} 时填：修复回归 commit>",
+              "```", ""]
+    lines.append("结论取值与含义（注册表原文）：")
+    lines += [f"- {value}：{meaning}" for value, meaning in sorted(conf["conclusions"].items())]
+    return "\n".join(lines)
 
 
 def _attribution_section(card: dict) -> str:
@@ -520,6 +742,10 @@ def _attribution_section(card: dict) -> str:
 
 def _assert_allowed(root: Path, out_dir: Path, pol: dict) -> None:
     """落点硬边界机械化：注册表 forbidWriteInto 里的目录（含其父）一律不许当输出。"""
+    conf_dir = (root / str(confirmation_policy(pol)["dir"])).resolve()
+    if out_dir == conf_dir or conf_dir in out_dir.parents or out_dir in conf_dir.parents:
+        raise ValueError(f"生成器不得写确认目录：落点 {out_dir.as_posix()} 与 {conf_dir.as_posix()} 重叠"
+                         "（确认记录属人判定；且派生区被 .gitignore 忽略，把确认塞进去等于让判定证据失踪）")
     for name in pol.get("forbidWriteInto") or []:
         blocked = (root / str(name)).resolve()
         if out_dir == blocked or blocked in out_dir.parents or out_dir in blocked.parents:
@@ -586,6 +812,29 @@ def _attribution_lines(summary) -> list:
     return lines
 
 
+def _closure_lines(audit: dict) -> list:
+    """闭环率逐数如实报：分母为空就 N/A，绝不把「没人确认」读成「都闭环了」或「0% 通过」。"""
+    conf, rules = audit["policy"], audit["policy"]["rules"]
+    pool, closed = audit["pool"], audit["closed"]
+    distribution = "、".join(f"{value} {len(items)} 张"
+                             for value, items in sorted(audit["confirmed"].items())) or "无"
+    rate = (f"{audit['rate']}（已闭环 {len(closed)}／已确认「{conf['closureConclusion']}」 {len(pool)} 张）"
+            if pool else f"N/A —— {rules['emptyDenominator']}")
+    lines = [f"- 确认协议（人在环）：候选 {audit['cards']} 张 ⇒ 未确认 {len(audit['unconfirmed'])} 张"
+             f"｜无效确认 {len(audit['invalid'])} 张｜已确认 {sum(len(v) for v in audit['confirmed'].values())} 张"
+             f"（结论分布：{distribution}）",
+             f"- 闭环率：**{rate}** ｜ 口径：{rules['unconfirmedNotCounted']}",
+             f"- 确认记录目录：`{conf['dir']}/` ｜ {rules['splitStorage']}"]
+    for info in audit["invalid"][:5]:
+        lines.append(f"  - 无效确认 `{info['id']}`：{'；'.join(info['problems']) or rules['shape']}")
+    if len(audit["invalid"]) > 5:
+        lines.append(f"  - （其余 {len(audit['invalid']) - 5} 条无效确认未列）")
+    if not pool:
+        lines.append(f"  - 分母为空：本轮没有一张卡经人确认成立 ⇒ 闭环率无从计算"
+                     f"（未确认 {len(audit['unconfirmed'])} 张单独报数，不折算成通过率）")
+    return lines
+
+
 def render_report(result: dict) -> str:
     pol, cards = result["policy"], result["cards"]
     lines = [f"# 候选问题卡生成（{pol['label']}）", ""]
@@ -599,6 +848,7 @@ def render_report(result: dict) -> str:
         lines += [f"  - {item}" for item in result["broken"]]
     lines.append(f"- 去重后候选：**{len(cards)} 张**（同一事实被两处命中只出一张；等级一律留空）")
     lines += _attribution_lines(result.get("attribution"))
+    lines += _closure_lines(closure_audit(result["root"], pol, cards))
     lines.append(f"- 落点：`{pol['outputDir']}/`（派生区，**不写 `issue/`**）")
     lines.append("")
     if cards:
