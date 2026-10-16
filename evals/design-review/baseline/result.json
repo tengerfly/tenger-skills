@@ -2,10 +2,10 @@
   "schema": "tenger.eval-baseline/v1",
   "eval": "evals/design-review/eval.yaml",
   "skill": "ui-ux-review",
-  "savedAt": "2026-10-17T01:33:49+08:00",
+  "savedAt": "2026-10-17T03:22:35+08:00",
   "anchors": {
     "skillRevision": "sha256:97d6bdc9a2ee993d63259a10ef0a3f90f16c8fc803ff2acf7c0ea641f14ada98",
-    "casesVersion": "sha256:3e25195a81be8c125cd7464905dd4746aa2fe4d871d73ae63cddd453e5dccc74",
+    "casesVersion": "sha256:9f6dcdb5eb762c2b655318c7d6f5040be87f9c51526db0ddc1914682c2d85748",
     "engine": "structure-only",
     "model": "engine-default",
     "judgeVersion": "eval-judge/1",
@@ -16,7 +16,7 @@
     "python": "3.11.15"
   },
   "counts": {
-    "passed": 5,
+    "passed": 7,
     "failed": 0,
     "blocked": 0,
     "error": 0
@@ -48,6 +48,18 @@
     },
     {
       "id": "EV-DR-004",
+      "layer": "structure",
+      "status": "passed",
+      "outcome": "red"
+    },
+    {
+      "id": "EV-DR-006",
+      "layer": "structure",
+      "status": "passed",
+      "outcome": "green"
+    },
+    {
+      "id": "EV-DR-007",
       "layer": "structure",
       "status": "passed",
       "outcome": "red"

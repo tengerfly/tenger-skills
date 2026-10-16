@@ -46,3 +46,28 @@ cases:
       file: .spec/设计评审/批次1-设计稿评审汇总报告.md
       append: "## §9 事后偷偷加的一节"
     expect: {validator: artifact, outcome: red, mustContain: contentDigest mismatch}
+
+  # ── 2026-10-17 补：维度报告的「跨页宽度实测表」判据（回流 issue/UI-UX-Review/2026-10-08/01，P0「规则空转」）
+  # 该条修复判据要的正是「跨页不变量必须有实测表」这条规则**真的被检出**，而不是写在模板里空转。
+  # 双侧交集：模板 dimension-review-template.md:27 声明 ＋ knowledge-bases／travel-agent 真实维度报告标题都有
+  # 「跨页宽度实测」子串 ⇒ 才允许拿来罚。EV-DR-001（汇总报告不含该节仍判绿）是这条规则的窄性对照。
+  - id: EV-DR-006
+    name: 视觉呈现维度报告含跨页宽度实测表必须判绿
+    layer: structure
+    given: evals/design-review/fixtures/review-clean
+    expect: {validator: sections, outcome: green}
+
+  - id: EV-DR-007
+    name: 实测表标题被改写（规则空转的原始形态）必须点名缺哪个关键词
+    layer: structure
+    given: evals/design-review/fixtures/review-clean
+    tamper:
+      file: .spec/设计评审/批次1-视觉呈现与可交付质量评审.md
+      replace:
+        from: "## 二附 · 跨页宽度实测表（多页交付必填）"
+        to: "## 二附 · 跨页看看"
+    expect:
+      validator: sections
+      outcome: red
+      mustContain: "跨页宽度实测"
+    issueRef: issue/UI-UX-Review/2026-10-08/01-跨页宽度不变量规则空转.md

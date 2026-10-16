@@ -441,6 +441,14 @@ artifacts:
   - match: ".spec/设计评审/*汇总报告*.md"
     note: 关键词取自 ui-ux-review 的「硬性产出」与 knowledge-bases 真实汇总报告标题的双侧交集（上游闸门核对表 / 时序核查）；维度报告与任务清单两侧写法不一致，暂不判，避免用猜的标题罚合规产物
     sections: [上游闸门核对, 时序核查]
+  # 2026-10-17 补：维度报告这一侧原被记为「两侧写法不一致 ⇒ 暂不判」，实测那是**没去找证据**而不是没有证据。
+  # 声明侧＝UI/ui-ux-review/assets/dimension-review-template.md:27；真实侧＝knowledge-bases 批次2／批次3
+  # 与 travel-agent 的《视觉呈现与可交付质量评审》都含「跨页宽度实测」标题（前缀二、／二附 ·／5.2 各不相同
+  # ⇒ 关键词取子串而非整行，否则误罚）。只约束文件名含「视觉呈现…评审」的产物；同夹具里的汇总报告不含该节
+  # 仍判绿（EV-DR-001 就是这条窄性的对照）。
+  - match: ".spec/设计评审/*视觉呈现*评审*.md"
+    note: 双侧交集证据取自模板 dimension-review-template.md §二附 与两个业务项目的真实维度报告；缺该节即违反 issue/UI-UX-Review/2026-10-08/01「规则空转」的修复判据
+    sections: [跨页宽度实测]
   required:
   - artifactId
   - type
