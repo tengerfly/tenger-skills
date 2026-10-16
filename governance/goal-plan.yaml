@@ -33,10 +33,10 @@ nextRules:
   blockedNeedsReason: "条目停在 doing/todo 必须写 blockedBy，否则红：没写原因的进行中等于没人认领"
   ledgerMustQuoteTask: "台账「下一格」那一行必须逐字抄 next.task 原文 ⇒ 指针有两份抄本就一定会漂（本仓已漂过两轮），以本文件为源"
 next:
-  cell: loop-intelligence
-  task: "排序第 4 格（台账第 5 项④智能化指标）：把反哺有效率的读数机制接出来——before/after 两个可核数缺一律 N/A 并写明原因，禁把「检出条数下降」冒充「同型错误率下降」，并配拒绝出数的反向对照；今晚拿不到 after ⇒ 该格不翻 ☑，只补数据通路"
-  why: "loop-l2 已按停下条件 c 收口：7 条缺口逐条对过未接线的校验器，没有一把现成尺子能等价表达（理由表见 docs/L2回流机械化判定清单.md 收口前审计）；loop-data 要用户开真实业务项目 ⇒ 只有④这格还有一段不依赖引擎、不依赖新判据的机制化工作"
-  notDo: "不为降数字声明不等价 issueRef；不把「需真跑」硬塞成结构层断言；不新增 documentSections 去罚合规产物"
+  cell: loop-data
+  task: "排序第 1 格（台账第 1 项①客观数据）：要用户在真实业务项目里跑一次业务节点（prd-design/dev/review 之一）完整 start→end，report 才出得了该节点墙钟与产物 sha；今晚无可自做项——三条 ◐（①④⑥）全部落在【不许自行解除】里，已按停下条件 b 记因停手"
+  why: "⑥已在 2026-10-17 按停下条件 c 收口（7 条无一把现成尺子能表达）；④的反哺有效率读数机制本轮已接出来（tsr feedback），今晚 N/A 的原因是反哺记录落在 quality-inspection、复发链落在 workflow，两侧没有交集——要等真跑产生 after 侧；①只等用户开新项目"
+  notDo: "不编造事件、不用运维节点冒充业务节点；不为出百分比把别的复发链借来凑分母；不设 TSR_ALLOW_ENGINE、不调引擎"
   stopWhen: "11 项全部 ☑，或剩余项全部已在本文件 blockedBy 写明属【不许自行解除】的硬阻塞——除此之外不得停下向用户提问"
 goals:
   - id: loop-data
@@ -99,7 +99,8 @@ goals:
     notDo: "禁用标题相似度凑组；无 after 数据只能标「未验证」"
     basis:
       commits: [1519904, 0b80d2b]
-      files: ["scripts/obs/recurrence.py:1", "scripts/obs/attribution.py:458"]
+      files: ["scripts/obs/recurrence.py:1", "scripts/obs/attribution.py:458", "scripts/obs/feedback.py:1",
+              "governance/obs-registry.yaml:420"]
     blockedBy: "反哺有效率要有「改动前/后同型错误率」两个可核数才许计；排序表红线写死「无 after 数据只能标未验证」，夜间会话不得为了出数把 检出条数 冒充 错误率"
   - id: loop-l2
     ledgerRow: 6

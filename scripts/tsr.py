@@ -375,6 +375,22 @@ def cmd_candidates(args) -> int:
     return 0
 
 
+def cmd_feedback(args) -> int:
+    """反哺有效率（plan v2 §3 智能化第三条）：只读台账与显式复发链，取不到就 N/A，绝不造数。
+
+    退出码恒为 0：N/A 是诚实降级（缺记录／缺链／窗不够），不是命令失败。把它当门禁就会有人为了变绿去凑分母。
+    """
+    from obs import feedback
+    root = _project(args)
+    report = feedback.measure(root)
+    print(feedback.render(report))
+    if args.write:
+        print(f"反哺有效率 → {feedback.write(root, report).relative_to(root).as_posix()}")
+    else:
+        print("  （只报告不落盘；要落派生报告加 --write）")
+    return 0
+
+
 def cmd_recurrence(args) -> int:
     """同型问题复发率（plan v2 §3「智能化」第二条）：只读 issue/ 卡片正文里的显式复发指针。
 
@@ -479,6 +495,12 @@ def main(argv=None) -> int:
     rec.add_argument("--write", action="store_true",
                      help="落派生报告到注册表声明的 report.outputFile（默认只打印；不写 issue/、不建卡）")
     rec.set_defaults(handler=cmd_recurrence)
+
+    feed = sub.add_parser("feedback",
+                          help="反哺有效率（智能化第三条）：反哺记录×显式复发链，取不到一律 N/A，不造数")
+    feed.add_argument("--write", action="store_true",
+                      help="落派生报告到 feedbackRate.report.outputFile（默认只打印）")
+    feed.set_defaults(handler=cmd_feedback)
 
     args = parser.parse_args(argv)
     try:

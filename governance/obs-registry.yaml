@@ -414,6 +414,33 @@ evolutionLedger:
     silent: "未声称生效也无判定值（不判、如实报数，不当成已通过）"
     unknownVerdict: "判定值在枚举外（不判红但如实报数，等人来分诊）"
 
+# ── 智能化指标第三条：反哺有效率（今晚只补通路，不造数）。
+# 最容易自欺的地方是「拿量具红点条数的下降当同型问题变少」——那条数只证明执法面收敛了。
+# 所以这里把三条禁止项写成注册表原文，代码只执行；任何一环取不到 ⇒ 整体 N/A 并指明缺在哪一环。
+feedbackRate:
+  version: 1
+  id: feedback_effectiveness
+  name: "反哺有效率"
+  pillar: 智能化
+  definition: "一条反哺（把踩过的坑沉淀成规则或判据）生效之后，同型问题在被观测语料里的发生是否相对生效前减少（plan v2 §3 智能化第三条）"
+  truthSource: "反哺记录＝evolutionLedger 里 state=声称生效、before/after 两侧可核、落账 commit 经 git cat-file 验真的条目；同型错误＝recurrence 用显式复发指针连出的链节点（带日期）；两侧都取仓内真相，不取宿主日志"
+  recompute: "./.venv/Scripts/python.exe scripts/tsr.py --project-root . feedback"
+  minRecords: 2
+  minChains: 2
+  minObserveDays: 14
+  windowDays: 90
+  beforeAfterPattern: 'before\s*(?P<before>[0-9]+)\s*→\s*after\s*(?P<after>[0-9]+)'
+  detectorRateLabel: "量具红点率（执法面收敛度，不是反哺有效率）"
+  naRule: "任一环取不到 ⇒ 整体 N/A 并写明缺在哪一环；分母为 0 一律不出百分比，也不得读成 0% 或 100%"
+  honestWithoutAfter: "无 after 侧可核数据只能标「未验证」，不得给百分比（排序表红线）"
+  linkRule: "反哺记录与复发链必须按 skill 对上（registry id／legacyAliases 大小写不敏感）；对不上就照实说「两侧没有交集」，不许把别的链借来凑分母"
+  forbidden:
+    - "不得把「量具红点条数下降」（台账 before/after 的检出条数）当反哺有效率：那只能说执法面收敛了，不能说明同型问题少发生了"
+    - "不得用标题相似度凑「同型」：recurrence 的旧口径就是因 1 个假阳性 + 漏掉全部真阳性而作废，只认显式复发指针"
+    - "n=1 不得标通过：单条链、单个观察窗只出「样本不足」，不出百分比"
+  report:
+    outputFile: ".spec/观测/反哺有效率.md"
+
 # ── 目标收益：「skill 正文该不该精简」的数据依据（排序第 6 项的 ☑ 硬判据）。
 # 三读数缺一个就不许开口；集中度过阈值时机械禁止给删减结论——本仓踩过的那类错：
 # 把「量具只在那一条款上认得出证据」读成「各 skill 都承接得好」，反过来就会读成「可以删」。
