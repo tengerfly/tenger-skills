@@ -2,9 +2,9 @@
   "schema": "tenger.eval-baseline/v1",
   "eval": "evals/design-review/eval.yaml",
   "skill": "ui-ux-review",
-  "savedAt": "2026-10-16T13:21:29+08:00",
+  "savedAt": "2026-10-16T20:27:48+08:00",
   "anchors": {
-    "skillRevision": "sha256:2051f04a985cc6798acede6ec495ca3c5441924e19752abe3ce59c6ed8ee2694",
+    "skillRevision": "sha256:90fa855a74d9be39e57980c3e180dfaceea80ce537b1d5624bf291f325629de5",
     "casesVersion": "sha256:3e25195a81be8c125cd7464905dd4746aa2fe4d871d73ae63cddd453e5dccc74",
     "engine": "structure-only",
     "model": "engine-default",

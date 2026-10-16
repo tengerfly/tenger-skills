@@ -2,9 +2,9 @@
   "schema": "tenger.eval-baseline/v1",
   "eval": "evals/tech-design/eval.yaml",
   "skill": "backend-tech-design",
-  "savedAt": "2026-10-16T13:21:30+08:00",
+  "savedAt": "2026-10-16T20:27:49+08:00",
   "anchors": {
-    "skillRevision": "sha256:6b4e61c6d154cc40ababc51f48cec104e9382a30693a556391f64d47fe703009",
+    "skillRevision": "sha256:8246b1a2302b26a7f845e9943ffba27dae1f0dd8d675396beb8bde3971df875e",
     "casesVersion": "sha256:781fa1c4782b065368b607328810db3bce2ac35e1644414ecad8454dfa2ba3ab",
     "engine": "codex",
     "model": "engine-default",
