@@ -1,0 +1,176 @@
+version: 1
+# 「自主推进排序与 ☑ 判据」＋「下一格唯一指针」的机器可读副本。
+# 为什么要有这份文件：本仓已经两次把流程写在散文里然后漂掉——正文注记说第 7 项 ☐→◐、表格行还写 ☐、
+# 计数行却按 ◐5 记（三处互斥）；面板也出现过 doing 与 ☑ 不同步。「忘记目标」不该靠人提醒，
+# 所以这里把状态／硬判据／依据／next 指针变成结构化的，validate_core 的 goalplan 执法直接读它：
+# 标 ☑ 却挂不出可回查依据、或 next 指针丢失/指向不存在的条目、或与台账行内状态不一致 ⇒ 门禁直接红。
+purpose: "长期目标（客观数据→问题定位→改动→评测验证→沉淀/回滚 正向循环）的机器可读状态与指针"
+sources:
+  plan: docs/observability-evaluation-plan-v2.md
+  ledger: docs/目标进度表.md
+  orderingTable: "自主推进排序与 ☑ 判据（下方 order 字段＝该节序号；没进该节的条目 order 为 null）"
+  panel: "~/.qoder-cn/canvas/canvases/goal-progress.canvas.tsx"
+  panelRule: "面板在用户目录、不随仓走（硬约束 A：执法不得绑宿主机器路径）：本机存在就按 panelId 逐条核状态，不存在只报「未核」，不判红也不判绿"
+statuses:
+  done: "☑ 完成：必须挂可回查依据（commit 或 文件:行号）"
+  doing: "◐ 进行中：有产出，但不足以判定目标达成"
+  todo: "☐ 未完成"
+proofRules:
+  doneNeeds: "status=done 的条目至少一条依据能被机器回查：commit 经只读 git cat-file 验真，或 文件:行号 落在真实文件且行号≤该文件行数"
+  naIsNotProof: "空列表、N/A、-、「见正文」都不算依据；只写文件不写行号也不算（回查落点必须唯一）"
+  commitPattern: '\b[0-9a-f]{7,40}\b'
+  fileLineForm: "path:line（path 相对仓根，行号是正整数）"
+  gitReadOnly: "只允许 git cat-file / rev-parse；本执法器不执行任何写操作型 git 命令"
+  unverifiableIsRed: "git 查不动（没装 git／不在仓里）也判红，不得读成通过"
+countRules:
+  mustEqualLedgerRows: "条目数必须等于台账目标级表格的行数（现 11），逐条按 ledgerRow 对号"
+  statusMustMatchLedger: "每条 status 必须等于台账该行的 ☑／◐／☐，两处不一致即红（历史快照当承诺的同族）"
+  countsMustMatch: "台账「计数」行的三个数必须等于逐条状态实算结果——计数行是抄的，行是源"
+nextRules:
+  required: "next.cell／next.task 缺失或为空 ⇒ 红：指针丢了＝流程断，无人值守会停在原地打转"
+  cellMustExist: "next.cell 必须是 goals[].id 之一，指向不存在的条目 ⇒ 红（不许留一个听起来对的名字）"
+  doneCellIsRed: "next.cell 指向的条目已是 done ⇒ 红：指针必须改写后才能提交"
+  blockedNeedsReason: "条目停在 doing/todo 必须写 blockedBy，否则红：没写原因的进行中等于没人认领"
+  ledgerMustQuoteTask: "台账「下一格」那一行必须逐字抄 next.task 原文 ⇒ 指针有两份抄本就一定会漂（本仓已漂过两轮），以本文件为源"
+next:
+  cell: loop-l2
+  task: "排序第 3 格（台账第 6 项④用例回流）：把 relay 缺回流从 10 条继续往下压，每条新增用例都配反向对照；不可机械化者留在清单里写明原因"
+  why: "排序表里 1 与 4 都撞硬阻塞（业务节点要真跑、反哺有效率要改动前后两个可核数），2/5/6 已 ☑；剩下能实质推进的存量欠账就是 3"
+  notDo: "不为降数字声明不等价 issueRef；不把「需真跑」硬塞成结构层断言"
+  stopWhen: "11 项全部 ☑，或剩余项全部已在本文件 blockedBy 写明属【不许自行解除】的硬阻塞——除此之外不得停下向用户提问"
+goals:
+  - id: loop-data
+    ledgerRow: 1
+    order: 1
+    panelId: loop-data
+    layer: 闭环①客观数据
+    label: 自记轨产出真实 run-log，指标层不再靠估算
+    status: doing
+    criteria: "run-log 里除运维节点外至少 1 个业务节点（prd-design/dev/review 等注册节点）完整 start→end，且 report 能算出该节点的墙钟与产物 sha"
+    notDo: "不编造事件、不用运维节点冒充业务节点"
+    basis:
+      commits: [59af8b0, 27d6657]
+      files: ["scripts/tsr.py:1"]
+    blockedBy: "业务节点要真跑起来才有依据，而真实业务节点属用户的在研项目；夜间会话不得造事件，也不得拿本仓运维节点冒充 ⇒ 允许长期 ◐"
+  - id: loop-locate
+    ledgerRow: 2
+    order: null
+    panelId: loop-locate
+    layer: 闭环②问题定位
+    label: 台账改动可机械判红，且误报压到可行动
+    status: done
+    criteria: "台账改动可机械判红，且误报压到可行动"
+    notDo: ""
+    basis:
+      commits: [3c53ea6, 1b8bd62]
+      files: []
+  - id: loop-eval-structure
+    ledgerRow: 3
+    order: null
+    panelId: loop-eval-structure
+    layer: 闭环③评测·结构层
+    label: 零成本回归门禁，带负向对照
+    status: done
+    criteria: "零成本回归门禁可当 pre-commit，且每套都有反向对照"
+    notDo: ""
+    basis:
+      commits: [88a1257]
+      files: []
+  - id: loop-eval-behaviour
+    ledgerRow: 4
+    order: 2
+    panelId: loop-eval-behaviour
+    layer: 闭环③评测·行为层
+    label: skill 端到端真跑，成本是实测数字
+    status: done
+    criteria: "行为层实跑结果落追加式台账并入库，D5 读它；一次未授权跑不得抹掉历史成本"
+    notDo: "不设 TSR_ALLOW_ENGINE、不花 API 费（真跑由用户决定）"
+    basis:
+      commits: [b894d53, 31abece, dd26b05]
+      files: [".spec/obs/behaviour-runs.jsonl:1"]
+  - id: loop-intelligence
+    ledgerRow: 5
+    order: 4
+    panelId: loop-intelligence
+    layer: 闭环④智能化指标
+    label: 规则命中率／同型问题复发率／反哺有效率
+    status: doing
+    criteria: "复发率按显式复发指针出数并有对照；反哺有效率需有「改动前/后同型错误率」两个可核数才计"
+    notDo: "禁用标题相似度凑组；无 after 数据只能标「未验证」"
+    basis:
+      commits: [1519904, 0b80d2b]
+      files: ["scripts/obs/recurrence.py:1", "scripts/obs/attribution.py:458"]
+    blockedBy: "反哺有效率要有「改动前/后同型错误率」两个可核数才许计；排序表红线写死「无 after 数据只能标未验证」，夜间会话不得为了出数把 检出条数 冒充 错误率"
+  - id: loop-l2
+    ledgerRow: 6
+    order: 3
+    panelId: loop-l2
+    layer: 闭环④用例回流
+    label: issue P0/P1 闭环必须回流成用例 + baseline diff
+    status: doing
+    criteria: "relay.py 缺回流数下降，且每条新增用例都有反向对照；不可机械化者留在清单里写明原因"
+    notDo: "不为降数字声明不等价 issueRef；不把「需真跑」硬塞成结构层断言"
+    basis:
+      commits: [a8f7ac6, 43aa723]
+      files: ["scripts/eval/relay.py:1", "docs/L2回流机械化判定清单.md:1"]
+    blockedBy: "剩 10 条缺口里多数需要行为层真跑或语义判断（逐条判定写在 docs/L2回流机械化判定清单.md）；真跑要用户授权引擎，夜间会话不得代跑"
+  - id: loop-sink
+    ledgerRow: 7
+    order: 5
+    panelId: loop-sink
+    layer: 闭环⑤沉淀/回滚
+    label: 异常→问题卡→归因→before/after→回滚指针 全自动
+    status: done
+    criteria: "候选问题卡有确认协议（人在环字段：确认人/时间/结论），且「未确认」不计入闭环率"
+    notDo: "夜间会话不得自行确认候选卡、不得自动重签 decisionRefs"
+    basis:
+      commits: [fb3513e, 2a9cf2b]
+      files: ["governance/obs-registry.yaml:215", "scripts/obs/candidates.py:71", "scripts/tests/test_candidate_confirmation.py:1"]
+  - id: constraint-a
+    ledgerRow: 8
+    order: null
+    panelId: constraint-a
+    layer: 硬约束 A
+    label: 观测/评测核心不绑定宿主
+    status: done
+    criteria: "观测/评测核心不绑定宿主：真相是自记轨＋git 轨，宿主日志只富化；能力按实测字段授予，取不到写 N/A"
+    notDo: ""
+    basis:
+      commits: []
+      files: ["scripts/obs/host_spec.py:1", "governance/host-specs/qoder.yaml:1"]
+  - id: constraint-b
+    ledgerRow: 9
+    order: null
+    panelId: constraint-b
+    layer: 硬约束 B
+    label: 不新增流程节点，运行时负担 ≤1 条 CLI 调用
+    status: done
+    criteria: "不新增流程节点，执法全落在既有校验器与 CLI 上，不要求任何 skill 多产文档"
+    notDo: ""
+    basis:
+      commits: []
+      files: ["scripts/tsr.py:1", "scripts/validate_core.py:1"]
+  - id: payoff-slim
+    ledgerRow: 10
+    order: 6
+    panelId: payoff-slim
+    layer: 目标收益
+    label: skill 正文该不该精简，有数据可依
+    status: done
+    criteria: "精简建议必须同时给出：条款证据覆盖率 + 承接集中度 + 规则命中率三读数，且集中度过阈值时禁止给删减结论"
+    notDo: "不凭单条命中数为 0 就判「可删」"
+    basis:
+      commits: [4c46167]
+      files: ["governance/obs-registry.yaml:416", "scripts/obs/slim.py:40", "scripts/tests/test_obs_slim.py:1"]
+  - id: deliver-push
+    ledgerRow: 11
+    order: null
+    panelId: deliver-push
+    layer: 交付
+    label: 代码推到远端分支
+    status: done
+    criteria: "代码推到 origin 的长期分支，且每轮收口后本地领先数为 0"
+    notDo: "不 force push、不改写已入库 commit message"
+    basis:
+      commits: [6d0ec12]
+      files: []

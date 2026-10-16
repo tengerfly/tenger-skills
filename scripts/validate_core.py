@@ -1119,11 +1119,233 @@ def render_evolution(result) -> str:
     return "\n".join(lines) + "\n"
 
 
+# ── 目标台账执法：「忘记目标」不再靠人提醒，门禁直接失败（判据在 governance/goal-plan.yaml，代码只执行）。
+GOALPLAN_FILE = "governance/goal-plan.yaml"
+GOALPLAN_SECTIONS = ("purpose", "sources", "statuses", "proofRules", "countRules", "nextRules", "next", "goals")
+GOAL_ENTRY_KEYS = ("id", "ledgerRow", "panelId", "layer", "label", "status", "criteria", "basis")
+PROOF_RULE_KEYS = ("doneNeeds", "naIsNotProof", "unverifiableIsRed")
+NEXT_RULE_KEYS = ("required", "cellMustExist", "doneCellIsRed", "ledgerMustQuoteTask")
+STATUS_MARKS = {"done": "☑", "doing": "◐", "todo": "☐"}
+_LEDGER_ROW = re.compile(r"^\|\s*(?P<row>\d+)\s*\|")
+_COUNT_LINE = re.compile(r"☑\s*完成\s*(?P<done>\d+).*?◐\s*进行中\s*(?P<doing>\d+).*?☐\s*未完成\s*(?P<todo>\d+)")
+
+
+def goalplan_policy(root):
+    """别的项目没有长期目标台账 ⇒ 返回 None 判「不适用」；本仓缺这份文件由单测钉住（执法不绑宿主路径）。"""
+    path = Path(root) / GOALPLAN_FILE
+    if not path.is_file():
+        return None
+    data = load_yaml(path)
+    missing = [key for key in GOALPLAN_SECTIONS if not data.get(key)]
+    if missing:
+        raise ValueError(f"{GOALPLAN_FILE} 缺必需节 {missing} ⇒ 不猜判据，也不猜状态枚举")
+    unknown = [key for key in data["statuses"] if key not in STATUS_MARKS]
+    if unknown:
+        raise ValueError(f"{GOALPLAN_FILE}.statuses 出现三态之外的值 {unknown} ⇒ 不允许「部分完成算完成」")
+    for section, keys in (("proofRules", PROOF_RULE_KEYS), ("nextRules", NEXT_RULE_KEYS)):
+        absent = [key for key in keys if not (data.get(section) or {}).get(key)]
+        if absent:
+            raise ValueError(f"{GOALPLAN_FILE}.{section} 缺判据文案 {absent} ⇒ 拒绝执行没有凭据的红口")
+    return data
+
+
+def ledger_goal_rows(root, relative):
+    """台账目标级表格 {行号: 状态符号} ＋计数行；第 4 列不是 ☑/◐/☐ 的行不认（排序表同形但无状态列）。"""
+    path = Path(root) / str(relative)
+    if not path.is_file():
+        raise ValueError(f"台账读不动：{relative} 不存在 ⇒ 无法核对状态一致性，不判绿")
+    rows, counts = {}, None
+    lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+    for line in lines:
+        match = _LEDGER_ROW.match(line)
+        cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+        if match and len(cells) >= 4 and cells[3][:1] in STATUS_MARKS.values():
+            rows[int(match.group("row"))] = cells[3][:1]
+        tally = _COUNT_LINE.search(line)
+        if tally and counts is None:
+            counts = {key: int(tally.group(key)) for key in ("done", "doing", "todo")}
+    return rows, counts, lines
+
+
+def goalproof_commit(repos, sha):
+    """commit 依据只读验真：查得到才算；git 查不动一律判红，不读成通过。"""
+    state = commit_exists(repos, sha)
+    if state is True:
+        return True, ""
+    if state is None:
+        return False, f"git 查不动（没装 git 或不在仓里）⇒ commit `{sha}` 不可回查，不判通过"
+    return False, f"commit `{sha}` 在该仓不存在 ⇒ 依据回查失败"
+
+
+def goalproof_file_line(root, token):
+    path, _, number = str(token).rpartition(":")
+    if not path or not number.isdigit():
+        return False, f"依据 `{token}` 不是 path:行号 的写法 ⇒ 回查落点不唯一"
+    target = Path(root) / path.replace("\\", "/")
+    if not target.is_file():
+        return False, f"依据 `{token}` 指的文件不存在 ⇒ 回查落点失效"
+    total = len(target.read_text(encoding="utf-8", errors="replace").splitlines())
+    line = int(number)
+    if not 0 < line <= total:
+        return False, f"依据 `{token}` 行号超出文件实际 {total} 行 ⇒ 指不到具体内容"
+    return True, ""
+
+
+def panel_goal_statuses(root, declared):
+    """面板在用户目录、不随仓走（硬约束 A）：本机存在才按 panelId 逐条核状态，取 id 后第一个 status。
+
+    相对路径按仓根解析——否则从别的 cwd 跑执法会把「面板读不到」误报成「面板不在本机」，
+    一致性检查就悄悄不做了（这正是本文件要防的自欺）。
+    """
+    if not declared:
+        return None
+    path = Path(str(declared)).expanduser()
+    if not path.is_absolute():
+        path = Path(root) / path
+    if not path.is_file():
+        return None
+    text = path.read_text(encoding="utf-8", errors="replace")
+    found = {}
+    for match in re.finditer(r"id:\s*'([^']+)'", text):
+        status = re.search(r"status:\s*'(done|doing|todo)'", text[match.end():match.end() + 4000])
+        if status:
+            found[match.group(1)] = status.group(1)
+    return found
+
+
+def goalplan_audit(root, data=None):
+    """逐条核对：状态枚举、与台账行/计数一致、☑ 依据可机器回查、◐/☐ 写了阻塞原因、next 指针有效。"""
+    root = Path(root).resolve()
+    data = data if data is not None else goalplan_policy(root)
+    if data is None:
+        return {"file": GOALPLAN_FILE, "applies": False, "entries": [], "errors": [], "counts": {},
+                "panel": "", "policy": {}}
+    goals = [entry for entry in data["goals"] if isinstance(entry, dict)]
+    rules = data.get("proofRules") or {}
+    pointer_rules = data.get("nextRules") or {}
+    errors, entries, ids = [], [], [str(entry.get("id") or "") for entry in goals]
+    if len(set(ids)) != len(ids) or "" in ids:
+        errors.append(f"goal-plan: goals[].id 缺失或重复（{ids}）⇒ 指针与面板都无法唯一对号")
+    ledger_rows, ledger_counts, ledger_lines = ledger_goal_rows(
+        root, (data.get("sources") or {}).get("ledger", ""))
+    real = {"done": 0, "doing": 0, "todo": 0}
+    repos = git_repos(root)
+    for entry in goals:
+        absent = [key for key in GOAL_ENTRY_KEYS if entry.get(key) in (None, "")]
+        if absent:
+            errors.append(f"goal-plan: `{entry.get('id')}` 缺必需字段 {absent}"
+                          " ⇒ 目标级条目不许把空值当已填（硬判据缺失就没法判 ☑）")
+        mark = STATUS_MARKS.get(str(entry.get("status")))
+        if mark is None:
+            errors.append(f"goal-plan: `{entry.get('id')}` 的 status `{entry.get('status')}` 不在三态枚举内"
+                          " ⇒ 不允许「部分完成算完成」")
+            continue
+        real[str(entry.get("status"))] += 1
+        basis = entry.get("basis") or {}
+        commits = [str(sha) for sha in (basis.get("commits") or []) if str(sha).strip()]
+        files = [str(item) for item in (basis.get("files") or []) if str(item).strip()]
+        problems, verified = [], 0
+        for sha in commits:
+            ok, why = goalproof_commit(repos, sha)
+            verified += 1 if ok else 0
+            problems += [why] if why else []
+        for token in files:
+            ok, why = goalproof_file_line(root, token)
+            verified += 1 if ok else 0
+            problems += [why] if why else []
+        if mark == "☑" and not (commits or files):
+            errors.append(f"goal-plan: `{entry.get('id')}` 标 ☑(done) 却没挂可回查依据（commit 或 path:行号都没有）"
+                          f" ⇒ {rules.get('naIsNotProof', '')}")
+        elif mark == "☑" and verified == 0:
+            errors.append(f"goal-plan: `{entry.get('id')}` 标 ☑(done) 但依据全部回查失败：{'；'.join(problems)}"
+                          f" ⇒ {rules.get('doneNeeds', '')}")
+        elif problems:
+            errors.append(f"goal-plan: `{entry.get('id')}` 的依据有 {len(problems)} 条回查失败"
+                          f"（没标 ☑ 也如实报，别攒到收口才炸）：{'；'.join(problems)}")
+        if mark in ("◐", "☐") and not str(entry.get("blockedBy") or "").strip():
+            errors.append(f"goal-plan: `{entry.get('id')}` 停在 {entry.get('status')} 却没写 blockedBy"
+                          " ⇒ 没写原因的「进行中」等于没人认领")
+        row = entry.get("ledgerRow")
+        if row not in ledger_rows:
+            errors.append(f"goal-plan: `{entry.get('id')}` 的 ledgerRow {row} 在台账里没有对应行 ⇒ 两处对不上号")
+        elif ledger_rows[row] != mark:
+            errors.append(f"goal-plan: `{entry.get('id')}` 状态 {entry.get('status')}（{mark}）"
+                          f"与台账第 {row} 行的 `{ledger_rows[row]}` 不一致 ⇒ 历史快照当承诺的同族漂移")
+        entries.append({"id": str(entry.get("id")), "status": str(entry.get("status")), "mark": mark,
+                        "verified": verified, "problems": problems})
+    if len(goals) != len(ledger_rows):
+        errors.append(f"goal-plan: 条目 {len(goals)} 条 ≠ 台账目标级表格 {len(ledger_rows)} 行 ⇒ 有一处漏登记")
+    if ledger_counts is None:
+        errors.append("goal-plan: 台账里找不到「计数」行 ⇒ 没有可对账的汇总数，不判绿")
+    elif ledger_counts != real:
+        errors.append(f"goal-plan: 台账「计数」行 {ledger_counts} ≠ 逐条实算 {real}"
+                      " ⇒ 计数行是抄的、行是源，抄错了就按行改计数")
+    cell, task = str((data.get("next") or {}).get("cell") or "").strip(), \
+        str((data.get("next") or {}).get("task") or "").strip()
+    if not cell or not task:
+        errors.append(f"goal-plan: next 指针缺失或为空（cell `{cell or 'N/A'}`／task `{task or 'N/A'}`）"
+                      f" ⇒ {pointer_rules.get('required', '')}")
+    elif cell not in ids:
+        errors.append(f"goal-plan: next.cell `{cell}` 不是 goals[].id 之一 ⇒ {pointer_rules.get('cellMustExist', '')}")
+    else:
+        aimed = next((entry for entry in goals if str(entry.get("id")) == cell), {})
+        if aimed.get("status") == "done":
+            errors.append(f"goal-plan: next.cell `{cell}` 指向已 done 的条目 ⇒ {pointer_rules.get('doneCellIsRed', '')}")
+    if task and not any(task in line for line in ledger_lines):
+        errors.append(f"goal-plan: 台账「下一格」没逐字抄 next.task 原文（`{task[:40]}…`） ⇒ "
+                      f"{pointer_rules.get('ledgerMustQuoteTask', '')}")
+    panel_status = panel_goal_statuses(root, (data.get("sources") or {}).get("panel", ""))
+    note = ""
+    if panel_status is None:
+        note = "面板不在本机 ⇒ 未核状态一致性（不判红也不判绿）"
+    else:
+        for entry in goals:
+            key = str(entry.get("panelId") or "")
+            if key not in panel_status:
+                errors.append(f"goal-plan: `{entry.get('id')}` 的 panelId `{key}` 在面板里找不到 ⇒ 两处对不上号")
+            elif panel_status[key] != entry.get("status"):
+                errors.append(f"goal-plan: 面板 `{key}` 状态 {panel_status[key]} ≠ goal-plan {entry.get('status')}"
+                              " ⇒ 面板与台账必须同批改（两处漂移已经骗过两轮）")
+    return {"file": GOALPLAN_FILE, "applies": True, "entries": entries, "errors": errors,
+            "counts": {**real, "goals": len(goals), "ledgerRows": len(ledger_rows),
+                       "verified": sum(item["verified"] for item in entries)},
+            "panel": note, "policy": data}
+
+
+def check_goalplan(root):
+    try:
+        return goalplan_audit(root)["errors"]
+    except (ValueError, OSError) as exc:
+        return [f"goal-plan: invalid document: {exc}"]
+
+
+def render_goalplan(result) -> str:
+    counts, entries = result["counts"], result["entries"]
+    lines = [f"# 目标台账执法（{result['file']}）", ""]
+    if not result["applies"]:
+        lines.append(f"- 该项目没有 {GOALPLAN_FILE} ⇒ 本执法不适用（不是通过，是没有长期目标台账）")
+        return "\n".join(lines) + "\n"
+    pointer = result["policy"].get("next") or {}
+    lines += [f"- 条目 **{counts['goals']}** 条｜台账行 {counts['ledgerRows']} 行"
+              f"｜☑ {counts['done']}｜◐ {counts['doing']}｜☐ {counts['todo']}"
+              f"｜依据回查通过 {counts['verified']} 处",
+              f"- 面板核对：{result['panel'] or '已按 panelId 逐条比对'}",
+              f"- 下一格：`{pointer.get('cell', 'N/A')}` —— {pointer.get('task', 'N/A')}", "",
+              "| id | 状态 | 依据回查 | 备注 |", "|---|---|---|---|"]
+    for entry in entries:
+        lines.append(f"| `{entry['id']}` | {entry['status']}（{entry['mark']}） | {entry['verified']} 处 "
+                     f"| {'；'.join(entry['problems']) or '—'} |")
+    if result["errors"]:
+        lines += ["", "## 红", *[f"- {error}" for error in result["errors"]]]
+    lines += ["", "复算：`./.venv/Scripts/python.exe scripts/validate_core.py goalplan --project-root .`"]
+    return "\n".join(lines) + "\n"
+
+
 def check_system(root, skip_fixtures=False, skip_knowledge=False, strict=False):
     errors=[]
     for p in (".spec/manifest.yaml",".spec/traceability.yaml",".spec/workflow.yaml"):
         if not file_exists(root/p): add(errors,f"root self-spec is required: {p}")
-    checks=[("registry",lambda:check_registry(root)),("skill-contract",lambda:check_skill_contract(root,True)),("graph",lambda:check_graph(root)),("transition",lambda:check_transitions(root)),("artifact",lambda:check_artifact(root)),("trace",lambda:check_trace(root)),("refs",lambda:check_refs(root)),("gate",lambda:check_gate(root)),("task",lambda:check_task(root)),("evolution",lambda:check_evolution(root))]
+    checks=[("registry",lambda:check_registry(root)),("skill-contract",lambda:check_skill_contract(root,True)),("graph",lambda:check_graph(root)),("transition",lambda:check_transitions(root)),("artifact",lambda:check_artifact(root)),("trace",lambda:check_trace(root)),("refs",lambda:check_refs(root)),("gate",lambda:check_gate(root)),("task",lambda:check_task(root)),("evolution",lambda:check_evolution(root)),("goalplan",lambda:check_goalplan(root))]
     if not skip_knowledge:
         knowledge_errors, warnings = check_knowledge(root, strict)
         errors.extend(f"knowledge: {e}" for e in knowledge_errors)
@@ -1157,7 +1379,8 @@ def main(argv=None):
     commands = {"registry": check_registry, "artifact": check_artifact, "trace": check_trace,
                 "refs": check_refs, "gate": check_gate, "transition": check_transitions,
                 "graph": check_graph, "task": check_task}
-    parser.add_argument("command", choices=[*commands, "skill-contract", "knowledge", "system", "drift", "evolution"])
+    parser.add_argument("command", choices=[*commands, "skill-contract", "knowledge", "system", "drift",
+                                            "evolution", "goalplan"])
     parser.add_argument("--project-root", default=".")
     parser.add_argument("--include-legacy", action="store_true")
     parser.add_argument("--strict", action="store_true")
@@ -1196,6 +1419,21 @@ def main(argv=None):
                 return 0
             print(f"evolution validation failed: {len(result['errors'])} error(s)（{tally}）")
             return 1
+        elif args.command == "goalplan":
+            result = goalplan_audit(root)
+            print(render_goalplan(result))
+            for error in result["errors"]:
+                print(error, file=sys.stderr)
+            if not result["applies"]:
+                print(f"goalplan not applicable: {GOALPLAN_FILE} 不存在（不是通过，是没有长期目标台账）")
+                return 0
+            tally = (f"条目 {result['counts']['goals']} 条｜☑ {result['counts']['done']}｜◐ {result['counts']['doing']}"
+                     f"｜依据回查通过 {result['counts']['verified']} 处")
+            if result["errors"]:
+                print(f"goalplan validation failed: {len(result['errors'])} error(s)（{tally}）")
+                return 1
+            print(f"goalplan validation passed（{tally}）")
+            return 0
         elif args.command == "skill-contract":
             errors = check_skill_contract(root, args.include_legacy)
         elif args.command == "knowledge":
