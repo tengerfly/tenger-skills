@@ -34,9 +34,9 @@ nextRules:
   ledgerMustQuoteTask: "台账「下一格」那一行必须逐字抄 next.task 原文 ⇒ 指针有两份抄本就一定会漂（本仓已漂过两轮），以本文件为源"
 next:
   cell: loop-data
-  task: "排序第 1 格（台账第 1 项①客观数据）：等用户在真实业务项目里跑一次业务节点（prd-design/dev/review 之一）完整 start→end，report 才出得了该节点的墙钟与产物 sha；本轮实测 24 个项目目录里只有本仓有 .spec/obs/run.jsonl ⇒ 三条 ◐（①④⑥）全部属【不许自行解除】硬阻塞、原因逐条挂在 blockedBy，停下条件 b 成立"
-  why: "⑥已在 2026-10-17 第五轮按停下条件 c 收口，三条出口逐条核过而不是凭印象：业务侧 12 个 .spec 根／862 个 md 里 03:00（上一轮双侧扫描时刻）之后新增或改动 0 个文件 ⇒ 六条判据的双侧交集现状未变，别再重扫；agent_judge 在 run.py 仍未实现且夜间不得接引擎；行为层真跑需用户授权。本轮把 6 条分诊结论从散文搬进 governance/eval-spec.yaml 的 l2Triage，由 relay.py 核对（未分诊判红、名单过期只报数不判红、尺子读不动判红）。④要一条改到 skill 正文且两侧可核的反哺记录（造记录须用户批准）＋第二条显式复发链。①只等用户开业务节点"
-  notDo: "不再把超时空输出当「没有」——结论要附扫描范围与文件计数；不为把缺回流 6 压成 0 去声明不等价 issueRef，也不把已分诊的条目从名单里删掉来冒充进展；不为出百分比借别的链凑分母；不设 TSR_ALLOW_ENGINE、不调引擎；不编造反哺记录、不代用户批准进化台账条目；夜间不自行确认候选卡"
+  task: "排序第 1 格（台账第 1 项①客观数据）：等用户在真实业务项目里跑一次业务节点（prd-design/dev/review 等注册节点）完整 start→end；本轮已把这句 ☑ 判据机械化（governance/obs-registry.yaml 的 objectiveData ＋ 看板新增「产物 sha（最新绑定）」列与 ✅/⛔ 判定行），本仓现值 ⛔ 未满足＝轨上只有运维节点 1 个（quality-inspection），所以三条 ◐（①④⑥）仍全部属【不许自行解除】，停下条件 b 成立"
+  why: "①的判据原文要「墙钟与产物 sha」，探针实测发现 summarize 里根本没有 sha 字段（只有字节数）⇒ 判据此前只兑现了一半，本轮补上并让看板自己报达成与否，不再由会话转述；⑥已在第六轮按条件 c 收口（6 条分诊结论进 eval-spec 的 l2Triage，由 relay 核对未分诊／过期／尺子读不动）；④要一条改到 skill 正文且两侧可核的反哺记录（造记录须用户批准）＋第二条显式复发链"
+  notDo: "不编造事件、不用运维节点冒充业务节点——为了让看板变绿去动 opsNodes 名单就是把判据调反，反向对照（清空 opsNodes 必须判满足）就是防这一手；不再把超时空输出当「没有」；不为把缺回流 6 压成 0 去声明不等价 issueRef；不设 TSR_ALLOW_ENGINE、不调引擎；不编造反哺记录、不代用户批准进化台账条目；夜间不自行确认候选卡"
   stopWhen: "11 项全部 ☑，或剩余项全部已在本文件 blockedBy 写明属【不许自行解除】的硬阻塞——除此之外不得停下向用户提问"
 goals:
   - id: loop-data
@@ -50,8 +50,9 @@ goals:
     notDo: "不编造事件、不用运维节点冒充业务节点"
     basis:
       commits: [59af8b0, 27d6657]
-      files: ["scripts/tsr.py:1"]
-    blockedBy: "业务节点要真跑起来才有依据，而真实业务节点属用户的在研项目；夜间会话不得造事件，也不得拿本仓运维节点冒充 ⇒ 允许长期 ◐。2026-10-17 第四轮把「没有业务数据」也改成数出来的：扫 /d/project 下 24 个项目目录，有 .spec 的 13 个，有 .spec/obs 的 1 个，有 .spec/obs/run.jsonl 的 1 个且就是本仓 ⇒ 自记轨在业务项目里确实一条都没产生，不是没找到"
+      files: ["scripts/tsr.py:1", "scripts/obs/metrics.py:1", "governance/obs-registry.yaml:1",
+              "scripts/tests/test_obs_objective_data.py:1"]
+    blockedBy: "业务节点要真跑起来才有依据，而真实业务节点属用户的在研项目；夜间会话不得造事件，也不得拿本仓运维节点冒充 ⇒ 允许长期 ◐。2026-10-17 第六轮把「没有业务数据」也改成数出来的：扫 /d/project 下 24 个项目目录，有 .spec 的 13 个、有 .spec/obs 的 1 个、有 .spec/obs/run.jsonl 的 1 个且就是本仓；同轮还查出一个真缺口——判据要「墙钟与产物 sha」，而 metrics.summarize 里此前没有 sha 字段（看板只有字节数），现已补 sha 列并把达成与否做成看板上一行 ✅/⛔（现值 ⛔：轨上只有运维节点 quality-inspection，76 事件／38 执行）"
   - id: loop-locate
     ledgerRow: 2
     order: null

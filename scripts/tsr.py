@@ -200,7 +200,9 @@ def cmd_report(args) -> int:
     registered = metrics.load_registry()
     node_errors = sorted({str(event.get("node")) for event in events
                           if event.get("node") not in registered})
-    text = metrics.render(metrics.summarize(events), node_errors, problems)
+    policy = metrics.load_objective_policy()
+    objective = metrics.objective_status(events, policy)
+    text = metrics.render(metrics.summarize(events), node_errors, problems, objective, policy)
     target = root / ".spec/观测/看板.md"
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(text, encoding="utf-8")
