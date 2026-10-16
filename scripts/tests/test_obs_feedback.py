@@ -9,7 +9,9 @@
 ④ 可归属链只剩 1 条 ⇒ N/A 并引 n=1 禁令；把 minChains 降到 1 ⇒ 同一个输入必须出数
    （证明禁止来自闸门，不是代码写死不给结论）；
 ⑤ 观察窗不足 ⇒ N/A 并给出实际天数与阈值；
-⑥ 两侧齐备才出百分比；⑦ 量具红点率（86%／92%）永远单列，不许爬到读数行上。
+⑥ 两侧齐备才出百分比；⑦ 量具红点率（86%／92%）永远单列，不许爬到读数行上；
+⑧ **落点层次**：反哺记录的落账 commit 改的是 skill 正文还是工具层——全在工具层时 N/A 必须说
+   「落点问题、再补链也没用」，读不动时只能记「未核」，不许把 git 失败默认成「未触达」（假阴性）。
 """
 from __future__ import annotations
 import shutil, sys, tempfile, unittest
@@ -65,11 +67,26 @@ class RegistryGateTests(unittest.TestCase):
         self.assertIn("缺必需判据键", str(caught.exception))
         self.assertIn("minObserveDays", str(caught.exception))
 
+    def test_missing_landing_section_refuses_default(self):
+        root = self.stripped(lambda data: data["feedbackRate"].pop("landing"))
+        with self.assertRaises(ValueError) as caught:
+            feedback.policy(root)
+        self.assertIn("缺必需判据键", str(caught.exception))
+        self.assertIn("landing", str(caught.exception))
+
+    def test_missing_landing_text_refuses_default(self):
+        # 落点文案也必须写在注册表里：代码里留一句"我觉得"的文案，下轮就没人能核对它出自哪条判据
+        root = self.stripped(lambda data: data["feedbackRate"]["landing"].pop("noneTouched"))
+        with self.assertRaises(ValueError) as caught:
+            feedback.policy(root)
+        self.assertIn("feedbackRate.landing 缺文案键", str(caught.exception))
+        self.assertIn("noneTouched", str(caught.exception))
+
 
 class GateTests(unittest.TestCase):
-    def verdict(self, records, links, chains=None, dropped=None, pol=None):
+    def verdict(self, records, links, chains=None, dropped=None, pol=None, landing=None):
         return feedback._verdict(pol or POL, records, chains if chains is not None else [],
-                                 links, dropped or [], "")
+                                 links, dropped or [], "", landing)
 
     def test_records_below_floor_is_na_with_dropped_reason(self):
         value, reason = self.verdict([record()], [], dropped=["`E-003`：未声称生效或判据本身有错"])
@@ -87,6 +104,39 @@ class GateTests(unittest.TestCase):
         self.assertIn(LINK_RULE, reason)
         self.assertIn("quality-inspection", reason)
         self.assertIn("workflow", reason, "要说清链落在哪个 skill，别只报「对不上」")
+
+    def test_landing_tool_only_names_the_layer_as_the_reason(self):
+        # 反向对照：落点全在工具层时，N/A 必须说「落点问题」而不是「差几条链」
+        landing = {"records": 2, "touched": 0, "unreadable": 0, "detail": []}
+        value, reason = self.verdict([record(skill="quality-inspection"),
+                                      record(skill="quality-inspection", day="2026-08-02")], [],
+                                     [chain(skill="workflow")], landing=landing)
+        self.assertIsNone(value)
+        self.assertIn(POL["landing"]["noneTouched"], reason)
+        self.assertNotIn(POL["landing"]["someTouched"], reason)
+
+    def test_landing_on_skill_text_switches_the_diagnosis(self):
+        landing = {"records": 2, "touched": 1, "unreadable": 0,
+                   "detail": [{"title": "E-1", "commit": "a" * 40, "files": 1, "skills": ["workflow"]},
+                              {"title": "E-2", "commit": "b" * 40, "files": 3, "skills": []}]}
+        value, reason = self.verdict([record(skill="quality-inspection"),
+                                      record(skill="quality-inspection", day="2026-08-02")], [],
+                                     [chain(skill="workflow")], landing=landing)
+        self.assertIsNone(value)
+        self.assertIn(POL["landing"]["someTouched"], reason)
+        self.assertNotIn("没有一条反哺记录的落账 commit 触达 skill 正文", reason,
+                         "已经有一条改到正文了还说「没有一条」＝假阴性")
+        self.assertIn("workflow", reason)
+
+    def test_unreadable_landing_is_never_counted_as_tool_only(self):
+        # 读不动 ≠ 未触达：把 git 失败默认成「工具层」就会造出一条不存在的落点结论
+        landing = {"records": 2, "touched": 0, "unreadable": 1, "detail": []}
+        value, reason = self.verdict([record(skill="quality-inspection"),
+                                      record(skill="quality-inspection", day="2026-08-02")], [],
+                                     [chain(skill="workflow")], landing=landing)
+        self.assertIsNone(value)
+        self.assertIn(POL["landing"]["unreadable"], reason)
+        self.assertNotIn(POL["landing"]["noneTouched"], reason)
 
     def test_single_chain_triggers_the_n1_ban(self):
         links = [link(skill="workflow"), link(skill="workflow", after_count=1)]
@@ -119,6 +169,48 @@ class GateTests(unittest.TestCase):
                                      [chain(skill="workflow"), chain(skill="code-review", label="Code-Review")])
         self.assertEqual(value, 0.5)
         self.assertEqual(reason, "")
+
+
+class LandingTests(unittest.TestCase):
+    """落点判定的三件事：目录前缀取自注册表、git 读不动要如实未核、真 commit 分类要对得上。"""
+
+    def test_prefixes_come_from_skill_registry_not_hardcoded_dirs(self):
+        prefixes = dict(feedback._skill_prefixes(ROOT))
+        self.assertIn("ui/ui-ux-review", prefixes)
+        self.assertEqual(prefixes["ui/ui-ux-review"], "ui-ux-review")
+
+    def test_non_sha_and_head_are_refused_not_guessed(self):
+        for bad in ("", "HEAD", "not-a-sha", "abc"):
+            self.assertIsNone(feedback.changed_files(bad, ROOT),
+                              f"`{bad}` 不是落账 commit 该长的样子，不能拿去猜落点")
+
+    def test_real_records_split_by_layer(self):
+        def last_commit(rel):
+            import subprocess
+            proc = subprocess.run(["git", "log", "-1", "--format=%H", "--", rel], cwd=str(ROOT),
+                                  capture_output=True, text=True, encoding="utf-8", errors="replace")
+            return proc.stdout.strip()
+
+        skill_commit = last_commit("UI/ui-ux-review/SKILL.md")
+        tool_commit = "27d66573faaaa9c706c47f0c5e6c23383dff4324"  # E-001 落账 commit（只改 tsr.py 与其单测）
+        self.assertTrue(skill_commit, "本仓历史里应有改到 skill 正文的 commit")
+        summary = feedback.landing_summary(ROOT, [
+            {"title": "E-skill", "date": "2026-10-01", "skills": ["ui-ux-review"],
+             "before": 3, "after": 1, "commit": skill_commit},
+            {"title": "E-tool", "date": "2026-10-02", "skills": ["quality-inspection"],
+             "before": 3, "after": 1, "commit": tool_commit}])
+        self.assertEqual(summary["records"], 2)
+        self.assertEqual(summary["touched"], 1, "改到 UI/ui-ux-review/SKILL.md 的那条必须判「触达 skill 正文」")
+        first, second = (item["skills"] for item in summary["detail"])
+        self.assertIn("ui-ux-review", first, "落点要点名到 registry id，不能只报「改过文件」")
+        self.assertTrue(first, "批处理 commit 会改到多个 skill，落点要全列出来而不是只取第一个")
+        self.assertEqual(second, [], "只改 scripts/tsr.py 与其单测 ⇒ 工具层，永远对不上 issue 池的链")
+
+    def test_missing_registry_lands_on_empty_prefixes(self):
+        root = Path(tempfile.mkdtemp())
+        self.addCleanup(lambda: shutil.rmtree(root, ignore_errors=True))
+        (root / "governance").mkdir(parents=True)
+        self.assertEqual(feedback._skill_prefixes(root), [])
 
 
 class RenderTests(unittest.TestCase):
@@ -172,6 +264,17 @@ class RealRepoTests(unittest.TestCase):
         self.assertIn(POL["name"], text)
         self.assertIn(POL["recompute"], text)
         self.assertIn("WorkFlow", text, "复发链要如实列出（1 条），不能因为没交集就不报")
+
+    def test_real_report_prints_where_each_record_landed(self):
+        # 现值：4 条反哺记录全部落在工具层 ⇒ 报告必须把「落点」这格算出来给人看，而不是只说对不上
+        landing = self.report["landing"]
+        self.assertLessEqual(landing["touched"] + landing["unreadable"], landing["records"])
+        text = feedback.render(self.report)
+        self.assertIn(POL["landing"]["rule"], text)
+        for item in landing["detail"]:
+            self.assertIn(item["title"], text, "每条记录的落点要逐条可核，不能只给一个合计")
+        if landing["touched"] == 0 and not landing["unreadable"]:
+            self.assertIn(POL["landing"]["noneTouched"], self.report["reason"])
 
 
 if __name__ == "__main__":

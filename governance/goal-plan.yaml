@@ -33,10 +33,10 @@ nextRules:
   blockedNeedsReason: "条目停在 doing/todo 必须写 blockedBy，否则红：没写原因的进行中等于没人认领"
   ledgerMustQuoteTask: "台账「下一格」那一行必须逐字抄 next.task 原文 ⇒ 指针有两份抄本就一定会漂（本仓已漂过两轮），以本文件为源"
 next:
-  cell: loop-data
-  task: "排序第 1 格（台账第 1 项①客观数据）：等用户在真实业务项目里跑一次业务节点（prd-design/dev/review 之一）完整 start→end，report 才出得了该节点的墙钟与产物 sha；本轮实测 /d/project 下 24 个项目目录里只有本仓有 .spec/obs/run.jsonl，业务侧自记轨为 0 ⇒ 三条 ◐（①④⑥）全部属【不许自行解除】硬阻塞，停下条件 b 成立"
-  why: "⑥在 2026-10-17 第四轮把 #20 翻案接成 documentSections，缺回流 7→6（已回流 21）；剩余 6 条的双侧标题命中数已逐条列进判定清单「第四轮」节，要再往下压只能等新真实文档证据、实现 agent_judge（run.py 未实现）或授权真跑，三者分别撞铁律 4／未实现／【不许自行解除】。④的反哺有效率读数通路已就位但今晚 N/A（2 条反哺记录落在 quality-inspection、1 条复发链落在 workflow，两侧无交集），要 after 侧真跑数据。①只等用户开业务节点"
-  notDo: "不编造事件、不用运维节点冒充业务节点；不为出百分比把别的复发链借来凑分母；不设 TSR_ALLOW_ENGINE、不调引擎；不再拿跨项目递归 grep 的超时空输出当「没有」——任何「查不到」结论必须附扫描范围与文件计数"
+  cell: loop-l2
+  task: "排序第 3 格（台账第 6 项④用例回流）：剩余 6 条缺回流的机械化只有三条路——新的真实文档证据（本轮已逐条给出两侧标题命中数，别再重扫）、实现 agent_judge（run.py 未实现，且夜间不得接引擎）、授权行为层真跑。下一轮若三者都没有新增，本格按停下条件 c 正式收口，不再占指针"
+  why: "⑥今晚 7→6（#20 靠双侧交集翻案接线，判据进 artifact-registry 的 documentSections）；④本轮把反哺有效率的 N/A 从「两侧没交集」细化成落点层次：4 条反哺记录的落账 commit 全部只改工具层、0 条触达 skill 正文 ⇒ 与按 skill 归属的复发链天然对不上（判据出处 docs/observability-evaluation-plan-v2.md:124 把反哺有效率定义为「问题闭环 → SKILL.md 落规则 → 同场景错误率变化」），要出数缺的是「改到某 skill 正文且两侧可核的反哺记录」＋第二条显式复发链，两者都不是夜间会话能造的；①仍只等用户开业务节点（实测 24 个项目目录里只有本仓有 .spec/obs/run.jsonl）"
+  notDo: "不再把超时空输出当「没有」——结论要附扫描范围与文件计数；不为出百分比借别的链凑分母；不设 TSR_ALLOW_ENGINE、不调引擎；不编造反哺记录、不代用户批准进化台账条目；夜间不自行确认候选卡"
   stopWhen: "11 项全部 ☑，或剩余项全部已在本文件 blockedBy 写明属【不许自行解除】的硬阻塞——除此之外不得停下向用户提问"
 goals:
   - id: loop-data
@@ -101,7 +101,7 @@ goals:
       commits: [1519904, 0b80d2b]
       files: ["scripts/obs/recurrence.py:1", "scripts/obs/attribution.py:458", "scripts/obs/feedback.py:1",
               "governance/obs-registry.yaml:420"]
-    blockedBy: "反哺有效率要有「改动前/后同型错误率」两个可核数才许计；排序表红线写死「无 after 数据只能标未验证」，夜间会话不得为了出数把 检出条数 冒充 错误率"
+    blockedBy: "反哺有效率要有「改动前/后同型错误率」两个可核数才许计；排序表红线写死「无 after 数据只能标未验证」，夜间会话不得为了出数把 检出条数 冒充 错误率。2026-10-17 第五轮把 N/A 的原因说细了一层：新增落点判据（obs-registry 的 feedbackRate.landing，代码只执行），实测 4 条反哺记录的落账 commit 全部只改工具层（scripts/、evals/、docs/），0 条触达 skill 正文 ⇒ 与按 skill 归属的 issue 池复发链天然对不上；判据出处是目标文档 plan v2:124 自己的定义「问题闭环 → SKILL.md 落规则 → 同场景错误率变化」。所以要出数缺的是「改到某 skill 正文、两侧可核的反哺记录」＋第二条显式复发链，两者都不能由夜间会话造（造记录要用户批准，链要真跑出来才有）"
   - id: loop-l2
     ledgerRow: 6
     order: 3

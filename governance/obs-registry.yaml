@@ -434,6 +434,11 @@ feedbackRate:
   naRule: "任一环取不到 ⇒ 整体 N/A 并写明缺在哪一环；分母为 0 一律不出百分比，也不得读成 0% 或 100%"
   honestWithoutAfter: "无 after 侧可核数据只能标「未验证」，不得给百分比（排序表红线）"
   linkRule: "反哺记录与复发链必须按 skill 对上（registry id／legacyAliases 大小写不敏感）；对不上就照实说「两侧没有交集」，不许把别的链借来凑分母"
+  landing:
+    rule: "反哺记录的落点按落账 commit 的改动文件判：文件落在 governance/skill-registry.yaml 里某个 skill 的 path/ 之下 ⇒ 触达 skill 正文；只落在 scripts/、evals/、docs/、governance/、evolution/ ⇒ 工具层。复发链的语料是 issue/ 卡片、按 skill 归属，所以工具层改动没有任何一条能对得上链——这是落点问题，不是数量问题。判据出处＝目标文档 docs/observability-evaluation-plan-v2.md:124 把反哺有效率定义为「问题闭环 → SKILL.md 落规则 → 之后同场景错误率变化」，「落到 skill 正文」是定义里就写着的条件，不是本工具新加的门槛"
+    noneTouched: "落点实测：没有一条反哺记录的落账 commit 触达 skill 正文（全部落在工具层）⇒ 与按 skill 归属的复发链天然对不上；要出数缺的是「改到某 skill 正文、两侧可核的反哺记录」，再补几条复发链也补不出来"
+    someTouched: "落点实测：已有反哺记录触达 skill 正文，两侧仍对不上 ⇒ 是 skill 不同（该 skill 没有显式复发链），不是落点层次问题"
+    unreadable: "落账 commit 的改动文件读不动 ⇒ 该条落点记「未核」，不默认算触达也不算未触达"
   forbidden:
     - "不得把「量具红点条数下降」（台账 before/after 的检出条数）当反哺有效率：那只能说执法面收敛了，不能说明同型问题少发生了"
     - "不得用标题相似度凑「同型」：recurrence 的旧口径就是因 1 个假阳性 + 漏掉全部真阳性而作废，只认显式复发指针"

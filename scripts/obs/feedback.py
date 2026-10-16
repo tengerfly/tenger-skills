@@ -15,6 +15,7 @@
 """
 from __future__ import annotations
 import re
+import subprocess
 from datetime import date, datetime, timedelta
 from pathlib import Path
 import yaml
@@ -23,7 +24,8 @@ ROOT_DIR = Path(__file__).resolve().parents[2]
 SHIPPED_REGISTRY = ROOT_DIR / "governance/obs-registry.yaml"
 SECTION_KEYS = ("name", "definition", "truthSource", "recompute", "minRecords", "minChains",
                 "minObserveDays", "windowDays", "beforeAfterPattern", "detectorRateLabel",
-                "naRule", "honestWithoutAfter", "linkRule", "forbidden", "report")
+                "naRule", "honestWithoutAfter", "linkRule", "landing", "forbidden", "report")
+LANDING_KEYS = ("rule", "noneTouched", "someTouched", "unreadable")
 DATE_IN_TITLE = re.compile(r"(?P<ymd>\d{4}-\d{2}-\d{2})")
 
 
@@ -46,6 +48,10 @@ def policy(root: Path | None = None) -> dict:
     missing = [key for key in SECTION_KEYS if key not in section or section[key] in (None, "", [])]
     if missing:
         raise ValueError(f"feedbackRate 缺必需判据键 {missing} ⇒ 拒绝用默认值冒充实装")
+    landing_missing = [key for key in LANDING_KEYS
+                       if not str((section.get("landing") or {}).get(key) or "").strip()]
+    if landing_missing:
+        raise ValueError(f"feedbackRate.landing 缺文案键 {landing_missing} ⇒ 落点判据只许写在注册表里")
     return section
 
 
@@ -71,6 +77,69 @@ def _skill_index(root: Path) -> dict:
         for key in filter(None, keys):
             index.setdefault(key.casefold(), ident)
     return index
+
+
+def _skill_prefixes(root: Path) -> list:
+    """skill 正文的目录前缀（registry path）；落点判定只认这张表，不在代码里写死目录名。"""
+    path = Path(root) / "governance/skill-registry.yaml"
+    if not path.is_file():
+        return []
+    out = []
+    for entry in (yaml.safe_load(path.read_text(encoding="utf-8")) or {}).get("skills") or []:
+        ident = str(entry.get("id") or "").strip()
+        rel = str(entry.get("path") or "").strip().replace("\\", "/").strip("/")
+        if ident and rel:
+            out.append((rel.casefold(), ident))
+    return out
+
+
+def changed_files(commit: str, root: Path) -> list:
+    """落账 commit 改了哪些文件（只读 git show）；读不动返回 None，交给调用方记「未核」。"""
+    if not re.fullmatch(r"[0-9a-fA-F]{7,40}", str(commit or "")):
+        return None
+    try:
+        proc = subprocess.run(["git", "show", "--pretty=format:", "--name-only", "--root", commit],
+                              cwd=str(root), capture_output=True, text=True, encoding="utf-8",
+                              errors="replace", timeout=30)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    if proc.returncode != 0:
+        return None
+    return [line.strip() for line in (proc.stdout or "").splitlines() if line.strip()]
+
+
+def landing_summary(root: Path, records: list) -> dict:
+    """逐条反哺记录算落点：改到 skill 正文＝可归属，只改工具层＝永远对不上 issue 池的复发链。"""
+    prefixes = _skill_prefixes(root)
+    detail, touched, unreadable = [], 0, 0
+    for record in records:
+        files = changed_files(record.get("commit", ""), root)
+        if files is None:
+            unreadable += 1
+            skills = None
+        else:
+            skills = sorted({ident for low, ident in prefixes
+                             for f in files if f.casefold().startswith(low + "/")})
+            if skills:
+                touched += 1
+        detail.append({"title": record["title"][:44], "commit": record.get("commit", ""),
+                       "files": len(files or []), "skills": skills})
+    return {"records": len(records), "touched": touched, "unreadable": unreadable, "detail": detail}
+
+
+def _landing_text(pol: dict, landing: dict | None) -> str:
+    if not landing or not landing["records"]:
+        return ""
+    parts = []
+    if landing["touched"] == 0 and not landing["unreadable"]:
+        parts.append(pol["landing"]["noneTouched"])
+    elif landing["touched"]:
+        ids = sorted({ident for item in landing["detail"] for ident in item["skills"] or []})
+        parts.append(f"{pol['landing']['someTouched']}（触达 {landing['touched']}/"
+                     f"{landing['records']} 条：{ids}）")
+    if landing["unreadable"]:
+        parts.append(f"{pol['landing']['unreadable']}（{landing['unreadable']} 条）")
+    return f"｜{'；'.join(parts)}" if parts else ""
 
 
 def _claim_records(root: Path, pol: dict) -> tuple:
@@ -129,7 +198,7 @@ def _chains(root: Path) -> tuple:
 
 
 def _verdict(pol: dict, records: list, chains: list, links: list, dropped: list | None = None,
-             chain_error: str = "") -> tuple:
+             chain_error: str = "", landing: dict | None = None) -> tuple:
     """出数与拒绝出数的全部判定都关在这个纯函数里：每道闸门各配一条反向对照。"""
     usable = [link for link in links if link["usable"]]
     distinct = sorted({link["skill"] for link in usable})
@@ -144,7 +213,7 @@ def _verdict(pol: dict, records: list, chains: list, links: list, dropped: list 
                       f"{sorted({skill for record in records for skill in record['skills']}) or 'N/A'}，"
                       f"{len(chains)} 条复发链落在 "
                       f"{sorted({chain['skill'] or chain['skillLabel'] for chain in chains}) or 'N/A'}"
-                      f" ⇒ 两侧没有交集，不借链凑分母，{pol['naRule']}")
+                      f" ⇒ 两侧没有交集，不借链凑分母{_landing_text(pol, landing)}，{pol['naRule']}")
     if not usable:
         return None, (f"{len(links)} 条关联全部观察窗不足：{links[0]['unusableReason']} ⇒ {pol['naRule']}")
     if len(distinct) < int(pol["minChains"]):
@@ -179,10 +248,12 @@ def measure(root: Path | None = None, pol: dict | None = None) -> dict:
                           "usable": observed >= least.days,
                           "unusableReason": (f"观察窗只有 {observed} 天 < minObserveDays={pol['minObserveDays']}"
                                              f" ⇒ 反哺刚生效还没有可看的窗")})
-    value, reason = _verdict(pol, records, chains, links, dropped, chain_error)
+    landing = landing_summary(root, records)
+    value, reason = _verdict(pol, records, chains, links, dropped, chain_error, landing)
     usable = [link for link in links if link["usable"]]
     report = {"policy": pol, "records": records, "dropped": dropped, "chains": chains,
-              "chainError": chain_error, "links": links, "usable": usable, "value": value, "reason": reason}
+              "chainError": chain_error, "links": links, "usable": usable, "value": value,
+              "reason": reason, "landing": landing}
     if value is not None:
         report["effective"] = [link["record"] for link in usable if link["afterCount"] == 0]
         report["recurred"] = [link["record"] for link in usable if link["afterCount"]]
@@ -221,6 +292,20 @@ def render(report: dict) -> str:
         lines.append(f"  - `{link['record']}` × {link['chain']}：自 {link['since']} 已观察 {link['observedDays']} 天"
                      f"｜前窗 {link['beforeCount']} 个节点｜后窗 {link['afterCount']} 个节点"
                      f"{'' if link['usable'] else '｜' + link['unusableReason']}")
+    landing = report.get("landing") or {}
+    lines += ["", "## 反哺记录落点（能不能对上链，先落在哪一层决定）", f"- 口径：{pol['landing']['rule']}"]
+    if landing.get("records"):
+        tool_only = landing["records"] - landing["touched"] - landing["unreadable"]
+        lines.append(f"- 实测：{landing['records']} 条反哺记录｜触达 skill 正文 {landing['touched']} 条"
+                     f"｜只改工具层 {tool_only} 条｜未核 {landing['unreadable']} 条")
+        for item in landing["detail"][:8]:
+            if item["skills"] is None:
+                where = "未核（" + pol["landing"]["unreadable"] + "）"
+            else:
+                where = "、".join(item["skills"]) if item["skills"] else "工具层（scripts/、evals/、docs/…）"
+            lines.append(f"  - `{item['title']}`（`{(item['commit'] or '')[:12]}`，改 {item['files']} 个文件）⇒ {where}")
+    else:
+        lines.append("- N/A —— 没有反哺记录可判落点")
     lines += ["", "## 禁止的读法（注册表原文，逐条照抄）",
               *[f"- {item}" for item in pol["forbidden"]],
               f"- {pol['naRule']}",
