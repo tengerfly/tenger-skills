@@ -26,7 +26,8 @@ ROOT_DIR = Path(__file__).resolve().parents[2]
 SHIPPED_REGISTRY = ROOT_DIR / "governance/obs-registry.yaml"
 SECTION_KEYS = ("label", "readings", "requiredReadings", "caliber", "gate", "output", "boundary")
 CALIBER_KEYS = ("sample", "projectSlug", "since", "until", "rule", "unfixedLabel")
-GATE_KEYS = ("missingReading", "concentrationAlarm", "zeroHitOnly", "watchListLabel", "lowHitShare")
+GATE_KEYS = ("missingReading", "concentrationAlarm", "zeroHitOnly", "watchListLabel", "lowHitShare",
+             "minEvidenceCards", "tooFewCards")
 
 
 def registry_path(root: Path | None = None) -> Path:
@@ -74,9 +75,10 @@ def caliber_check(report: dict, cal: dict) -> tuple:
     return (not gaps, gaps)
 
 
-def readings(rules_report: dict, attribution, cal: dict) -> dict:
+def readings(rules_report: dict, attribution, cal: dict, gate: dict | None = None) -> dict:
     """三读数各自成条：取不到就是 N/A ＋原因，绝不拿相近数字顶替。"""
     out: dict = {}
+    floor = int((gate or {}).get("minEvidenceCards") or 0)
     value = rules_report.get("value")
     fixed, gaps = caliber_check(rules_report, cal)
     if value is None:
@@ -97,6 +99,12 @@ def readings(rules_report: dict, attribution, cal: dict) -> dict:
     elif cards == 0:
         out["clauseEvidenceCoverage"] = {"label": "条款证据覆盖率", "value": None,
                                          "reason": "本轮没有候选卡 ⇒ 没有可归因的对象，比例无从计算（不得退化成 100%）"}
+    elif floor and cards < floor:
+        # 数照样印出来给人看，但 usable=False ⇒ 闸门当这一环缺：分母太小的 100% 不是「覆盖得好」
+        out["clauseEvidenceCoverage"] = {
+            "label": "条款证据覆盖率", "value": int(counts.get("withClauses", 0)) / cards, "usable": False,
+            "detail": f"带逐字条款证据的卡 {counts.get('withClauses', 0)}/{cards} 张",
+            "reason": f"候选卡 {cards} 张 < minEvidenceCards={floor} ⇒ {gate['tooFewCards']}"}
     else:
         out["clauseEvidenceCoverage"] = {"label": "条款证据覆盖率",
                                          "value": int(counts.get("withClauses", 0)) / cards,
@@ -106,6 +114,11 @@ def readings(rules_report: dict, attribution, cal: dict) -> dict:
         out["attributionConcentration"] = {"label": "承接集中度", "value": None,
                                            "reason": "没有条款证据可统计占比 ⇒ 集中度无从计算"
                                            if cards else "本轮没有候选卡 ⇒ 集中度无从计算"}
+    elif attribution is not None and floor and cards < floor:
+        out["attributionConcentration"] = {
+            "label": "承接集中度", "value": float(conc.get("share", 0.0)), "usable": False,
+            "threshold": float(conc.get("threshold", 0.0)),
+            "reason": f"候选卡 {cards} 张 < minEvidenceCards={floor} ⇒ {gate['tooFewCards']}"}
     else:
         out["attributionConcentration"] = {
             "label": "承接集中度", "value": float(conc.get("share", 0.0)),
@@ -121,7 +134,7 @@ def advise(root: Path, rules_report: dict, attribution, advice_spec: dict | None
     """把三读数摆齐＋按闸门出结论。返回 {readings, blocked, reasons, watch, forbidden}。"""
     pol = advice_spec or spec(root)
     names = [str(name) for name in pol["requiredReadings"]]
-    got = readings(rules_report, attribution, pol["caliber"])
+    got = readings(rules_report, attribution, pol["caliber"], pol["gate"])
     result = {"policy": pol, "readings": got, "missing": [], "blocked": [], "watch": [],
               "concentrationAlarm": False, "caliberFixed": False}
     def unusable(item: dict) -> bool:

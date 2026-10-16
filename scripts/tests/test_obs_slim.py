@@ -234,5 +234,49 @@ class RealRegistryTests(unittest.TestCase):
         self.assertEqual(probe.returncode, 0, "精简建议是派生物：不入库，靠复算命令重算")
 
 
+class EvidenceFloorTests(unittest.TestCase):
+    """样本太薄那一格：100% 覆盖率在几张卡上说的是分母小，不是承接得好（同族红线：禁 n=1 标通过）。"""
+
+    def thin(self, mutate):
+        root = Path(tempfile.mkdtemp())
+        self.addCleanup(lambda: shutil.rmtree(root, ignore_errors=True))
+        (root / "governance").mkdir(parents=True)
+        data = yaml.safe_load(slim.SHIPPED_REGISTRY.read_text(encoding="utf-8"))
+        mutate(data)
+        (root / "governance/obs-registry.yaml").write_text(
+            yaml.safe_dump(data, allow_unicode=True), encoding="utf-8")
+        return root
+
+    def test_missing_floor_key_refuses_default(self):
+        root = self.thin(lambda data: data["slimAdvice"]["gate"].pop("minEvidenceCards"))
+        with self.assertRaises(ValueError) as caught:
+            slim.spec(root)
+        self.assertIn("slimAdvice.gate 缺判据键", str(caught.exception))
+        self.assertIn("minEvidenceCards", str(caught.exception))
+
+    def test_full_coverage_on_thin_sample_is_not_a_percentage_to_act_on(self):
+        floor = int(GATE["minEvidenceCards"])
+        advice = slim.advise(ROOT, hit_report(files=low_files()),
+                             attribution(cards=floor - 1, with_clauses=floor - 1), POL)
+        coverage = advice["readings"]["clauseEvidenceCoverage"]
+        self.assertEqual(coverage["value"], 1.0, "数字要照实印出来给人看")
+        self.assertIs(coverage["usable"], False, "但闸门必须当这一环缺")
+        self.assertIn(GATE["tooFewCards"], coverage["reason"])
+        concentration = advice["readings"]["attributionConcentration"]
+        self.assertIs(concentration["usable"], False)
+        self.assertIn(GATE["tooFewCards"], concentration["reason"])
+        self.assertEqual(advice["watch"], [], "样本不足不许出观察名单")
+        self.assertIn(GATE["missingReading"], advice["blocked"][0])
+
+    def test_lowering_the_floor_makes_the_same_input_produce_a_list(self):
+        # 反向对照：同一份输入（9 张卡、全带证据），把阈值调到 1 就必须出名单 ⇒ 挡下来的是闸门不是写死
+        floor = int(GATE["minEvidenceCards"])
+        loosened = dict(POL, gate=dict(GATE, minEvidenceCards=1))
+        advice = slim.advise(ROOT, hit_report(files=low_files()),
+                             attribution(cards=floor - 1, with_clauses=floor - 1), loosened)
+        self.assertTrue(advice["watch"], "撤掉闸门后同一输入必须真的出名单")
+        self.assertEqual(advice["blocked"], [])
+
+
 if __name__ == "__main__":
     unittest.main()

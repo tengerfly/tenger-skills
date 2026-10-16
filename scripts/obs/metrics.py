@@ -20,9 +20,10 @@ def load_objective_policy() -> dict:
     """①客观数据判据的口径来自注册表；缺节或缺文案就报错，不猜「哪个节点算业务」。"""
     import yaml
     try:
-        section = (yaml.safe_load(REGISTRY.read_text(encoding="utf-8")) or {}).get("objectiveData")
+        data = yaml.safe_load(REGISTRY.read_text(encoding="utf-8")) or {}
     except (OSError, yaml.YAMLError) as exc:
         raise ValueError(f"cannot read objectiveData from {REGISTRY.name}: {exc}") from exc
+    section = data.get("objectiveData")
     if not isinstance(section, dict):
         raise ValueError(f"{REGISTRY.name} 未声明 objectiveData ⇒ 不猜业务节点从哪来")
     missing = [key for key in OBJECTIVE_KEYS if key not in section or section[key] in (None, "", [])]
@@ -32,6 +33,12 @@ def load_objective_policy() -> dict:
     absent = [key for key in VERDICT_KEYS if not str(verdicts.get(key) or "").strip()]
     if absent:
         raise ValueError(f"objectiveData.verdicts 缺文案 {absent} ⇒ 判定结果必须逐条有名有姓")
+    registered = {str(node.get("id")) for node in (data.get("nodes") or []) if node.get("id")}
+    unknown_ops = [str(name) for name in section["opsNodes"] if str(name) not in registered]
+    if unknown_ops:
+        # 名单里写错一个节点名，就等于把那条运维轨悄悄算成业务节点 ⇒ ①会假绿。宁可不跑也不猜。
+        raise ValueError(f"objectiveData.opsNodes 点名了未注册的节点 {unknown_ops} ⇒ "
+                         f"拼错的排除名单会把元工作轨读成业务数据，拒绝据此判「满足」")
     return section
 
 

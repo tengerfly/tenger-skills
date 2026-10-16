@@ -487,6 +487,8 @@ slimAdvice:
     zeroHitOnly: "禁止仅凭单条命中数为 0 判「可删」：低命中只说明被采到的轨迹里没有读取/引用证据，属下界"
     watchListLabel: "观察名单（待验证，不是删除清单）"
     lowHitShare: 0.10
+    minEvidenceCards: 10
+    tooFewCards: "证据样本太薄 ⇒ 这一环只算「样本不足」（数字照印给人看，但闸门当它缺），不出删减结论也不出观察名单：全带证据的 100% 在几张卡上说的是分母小，不是各 skill 承接得好（同族红线：禁 n=1 标通过）"
   output:
     file: ".spec/观测/精简建议.md"
     recompute: "./.venv/Scripts/python.exe scripts/tsr.py --project-root . slim --host qoder --home ~/.qoder-cn"

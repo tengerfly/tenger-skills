@@ -84,6 +84,18 @@ class PolicyGateTests(unittest.TestCase):
         self.assertIn("missingDigest", str(caught.exception))
 
 
+    def test_typo_in_ops_nodes_refuses_instead_of_faking_green(self):
+        # 名单里一个字母写错，那条运维轨就会被当业务节点 ⇒ ①假绿；这种错必须拒绝开工
+        original = metrics.REGISTRY
+        metrics.REGISTRY = self.with_registry(
+            lambda data: data["objectiveData"]["opsNodes"].append("quality-inspections"))
+        self.addCleanup(setattr, metrics, "REGISTRY", original)
+        with self.assertRaises(ValueError) as caught:
+            metrics.load_objective_policy()
+        self.assertIn("点名了未注册的节点", str(caught.exception))
+        self.assertIn("quality-inspections", str(caught.exception))
+
+
 class VerdictTests(unittest.TestCase):
     def test_business_node_with_clock_and_digest_satisfies(self):
         status = metrics.objective_status(BIZ + OPS, POLICY)
