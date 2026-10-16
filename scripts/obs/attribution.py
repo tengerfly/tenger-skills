@@ -8,12 +8,16 @@
 1. **每一跳都要能点回原文。** 路径 → 节点/skill 只走注册表反查（`nodes[].paths` glob、卡面 `node`
    字段、issue 池目录段 ↔ `skill-registry` 的 id/legacyAliases 逐字相等），每条命中都带
    `governance/*.yaml:行号` 的出处；条款命中输出 **文件:行区 + 正文原文**，不是标题摘要。
-2. **禁止用标题冒充条款，禁止挑「最像的那段」。** needle 必须逐字出现在二级标题段的**正文**里
-   （标题行本身命中不算）；不做相似度、不做同义词、不做「大概说的是这段」。
+2. **两类证据，口径都是逐字，没有第三类。** ①needle 逐字出现在二级标题段的**正文**里（标题行本身
+   命中不算）；②注册表声明的**锚点词**逐字出现在该二级标题的**标题文本**里（章节级同义锚点）。
+   ②只回答「该 skill 正文里有没有自己承接这条义务的章节」——上一轮正是缺这一格，把量具认不出
+   承接章节记成了「各 skill 正文没有承接条款」，那是拿检测器的盲区当被观测对象的违规。
+   两类都不做相似度、不做同义推断、不做「大概说的是这段」，更不许在多命中里挑「最像的那个」。
 3. **取不到就说取不到。** 没有条款证据就输出「未归因（无条款证据）」并写明哪一跳断了；
    多条命中（多 skill 或多条款）一律「多归属，需人裁决」并**全部列出**，不许自行挑一个当结论。
 
-判据（路由、语料范围、needle、结论口径）全部在 `governance/obs-registry.yaml` 的 `attribution` 节。
+判据（路由、语料范围、needle、锚点词表、集中度阈值、结论口径）全部在 `governance/obs-registry.yaml`
+的 `attribution` 节；代码里零硬编码常量，注册表没声明就拒绝开工或如实降级，不猜默认口径。
 """
 from __future__ import annotations
 import fnmatch
@@ -37,7 +41,8 @@ def policy(root: Path | None = None) -> dict:
     section = data.get("attribution")
     if not isinstance(section, dict):
         raise ValueError(f"{path.as_posix()} 未声明 attribution 判据 ⇒ 不猜口径")
-    missing = [key for key in ("routes", "corpus", "kinds", "verdicts", "headingPattern")
+    missing = [key for key in ("routes", "corpus", "kinds", "verdicts", "headingPattern",
+                              "headingAnchors", "concentration")
                if not section.get(key)]
     if missing:
         raise ValueError(f"{path.as_posix()} 的 attribution 节缺必需键 {missing} ⇒ 拒绝用默认值冒充实装")
@@ -277,10 +282,16 @@ def expand_needles(pol: dict, kind: str, card: dict) -> tuple:
     return needles, skipped
 
 
-def search_clauses(root: Path, skills: list, needles: list, pol: dict) -> list:
-    """条款命中 = needle 逐字出现在某二级标题段的**正文**里。标题行命中一律不算。"""
+def search_clauses(root: Path, skills: list, needles: list, pol: dict, anchors: list | None = None) -> list:
+    """条款证据两类，都是逐字：① needle 出现在二级标题段的**正文**里；② 锚点词出现在该段的**标题文本**里。
+
+    ②是注册表 `headingAnchors` 声明的章节级同义锚点，只用来认出「该 skill 自己承接了这条义务」的章节。
+    一段只出一行证据（同段多词命中不刷屏），但**跨段/跨文件一律全部列出**，多命中不挑一个。
+    """
     limit = int(pol.get("maxClauseChars", 900))
     heading_pattern = str(pol["headingPattern"])
+    labels = pol["headingAnchors"]
+    usable = list(anchors or [])
     hits, cache = [], {}
     for entry in skills:
         for path in corpus_files(root, entry.get("skillPath"), pol):
@@ -294,20 +305,58 @@ def search_clauses(root: Path, skills: list, needles: list, pol: dict) -> list:
                     cache[relative] = []
             for section in cache[relative]:
                 body_text = "\n".join(text for _, text in section["body"])
+                matched = None
                 for needle in needles:
                     if needle and needle in body_text:
-                        hits.append({
-                            "skill": entry["skill"], "file": relative,
-                            "heading": section["heading"],
-                            "startLine": section["headingLine"], "endLine": section["endLine"],
-                            "needle": needle,
-                            "bodyLines": [f"{relative}:{number}" + "｜" + text
-                                          for number, text in section["body"] if text.strip()],
-                            "text": body_text.strip()[:limit],
-                            "truncated": len(body_text.strip()) > limit,
-                        })
-                        break                       # 一段只算一条证据，别为多个 needle 重复刷屏
+                        matched = {"match": "needle-body", "needle": needle, "anchor": "",
+                                   "evidenceClass": str(labels["needleEvidence"])}
+                        break
+                if matched is None and usable:
+                    # 锚点只在标题文本里逐字查；正文语义一律不看（看语义就是猜测）
+                    title = re.sub(r"^#+\s*", "", str(section["heading"])).strip()
+                    for anchor in usable:
+                        if anchor and anchor in title:
+                            matched = {"match": "heading-anchor", "needle": "", "anchor": anchor,
+                                       "evidenceClass": str(labels["anchorEvidence"])}
+                            break
+                if matched is None:
+                    continue
+                hits.append({
+                    "skill": entry["skill"], "file": relative,
+                    "heading": section["heading"],
+                    "startLine": section["headingLine"], "endLine": section["endLine"],
+                    "needle": matched["needle"], "anchor": matched["anchor"],
+                    "match": matched["match"], "evidenceClass": matched["evidenceClass"],
+                    "bodyLines": [f"{relative}:{number}" + "｜" + text
+                                  for number, text in section["body"] if text.strip()],
+                    "text": body_text.strip()[:limit],
+                    "truncated": len(body_text.strip()) > limit,
+                })
     return hits
+
+
+# ── 章节级同义锚点：词表、开关、最小长度、文案全部在注册表 headingAnchors 与各 kind 的 anchors ──
+def heading_anchors(pol: dict, kind: str) -> tuple:
+    """返回 (可启用的锚点词, 被拒用的说明)。kind 没声明 anchors ⇒ 空表 ⇒ 与 needle 口径完全一致。"""
+    declared = [str(item) for item in ((pol["kinds"].get(kind) or {}).get("anchors") or [])]
+    if not declared:
+        return [], []
+    gate = pol["headingAnchors"]
+    if not gate.get("enabled"):
+        return [], ["headingAnchors.enabled 为假 ⇒ 锚点这一侧不执法（只有 needle 口径生效）"]
+    if str(gate.get("match")) != "heading-verbatim":
+        # 口径值不认识就是没口径：拒绝按锚点执法，不自己猜一套匹配方式
+        raise ValueError(str(gate["badMatchReason"]).replace("{match}", str(gate.get("match"))))
+    minimum = int(gate["minChars"])
+    usable, skipped = [], []
+    for anchor in declared:
+        if len(anchor) < minimum:
+            skipped.append(str(gate["shortAnchorReason"])
+                           .replace("{anchor}", anchor).replace("{length}", str(len(anchor)))
+                           .replace("{minChars}", str(minimum)))
+            continue
+        usable.append(anchor)
+    return usable, skipped
 
 
 def _locate(lines: list, tokens: list):
@@ -367,22 +416,26 @@ def attribute_card(root: Path, card: dict, pol: dict | None = None,
     pol = pol or policy(root)
     verdicts = pol["verdicts"]
     needles, skipped = expand_needles(pol, card["kind"], card)
+    anchors, skipped_anchors = heading_anchors(pol, card["kind"])
     resolved = resolve_skills(root, card, pol)
     distinct_skills = [item["skill"] for item in resolved["skills"]]
-    clauses = search_clauses(root, resolved["skills"], needles, pol) if needles else []
+    clauses = (search_clauses(root, resolved["skills"], needles, pol, anchors)
+               if (needles or anchors) else [])
     distinct_clauses = []
     for clause in clauses:
         key = (clause["file"], clause["startLine"])
         if key not in [(row["file"], row["startLine"]) for row in distinct_clauses]:
             distinct_clauses.append(clause)
 
-    if not needles:
-        verdict, why = verdicts["none"], "该 kind 在注册表里没有声明 needle ⇒ 无条款判据可查，不猜"
+    if not needles and not anchors:
+        verdict, why = verdicts["none"], "该 kind 在注册表里没有声明 needle/anchors ⇒ 无条款判据可查，不猜"
     elif not resolved["skills"]:
         verdict, why = verdicts["none"], "路径→skill 的每一跳都没命中：" + "；".join(resolved["broken"])
     elif not distinct_clauses:
         verdict, why = verdicts["none"], ("已定位 skill，但 needle 在该 skill 的 SKILL.md/shared 正文里"
-                                          "逐字查不到管辖条款 ⇒ 无条款证据（不拿标题或相近段落冒充）")
+                                          "逐字查不到管辖条款"
+                                          + (f"，注册表声明的标题锚点 {anchors} 也逐字没命中任何标题" if anchors else "")
+                                          + " ⇒ 无条款证据（不拿相近段落或语义相近冒充）")
     elif len(distinct_clauses) > 1 or len(distinct_skills) > 1:
         verdict, why = verdicts["multiple"], (f"条款证据 {len(distinct_clauses)} 处"
                                               f"／归属路由涉及 {len(distinct_skills)} 个 skill ⇒ 全部列出")
@@ -390,6 +443,7 @@ def attribute_card(root: Path, card: dict, pol: dict | None = None,
         verdict, why = verdicts["attributed"], "唯一条款证据"
     declared = (pol["kinds"].get(card["kind"]) or {})
     return {"verdict": verdict, "why": why, "needles": needles, "skippedNeedles": skipped,
+            "anchors": anchors, "skippedAnchors": skipped_anchors,
             "routes": resolved["rows"], "skills": resolved["skills"],
             "brokenRoutes": resolved["broken"], "clauses": distinct_clauses,
             "judgeSources": judge_clause(root, card, pol, cand_pol),
@@ -400,13 +454,42 @@ def attribute_card(root: Path, card: dict, pol: dict | None = None,
             "recompute": str(pol["recompute"])}
 
 
+# ── 防刷分闸：承接集中度（阈值与文案全部来自注册表 attribution.concentration）──────────
+def concentration_report(pol: dict, per_clause: list, total_cards: int) -> dict:
+    """同一条款承担的证据占比过高 ⇒ 报警，并把本次命中率标为不可当质量结论使用。
+
+    一条共享契约撑起全部归因，说明的是**覆盖面窄**（量具只在一条条款上认得出证据），
+    不是各 skill 都承接得好。样本太小时不报警，但如实写「未判」，不当成已通过。
+    """
+    spec = pol["concentration"]
+    threshold = float(spec["maxClauseShare"])
+    minimum = int(spec["minEvidence"])
+    total = sum(row["evidence"] for row in per_clause)
+    top = max(per_clause, key=lambda row: row["evidence"]) if per_clause else None
+    share = (top["evidence"] / total) if (top and total) else 0.0
+    below_sample = bool(top and total < minimum and share >= threshold)
+    alarm = bool(top and total >= minimum and share >= threshold)
+    def filled(text: str) -> str:
+        return (str(text).replace("{share}", f"{share:.0%}")
+                .replace("{threshold}", f"{threshold:.0%}")
+                .replace("{evidence}", str(total))
+                .replace("{minEvidence}", str(minimum)))
+    return {"alarm": alarm, "label": str(spec["alarmLabel"]), "unusable": str(spec["unusableLabel"]),
+            "reason": filled(spec["reason"]) if alarm else "",
+            "belowSample": below_sample,
+            "offSampleNote": filled(spec["offSampleReason"]) if below_sample else "",
+            "share": share, "threshold": threshold, "minEvidence": minimum,
+            "evidence": total, "cards": total_cards, "distinctClauses": len(per_clause),
+            "top": (top or {})}
+
+
 def attribute_all(root: Path, cards: list, pol: dict | None = None,
                   cand_pol: dict | None = None) -> dict:
-    """整批归因 + 三分类计数。只读；不改卡面已有字段之外的东西。"""
+    """整批归因 + 三分类计数 + 承接集中度报警。只读；不改卡面已有字段之外的东西。"""
     root = Path(root).resolve()
     pol = pol or policy(root)
     buckets = {key: 0 for key in pol["verdicts"].values()}
-    counts = {"cards": 0, "noSkill": 0, "clauses": 0, "multiSkillCards": 0}
+    counts = {"cards": 0, "noSkill": 0, "clauses": 0, "multiSkillCards": 0, "withClauses": 0}
     distinct: list = []
     for card in cards:
         result = attribute_card(root, card, pol, cand_pol)
@@ -414,18 +497,26 @@ def attribute_all(root: Path, cards: list, pol: dict | None = None,
         buckets[result["verdict"]] = buckets.get(result["verdict"], 0) + 1
         counts["cards"] += 1
         counts["clauses"] += len(result["clauses"])
+        if result["clauses"]:
+            counts["withClauses"] += 1        # 有条款证据（含多归属）≠ 唯一归属；两个数分开报，别混成一个
         for clause in result["clauses"]:
             key = (clause["file"], clause["startLine"])
-            if key not in distinct:
-                distinct.append(key)
+            row = next((item for item in distinct if (item["file"], item["startLine"]) == key), None)
+            if row is None:
+                distinct.append({"file": clause["file"], "startLine": clause["startLine"],
+                                 "endLine": clause["endLine"], "heading": clause["heading"],
+                                 "match": clause["match"], "evidence": 1})
+            else:
+                row["evidence"] += 1
         if not result["skills"]:
             counts["noSkill"] += 1
         if len(result["skills"]) > 1:
             counts["multiSkillCards"] += 1
     counts["distinctClauses"] = len(distinct)
-    counts["distinctClauseFiles"] = sorted({name for name, _ in distinct})
+    counts["distinctClauseFiles"] = sorted({row["file"] for row in distinct})
     buckets["cards"] = counts["cards"]
-    return {"buckets": buckets, "counts": counts, "policy": pol}
+    return {"buckets": buckets, "counts": counts, "clauses": distinct,
+            "concentration": concentration_report(pol, distinct, counts["cards"]), "policy": pol}
 
 
 # ── 卡面渲染：归因段接在候选卡里，指针能一路点到原文 ──────────────────────────────
@@ -434,9 +525,14 @@ def render_block(attribution: dict) -> str:
     lines.append(f"- 结论：**{attribution['verdict']}** ｜ 依据：{attribution['why']}")
     if attribution.get("basis"):
         lines.append(f"- needle 出处（判据原文的 operative 词）：{attribution['basis']}")
-    lines.append(f"- 查条款用的 needle（逐字匹配，非相似）：{attribution['needles'] or 'N/A（注册表未声明）'}")
+    lines.append(f"- 查条款用的 needle（逐字匹配正文，非相似）：{attribution['needles'] or 'N/A（注册表未声明）'}")
     for item in attribution.get("skippedNeedles") or []:
         lines.append(f"- needle 降级：{item}")
+    if attribution.get("anchors"):
+        lines.append(f"- 章节级锚点（逐字匹配 ## 标题文本，只用于认「该 skill 自己的承接章节」）："
+                     f"{attribution['anchors']}")
+    for item in attribution.get("skippedAnchors") or []:
+        lines.append(f"- 锚点降级：{item}")
     lines.append("")
     if attribution["routes"]:
         lines += ["### 路径 → 节点/skill 反查（每一跳都能点回注册表）", "",
@@ -450,15 +546,21 @@ def render_block(attribution: dict) -> str:
     if attribution.get("brokenRoutes"):
         lines.append("")
     if attribution["clauses"]:
-        lines += ["### 管辖该判据的条款原文（按正文逐字命中，不是标题摘要）", ""]
+        lines += ["### 管辖该判据的条款原文（逐字命中：正文 needle 或注册表锚点，两类都写清是哪一类）", ""]
         for clause in attribution["clauses"]:
             limit = 120
+            matched = (f"needle `{clause['needle']}`" if clause["match"] == "needle-body"
+                       else f"锚点词 `{clause['anchor']}`")
             lines.append(f"- **{clause['file']}:{clause['startLine']}-{clause['endLine']}**"
-                         f" ｜ skill `{clause['skill']}` ｜ 命中词 `{clause['needle']}`"
-                         f" ｜ 标题行 {clause['heading'][:limit]}（标题本身不算证据，证据见下面正文）")
+                         f" ｜ skill `{clause['skill']}` ｜ {clause['evidenceClass']}"
+                         f" ｜ 命中：{matched} ｜ 标题行 {clause['heading'][:limit]}")
             lines.append("")
             for row in clause["bodyLines"]:
                 lines.append(f"    {row}")
+            lines.append("")
+        if any(item["match"] == "heading-anchor" for item in attribution["clauses"]):
+            lines.append("> 锚点命中的那段**只**证明该 skill 有自己承接这条义务的章节；"
+                         "该段正文是否真写了判据原文，按上面列出的正文行自己核。")
             lines.append("")
         if len(attribution["clauses"]) > 1:
             lines.append("> **多归属，需人裁决**：上面每一处都是逐字命中的候选责任条款，"

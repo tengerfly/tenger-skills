@@ -553,7 +553,11 @@ def write(root: Path, cards: list, pol: dict | None = None) -> dict:
 
 
 def _attribution_lines(summary) -> list:
-    """归因三分类如实报数。命中率低也照报——把「没归因上」写成「都归好了」才是造假。"""
+    """归因三分类如实报数 + 承接集中度报警。命中率低也照报——把「没归因上」写成「都归好了」才是造假。
+
+    反过来也一样：命中率 100% 但证据全压在同一条款上，是**量具只在那一条上认得出证据**（覆盖面窄），
+    不是各 skill 都承接得好。这种情况下本次命中率一律标注为不可当质量结论使用。
+    """
     if not summary or summary.get("error"):
         reason = (summary or {}).get("error", "归因段本轮没有被调用")
         return [f"- 归因：**N/A —— {reason}**（没归因不等于没问题，也不等于都已归属）"]
@@ -563,16 +567,22 @@ def _attribution_lines(summary) -> list:
                       ("归因（唯一条款证据）", "多归属，需人裁决", "未归因（无条款证据）"))
     rate = f"{buckets.get('归因（唯一条款证据）', 0) / total:.0%}" if total else "N/A"
     lines = [f"- 归因（条款级，逐字命中才算证据）：{parts or 'N/A'}"
-             f"｜证据化命中率 {rate}（共 {total} 张）"]
+             f"｜证据化命中率 {rate}（共 {total} 张）"
+             f"；带条款证据的卡（含多归属）{counts.get('withClauses', 0)} 张"]
     lines.append(f"- 路径→skill 一跳都没命中的卡 {counts['noSkill']} 张"
                  f"；涉及多个 skill 的卡 {counts['multiSkillCards']} 张"
                  f"；累计条款证据 {counts['clauses']} 处，去重后落在 "
                  f"{counts.get('distinctClauses', 0)} 个不同条款上"
                  f"（{('、'.join(f'`{name}`' for name in counts.get('distinctClauseFiles') or [])) or 'N/A'}）")
-    if counts.get("distinctClauses") == 1 and counts.get("clauses", 0) > 1:
-        lines.append("- 注意：多张卡归到**同一条**条款 ⇒ 该义务只在共享契约/治理判据里，"
-                     "各 skill 正文没有自己的承接条款；这是「判据有执法者、正文无承接」的缺口，"
-                     "不是 24 个各自独立的条款问题。")
+    conc = summary.get("concentration") or {}
+    top = conc.get("top") or {}
+    if conc.get("alarm"):
+        lines.append(f"- ⛔ **{conc['label']}**：{conc['reason']}"
+                     f"（占比最高的一条 = `{top.get('file')}:{top.get('startLine')}-{top.get('endLine')}`"
+                     f"｜{top.get('heading')}｜{top.get('evidence')}/{conc.get('evidence')} 处证据）"
+                     f" ⇒ **{conc['unusable']}**（本轮命中率 {rate}）")
+    elif conc.get("belowSample"):
+        lines.append(f"- 集中度：{conc['offSampleNote']}")
     return lines
 
 

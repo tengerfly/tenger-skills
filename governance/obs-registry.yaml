@@ -101,7 +101,13 @@ candidates:
     noObservability: "观测未接入"
 # ── 闭环后段①：候选卡 → 具体 skill 的具体条款（plan v2 §5「归因到具体 skill 的具体条款（读轨迹原文）」）。
 # 归因只走注册表反查：每一跳都要能点回原文核对。找不到可证据化条款就落「未归因」，禁止猜、
-# 禁止用标题冒充条款、禁止把「最像的那段」当成责任条款；多命中全部列出并交人裁决。
+# 禁止把「最像的那段」当成责任条款；多命中全部列出并交人裁决。
+# 证据两类，口径都是**逐字**，没有第三类：
+#   ① needle 逐字出现在二级标题段的正文里（原口径，未放宽）；
+#   ② 锚点词逐字出现在该二级标题的标题文本里（章节级同义锚点，见 headingAnchors）。
+# ②只是修「锚点太窄 ⇒ 把量具故障记成被观测对象的违规」这一格：它只回答「该 skill 正文里有没有
+# 自己承接这条义务的章节」，不替代①、也不许用「内容看起来相关」当证据；两类证据全部并列输出，
+# 命中多处仍是一律「多归属，需人裁决」，代码不挑一个。
 attribution:
   version: 1
   label: "归因（条款级）"
@@ -138,14 +144,42 @@ attribution:
   # 条款 = 一个「## 二级标题 + 到下一个二级标题前的正文」。needle 必须落在**正文**（不含标题行）。
   clauseUnit: h2-section
   headingPattern: '^##\s+\S'
-  bodyOnly: true
+  bodyOnly: true          # 只对 needle 成立：正文逐字口径没有放宽；标题这一侧只认下面的锚点词
   caseSensitive: true
   maxClauseChars: 900
+  # ── 章节级同义锚点：认「该 skill 正文自己承接了这条义务」的章节。
+  # 命中口径仍是逐字，且只在「## 标题行的标题文本」里查锚点词（不做相似度、不看正文语义）。
+  # 锚点词表全部写在各 kind 的 anchors 里，代码零硬编码常量；本块只放机制与文案。
+  headingAnchors:
+    enabled: true
+    match: heading-verbatim   # 代码只认这个值；写成别的值 ⇒ 拒绝按锚点执法并报 N/A（不猜口径）
+    minChars: 4               # 短锚点会把无关章节卷进来（判据宁窄勿宽）：低于此长度的锚点词一律不启用
+    needleEvidence: "正文逐字命中 needle（operative 判据词落进了这段正文）"
+    anchorEvidence: "标题逐字命中锚点（只证明该 skill 有承接章节，不证明该段正文写出了判据原文）"
+    shortAnchorReason: "锚点词「{anchor}」长度 {length} < headingAnchors.minChars={minChars} ⇒ 不启用（短词会把无关章节算成承接，判据宁窄勿宽）"
+    badMatchReason: "headingAnchors.match 声明的是「{match}」，不是本代码实现的 heading-verbatim ⇒ 拒绝按锚点执法（口径不认识就是没口径，不猜一套出来）"
+  # ── 防刷分闸：承接集中度报警。一条条款撑起大部分证据 = 覆盖面窄，不是覆盖得好；
+  # 这种情况下「命中率再高」也不能当质量结论——把量具的覆盖偏差记成被观测对象的成绩，是本仓要防的同一类错误。
+  concentration:
+    maxClauseShare: 0.6       # 单一条款承担的证据占比 ≥ 此值 ⇒ 报警（阈值写在注册表，代码不硬编码）
+    minEvidence: 3            # 证据总数低于此值不报警：两三条证据算比例是噪声，不是信号
+    alarmLabel: "承接集中度异常"
+    unusableLabel: "本次证据化命中率不可当质量结论使用"
+    reason: "同一条款承担的证据占比 {share} ≥ 阈值 {threshold} ⇒ 说明该义务只在这一条条款上被找到（覆盖面窄），不是各 skill 都承接得好"
+    offSampleReason: "条款证据总数 {evidence} < concentration.minEvidence={minEvidence} ⇒ 占比再高也不报警（样本太小），但这不等于分散，如实标注未判"
   # 每类候选 kind 的 needle 组（逐字命中即算条款证据）。needle 取判据原文里的 operative 词，
   # 或由卡面指针机械代入（{issueDir} = 涉事产物的 issue 池目录段）。空列表 ⇒ 该 kind 无从归因，如实落未归因。
+  # anchors 只给「45 份 SKILL.md 里实测确有逐字相同二级标题」的 kind。其余 kind 一律不声明：
+  # 逐字核过没有同义标题（如「未提交/台账绑定/未收口/issueRef」都不在任何 ## 标题里），编一个锚点
+  # 就是把判据放宽成猜测——那类卡继续落未归因，并在卡面给出判据原文的行号，交人裁决。
   kinds:
     缺回流用例:
       needles: ["回流", "回归用例", "反哺记录"]
+      # 锚点词 = 45 份 SKILL.md 里逐字存在的二级标题（不是本仓编的词）：
+      # `## 问题记录与恢复（执行必需）` 45/45、`## …、运行问题埋点` 16/45。
+      anchors: ["问题记录与恢复", "运行问题埋点"]
+      anchorsBasis: "锚点承接的是「记录→反哺」义务族本身；实测全仓 45 份正文里「回流/回归用例」只出现 1 次（bug-fix）"
+      anchorsLimit: "⇒ 锚点命中只证明「该 skill 有自己承接的章节」，不证明 L2 回流判据落进了正文；判据仍只在 eval-spec.yaml + relay.py"
       basis: "判据原文（governance/eval-spec.yaml:caseTiers.L2「闭环后必须回流成 1 条；未回流不得标闭环」）"
       ruleSource: "governance/eval-spec.yaml:caseTiers.L2"
       note: "needle 只取判据原文里的 operative 词；不用「反哺」这类泛词——它在 skill 正文 12 个文件里命中，"
