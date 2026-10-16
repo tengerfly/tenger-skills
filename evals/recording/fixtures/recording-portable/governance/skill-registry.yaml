@@ -1,0 +1,8 @@
+version: 1
+# 评测夹具：自带规范的便携包形态（recordingPolicy 必须落在 skill 目录内）。
+skills:
+  - id: probe-portable
+    name: probe-portable
+    path: PRD/probe-portable
+    status: active
+    recordingPolicy: PRD/probe-portable/references/recording.md

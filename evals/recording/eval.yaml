@@ -1,0 +1,87 @@
+# 结构层评测集 · 埋点主通道承接节（skill-optimizer / validate_core recording）
+#
+# 回流 issue/Skill-Optimizer/2026-09-04/01-埋点规范需落地到各skill.md（P1｜已沉淀）。
+# 该条现象栏原文：「埋点规范只是文档，12 个专业 skill 的 SKILL.md 里没有埋点节 ⇒ 监听主通道空转」；
+# 修复方向＝给各 skill 正文追加自查上报的承接节。今天这条义务的落地形态是
+# `## 问题记录与恢复（执行必需）` 承接节（45/45 active skill 已带，见 docs/目标进度表.md 五补/六补），
+# 所以等价判据是「active skill 的正文必须有承接节＋四个义务词＋唯一规范指针」，
+# 而不是要求 2026-09-04 那版字面标题「运行问题埋点（收尾自查）」（它只存在于 16/45，
+# 拿它当判据会把 29 个合规条目罚红——那是判据过窄的反向版本，同样不许）。
+#
+# 判据实现只有一份：scripts/validate_core.py 的 check_recording（单测 test_problem_recording 调同一个函数），
+# 本套不再复写一遍规则；红用例一律在合规夹具上做最小破坏并断言具体判据文本，不看退出码。
+
+schema: tenger.eval/v1
+skill: skill-optimizer
+cases:
+  - id: EV-REC-001
+    name: 合规承接节（含 legacy 条目缺节）必须判绿
+    layer: structure
+    given: evals/recording/fixtures/recording-clean
+    expect:
+      validator: recording
+      outcome: green
+
+  - id: EV-REC-002
+    name: 自带规范的便携包必须判绿（recordingPolicy 在包内）
+    layer: structure
+    given: evals/recording/fixtures/recording-portable
+    expect:
+      validator: recording
+      outcome: green
+
+  - id: EV-REC-003
+    name: SKILL.md 没有承接节（主通道空转的原始形态）必须判红
+    layer: structure
+    given: evals/recording/fixtures/recording-clean
+    # 把承接节标题改成别的节：正文还在，但自查上报职责的落点消失了
+    tamper:
+      file: PRD/probe-skill/SKILL.md
+      replace:
+        from: "## 问题记录与恢复（执行必需）"
+        to: "## 输出"
+    expect:
+      validator: recording
+      outcome: red
+      mustContain: missing recording section
+    issueRef: issue/Skill-Optimizer/2026-09-04/01-埋点规范需落地到各skill.md
+
+  - id: EV-REC-004
+    name: 承接节缺义务词（唯一索引被改掉）必须点名缺哪一个
+    layer: structure
+    given: evals/recording/fixtures/recording-clean
+    tamper:
+      file: PRD/probe-skill/SKILL.md
+      replace:
+        from: "唯一索引"
+        to: "索引"
+    expect:
+      validator: recording
+      outcome: red
+      mustContain: "missing obligation keyword: 唯一索引"
+
+  - id: EV-REC-005
+    name: 规范指针指向不存在的文件必须判红（引用不能是装饰）
+    layer: structure
+    given: evals/recording/fixtures/recording-clean
+    tamper:
+      file: PRD/probe-skill/SKILL.md
+      replace:
+        from: "../../shared/problem-recording.md"
+        to: "../../shared/no-such-policy.md"
+    expect:
+      validator: recording
+      outcome: red
+      mustContain: does not resolve
+
+  - id: EV-REC-006
+    name: 承接节里两个规范指针（落点不唯一）必须判红
+    layer: structure
+    given: evals/recording/fixtures/recording-clean
+    tamper:
+      file: PRD/probe-skill/SKILL.md
+      append: "再指一次 `../../shared/traceability.md` 就分不清谁是权威规范了。"
+    expect:
+      validator: recording
+      outcome: red
+      mustContain: must declare exactly one policy pointer

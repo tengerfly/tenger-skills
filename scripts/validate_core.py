@@ -187,7 +187,13 @@ def skill_files(root):
     for current, dirs, files in os.walk(root, topdown=True, followlinks=False, onerror=fail):
         dirs[:] = [d for d in dirs if d not in {
             ".git", ".spec", ".agents", ".codex", ".venv", "__pycache__",
-            "node_modules", "_clones", "dist", "build", "assets"
+            "node_modules", "_clones", "dist", "build", "assets",
+            # 评测夹具里的 SKILL.md 是被测数据，不是本仓的 skill：它们自带一份迷你
+            # governance/skill-registry.yaml，跑在临时复制出来的项目根里。把它们当 skill 清点，
+            # 要么逼着真注册表登记假条目（污染 skill 名录），要么门禁永远红——两者都比这条规则本身坏。
+            # 残留风险：把真 skill 藏进 fixtures/ 目录可以躲过这条清点，靠 registry 侧的
+            # 「registry path is not a Skill directory」与 eval 用例的判绿对照兜。
+            "fixtures"
         }]
         if "SKILL.md" in files:
             result.append(Path(current) / "SKILL.md")
@@ -1341,11 +1347,75 @@ def render_goalplan(result) -> str:
     return "\n".join(lines) + "\n"
 
 
+# ── 埋点主通道执法（回流 issue/Skill-Optimizer/2026-09-04/01）：各 skill 正文必须有自查上报的承接节。
+# 该条现象是「埋点规范只是文档，12 个专业 skill 的 SKILL.md 里没有埋点节 ⇒ 监听主通道空转」，
+# 今天这条义务的落地形态是 `## 问题记录与恢复（执行必需）` 承接节（45/45 active skill 已带）。
+# 口径此前只活在 scripts/tests/test_problem_recording.py 里（单测能红，评测层没有判据入口），
+# 现在提到校验器：同一份判据只写一次，单测与评测集都调它，不另造第二套。
+RECORDING_HEADING = "## 问题记录与恢复（执行必需）"
+RECORDING_OBLIGATIONS = ("下一安全节点", "根因未明", "恢复/交付前", "唯一索引")
+RECORDING_DEFAULT_POLICY = "shared/problem-recording.md"
+RECORDING_POINTER = re.compile(r"`([^`]*\.md)`")
+
+
+def recording_section(text):
+    """取承接节正文：声明标题到下一个二级标题之间；没有标题返回 None（空串会被读成「有节但没内容」）。"""
+    if RECORDING_HEADING not in text:
+        return None
+    return text.split(RECORDING_HEADING, 1)[1].split("\n## ", 1)[0]
+
+
+def check_recording(root):
+    """每个 status=active 的 skill：承接节存在＋四个义务词逐字在场＋只指一个规范文件且解析得到。
+
+    legacy／非 active 条目不罚（判据宁窄勿宽）；项目没有 skill-registry.yaml ⇒ 不适用，返回空。
+    """
+    registry = Path(root) / "governance/skill-registry.yaml"
+    if not registry.is_file():
+        return []
+    errors = []
+    for skill in items(load_yaml(registry).get("skills")):
+        if skill.get("status") != "active":
+            continue
+        skill_id = str(skill.get("id") or skill.get("path") or "?")
+        relative = str(skill.get("path") or "").replace("\\", "/")
+        directory = Path(root) / relative
+        entry = directory / "SKILL.md"
+        if not entry.is_file():
+            add(errors, f"skill {skill_id} has no SKILL.md at {relative}/SKILL.md")
+            continue
+        section = recording_section(entry.read_text(encoding="utf-8", errors="replace"))
+        if section is None:
+            add(errors, f"skill {skill_id} SKILL.md missing recording section: {RECORDING_HEADING}")
+            continue
+        for word in RECORDING_OBLIGATIONS:
+            if word not in section:
+                add(errors, f"skill {skill_id} recording section missing obligation keyword: {word}")
+        refs = RECORDING_POINTER.findall(section)
+        if len(refs) != 1:
+            add(errors, f"skill {skill_id} recording section must declare exactly one policy pointer, "
+                        f"found {len(refs)}")
+            continue
+        declared = skill.get("recordingPolicy")
+        policy = Path(root) / str(declared or RECORDING_DEFAULT_POLICY)
+        if not policy.is_file():
+            add(errors, f"skill {skill_id} recording policy file does not exist: {policy.name}")
+            continue
+        if (directory / refs[0]).resolve() != policy.resolve():
+            add(errors, f"skill {skill_id} recording pointer `{refs[0]}` does not resolve to the declared "
+                        f"policy {str(declared or RECORDING_DEFAULT_POLICY)}")
+            continue
+        if declared and not policy.resolve().is_relative_to(directory.resolve()):
+            add(errors, f"skill {skill_id} recordingPolicy must live inside the skill dir for portable "
+                        f"packages: {policy.name}")
+    return errors
+
+
 def check_system(root, skip_fixtures=False, skip_knowledge=False, strict=False):
     errors=[]
     for p in (".spec/manifest.yaml",".spec/traceability.yaml",".spec/workflow.yaml"):
         if not file_exists(root/p): add(errors,f"root self-spec is required: {p}")
-    checks=[("registry",lambda:check_registry(root)),("skill-contract",lambda:check_skill_contract(root,True)),("graph",lambda:check_graph(root)),("transition",lambda:check_transitions(root)),("artifact",lambda:check_artifact(root)),("trace",lambda:check_trace(root)),("refs",lambda:check_refs(root)),("gate",lambda:check_gate(root)),("task",lambda:check_task(root)),("evolution",lambda:check_evolution(root)),("goalplan",lambda:check_goalplan(root))]
+    checks=[("registry",lambda:check_registry(root)),("skill-contract",lambda:check_skill_contract(root,True)),("graph",lambda:check_graph(root)),("transition",lambda:check_transitions(root)),("artifact",lambda:check_artifact(root)),("trace",lambda:check_trace(root)),("refs",lambda:check_refs(root)),("gate",lambda:check_gate(root)),("task",lambda:check_task(root)),("evolution",lambda:check_evolution(root)),("goalplan",lambda:check_goalplan(root)),("recording",lambda:check_recording(root))]
     if not skip_knowledge:
         knowledge_errors, warnings = check_knowledge(root, strict)
         errors.extend(f"knowledge: {e}" for e in knowledge_errors)
@@ -1378,7 +1448,7 @@ def main(argv=None):
     parser = argparse.ArgumentParser()
     commands = {"registry": check_registry, "artifact": check_artifact, "trace": check_trace,
                 "refs": check_refs, "gate": check_gate, "transition": check_transitions,
-                "graph": check_graph, "task": check_task}
+                "graph": check_graph, "task": check_task, "recording": check_recording}
     parser.add_argument("command", choices=[*commands, "skill-contract", "knowledge", "system", "drift",
                                             "evolution", "goalplan"])
     parser.add_argument("--project-root", default=".")

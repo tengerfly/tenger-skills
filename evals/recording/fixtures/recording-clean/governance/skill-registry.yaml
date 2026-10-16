@@ -1,0 +1,11 @@
+version: 1
+# 评测夹具：埋点主通道承接节的合规形态（判绿）＋一个 legacy 条目（缺节也不该被罚，判据宁窄勿宽）。
+skills:
+  - id: probe-skill
+    name: probe-skill
+    path: PRD/probe-skill
+    status: active
+  - id: probe-legacy
+    name: probe-legacy
+    path: Other/probe-legacy
+    status: legacy
