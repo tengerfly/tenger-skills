@@ -59,6 +59,119 @@ metrics:
     bias: >
       只统计被采样的 session，未采到的语料按未命中计 ⇒ 报告值是下界，禁止当上界引用；
       本仓自身的维护会话也在读正文，算之前用 --project-slug 限定被观测项目。
+# ── 智能化指标②：同型问题复发率（plan v2 §3 第二条 + §5「应随反哺下降」）。口径只有一条：**显式复发指针**。
+# 作废口径（不得走回头路）：按「标题去掉日期数字后的主干词」聚指纹——实测两头都错：没有 `# ` 标题行的卡
+# 回退用路径当标题，把同目录两张**不同问题**并成「同型」（假阳性）；而真写了「第 3 次复发」的卡一条没检出
+# （假阴性）。所以配对一律只认卡片正文里逐字存在的两类指针，其它相似度都不算。
+# 语料是历史证据、只读：本指标不改写任何卡、不新建卡、不要求任何 skill 新产出文档。
+recurrence:
+  version: 1
+  id: same_type_recurrence_rate
+  name: 同型问题复发率
+  pillar: 智能化
+  definition: "同一 skill 下由显式复发指针串起来的 A→B→C 复发链，与滚动窗口内的复发卡片占比（plan v2 §3 第二条）"
+  truthSource: "issue/ 卡片正文里的显式复发指针（指针原文 + 文件:行号，逐条可点回去核对）"
+  recompute: "./.venv/Scripts/python.exe scripts/tsr.py --project-root . recurrence"
+  use: >
+    只用于判断「反哺之后同类问题有没有少起来」。分母是 issue/ 卡片数、不是运行次数，
+    且口径只认卡片里写明的指针 ⇒ 报告值是「已被记录下来的复发」，不是「全部复发」。
+    不参与打分、不是放行依据。
+  # 配对禁区（代码不得实现其中任何一种；本节是判据来源，不是注释）：
+  forbidden:
+    - "标题相近／路径相近／去掉日期后的主干词指纹配对（上一版假阳性的来源）"
+    - "正文出现「复发」二字就算复发（只有真正带显式指针的才计入）"
+    - "把「没扫到／读不动」写成「没复发」（读不动与非日期目录单独计数，不折进 0）"
+    - "把「未解析到的指针」拿相近标题冒替"
+  corpus:
+    glob: "issue/*/*/*.md"      # 深度 3：<池根>/<Skill>/<日期>/<序号>-<标题>.md；issue/README.md 在深度 1，天然不匹配
+    layout: "issue/<Skill>/<YYYY-MM-DD>/<NN>-<标题>.md"
+    skillFrom: grandparentDir   # 代码只认这个值：skill = 父目录的父目录名；写成别的值 ⇒ 拒绝开工（不猜取法）
+    dateFrom: parentDir         # 代码只认这个值：日期只取父目录名，禁止从正文猜
+    datePattern: '^\d{4}-\d{2}-\d{2}$'
+    cardPattern: '^(\d{2})'     # 文件名前两位 = 同日多张卡之间的先后
+    excludeFileNames: ["README.md"]
+    encoding: utf-8
+  # 取值闸门：以上每个取数／配对策略的代码实现只认这张表里的字面值。声明了别的值 ⇒ 拒绝开工并报错，
+  # 不猜一套、也不退回实现里的某个分支（同 attribution.headingAnchors.match 的先例）。
+  recognized:
+    corpus.skillFrom: grandparentDir
+    corpus.dateFrom: parentDir
+    window.cutoffPolicy: latestCardDate
+    chain.scope: sameSkill
+    chain.order: ascendingByDateThenCard
+    rate.numerator: recurrenceCardsInWindow
+    rate.denominator: cardsInWindow
+    rate.dedupe: byCard
+  badValueReason: "{key} 声明的是「{value}」，本代码只实现「{expect}」⇒ 拒绝开工（口径不认识就是没口径，不猜一套出来）"
+  window:
+    days: 30                    # 滚动窗口天数只写在这里，代码不硬编码
+    inclusiveStart: true        # 窗口含首尾两天 ⇒ 起点 = 切点 -(days-1)；写成 false 就是右开一天，如实换口径
+    badDaysReason: "window.days 声明的是「{value}」，必须是正整数 ⇒ 拒绝按这个窗口开工（不退回任何默认天数）"
+    cutoffPolicy: latestCardDate
+    cutoffReason: "切点取语料里最新的卡片日期，报告里写明具体值（不拿今天、不拿文件 mtime 冒充切点）"
+  pointers:
+    # ① 序数复发：第 N 次复发（阿拉伯数字／中文数字／全角数字都算，允许「第 3 次复发」这类空格）
+    ordinal:
+      pattern: '第\s*(?P<numeral>[０-９0-9一二两三四五六七八九十百千零]+)\s*次\s*复发'
+      label: 序数复发
+      numeralGroup: numeral
+      direction: 本卡声称这是第 N 次
+    # ② 指回旧卡的引用：issue/<Skill>/<日期>/<NN>…（允许 ../../ 前缀、允许省略 .md、允许 01-*.md 这类通配尾巴）
+    issueRef:
+      pattern: '(?:\.\./)*issue/(?P<skill>[^/`，、；\s]+)/(?P<date>\d{4}-\d{2}-\d{2})/(?P<card>\d{2})'
+      label: 旧卡指针
+      groups: [skill, date, card]
+      direction: 本卡指回更早的卡
+    numerals: {零: 0, 一: 1, 二: 2, 两: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9, 十: 10}
+    missingGroupReason: "注册表声明的指针模式里没有命名组「{group}」⇒ 取不了数（不猜组、不拿整串匹配冒替）"
+  # 成链判据（全部机械，四条件同时成立才成一条边）：
+  #   ① 指针能在语料里解析到一张卡：skill 目录名逐字相等（仅大小写折叠）＋日期相等＋序号相等；
+  #   ② 目标严格早于本卡（先比日期，同日比序号）⇒ 同日「另登/联动落点」不会被当成复发；
+  #   ③ 指针不指向自己（`# ../../issue/<自己>` 这类占位自指路径实测存在）；
+  #   ④ 同一行还带复发记号 ⇒ 只「引用旧卡」而没有任何复发字样的，算待裁决的交叉引用，不算复发。
+  chain:
+    scope: sameSkill
+    order: ascendingByDateThenCard
+    requireCue: true
+    cueWords: ["复发"]
+    snippetField: "指针原文片段"
+    locationField: "指针位置"
+  rate:
+    label: 复发率
+    numerator: recurrenceCardsInWindow    # 分子=窗口内「自己带显式指针指回更早同 skill 卡片」的卡片数
+    denominator: cardsInWindow            # 分母=窗口内卡片数（读不动的卡不入分母，见 reasons.unreadable）
+    dedupe: byCard                        # 一张卡指向多张旧卡只算一次复发（复发的是这张卡，不是指针条数）
+  report:
+    outputFile: ".spec/观测/同型问题复发率.md"
+    naToken: "N/A"
+    maxSnippetChars: 200
+    snippetEllipsis: "…"
+    maxListItems: 25          # 旁证清单一次最多铺这么多条（多出来的如实报「未列 N 条」，不静默截断）
+  naRule: >
+    语料 glob 命中 0 张 ⇒ N/A（没语料不是「0% 复发」）；没有任何合法日期目录 ⇒ 切点取不到 ⇒ N/A；
+    窗口／语料键缺失或取值不认识 ⇒ 直接报错拒绝开工，不退回默认值。扫描成功但零复发 ⇒ 如实报 0.0
+    并附「0 = 卡片里没写显式指针，不等于问题没复发」的口径声明——口径窄是窄，不许读成没问题。
+  reasons:
+    noCorpus: "语料 glob 未命中任何卡片 ⇒ 无基数，不是 0% 复发（是没得算）"
+    noCutoff: "没有任何合法日期目录 ⇒ 切点取不到（不拿文件 mtime 或巡检时刻冒充卡片日期）"
+    unreadable: "卡片读不动 ⇒ 既不计复发也不计未复发，单列交人处置"
+    nonDateDir: "日期目录名不合 corpus.datePattern ⇒ 该卡不入窗口基数（不从正文猜日期）"
+    irregularName: "文件名不合 corpus.cardPattern ⇒ 同日先后无从判定，不入基数（不拿整名当序号）"
+    excluded: "文件名命中 corpus.excludeFileNames ⇒ 不是卡片（如 issue/README.md 这类说明文件）"
+    recurrenceEdge: "指针可解析＋目标严格更早＋同 skill＋同行有复发记号 ⇒ 计为一条复发边"
+    unresolved: "指针在语料里解析不到对应卡片 ⇒ 不成链（不拿相近标题冒替）"
+    ambiguous: "同一 skill+日期+序号在语料里命中多张卡 ⇒ 指针有歧义，不挑一张"
+    forwardRef: "指针指向更晚日期或同日更晚序号 ⇒ 不是「指回旧卡」，不成链"
+    selfRef: "指针指向本卡自己 ⇒ 占位自指路径，不成链"
+    crossSkill: "指针指向别的 skill 的卡 ⇒ 本指标按「同一 skill 下 A→B→C」计链，跨 skill 只作旁证列出"
+    cueless: "只有旧卡引用、同一行没有复发记号 ⇒ 算交叉引用不算复发，单列交人裁决"
+    unparsedOrdinal: "序数词不在 pointers.numerals 里 ⇒ 记为「序数无法解析」，不猜一个数"
+    ordinalWithoutChain: "写了「第 N 次复发」但没有可解析的旧卡指针 ⇒ 如实列为未成链声称，不计入复发率，交人裁决"
+    zero: "扫描成功但没有任何显式指针 ⇒ 复发链 0 条、复发率 0.0；这是「卡片里没写」，不是「问题没复发」"
+  caveats:
+    narrowScope: "口径只认卡片正文的显式指针：卡片没写指针的复发扫不出来 ⇒ 报告值是下界，禁止当上界引用"
+    notAbsence: "0 条链的含义是「语料里没有显式指针」，不等于「没有复发」；补指针要由人改卡，本工具不替人写"
+    denominatorNote: "分母是窗口内可解析日期的卡片数（issue/README.md 不计），不是运行次数，也不是节点数"
 # ── 闭环中间段①：检测面 → 候选问题卡（plan v2 §5）。判据与文案全部在本节，代码只执行不硬编码。
 # 候选卡只登记「哪个检出面在说什么对不上」＋机器派生指针，不判定问题成立、不分级、不落 issue/。
 candidates:

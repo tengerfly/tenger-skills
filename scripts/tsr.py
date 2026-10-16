@@ -332,6 +332,29 @@ def cmd_candidates(args) -> int:
     return 0
 
 
+def cmd_recurrence(args) -> int:
+    """同型问题复发率（plan v2 §3「智能化」第二条）：只读 issue/ 卡片正文里的显式复发指针。
+
+    口径与文案全部在 governance/obs-registry.yaml 的 recurrence 节（语料 glob、窗口天数、
+    指针正则、成链条件、N/A 规则）；键缺失或取值不认识 ⇒ 直接报错退出，不退回默认值。
+    不做任何标题相似度配对（上一版那么干同时产出假阳性和假阴性，已作废）。
+    退出码恒为 0：这条指标是事实陈述，红绿仍由 issue/ 池与 L2 回流执法；把它当门禁就等于
+    「复发率高 ⇒ 判工作流有问题」，那是把量具读数冒成判定。
+    """
+    from obs import recurrence
+    root = _project(args)
+    pol = recurrence.policy(root)
+    report = recurrence.measure(root, pol)
+    print(recurrence.render(report))
+    if args.write:
+        target = recurrence.write(root, report)
+        print(f"复发率报告 → {target.relative_to(root).as_posix()}（只新增派生报告，不改任何卡片）")
+    else:
+        # 落点也取自注册表（recurrence.report.outputFile）：命令行文案里不另写一套路径
+        print(f"  （只报告不落盘；要落 {report['outputFile']} 加 --write）")
+    return 0
+
+
 def main(argv=None) -> int:
     if hasattr(sys.stdout, "reconfigure"):
         # Windows 控制台默认 GBK：中文口径与 N/A 原因打出去会成乱码，读报告的人只能猜
@@ -394,6 +417,11 @@ def main(argv=None) -> int:
     cand.add_argument("--max-age-hours", type=float, default=4.0, help="git 轨「改动未提交」的超龄阈值")
     cand.add_argument("--preview", type=int, default=10, help="打印前 N 张候选卡的指针摘要")
     cand.set_defaults(handler=cmd_candidates)
+
+    rec = sub.add_parser("recurrence")
+    rec.add_argument("--write", action="store_true",
+                     help="落派生报告到注册表声明的 report.outputFile（默认只打印；不写 issue/、不建卡）")
+    rec.set_defaults(handler=cmd_recurrence)
 
     args = parser.parse_args(argv)
     try:
