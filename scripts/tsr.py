@@ -279,17 +279,11 @@ def cmd_score(args) -> int:
 
 def cmd_audit(args) -> int:
     """Cross-check declared work against what actually landed; report, never auto-fix."""
-    from obs import anomaly, gitlog
+    from obs import anomaly, candidates, gitlog
     root = _project(args)
     events = schema.read_events(root)
-    opened, closed = {}, set()
-    for event in events:
-        key = (event.get("executionId"), event.get("node"))
-        if event["event"] == "node-start":
-            opened[key] = event.get("ts")
-        elif event["event"] == "node-end":
-            closed.add(key)
-    unclosed = {key: ts for key, ts in opened.items() if key not in closed}
+    # 未收口口径与候选卡生成器同一个函数：同一事实两处各算一套，卡就会分家
+    unclosed = candidates.unclosed_pairs(events)
     findings = gitlog.find_gaps(root, unclosed, max_age_hours=args.max_age_hours)
     if not findings:
         print("audit: 无未收口节点，无超时未提交改动")
@@ -301,6 +295,34 @@ def cmd_audit(args) -> int:
         print(f"问题卡 → 新增 {len(result['created'])} 条，已存在 {len(result['unchanged'])} 条（不重复建条目）")
     else:
         print("  （只报告不落盘；要建档加 --write）")
+    return 0
+
+
+def cmd_candidates(args) -> int:
+    """检测面 → 候选问题卡（plan v2 §5 中间段第一格）。只派生指针，不判定、不分级、不进 issue/。
+
+    退出码恒为 0：候选卡是「未经确认的检出项」，红绿由各检出面自己判（verify/relay 才是执法者）。
+    把它当门禁会让「有候选」被误读成「有问题成立」。
+    """
+    from obs import candidates
+    root = _project(args)
+    result = candidates.collect(root, max_age_hours=args.max_age_hours)
+    print(candidates.render_report(result))
+    for card in result["cards"][:args.preview]:
+        print(f"  [{card['kind']}] {card['id']} ｜ executionId {card['executionId'] or 'N/A'}"
+              f" ｜ 窗口 {card['window'].get('start') or 'N/A'} → {card['window'].get('end') or 'N/A'}"
+              f" ｜ 涉事产物 {len(card['artifacts'])} 个")
+    if len(result["cards"]) > args.preview:
+        print(f"  （其余 {len(result['cards']) - args.preview} 张未预览；--preview 调大）")
+    if args.write:
+        written = candidates.write(root, result["cards"])
+        print(f"候选卡 → 新增 {len(written['created'])} 张｜更新 {len(written['updated'])} 张｜"
+              f"未变 {len(written['unchanged'])} 张 ｜ 落点 {written['dir']}")
+        if written["stale"]:
+            print(f"  不再命中的旧候选卡 {len(written['stale'])} 张（只报不删，由人处置）："
+                  f"{'、'.join(written['stale'][:10])}")
+    else:
+        print("  （只报告不落盘；要建候选卡加 --write）")
     return 0
 
 
@@ -359,6 +381,13 @@ def main(argv=None) -> int:
     audit.add_argument("--write", action="store_true", help="persist findings as problem cards")
     audit.add_argument("--max-age-hours", type=float, default=4.0)
     audit.set_defaults(handler=cmd_audit)
+
+    cand = sub.add_parser("candidates")
+    cand.add_argument("--write", action="store_true",
+                      help="落候选卡到注册表声明的派生区（candidates.outputDir）；绝不写 issue/")
+    cand.add_argument("--max-age-hours", type=float, default=4.0, help="git 轨「改动未提交」的超龄阈值")
+    cand.add_argument("--preview", type=int, default=10, help="打印前 N 张候选卡的指针摘要")
+    cand.set_defaults(handler=cmd_candidates)
 
     args = parser.parse_args(argv)
     try:

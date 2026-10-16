@@ -20,5 +20,8 @@ __pycache__/
 .spec/obs/eval-baseline-diff.json
 .spec/obs/detection.json
 .spec/obs/behaviour/
+# 候选问题卡（tsr candidates 派生区）：四个检出面随时可重算，未确认前不入库；
+# 正式卡仍走 .spec/issues/（tsr audit 建档），issue/ 是历史证据只读，两者都不忽略
+.spec/obs/candidates/
 .tmp-eval/
 .spec/观测/

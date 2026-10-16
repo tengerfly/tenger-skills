@@ -59,3 +59,83 @@ metrics:
     bias: >
       只统计被采样的 session，未采到的语料按未命中计 ⇒ 报告值是下界，禁止当上界引用；
       本仓自身的维护会话也在读正文，算之前用 --project-slug 限定被观测项目。
+# ── 闭环中间段①：检测面 → 候选问题卡（plan v2 §5）。判据与文案全部在本节，代码只执行不硬编码。
+# 候选卡只登记「哪个检出面在说什么对不上」＋机器派生指针，不判定问题成立、不分级、不落 issue/。
+candidates:
+  version: 1
+  outputDir: ".spec/obs/candidates"
+  idPrefix: "CAND-"
+  label: "候选·未经确认"
+  statusValue: "候选·未经确认（未分诊，不等于问题成立）"
+  gradeValue: "未定级——P0/P1 分级属人的判定，生成器不得代填"
+  forbidWriteInto: ["issue"]
+  maxEvidenceChars: 240
+  maxArtifactsPerCard: 12
+  recompute: "./.venv/Scripts/python.exe scripts/tsr.py --project-root . candidates --write"
+  windowRule: "同 executionId + node 的 node-start → node-end ts，取自 run.jsonl 的机器时钟（不是回忆）"
+  boundary: "候选卡是镜像不是真相：同 kind+evidence 才去重；不再命中的旧卡只报不删，由人处置"
+  naReasons:
+    noExecution: "该检出面在 run-log 里没有对应事件 ⇒ 无 executionId 可指（不猜、不拿相近事件冒替）"
+    noWindow: "run-log 里没有成对的 node-start/node-end ⇒ ts 窗口取不到（不拿文件 mtime 冒充节点窗口）"
+    noCloseTs: "该执行还没有 node-end ⇒ 收口时刻取不到（不拿巡检时刻冒充收口）"
+    noArtifact: "该检出行没有可绑定的产物指针（事件未绑定产物，或判据核的是关联不是字节）⇒ 无涉事产物可列，不编"
+    fileGone: "磁盘上已无此文件 ⇒ 现值 sha256 取不到，只保留台账记录值"
+    noBinding: "该路径没有被任何 node-end 绑定过 ⇒ 台账记录值取不到（这本身正是本条异常的内容）"
+    noLog: "项目没有 run-log ⇒ 观测未接入，无指针可派生"
+    relayGap: "回流缺口是「台账↔用例」的关联缺失，不是某次执行的观测异常 ⇒ 无 executionId、无节点窗口可给（不拿相近事件冒替）"
+  surfaces:
+    verify: {name: "tsr verify", judgeSource: "scripts/tsr.py:verify / obs.check_bindings"}
+    report: {name: "tsr report 看板派生", judgeSource: "scripts/tsr.py:cmd_report + scripts/obs/metrics.py:summarize"}
+    gitlog: {name: "tsr audit · git 轨巡检", judgeSource: "scripts/obs/gitlog.py:find_gaps"}
+    relay: {name: "L2 回流执法", judgeSource: "scripts/eval/relay.py:audit", ruleSource: "governance/eval-spec.yaml:caseTiers.L2"}
+  kinds:
+    unregisteredNode: "节点名未注册"
+    unclosedNode: "节点未收口"
+    uncommitted: "改动未提交"
+    missingBackflow: "缺回流用例"
+    danglingRef: "悬空 issueRef"
+    unreadableEval: "评测集读不动"
+    bindingDrift: "产物改了没落台账"
+    artifactGone: "产物已从磁盘消失"
+    contract: "run-log 契约违规"
+    noObservability: "观测未接入"
+# ── 闭环中间段②：进化台账 before/after 执法（plan v2 §3 台账规则 + §6 M6）。
+# 规则原文：每条进化必须挂 before/after，无指标一律标「未验证」，禁止写「已优化」。此前纯纸面。
+evolutionLedger:
+  version: 1
+  path: "evolution/进化台账.md"
+  truthSource: "台账正文（只读；本命令不改写台账、不替人补指标）"
+  entryHeading: '^#{2,4}\s+E-\S+'
+  fields:
+    proof: "效果证据"
+    verdict: "判定"
+  honestVerdict: "未验证"
+  claimingVerdict: "已验证"
+  verdictValues: ["已验证", "未验证"]
+  claimWords: ["已优化", "已生效", "已验证", "已闭环"]
+  forbiddenWords: ["已优化"]
+  beforeToken: "before"
+  afterToken: "after"
+  beforePattern: 'before[^→\n]*[0-9]'
+  afterPattern: 'after[^→\n]*[0-9]'
+  sourcePattern: '`[^`]+`'
+  acceptedSources: ["tsr report", "tsr score", "tsr verify", "tsr audit", "tsr candidates",
+                    "validate_core", "detection.json", "eval-report.json",
+                    "eval-baseline-diff.json", "baseline/result.json", "relay.py"]
+  reasons:
+    missingLedger: "进化台账不存在 ⇒ 无从判定，不算通过（不得把「没台账」读成「没问题」）"
+    unreadable: "台账读不动 ⇒ 无法执法，本条按红处理"
+    missingPolicy: "governance/obs-registry.yaml 未声明 evolutionLedger 判据 ⇒ 不猜口径"
+    noProofField: "声称生效却缺「效果证据」行（plan v2 §3：每条进化必须挂 before/after）"
+    noBefore: "「效果证据」里没有 before 侧可核数值（判据：before 之后必须跟数值）"
+    noAfter: "「效果证据」里没有 after 侧可核数值（判据：after 之后必须跟数值）"
+    noNumber: "before/after 只有文字描述、没有数值 ⇒ 叙述不算指标"
+    noSource: "「效果证据」的出处不是注册表允许的可复算量具（evolutionLedger.acceptedSources）"
+    forbiddenWord: "台账禁止写「已优化」（plan v2 §3：无指标一律标「未验证」）"
+    contradiction: "判定=未验证 却在正文声称生效 ⇒ 自相矛盾"
+    badVerdict: "判定值不在枚举内（已验证|未验证）⇒ 判不了不算通过"
+  verdictBuckets:
+    claimedWithProof: "声称生效且挂了 before/after（判绿）"
+    honestUnverified: "写「未验证」的诚实态（判绿，不要求指标）"
+    silent: "未声称生效也无判定值（不判、如实报数，不当成已通过）"
+    unknownVerdict: "判定值在枚举外（不判红但如实报数，等人来分诊）"

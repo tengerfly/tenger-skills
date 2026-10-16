@@ -775,11 +775,206 @@ def check_fixture(root, kind):
         return artifact_context(root)[2]
     return check_trace(root)
 
+# ── 进化台账 before/after 执法（plan v2 §3 台账规则 / §5 闭环「记 before→after」那一段）────────────
+# 规则原文：每条进化必须挂 before/after，无指标一律标「未验证」，禁止写「已优化」。此前纯纸面。
+# 判据全部在 governance/obs-registry.yaml 的 evolutionLedger 节（同「生效日从 schema 读」的先例），
+# 代码只执行；本命令只读台账，绝不改写、绝不替人补指标。
+EVOLUTION_KEYS = ("path", "entryHeading", "fields", "claimWords", "forbiddenWords", "beforePattern",
+                  "afterPattern", "sourcePattern", "acceptedSources", "honestVerdict",
+                  "claimingVerdict", "verdictValues", "reasons")
+_ENTRY_FIELD = re.compile(r"^\s*[-*]?\s*\**(?P<name>[^*：:]+?)\**\s*[:：]\s*(?P<value>.*)$")
+_FENCE = re.compile(r"^\s*(```|~~~)")
+
+
+def evolution_policy(root):
+    path = root / "governance" / "obs-registry.yaml"
+    if not path.is_file():
+        raise ValueError("判据注册表 governance/obs-registry.yaml 不存在 ⇒ 无法执法，不猜口径")
+    section = load_yaml(path).get("evolutionLedger")
+    if not isinstance(section, dict):
+        raise ValueError("governance/obs-registry.yaml 未声明 evolutionLedger 判据 ⇒ 不猜口径")
+    missing = [key for key in EVOLUTION_KEYS if not section.get(key)]
+    if missing:
+        raise ValueError(f"evolutionLedger 缺必需判据键 {missing} ⇒ 拒绝用默认值冒充实装")
+    return section
+
+
+def _dequote(text):
+    """剥掉模板尖括号占位与「」角引号里的被禁止措辞：说明文字不是声称（防误伤模板自身）。"""
+    stripped = re.sub(r"<[^>]*>", "", str(text or ""))
+    return re.sub(r"「[^」]*」|“[^”]*”", "", stripped)
+
+
+def _entry_field(body, name):
+    for number, line in body:
+        match = _ENTRY_FIELD.match(line)
+        if match and match.group("name").strip() == name:
+            return number, match.group("value").strip()
+    return None, None
+
+
+def _claim_lines(lines, words):
+    """命中声称词的具体行号（行内先剥引号/占位，避免把模板说明读成声称）。"""
+    hits = []
+    for number, line in lines:
+        cleaned = _dequote(line)
+        hits += [(number, word) for word in words if word in cleaned]
+    return hits
+
+
+def evolution_audit(root, ledger=None) -> dict:
+    """逐条判定进化台账：声称生效必须挂 before+after 可核数值与出处；「未验证」是诚实态，放行。"""
+    pol = evolution_policy(root)
+    reasons = pol["reasons"]
+    relative = str(ledger or pol["path"]).replace("\\", "/")
+    path, error = project_path(root, relative)
+    empty = {"file": relative, "entries": [], "errors": [], "counts": {}}
+    if error:
+        return {**empty, "errors": [f"{relative}: 台账路径非法：{error}"]}
+    if not path.is_file():
+        return {**empty, "errors": [f"{relative}: {reasons['missingLedger']}"]}
+    try:
+        lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+    except OSError as exc:
+        return {**empty, "errors": [f"{relative}: {reasons['unreadable']}（{exc}）"]}
+
+    in_fence, scannable = False, []
+    for number, line in enumerate(lines, 1):
+        if _FENCE.match(line):
+            in_fence = not in_fence
+            continue
+        if not in_fence:
+            scannable.append((number, line))
+
+    heading = re.compile(str(pol["entryHeading"]))
+    marks = [(number, line) for number, line in scannable if heading.match(line)]
+    proof_name = str(pol["fields"]["proof"])
+    verdict_name = str(pol["fields"]["verdict"])
+    claims_words = [str(word) for word in items(pol["claimWords"])]
+    forbidden_words = [str(word) for word in items(pol["forbiddenWords"])]
+    entries = []
+    for index, (start, title) in enumerate(marks):
+        stop = marks[index + 1][0] - 1 if index + 1 < len(marks) else max(start, len(lines))
+        body = [(number, line) for number, line in scannable if start < number <= stop]
+        verdict_line, verdict = _entry_field(body, verdict_name)
+        proof_line, proof = _entry_field(body, proof_name)
+        proof_value = _dequote(proof)
+        verdict_clean = _dequote(verdict).strip() if verdict else ""
+        if not (verdict_line and verdict_clean):
+            state = "missing"
+        elif str(pol["honestVerdict"]) in verdict_clean:
+            state = "honest"
+        elif str(pol["claimingVerdict"]) in verdict_clean:
+            state = "claiming"
+        else:
+            state = "unknown"
+        forbidden_hits = _claim_lines([(start, title)] + body, forbidden_words)
+        claim_hits = [hit for hit in _claim_lines([(start, title)] + body, claims_words)
+                      if hit[1] not in forbidden_words]
+        errors = []
+        demanding = state == "claiming" or bool(claim_hits) or bool(forbidden_hits)
+        for number, word in forbidden_hits:
+            errors.append(f"{relative}:{number}: {reasons['forbiddenWord']}（命中原词「{word}」）")
+        if demanding:
+            if proof_line is None:
+                claimed = verdict.strip() or "、".join(word for _, word in claim_hits + forbidden_hits)
+                errors.append(f"{relative}:{start}: {reasons['noProofField']}（本条声称：{claimed[:80]}）")
+            else:
+                absent = []
+                if not re.search(r"[0-9]", proof_value):
+                    absent.append(reasons["noNumber"])
+                else:
+                    if not re.search(str(pol["beforePattern"]), proof_value):
+                        absent.append(reasons["noBefore"])
+                    if not re.search(str(pol["afterPattern"]), proof_value):
+                        absent.append(reasons["noAfter"])
+                if not absent:
+                    sources = [str(src) for src in items(pol["acceptedSources"])]
+                    pointers = re.findall(str(pol["sourcePattern"]), proof)
+                    if not any(any(src in pointer for src in sources) for pointer in pointers):
+                        absent.append(f"{reasons['noSource']}（允许量具：{'、'.join(sources)}）")
+                if absent:
+                    errors.append(f"{relative}:{proof_line}: " + "；".join(absent)
+                                  + f"（本行原文：{proof[:120]}）")
+        if state == "honest" and claim_hits:
+            number, word = claim_hits[0]
+            errors.append(f"{relative}:{number}: {reasons['contradiction']}（命中原词「{word}」）")
+        if state == "unknown" and not any(number == verdict_line for number, _ in forbidden_hits):
+            # 同一行已经因禁词报红就不再叠一条「判定值非法」：两条同址的红只会淹没真问题
+            errors.append(f"{relative}:{verdict_line}: {reasons['badVerdict']}"
+                          f"（判定值：{(verdict or '')[:40]}）")
+        entries.append({"line": start, "title": title.strip(), "state": state,
+                        "verdict": (verdict or "")[:120], "verdictLine": verdict_line,
+                        "proof": (proof or "")[:200], "proofLine": proof_line,
+                        "claims": [f"{number}:{word}" for number, word in claim_hits],
+                        "errors": errors})
+    flagged = [error for entry in entries for error in entry["errors"]]
+    counts = {
+        "entries": len(entries),
+        "withProof": sum(1 for entry in entries if entry["state"] == "claiming" and not entry["errors"]),
+        "honest": sum(1 for entry in entries if entry["state"] == "honest" and not entry["errors"]),
+        "silent": sum(1 for entry in entries if not entry["errors"] and entry["state"] == "missing"),
+        "unknownVerdict": sum(1 for entry in entries if entry["state"] == "unknown"),
+        "red": len(flagged),
+    }
+    return {"file": relative, "entries": entries, "errors": flagged, "counts": counts, "policy": pol}
+
+
+def check_evolution(root, ledger=None):
+    """门禁入口：红＝声称生效却无可核 before/after、写了禁词、判定自相矛盾、台账读不动。"""
+    try:
+        return evolution_audit(root, ledger)["errors"]
+    except ValueError as exc:
+        return [str(exc)]
+
+
+def render_evolution(result) -> str:
+    counts, entries = result["counts"], result["entries"]
+    pol = result.get("policy") or {}
+    buckets = (pol.get("verdictBuckets") or {}) if isinstance(pol, dict) else {}
+    lines = [f"# 进化台账 before/after 执法（{result['file']}）", ""]
+    lines.append(f"- 台账条目 {counts['entries']} 条：挂 before/after 且判绿 **{counts['withProof']}** 条"
+                 f"｜诚实「{pol.get('honestVerdict','未验证')}」**{counts['honest']}** 条"
+                 f"｜裸声称或判据不合规 **{counts['red']}** 处（可能集中在同一条）"
+                 f"｜未声称生效 {counts['silent']} 条｜判定值枚举外 {counts['unknownVerdict']} 条")
+    lines.append(f"- 真相源：{pol.get('truthSource','') if isinstance(pol, dict) else ''}")
+    lines.append("")
+    if entries:
+        lines += ["| 行 | 条目 | 判定 | 效果证据 | 本条结论 |", "|---|---|---|---|---|"]
+        for entry in entries:
+            verdict = entry["verdict"] or "N/A（缺判定行）"
+            proof = (entry["proof"] or "N/A（缺效果证据行）").replace("|", "／")
+            outcome = "⛔ 红" if entry["errors"] else ("✅ 绿" if entry["state"] != "missing" else "— 未声称生效")
+            lines.append(f"| {entry['line']} | {entry['title'][:40]} | {verdict[:24]} | {proof[:60]} | {outcome} |")
+        lines.append("")
+        for entry in entries:
+            for error in entry["errors"]:
+                lines.append(f"- ⛔ {error}")
+        lines.append("")
+        quiet = [entry for entry in entries if not entry["errors"] and entry["state"] in ("missing", "unknown")]
+        if quiet:
+            lines.append(f"不判红但如实报数（{len(quiet)} 条，既不默认它成立、也不默认它没事）：")
+            lines += [f"- {result['file']}:{entry['line']}：{entry['title'][:40]}"
+                      f"（{'判定值枚举外' if entry['state']=='unknown' else '没有判定值，也没有声称生效'}）"
+                      for entry in quiet]
+            lines.append("")
+        for key in ("claimedWithProof", "honestUnverified", "silent", "unknownVerdict"):
+            if buckets.get(key):
+                lines.append(f"- 口径：{buckets[key]}")
+        lines.append("")
+    else:
+        lines.append("台账里还没有任何进化条目（0 条）⇒ 没有可判对象。这是「没测」，不是「没问题」：")
+        lines.append("执法器本身由 `scripts/tests` 的合成夹具做反向对照钉住，真实条目一出现就按同一判据判。")
+        lines.append("")
+    lines.append("复算：`./.venv/Scripts/python.exe scripts/validate_core.py evolution --project-root .`")
+    return "\n".join(lines) + "\n"
+
+
 def check_system(root, skip_fixtures=False, skip_knowledge=False, strict=False):
     errors=[]
     for p in (".spec/manifest.yaml",".spec/traceability.yaml",".spec/workflow.yaml"):
         if not file_exists(root/p): add(errors,f"root self-spec is required: {p}")
-    checks=[("registry",lambda:check_registry(root)),("skill-contract",lambda:check_skill_contract(root,True)),("graph",lambda:check_graph(root)),("transition",lambda:check_transitions(root)),("artifact",lambda:check_artifact(root)),("trace",lambda:check_trace(root)),("refs",lambda:check_refs(root)),("gate",lambda:check_gate(root)),("task",lambda:check_task(root))]
+    checks=[("registry",lambda:check_registry(root)),("skill-contract",lambda:check_skill_contract(root,True)),("graph",lambda:check_graph(root)),("transition",lambda:check_transitions(root)),("artifact",lambda:check_artifact(root)),("trace",lambda:check_trace(root)),("refs",lambda:check_refs(root)),("gate",lambda:check_gate(root)),("task",lambda:check_task(root)),("evolution",lambda:check_evolution(root))]
     if not skip_knowledge:
         knowledge_errors, warnings = check_knowledge(root, strict)
         errors.extend(f"knowledge: {e}" for e in knowledge_errors)
@@ -813,12 +1008,13 @@ def main(argv=None):
     commands = {"registry": check_registry, "artifact": check_artifact, "trace": check_trace,
                 "refs": check_refs, "gate": check_gate, "transition": check_transitions,
                 "graph": check_graph, "task": check_task}
-    parser.add_argument("command", choices=[*commands, "skill-contract", "knowledge", "system", "drift"])
+    parser.add_argument("command", choices=[*commands, "skill-contract", "knowledge", "system", "drift", "evolution"])
     parser.add_argument("--project-root", default=".")
     parser.add_argument("--include-legacy", action="store_true")
     parser.add_argument("--strict", action="store_true")
     parser.add_argument("--skip-fixtures", action="store_true")
     parser.add_argument("--skip-knowledge", action="store_true")
+    parser.add_argument("--ledger", help="只覆盖台账路径；判据仍从 governance/obs-registry.yaml 读")
     args = parser.parse_args(argv)
     root = Path(args.project_root).resolve()
     try:
@@ -836,6 +1032,14 @@ def main(argv=None):
             print(f"待重签 {len(rows)} 条 ｜ 台账结构错误 {len(structural)} 条"
                   f" ｜ 重签需人工批准（decisionRefs），本命令不改写台账")
             return 1 if (rows or structural) else 0
+        elif args.command == "evolution":
+            result = evolution_audit(root, args.ledger)
+            print(render_evolution(result))
+            for error in result["errors"]:
+                print(error, file=sys.stderr)
+            print(f"evolution validation "
+                  + (f"failed: {len(result['errors'])} error(s)" if result["errors"] else "passed"))
+            return 1 if result["errors"] else 0
         elif args.command == "skill-contract":
             errors = check_skill_contract(root, args.include_legacy)
         elif args.command == "knowledge":
