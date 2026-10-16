@@ -188,6 +188,12 @@ class RealPoolWiringTests(unittest.TestCase):
         # 反向对照：接线本身不能退化成「字段有人写、没人读」
         self.assertGreaterEqual(len(relay.audit(ROOT)["covered"]), 1)
 
+    def test_workflow_2026_10_10_closed_entries_have_backflow_cases(self):
+        # 2026-10-15 补线的两条 WorkFlow P0 必须保持在覆盖里：用例被删、issueRef 被漂改，这里先红
+        covered = {entry["id"] for entry in relay.audit(ROOT)["covered"]}
+        self.assertIn("issue/WorkFlow/2026-10-10/01-上游Gate关闭后下游仍排队缺开工前闸门校验.md", covered)
+        self.assertIn("issue/WorkFlow/2026-10-10/02-业务项目控制文件偏离v2契约致Gate从未被机械校验.md", covered)
+
     def test_required_count_always_equals_covered_plus_missing(self):
         result = relay.audit(ROOT)
         self.assertEqual(len(result["closedP0P1"]), len(result["covered"]) + len(result["missing"]))

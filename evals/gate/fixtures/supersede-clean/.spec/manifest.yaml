@@ -1,0 +1,25 @@
+projectId: eval-supersede
+artifacts:
+- artifactId: PRD-S-001
+  type: prd
+  path: .spec/prd/PRD-S-001.md
+  lifecycle: CREATE
+  owner: pm
+  status: SUPERSEDED
+  producedBy: prd-design
+  producedAt: '2026-10-09T10:00:00+08:00'
+  sourceRefs: []
+  evidenceRefs: []
+  decisionRefs: []
+- artifactId: TDD-S-001
+  type: tech-design
+  path: .spec/tdd/TDD-S-001.md
+  lifecycle: CREATE
+  owner: backend
+  status: REVIEW
+  producedBy: backend-tech-design
+  producedAt: '2026-10-10T08:00:00+08:00'
+  sourceRefs: [PRD-S-001]
+  evidenceRefs: []
+  decisionRefs: []
+  supersedes: [PRD-S-001]

@@ -1,0 +1,16 @@
+# 复刻 issue/WorkFlow/2026-10-10/02 实测到的 knowledge-bases 建档偏差（其一）：
+# 同一映射内重复的 sourceRefs 键 —— v2 量具（StrictLoader 拒重复键）当场解析失败，
+# 当时该项目的全部闸门规则因此一条都没被机械校验过。
+projectId: eval-legacy-dupkey
+artifacts:
+- artifactId: PRD-K-001
+  type: prd
+  path: .spec/prd/PRD-K-001.md
+  lifecycle: CREATE
+  owner: pm
+  status: REVIEW
+  producedBy: prd-design
+  producedAt: '2026-10-09T10:00:00+08:00'
+  sourceRefs: []
+  evidenceRefs: []
+  sourceRefs: [URL-20261009-001]

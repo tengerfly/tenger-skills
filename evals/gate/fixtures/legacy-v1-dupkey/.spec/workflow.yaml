@@ -1,0 +1,7 @@
+# 复刻 issue/WorkFlow/2026-10-10/02 实测偏差（其二）：
+# workflow.yaml 是 v1 形状 —— 外面包一层 workflow:，用 currentState，顶层没有
+# state / gate / allowDownstream，校验器实报 `workflow has invalid gate: None`。
+workflow:
+  projectId: eval-legacy-dupkey
+  currentState: TDD_CONSISTENCY_UNVERIFIED
+  nextAction: 补 TDD 三件事后启动 FTDD

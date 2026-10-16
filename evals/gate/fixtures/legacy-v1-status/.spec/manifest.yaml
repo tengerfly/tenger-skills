@@ -1,0 +1,13 @@
+# 复刻 issue/WorkFlow/2026-10-10/02 实测偏差（其三/其四）：
+# - status 写成枚举外的 APPROVED_SUPERSEDED（同时宣称「批准」与「已作废」，下游只看得到前半句）；
+# - 条目缺 lifecycle / owner / producedAt 必填字段（该案 24/24 条全缺）。
+projectId: eval-legacy-status
+artifacts:
+- artifactId: PRD-K-002
+  type: prd
+  path: .spec/prd/PRD-K-002.md
+  status: APPROVED_SUPERSEDED
+  producedBy: prd-design
+  sourceRefs: []
+  evidenceRefs: []
+  decisionRefs: []

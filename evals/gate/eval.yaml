@@ -70,6 +70,80 @@ cases:
       outcome: red
       mustContain: references unknown id
 
+  - id: EV-GATE-006
+    name: 下游绑作废基线但已声明取代关系必须判绿（EV-GATE-007 的防误伤对照）
+    layer: structure
+    given: evals/gate/fixtures/supersede-clean
+    expect:
+      validator: artifact
+      outcome: green
+
+  - id: EV-GATE-007
+    name: 下游产物绑 SUPERSEDED 基线却不声明取代关系必须判红
+    layer: structure
+    given: evals/gate/fixtures/supersede-clean
+    # 出处：issue/WorkFlow/2026-10-10/01 根因 2「下游产物不绑定基线指纹，基线作废后无人回头清点」。
+    # 该条修复时补进 check_artifact 的机械判据原文即「is built on a superseded baseline via sourceRefs」
+    # （见条目「落地时自纠」注：原断言"量具本就有牙齿"不成立，此判据属该条修复新补）。
+    # 行为侧判据（上游 allowDownstream: false 时编排器拒绝启动下游）需真跑 fresh 会话，不在本层声称。
+    issueRef: issue/WorkFlow/2026-10-10/01-上游Gate关闭后下游仍排队缺开工前闸门校验.md
+    tamper:
+      file: .spec/manifest.yaml
+      replace:
+        from: "supersedes: [PRD-S-001]"
+        to: "supersedes: []"
+    expect:
+      validator: artifact
+      outcome: red
+      mustContain: is built on a superseded baseline
+
+  - id: EV-GATE-008
+    name: 同一映射内重复 sourceRefs 键必须当场解析失败判红
+    layer: structure
+    given: evals/gate/fixtures/legacy-v1-dupkey
+    # 出处：issue/WorkFlow/2026-10-10/02 现象实测输出原文第 1 行
+    # 「cannot parse YAML ...manifest.yaml: duplicate YAML key: 'sourceRefs'」。夹具复刻该案偏差形状。
+    issueRef: issue/WorkFlow/2026-10-10/02-业务项目控制文件偏离v2契约致Gate从未被机械校验.md
+    expect:
+      validator: artifact
+      outcome: red
+      mustContain: duplicate YAML key
+
+  - id: EV-GATE-009
+    name: workflow.yaml 用 v1 形状（无顶层 gate）必须判红
+    layer: structure
+    given: evals/gate/fixtures/legacy-v1-dupkey
+    # 出处：同条 issue 现象实测输出第 2 行「workflow has invalid gate: None」——
+    # gate/allowDownstream 的机械执法从没发生，正是该条要闭合的「量具没接上」。
+    issueRef: issue/WorkFlow/2026-10-10/02-业务项目控制文件偏离v2契约致Gate从未被机械校验.md
+    expect:
+      validator: gate
+      outcome: red
+      mustContain: "workflow has invalid gate: None"
+
+  - id: EV-GATE-010
+    name: status 写枚举外 APPROVED_SUPERSEDED 必须判红
+    layer: structure
+    given: evals/gate/fixtures/legacy-v1-status
+    # 出处：同条 issue 偏差表「status 枚举」行——APPROVED_SUPERSEDED 同时宣称「批准」与「已作废」，
+    # 修复判据＝枚举外状态必须被量具当场拒绝（该案实测：若校验器当时可解析，此值会当场报错）。
+    issueRef: issue/WorkFlow/2026-10-10/02-业务项目控制文件偏离v2契约致Gate从未被机械校验.md
+    expect:
+      validator: artifact
+      outcome: red
+      mustContain: "has invalid status: APPROVED_SUPERSEDED"
+
+  - id: EV-GATE-011
+    name: 条目缺 lifecycle 等必填字段（v1 建档形状）必须判红
+    layer: structure
+    given: evals/gate/fixtures/legacy-v1-status
+    # 出处：同条 issue 偏差表「必填字段」行（lifecycle/owner/producedAt 三条全无，24/24 条缺）。
+    issueRef: issue/WorkFlow/2026-10-10/02-业务项目控制文件偏离v2契约致Gate从未被机械校验.md
+    expect:
+      validator: artifact
+      outcome: red
+      mustContain: "missing required field: lifecycle"
+
   - id: EV-GATE-101
     name: 需求未冻结前不得先抛技术选型问题（真跑 codex+DS）
     layer: behaviour

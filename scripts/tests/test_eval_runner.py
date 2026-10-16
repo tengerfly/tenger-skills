@@ -176,6 +176,45 @@ class QuestionScopeJudgingTests(unittest.TestCase):
         self.assertEqual("error", self._judge("我已经把 intake 落盘了，无需你补充。")["status"])
 
 
+class GateL2BackflowEvalTests(unittest.TestCase):
+    """2026-10-15 L2 回流补线的对照组（EV-GATE-006..011，指回 issue/WorkFlow/2026-10-10/01、/02）。
+
+    红用例全部断言具体判据文本（mustContain），且逐条先被翻红一遍：
+    ① red 期望改成 green 必须报 failed；② mustContain 换成不存在的文本必须报 failed；
+    ③ 判绿对照（EV-GATE-006）被注入违规后仍期望 green 必须报 failed——防「is built on a
+    superseded baseline」这条新检出口径漂成过罚合规产物。
+    """
+
+    RED_CASES = ("EV-GATE-007", "EV-GATE-008", "EV-GATE-009", "EV-GATE-010", "EV-GATE-011")
+
+    def test_red_cases_flipped_to_green_report_failed(self):
+        for case_id in self.RED_CASES:
+            drifted = copy.deepcopy(case(case_id))
+            self.assertEqual(drifted["expect"]["outcome"], "red")
+            drifted["expect"]["outcome"] = "green"
+            result = evaluator.run_case(drifted)
+            self.assertEqual(result["status"], "failed", f"{case_id} 的 red 期望可以随便调绿")
+
+    def test_absent_finding_text_cannot_borrow_an_unrelated_failure(self):
+        for case_id in self.RED_CASES:
+            weak = copy.deepcopy(case(case_id))
+            weak["expect"]["mustContain"] = "这段判据文本不存在"
+            self.assertEqual(evaluator.run_case(weak)["status"], "failed",
+                             f"{case_id} 只看红/绿就能借别的错通过")
+
+    def test_green_control_flips_to_failed_when_the_violation_is_injected(self):
+        broken = copy.deepcopy(case("EV-GATE-006"))
+        broken["tamper"] = copy.deepcopy(case("EV-GATE-007")["tamper"])
+        result = evaluator.run_case(broken)
+        self.assertEqual(result["status"], "failed")
+        self.assertEqual(result["outcome"], "red")
+
+    def test_backflow_issue_refs_resolve_not_dangling(self):
+        # 接线本身腐烂（条目改名/路径写错）时 run_case 必须报 error，而不是静默失去回流覆盖
+        for case_id in ("EV-GATE-007", "EV-GATE-008", "EV-GATE-009", "EV-GATE-010", "EV-GATE-011"):
+            self.assertEqual(evaluator.issue_ref_problem(case(case_id)), "", case_id)
+
+
 class WorkflowGraphEvalTests(unittest.TestCase):
     """§4.3 第 3 条「故意让 skill 跳步 → 评测必须失败」的反向对照。
 
