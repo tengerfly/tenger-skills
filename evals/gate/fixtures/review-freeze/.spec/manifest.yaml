@@ -1,0 +1,14 @@
+version: 1
+projectId: eval-review-freeze
+artifacts:
+- artifactId: TR-REPORT-R4
+  type: validation-report
+  path: .spec/技术方案评审/批次4-技术方案评审汇总.md
+  lifecycle: CREATE
+  owner: tech-review
+  status: REVIEW
+  producedBy: tech-review
+  producedAt: '2026-09-17T10:00:00+08:00'
+  sourceRefs: []
+  evidenceRefs: []
+  decisionRefs: []

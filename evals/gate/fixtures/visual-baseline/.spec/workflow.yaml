@@ -1,0 +1,32 @@
+# 夹具形状：⑩-后 后端批次在「无视觉基线」条件下放行 —— 合规写法＝ CONDITIONAL + 例外登记 + 用户批准挂账。
+# 判据出处 issue/WorkFlow/2026-09-23/04 修复判据 ③「技术设计批次若输入基线声明『设计稿：无』，
+# 须同时登记为例外（EXC）并写明用户批准出处」＋落地 §5.1「视觉基线缺失须登记例外」。
+# dueAt／expiresAt 写死远期：夹具要长期判绿，合规产物不能因日历漂移被误罚（真项目须填真实期限）。
+version: 1
+workflowId: WF-EVAL-VB
+projectId: eval-visual-baseline
+executionId: EXEC-EVAL-VB
+lifecycle: CREATE
+state: TECH_DESIGN_IN_PROGRESS
+currentSkill: backend-tech-design
+gate: CONDITIONAL
+allowDownstream: true
+artifactRefs:
+- ART-TDD-V1
+evidenceRefs:
+- EVID-VISUAL-CHECK
+decisionRefs:
+- DEC-VISUAL-001
+reason: visual-baseline-missing-registered-as-exception
+nextAction: 设计稿产出后按 §5.1 启动 ⑩-前 批次
+unresolvedRisks:
+- severity: P2
+  description: 本批次无视觉基线，前端渲染策略条款须在 FTDD 阶段回收
+  owner: backend-tech-design
+exceptionId: EXC-VISUAL-001
+risk: 后端批次先于设计稿，版式决策可能被顺手定掉
+owner: backend-tech-design
+dueAt: '2099-12-31T23:59:59+08:00'
+remediation: ui-ux-design（B 路径自写）→ ui-ux-review → frontend-tech-design
+approvalRef: DEC-VISUAL-001
+revision: visual-baseline-exception

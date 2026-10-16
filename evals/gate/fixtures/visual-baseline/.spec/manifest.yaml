@@ -1,0 +1,35 @@
+# 夹具台账：后端技术设计批次 + 视觉基线缺失的例外批准记录（decision）。
+# decision 只作溯源挂账，不参与摘要核对（validate_core.check_digests 对 type=decision 跳过）。
+version: 1
+projectId: eval-visual-baseline
+artifacts:
+- artifactId: ART-TDD-V1
+  type: tech-design
+  path: .spec/TDD/整体技术框架.md
+  lifecycle: CREATE
+  owner: backend-tech-design
+  status: REVIEW
+  producedBy: backend-tech-design
+  producedAt: '2026-09-23T10:00:00+08:00'
+  sourceRefs: []
+  evidenceRefs: []
+  decisionRefs: []
+- artifactId: EVID-VISUAL-CHECK
+  type: validation-report
+  path: .spec/技术方案评审/后端批次-视觉基线核对.md
+  lifecycle: CREATE
+  owner: tech-review
+  status: REVIEW
+  producedBy: tech-review
+  producedAt: '2026-09-23T11:00:00+08:00'
+  sourceRefs: []
+  evidenceRefs: []
+  decisionRefs: []
+- artifactId: DEC-VISUAL-001
+  type: decision
+  path: .spec/decisions/DEC-VISUAL-001.yaml
+  lifecycle: CREATE
+  owner: backend-tech-design
+  status: APPROVED
+  producedBy: user
+  producedAt: '2026-09-23T11:30:00+08:00'

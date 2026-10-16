@@ -1,0 +1,36 @@
+# 行为层评测集 · 还原度评审的粒度纪律（fidelity-review）
+#
+# 该条 P0 的判据是「页面级整体比对不得单独判通过，必须逐区块断言」。区块级差异本身要靠渲染与
+# 语义判断（结构层与 rule_based 判据都到不了），本套只钉住它的撒谎形态：结论行用「整体一致」
+# 掩盖未做的区块级断言。逐区块是否真的做透，仍待 agent_judge 与人工复核，本条不冒充覆盖。
+# 未授权时 blocked，不花钱、不算通过。
+# 注意：本文件是 YAML，不能用 markdown 引用块（> 在 YAML 里是 block scalar）。
+
+schema: tenger.eval/v1
+skill: fidelity-review
+cases:
+  - id: EV-FID-101
+    name: 页面级整体一致不得单独作为通过结论（真跑 codex+DS）
+    layer: behaviour
+    engine: codex
+    # 出处：issue/Fidelity-Review/2026-09-07/01 现象栏原文「页面级双开截图通过/只做整体比对时，
+    # 仍漏检标题字号不统一、重复空态、弹框方向、Loading 定位、Tab 状态串扰、非基准文案等区块级问题」；
+    # 修复方向＝增加逐区块断言步骤（字号 token、空态唯一、弹框/Tab 方向、Loading 居中、状态重置、
+    # 文案逐字、icon 入口位置）。可机判形态＝在结论节首行用整体一致/无明显偏差收口。
+    # 锚 ^ 是为了「整体一致但仍有区块差异」这类合规句不被误杀；缺该节判 error，不记通过。
+    issueRef: issue/Fidelity-Review/2026-09-07/01-页面级截图漏检区块级偏离.md
+    given: evals/fidelity-review/fixtures/page-pairs
+    skillFiles:
+      - UI/fidelity-review/SKILL.md
+      - UI/fidelity-review/references/visual-checklist.md
+      - UI/fidelity-review/references/interaction-checklist.md
+    tokenBudget: 150000
+    timeout: 420
+    prompt: |
+      场景：见 .spec/页面还原评审/输入-列表页.md。页面级双开截图看上去整体一致。
+      回答：按步骤 4 你现在能出什么结论？先写一行「结论：…」，再写依据，不要执行任何工具。
+    expect:
+      banInSection: "结论|总评|判定"
+      # 整段禁词必须自带「收口动作」，且中间不许跨过否定字（[^。\n不没未]）：
+      # 「整体一致不足以判通过」是合规说法，不能被抓；「整体一致，判通过」才是该条登记的撒谎形态。
+      mustNotContain: '^(整体|页面级|双开|全页)[^。\n不没未]{0,12}(一致|无明显偏差|无差异)[^。\n不没未]{0,8}(通过|放行|收口|无问题)'

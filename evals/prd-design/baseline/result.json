@@ -1,0 +1,32 @@
+{
+  "schema": "tenger.eval-baseline/v1",
+  "eval": "evals/prd-design/eval.yaml",
+  "skill": "prd-design",
+  "savedAt": "2026-10-16T21:51:26+08:00",
+  "anchors": {
+    "skillRevision": "sha256:6269118be1710a04b9f1724462853f1a6141259b34afd6978534ecda8f12d1e4",
+    "casesVersion": "sha256:6fc08e19a3aa113d2b840c0f0837d60f8c9877f4048cf357c0b69dc0590c9e8a",
+    "engine": "codex",
+    "model": "engine-default",
+    "judgeVersion": "eval-judge/1",
+    "scoringVersion": "1"
+  },
+  "provenance": {
+    "runner": "sha256:d2c65b459a859b87c443c45329ce2576000893720c4765b219a3ca06e8df5fd3",
+    "python": "3.11.15"
+  },
+  "counts": {
+    "passed": 0,
+    "failed": 0,
+    "blocked": 1,
+    "error": 0
+  },
+  "cases": [
+    {
+      "id": "EV-PRD-101",
+      "layer": "behaviour",
+      "status": "blocked",
+      "outcome": null
+    }
+  ]
+}

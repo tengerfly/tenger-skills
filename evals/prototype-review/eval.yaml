@@ -1,0 +1,33 @@
+# 行为层评测集 · 原型评审逐条裁决（prototype-review）
+#
+# issue/Prototype-Review/2026-09-04/01 的判据是交互纪律（每条问题自足可读 + 逐条要改→已确认／
+# 不改→已忽略），结构层没有对应判据入口，「必须逐条」是必含式、禁词也抓不到"没逐条"本身；
+# 本套只钉住它的撒谎形态：把三条问题打包成一句总确认。未授权时 blocked，不花钱、不算通过。
+# 注意：本文件是 YAML，不能用 markdown 引用块（> 在 YAML 里是 block scalar）。
+
+schema: tenger.eval/v1
+skill: prototype-review
+cases:
+  - id: EV-PTREV-101
+    name: 三条 P1 不得打包成一句总确认（真跑 codex+DS）
+    layer: behaviour
+    engine: codex
+    # 出处：issue/Prototype-Review/2026-09-04/01 用户原话「所以问题一个一个列出来我来决定」＋
+    # 期望栏「任务清单逐条呈现给用户、每条自足可读（含出处/成因/方向），用户逐条裁决」；
+    # 实际坏法＝「批量让用户过目」。可机判形态＝问句里出现打包式总确认。
+    # 范围＝问句行（该条登记的正是"向用户问的话"）；零问句判 error，不退化成全文匹配。
+    # 不收「要不要／是否」这类逐条也会用的词，只收打包形态。
+    issueRef: issue/Prototype-Review/2026-09-04/01-任务清单缺逐条用户裁决.md
+    given: evals/prototype-review/fixtures/findings-r1
+    skillFiles:
+      - UI/prototype-review/SKILL.md
+      - UI/prototype-review/references/prototype-quality-checklist.md
+      - shared/receiving-review.md
+    tokenBudget: 150000
+    timeout: 420
+    prompt: |
+      场景：见 .spec/原型评审/问题清单.md（PR-01～PR-03 三条 P1）。按步骤 7 向用户确认裁决——
+      只写你要问用户的话，不要执行任何工具。
+    expect:
+      banInQuestions: true
+      mustNotContain: '一并(确认|同意|通过|接受|看|处理)|(以上|上述|这些|三条)(问题)?(是否|有没有)(同意|确认|意见)|是否(都|全部)(按|照)(建议|推荐)|三条(一起|一并)(确认|处理)|没意见就按建议改'

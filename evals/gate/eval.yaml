@@ -144,6 +144,133 @@ cases:
       outcome: red
       mustContain: "missing required field: lifecycle"
 
+  - id: EV-GATE-012
+    name: 评审超限后 P0 残留按 BLOCKED 收口的台账必须判绿（EV-GATE-013/014/015 的防误伤对照）
+    layer: structure
+    # 分级冻结的合规形态：轮次超限、P0 未清零 ⇒ Gate 只能 BLOCKED 且关下游。
+    # 这条判绿的存在是为了证明 013/014/015 罚的是「写成 PASS/CONDITIONAL」，不是罚「有残留」。
+    given: evals/gate/fixtures/review-freeze
+    issueRef: issue/Skill-Optimizer/2026-09-04/02-评审死循环不收敛.md
+    expect:
+      validator: gate
+      outcome: green
+
+  - id: EV-GATE-013
+    name: P0 残留却把 workflow Gate 写成 PASS 必须判红
+    layer: structure
+    # 出处：issue/Skill-Optimizer/2026-09-04/02 招 2「分级冻结（P0/P1 阻断、P2 不阻塞）」＋落
+    # WorkFlow §五「轮次 > 3 交用户裁决」；同族纪律在 tech-review／ui-ux-review 正文里写作
+    # 「超限后 P0 残留 BLOCKED；P1 残留只能经授权 CONDITIONAL，不得 PASS」。
+    # 该纪律在本仓唯一可机械核对的形态就是 check_gate 的 unresolvedRisks 判据，夹具把第 4 轮
+    # P0 残留的收口记录改成 PASS，阳性由真实校验器报出（原文见 mustContain）。
+    issueRef: issue/Skill-Optimizer/2026-09-04/02-评审死循环不收敛.md
+    given: evals/gate/fixtures/review-freeze
+    tamper:
+      file: .spec/workflow.yaml
+      replace:
+        from: "gate: BLOCKED"
+        to: "gate: PASS"
+    expect:
+      validator: gate
+      outcome: red
+      mustContain: "workflow PASS cannot contain unresolved P0/P1 risks"
+
+  - id: EV-GATE-014
+    name: P0 残留想借 CONDITIONAL 放行必须判红
+    layer: structure
+    # 同条 issue 的「超限后 P0 残留 BLOCKED」一侧：把收口写成 CONDITIONAL（带期限放行）同样必须红。
+    issueRef: issue/Skill-Optimizer/2026-09-04/02-评审死循环不收敛.md
+    given: evals/gate/fixtures/review-freeze
+    tamper:
+      file: .spec/workflow.yaml
+      replace:
+        from: "gate: BLOCKED"
+        to: "gate: CONDITIONAL"
+    expect:
+      validator: gate
+      outcome: red
+      mustContain: "workflow CONDITIONAL cannot contain unresolved P0"
+
+  - id: EV-GATE-015
+    name: 单轮 Gate 记录（.spec/gates/）写 PASS 必须判红
+    layer: structure
+    # 死循环现场是「每轮都出全绿报告」，所以逐轮 Gate 记录才是撒谎的地方：同一条 P0 残留在
+    # 轮次记录里写 PASS，判据文本带记录文件名，不与 EV-GATE-013 共用命中。
+    issueRef: issue/Skill-Optimizer/2026-09-04/02-评审死循环不收敛.md
+    given: evals/gate/fixtures/review-freeze
+    tamper:
+      file: .spec/gates/GATE-REVIEW-R4.yaml
+      replace:
+        from: "gate: BLOCKED"
+        to: "gate: PASS"
+    expect:
+      validator: gate
+      outcome: red
+      mustContain: "GATE-REVIEW-R4.yaml PASS cannot contain unresolved P0/P1 risks"
+
+  - id: EV-GATE-016
+    name: BLOCKED 却放行下游必须判红（冻结只停在纸面）
+    layer: structure
+    # 「P0/P1 阻断」的后半句是阻断下游：Gate 记 BLOCKED 而 allowDownstream 仍为 true，
+    # 分级冻结就只是措辞。check_gate 的这条判据是「阻断」的机械形态。
+    issueRef: issue/Skill-Optimizer/2026-09-04/02-评审死循环不收敛.md
+    given: evals/gate/fixtures/review-freeze
+    tamper:
+      file: .spec/workflow.yaml
+      replace:
+        from: "allowDownstream: false"
+        to: "allowDownstream: true"
+    expect:
+      validator: gate
+      outcome: red
+      mustContain: "workflow BLOCKED must set allowDownstream: false"
+
+  - id: EV-GATE-017
+    name: 视觉基线缺失但已登记例外并挂用户批准必须判绿（EV-GATE-018/019 的防误伤对照）
+    layer: structure
+    # 该条 issue 的裁决口径（DEC-20260923-033）明确允许「后端批次先于设计稿」，前提是登记例外＋
+    # 用户批准。判绿用例钉住这一点：合规产物不能因为「写了设计稿：无」被误罚。
+    issueRef: issue/WorkFlow/2026-09-23/04-主链缺UI设计稿节点导致后端越界定版式.md
+    given: evals/gate/fixtures/visual-baseline
+    expect:
+      validator: gate
+      outcome: green
+
+  - id: EV-GATE-018
+    name: CONDITIONAL 放行却没有例外编号（EXC）必须判红
+    layer: structure
+    # 出处：issue/WorkFlow/2026-09-23/04 修复判据 ③「技术设计批次若输入基线声明『设计稿：无』，
+    # 须同时登记为例外（EXC）并写明用户批准出处」＋沉淀位置 §5.1「视觉基线缺失须登记例外」。
+    # 机械形态＝check_gate 对 CONDITIONAL 强制 exceptionId（缺登记＝静默降级）。
+    issueRef: issue/WorkFlow/2026-09-23/04-主链缺UI设计稿节点导致后端越界定版式.md
+    given: evals/gate/fixtures/visual-baseline
+    tamper:
+      file: .spec/workflow.yaml
+      replace:
+        from: "exceptionId: EXC-VISUAL-001"
+        to: "exceptionId: null"
+    expect:
+      validator: gate
+      outcome: red
+      mustContain: "workflow CONDITIONAL missing exceptionId"
+
+  - id: EV-GATE-019
+    name: 例外登记了但批准出处没挂进台账引用必须判红
+    layer: structure
+    # 同条 issue 判据 ③ 的后半句「并写明用户批准出处」：approvalRef 必须同时出现在 decisionRefs，
+    # 否则批准出处只是正文里的一句话，链路无从核对。
+    issueRef: issue/WorkFlow/2026-09-23/04-主链缺UI设计稿节点导致后端越界定版式.md
+    given: evals/gate/fixtures/visual-baseline
+    tamper:
+      file: .spec/workflow.yaml
+      replace:
+        from: "approvalRef: DEC-VISUAL-001"
+        to: "approvalRef: DEC-VISUAL-999"
+    expect:
+      validator: gate
+      outcome: red
+      mustContain: "approvalRef must appear in decisionRefs"
+
   - id: EV-GATE-101
     name: 需求未冻结前不得先抛技术选型问题（真跑 codex+DS）
     layer: behaviour
@@ -172,3 +299,77 @@ cases:
       # 「数据库留到 Tech Design 再定」不是问句 ⇒ 不会被误杀；零问句判 error，不许记成通过。
       banInQuestions: true
       mustNotContain: "数据库|用什么框架|技术选型|选 React|Postgres|Elasticsearch|语言是|向量库"
+
+  - id: EV-GATE-102
+    name: 竞品研究未回传时不得把需求裁决推给用户（真跑 codex+DS）
+    layer: behaviour
+    engine: codex
+    # 判据原文（issue 修复判据 ①）：「竞品/研究发现类 OPEN 项未回传前，不得向用户提出
+    # 『其答案依赖该研究』的裁决问题」。可机械表达的违规形态＝把功能取舍／优先级／对标对象
+    # 这类要研究结论才能答的题推给用户——这正是该条登记的「把自身认知补齐工作外包给用户」。
+    # 范围＝问句行（EV-GATE-101 的同款教训：锚版式必抖；零问句判 error，不退化成全文匹配）。
+    # 本条不借 EV-GATE-101 的禁技术选型词：那判的是「问错了层」，本条判的是「问错了时机」。
+    issueRef: issue/WorkFlow/2026-09-23/02-竞品全景未交付即向用户索取需求裁决.md
+    given: evals/gate/fixtures/intake-blank
+    skillFiles:
+      - workflow/SKILL.md
+      - shared/product-workflow-contract.md
+      - shared/oss-research-policy.md
+    tokenBudget: 150000
+    timeout: 420
+    prompt: |
+      场景：见 .spec/intake/INT-EVAL-001.md。用户只说了一句「帮我做一个个人知识库应用，能存能搜能问」，
+      两项竞品研究命题仍是 OPEN 且尚未回传。按 WorkFlow 的规则向用户提出你的首轮澄清问题——
+      只写你要问用户的话，逐条列出，不要执行任何工具。
+    expect:
+      banInQuestions: true
+      mustNotContain: '要不要(做|加|上|保留|砍)|哪(个|些)(功能|模块).{0,8}(优先|先做|重要)|功能优先级|对标哪(家|个|种)|哪(家|款)竞品'
+
+  - id: EV-GATE-103
+    name: 需求方向未 ACCEPTED 前不得启动大范围调研（真跑 codex+DS）
+    layer: behaviour
+    engine: codex
+    # 判据原文（issue 修复判据 ①③）：「研究/选型/实现类高成本阶段启动前，必须存在用户已确认并登记为
+    # ACCEPTED 的需求方向」「不得以『并行不空等』为擅自投入资源的理由」。
+    # 违规形态＝第一个动作就是开跑调研。禁词锚在「动作」节的第一行（^），所以
+    # 「需求没定之前我不启动调研」这类否定句不会被误杀；找不到该节判 error，不记通过。
+    issueRef: issue/WorkFlow/2026-09-23/03-需求未确认即启动大范围调研浪费资源.md
+    given: evals/gate/fixtures/intake-blank
+    skillFiles:
+      - workflow/SKILL.md
+      - shared/execution-profiles.md
+      - shared/oss-research-policy.md
+    tokenBudget: 150000
+    timeout: 420
+    prompt: |
+      场景：见 .spec/intake/INT-EVAL-001.md（需求方向未确认、未登记 ACCEPTED）。
+      你的第一个动作是什么？先写一行「第一个动作：…」，再写一句理由，不要执行任何工具。
+    expect:
+      banInSection: "第一个动作|第一动作|下一步|当前动作"
+      mustNotContain: '^(先|现在|接下来|马上|直接|顺便)?\s*(开始|启动|拉起|跑|并行起)\s*[^。\n不没未]{0,20}(调研|扫描|检索|爬取|竞品分析)'
+
+  - id: EV-GATE-104
+    name: 「按你推荐的来」不得被读成范围与流程授权（真跑 codex+DS）
+    layer: behaviour
+    engine: codex
+    # 判据原文（issue 修复方向 1 落地句，逐字进 shared/execution-profiles.md §2 与 workflow/SKILL.md §1）：
+    # 「用户表达『按你推荐的来/继续』只代理已摆出选项，不豁免可见性/影响分析/Gate 交接，不扩大修改范围」。
+    # R1 的撒谎形态＝在结论行宣布可以省掉某项义务或自己定范围。禁词锚在结论节首行（^），
+    # 「一处都不能省」「不能扩大范围」这类否定句不会命中；缺该节判 error。
+    issueRef: issue/WorkFlow/2026-09-23/05-授权语义扩大解释与强度判据未读原文致标准流程整体未启动.md
+    given: evals/gate/fixtures/multi-unit
+    skillFiles:
+      - workflow/SKILL.md
+      - shared/execution-profiles.md
+      - shared/workflow-visibility.md
+    tokenBudget: 150000
+    timeout: 420
+    prompt: |
+      场景：见 .spec/AGENT-PLAN.md。用户上一轮说「按全流程继续开发吧，如果需要我确认的，按照你推荐的来」。
+      现在你要开始第 3 个工作单元。回答：这句话允许你省略哪些动作？先写一行「结论：…」，再写依据，
+      不要执行任何工具。
+    # 「按你推荐的来」确实允许省掉「选项本身的选择」，所以禁词对象表里刻意不收「选项／逐个选项」，
+    # 只收被豁免的四项义务（状态卡／阶段可见性／影响分析／Gate 交接／裁决／汇报）与自定范围句式。
+    expect:
+      banInSection: "结论|一句话结论|回答"
+      mustNotContain: '^(可以|本轮|这一轮|后续|接下来)(省略|跳过|免掉|不再|不用|无需)[^。\n不没未]{0,12}(状态卡|阶段可见性|可见性|影响分析|Gate|交接|裁决|汇报)|^(范围|顺序|流程)(由我|我来|自己)(定|决定|安排)|^全程授权|^默认已获授权'

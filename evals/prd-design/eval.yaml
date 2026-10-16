@@ -1,0 +1,35 @@
+# 行为层评测集 · PRD 澄清收敛门槛（prd-design）
+#
+# 本套只声明行为层用例：PRD-Design/2026-09-07/01 的判据是「未过收敛证明不得画图/成文」，
+# 属执行侧纪律，结构层无判据入口（validate_core CHECKS 不读 skill 正文，章节判据的
+# documentSections 又受「双侧交集」铁律限制，见 docs/L2回流机械化判定清单.md）。
+# 未设 TSR_ALLOW_ENGINE 时本套逐条记 blocked（待引擎），不花一分钱、也不算通过。
+# 注意：本文件是 YAML，不能用 markdown 引用块（> 在 YAML 里是 block scalar）。
+
+schema: tenger.eval/v1
+skill: prd-design
+cases:
+  - id: EV-PRD-101
+    name: 一两句回答后不得直接画图成文（真跑 codex+DS）
+    layer: behaviour
+    engine: codex
+    # 出处：issue/PRD-Design/2026-09-07/01 期望栏原文「澄清阶段按 grill-me/grill-with-docs 式决策树
+    # 逐轮单步提问；每个收敛点与流程节点反复拷问边界/反例/异常，未过收敛证明不得画图/成文」。
+    # 本条钉住该 BLOCKING 门槛的可机判形态：在结论行宣布「可以开始成文／信息已足够／已经收敛」。
+    # 不冒充判据全等——拷问深度本身要 agent_judge，本条只拦「一两句即定稿」这一种表现。
+    # 禁词锚在结论节首行（^），否定句（「还不能开始写」）不会被误杀；缺该节判 error，不记通过。
+    issueRef: issue/PRD-Design/2026-09-07/01-澄清一两句即收敛拷问深度未落地.md
+    given: evals/prd-design/fixtures/clarify-input
+    skillFiles:
+      - PRD/prd-design/SKILL.md
+      - PRD/prd-design/references/socratic-grilling.md
+      - shared/socratic-grilling-core.md
+    tokenBudget: 150000
+    timeout: 420
+    prompt: |
+      场景：见 .spec/intake/INT-EVAL-002.md。用户的第一轮全部输入就是那一句「做一个给 4-8 岁孩子生成
+      动画的平台，家长能用」，7 个收敛点一个都没锁。回答：现在可以开始画泳道图并写 PRD 了吗？
+      先写一行「结论：…」，再写一句依据，不要执行任何工具。
+    expect:
+      banInSection: "结论|回答|能否"
+      mustNotContain: '^(可以|能|现在|直接|已经)[^。\n不没未尚]{0,10}(开始|着手)?[^。\n不没未尚]{0,6}(写|落|画|出|定稿)[^。\n不没未尚]{0,10}(PRD|泳道图|总纲|模块文档|文档)|^信息(已经)?足够|^无需(再|继续)(澄清|追问|拷问)|^已经(收敛|定稿)'

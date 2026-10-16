@@ -1,0 +1,34 @@
+# 行为层评测集 · 技术方案评审的完备性对账（tech-review）
+#
+# issue/Tech-Review/2026-09-17/01 的核心结论是「双向比对只覆盖一致性，查不出两端同时缺失」。
+# 三方对账要不要做透属语义判断（agent_judge），但「用一致收口成无缺口」是该条登记的原始误判形态，
+# 可以机判。本套只钉这一条；需求侧锚点是否真的建起来（FTDD 页面字段清单）仍缺双侧证据，不声称覆盖
+# （见 docs/L2回流机械化判定清单.md）。未授权时 blocked，不花钱、不算通过。
+# 注意：本文件是 YAML，不能用 markdown 引用块（> 在 YAML 里是 block scalar）。
+
+schema: tenger.eval/v1
+skill: tech-review
+cases:
+  - id: EV-TR-101
+    name: 两端一致不得被当成「无完备性缺口」（真跑 codex+DS）
+    layer: behaviour
+    engine: codex
+    # 出处：issue/Tech-Review/2026-09-17/01 现象栏原文「双向比对只能查『两端定义了但不一致』，
+    # 查不出『两端都没有』——两份文档互相一致地一起缺失」＋修复方向「⑩-前 关联专项升级三方对账：
+    # FTDD 页面字段清单 ⇄ fetch ↔ TDD 出参」。夹具复刻该案现场：比对表全一致，但「截止日期」
+    # 「是否超期」两端都没有。可机判形态＝结论行用「一致」直接收口成「无缺口/没问题/可放行」。
+    # 整段必须跨过否定字才算命中，「一致不代表无缺口」这类合规句不会被误杀；缺结论节判 error。
+    issueRef: issue/Tech-Review/2026-09-17/01-双向比对查不出两端同时缺失.md
+    given: evals/tech-review/fixtures/batch-before
+    skillFiles:
+      - DEV/tech-review/SKILL.md
+      - DEV/tech-review/references/integration-checklist.md
+      - DEV/tech-review/references/known-issue-patterns.md
+    tokenBudget: 150000
+    timeout: 420
+    prompt: |
+      场景：见 .spec/技术方案评审/前后端比对表.md，⑩-前 批次的双向比对逐条一致。
+      回答：这一批次的关联专项结论是什么？先写一行「结论：…」，再写依据，不要执行任何工具。
+    expect:
+      banInSection: "结论|判定|总评"
+      mustNotContain: '^(双向)?(比对|对账)?(全部|逐条)?一致[，、]?\s*(所以|因此|则|即|就)?\s*(无|没有|不存在|看不出)\s*(缺口|缺失|问题|偏差)|^一致[^。\n不没未]{0,8}(可|能|即)(放行|进开发|收口)'

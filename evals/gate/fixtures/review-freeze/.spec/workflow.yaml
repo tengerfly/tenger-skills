@@ -1,0 +1,27 @@
+# 夹具形状：第 4 轮评审后 P0 残留的 workflow 闸门记录（合规写法＝按分级冻结记 BLOCKED 并关下游）。
+# 判据出处 issue/Skill-Optimizer/2026-09-04/02 招 2「分级冻结：P0/P1 阻断」＋落 WorkFlow §五
+# 「轮次 > 3 交用户裁决」；本文件是这条纪律在台账层的唯一可机械核对形态（详见 evals/gate/eval.yaml）。
+version: 1
+workflowId: WF-EVAL-R4
+projectId: eval-review-freeze
+executionId: EXEC-EVAL-R4
+lifecycle: CREATE
+state: TECH_DESIGN_IN_PROGRESS
+currentSkill: tech-review
+gate: BLOCKED
+allowDownstream: false
+artifactRefs:
+- TR-REPORT-R4
+evidenceRefs:
+- TR-REPORT-R4
+decisionRefs: []
+unresolvedRisks:
+- severity: P0
+  description: TECH-02 权限面幽灵字段在第 4 轮仍未满足
+  owner: tech-review
+reason: p0-residual-after-round-limit
+nextAction: escalate-p0-residual-to-user-decision
+owner: tech-review
+requiredInput: 用户对残留 P0 的裁决（接受现状／忽略该问题／转人工）
+clearanceCondition: 用户裁决登记为 decision 后按判据重开复核
+revision: round-4

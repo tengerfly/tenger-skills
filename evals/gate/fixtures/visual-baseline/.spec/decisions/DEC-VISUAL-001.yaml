@@ -1,0 +1,18 @@
+# 夹具例外批准记录：用户裁决「后端批次可先于设计稿」，同时确认硬约束在设计稿为 FTDD 前置。
+# 形状取自 issue/WorkFlow/2026-09-23/04 记录的 travel-agent DEC-20260923-033 裁决口径。
+decisionId: DEC-VISUAL-001
+projectId: eval-visual-baseline
+executionId: EXEC-EVAL-VB
+decision: approve
+status: APPROVED
+approvedBy: user-owner
+approvedAt: '2026-09-23T11:30:00+08:00'
+expiresAt: '2099-12-31T23:59:59+08:00'
+owner: backend-tech-design
+scope:
+  actions:
+  - accept-risk
+  exceptionId: EXC-VISUAL-001
+  artifactIds:
+  - ART-TDD-V1
+rationale: 后端方案输入为 PRD／原型结构／blueprint，不吃视觉稿；设计稿仍是 FTDD、frontend-dev、fidelity-review 的前置

@@ -2,23 +2,23 @@
   "schema": "tenger.eval-baseline/v1",
   "eval": "evals/tech-design/eval.yaml",
   "skill": "backend-tech-design",
-  "savedAt": "2026-10-16T20:27:49+08:00",
+  "savedAt": "2026-10-16T21:51:28+08:00",
   "anchors": {
     "skillRevision": "sha256:8246b1a2302b26a7f845e9943ffba27dae1f0dd8d675396beb8bde3971df875e",
-    "casesVersion": "sha256:781fa1c4782b065368b607328810db3bce2ac35e1644414ecad8454dfa2ba3ab",
+    "casesVersion": "sha256:c718ba01c7113f03110b7cd96982e4d088d4af9a40cbb8492eb176509465cb16",
     "engine": "codex",
     "model": "engine-default",
     "judgeVersion": "eval-judge/1",
     "scoringVersion": "1"
   },
   "provenance": {
-    "runner": "sha256:90dbc87e1cd98a3a70258983edf647d8010c2abc8be61e44b5575c9a2d9dfa2d",
+    "runner": "sha256:d2c65b459a859b87c443c45329ce2576000893720c4765b219a3ca06e8df5fd3",
     "python": "3.11.15"
   },
   "counts": {
     "passed": 3,
     "failed": 0,
-    "blocked": 1,
+    "blocked": 2,
     "error": 0
   },
   "cases": [
@@ -42,6 +42,12 @@
     },
     {
       "id": "EV-TDD-101",
+      "layer": "behaviour",
+      "status": "blocked",
+      "outcome": null
+    },
+    {
+      "id": "EV-TDD-102",
       "layer": "behaviour",
       "status": "blocked",
       "outcome": null

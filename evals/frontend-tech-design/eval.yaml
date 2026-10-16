@@ -1,0 +1,114 @@
+# 行为层评测集 · 前端方案与施工的收敛门槛、契约出口（frontend-tech-design ＋ frontend-dev）
+#
+# 四条 issue 的判据都在执行侧：选型拷问收敛、方案期当场裁决字段缺口、设计稿唯一权威零加戏、
+# Ext 补位须有出口。结构层没有等价判据入口——页面字段清单只在声明侧存在，真实 FTDD 文档从未
+# 产出过含该标题的产物，双侧交集证不出来 ⇒ 不新增 documentSections（铁律见判定清单）。
+# 未授权时逐条 blocked，不花钱、不算通过。
+#
+# 盲区如实写明（EV-FE-101／EV-FE-102）：这两条的被测正文是 DEV/frontend-dev，但本套的
+# skillRevision 锚只覆盖 skill 字段指向的 DEV/frontend-tech-design ＋ shared/。原因不在评测集：
+# DEV/frontend-dev/assets/frontend-template-vue3/node_modules 里有一批未跟踪的 pnpm 软链，
+# 目标已悬空，`baseline.skill_sources` 的 rglob 撞上就 FileNotFoundError ⇒ 本机根本没法为
+# skill: frontend-dev 建锚。修法（清掉模板里的 node_modules，或给锚计算加容错）都在本格边界外，
+# 所以先挂在本套并留这条注：frontend-dev 正文改动不会自动作废这两条基线，复核时要人工看一眼。
+# 注意：本文件是 YAML，不能用 markdown 引用块（> 在 YAML 里是 block scalar）。
+
+schema: tenger.eval/v1
+skill: frontend-tech-design
+cases:
+  - id: EV-FTDD-101
+    name: 选型未拷问完不得「问完即定稿」（真跑 codex+DS）
+    layer: behaviour
+    engine: codex
+    # 出处：issue/Frontend-Tech-Design/2026-09-07/01 期望栏原文「每个选型/拆分/数据流决策按决策树
+    # 单步提问反复拷问（失败/涨 10 倍/漏项 + 边界 + 节点），未过收敛证明不得写入 overview 或模块文档」；
+    # 现象栏点名的正是「一次一问、推荐前置、问完即定稿」这种意图性措辞被一句确认带过。
+    issueRef: issue/Frontend-Tech-Design/2026-09-07/01-选型澄清一两句即定稿拷问深度未落地.md
+    given: evals/frontend-tech-design/fixtures/clarify-input
+    skillFiles:
+      - DEV/frontend-tech-design/SKILL.md
+      - DEV/frontend-tech-design/references/socratic-grilling.md
+      - shared/socratic-grilling-core.md
+    tokenBudget: 150000
+    timeout: 420
+    prompt: |
+      场景：见 .spec/prd/PRD-M01.md。用户只回了一句「按你判断的来」，暗黑主题、i18n、兼容下限、
+      组件库与路由形态都还没问过，你也没做收敛证明。回答：现在可以定稿 FTDD 总文档了吗？
+      先写一行「结论：…」，再写一句依据，不要执行任何工具。
+    expect:
+      banInSection: "结论|回答|能否"
+      mustNotContain: '^(可以|能|现在|直接|已经)[^。\n不没未尚]{0,10}(开始|着手)?[^。\n不没未尚]{0,6}(写|落|出|定稿)[^。\n不没未尚]{0,10}(overview|总文档|模块方案|FTDD|文档)|^信息(已经)?足够|^无需(再|继续)(澄清|追问|拷问)|^已经(收敛|定稿)'
+
+  - id: EV-FTDD-102
+    name: 页面字段缺口不得推到开发期或联调期（真跑 codex+DS）
+    layer: behaviour
+    engine: codex
+    # 出处：issue/Frontend-Tech-Design/2026-09-17/01 期望栏原文「契约缺口在方案期（FTDD 编写 +
+    # ⑩-前 评审）暴露并关闭，开发期零意外缺字段」；修复方向的裁决动作＝「清单有、TDD 无」= 缺口
+    # 当场裁决留痕。可机判形态＝在下一步/处理节首行把缺口推给开发期或联调期（该条登记的腐化路径）。
+    # 同条 issue 的「必须产出页面字段清单」属必含式判据，禁词表达不了「缺了没写」，本条不声称覆盖它。
+    issueRef: issue/Frontend-Tech-Design/2026-09-17/01-FTDD缺页面字段清单契约完备性无锚点.md
+    given: evals/frontend-tech-design/fixtures/clarify-input
+    skillFiles:
+      - DEV/frontend-tech-design/SKILL.md
+      - DEV/frontend-tech-design/references/decision-rules.md
+      - shared/artifact-contract.md
+    tokenBudget: 150000
+    timeout: 420
+    prompt: |
+      场景：见 .spec/prd/PRD-M01.md。写 FTDD 模块方案 §5 接口对接时，你发现页面要展示「截止日期」和
+      「是否超期」，而后端 TDD 出参里没有这两个字段。回答：你现在怎么处理？
+      先写一行「处理：…」，再写下一步，不要执行任何工具。
+    expect:
+      banInSection: "处理|下一步|方案"
+      mustNotContain: '^(联调|开发期|开发时|后端|后续|以后|之后)(再|时|再说|再对|再补)|^先(按|用|拿)(现有接口|现有字段|缺的|没有的)|^(字段|缺口)(先)?(留|放|拖|等)(着|到|待)?(联调|开发期|开发|后端|以后)'
+
+  - id: EV-FE-101
+    name: 设计稿没画的文案与布局不得自行补（真跑 codex+DS）
+    layer: behaviour
+    engine: codex
+    # 出处：issue/Frontend-Dev/2026-09-07/01 期望栏原文「设计稿唯一权威、逐区块零加戏」，
+    # 实际坏法＝「按模型偏好自创布局/文案/空态」（竖版弹框改横排、自写文案、自加空态）。
+    # 落点：../Frontend-Dev/SKILL.md「设计稿唯一权威 ＋ 零加戏」铁律 ＋ references/fidelity-guide.md。
+    # 可机判形态＝在做法/方案节首行宣布按自己的理解或常见做法补内容；禁词锚 ^ 且跨不过否定字，
+    # 「照设计稿实现，设计稿没画的不自创」不会被误杀；缺该节判 error。
+    # 视觉/区块级比对本身（该条的另一半）需渲染与语义判断，本条不声称覆盖。
+    # 注：本条被测正文是 DEV/frontend-dev，锚盲区见本文件头部说明。
+    issueRef: issue/Frontend-Dev/2026-09-07/01-自创稿与设计稿偏差.md
+    given: evals/frontend-tech-design/fixtures/design-gap
+    skillFiles:
+      - DEV/frontend-dev/SKILL.md
+      - DEV/frontend-dev/references/fidelity-guide.md
+    tokenBudget: 150000
+    timeout: 420
+    prompt: |
+      场景：见 .spec/设计稿/设置弹框.md。设计稿只画了纵向三项与两个按钮，没有写空态、副标题和加载态。
+      现在要实现这个弹框。回答：你怎么做？先写一行「做法：…」，再写理由，不要执行任何工具。
+    expect:
+      banInSection: "做法|实现|方案|下一步"
+      mustNotContain: '^(我|自己)(来|定|加|补|写)|^(按|照)(常见|通用|惯例|经验|我|行业)(做法|惯例|理解|经验)?(再)?(补|加|写|排|做|套)|^顺手(加|补|写)|^自(创|拟)|^加戏|^优化(文案|排版|布局|间距)'
+
+  - id: EV-FE-102
+    name: Ext 补位不得静默存活到联调后（真跑 codex+DS）
+    layer: behaviour
+    engine: codex
+    # 出处：issue/Frontend-Dev/2026-09-17/01 期望栏原文「Ext 补位是临时态，每个缺口有出口……
+    # 联调时前端私有契约清零」，实际坏法＝「留痕只进不出，可静默存活到联调甚至上线」；
+    # 落地的强制位＝S7「临时态非终态 ＋ PROJECT.md 逐条登记 ＋ 联调前清零」。
+    # 可机判形态＝在处理/下一步节首行把补位留到联调后或先留着；锚 ^ 且第三段的字符类跨不过
+    # 「不／没／未」，所以「Ext 不能留着」不会被误杀；缺该节判 error。
+    # 注：本条被测正文同样是 DEV/frontend-dev。
+    issueRef: issue/Frontend-Dev/2026-09-17/01-XxxExt补位无出口可存活到联调后.md
+    given: evals/frontend-tech-design/fixtures/ext-backfill
+    skillFiles:
+      - DEV/frontend-dev/SKILL.md
+      - DEV/frontend-dev/references/decision-rules.md
+      - shared/artifact-contract.md
+    tokenBudget: 150000
+    timeout: 420
+    prompt: |
+      场景：见 .spec/PROJECT.md，两个 XxxExt 补位字段（cardDeadlineExt、overdueExt）出口仍「待定」，
+      马上进联调。回答：这两个补位怎么处理？先写一行「处理：…」，再写下一步，不要执行任何工具。
+    expect:
+      banInSection: "处理|下一步|结论"
+      mustNotContain: '^(先|就)(留着|带着|不管|沿用)|^(联调|上线|以后|后续|之后)(再|时)(清|清理|处理|消化|对齐|补)|^Ext[^。\n不没未]{0,8}(留着|用着|不管|不动)'

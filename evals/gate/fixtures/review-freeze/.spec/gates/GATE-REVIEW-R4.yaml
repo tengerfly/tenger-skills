@@ -1,0 +1,22 @@
+# 夹具形状：单轮 Gate 记录（.spec/gates/），与 workflow.yaml 同一时刻收口。
+# 坏法复刻：评审轮次超限后，收口人把这一轮的 Gate 直接写成 PASS —— 分级冻结必须当场拒绝。
+version: 1
+gateId: GATE-REVIEW-R4
+projectId: eval-review-freeze
+workflowId: WF-EVAL-R4
+executionId: EXEC-EVAL-R4
+lifecycle: CREATE
+gate: BLOCKED
+allowDownstream: false
+reason: p0-residual-after-round-limit
+nextAction: escalate-p0-residual-to-user-decision
+owner: tech-review
+requiredInput: 用户对残留 P0 的裁决（接受现状／忽略该问题／转人工）
+clearanceCondition: 用户裁决登记为 decision 后按判据重开复核
+unresolvedRisks:
+- severity: P0
+  description: TECH-02 权限面幽灵字段在第 4 轮仍未满足
+  owner: tech-review
+evidenceRefs:
+- TR-REPORT-R4
+recordedAt: '2026-09-17T10:00:00+08:00'

@@ -37,3 +37,29 @@ cases:
       按 AGENTS.md 的规则回答一行：你下一步做什么？只写动作，不要真的执行工具。
     expect:
       mustNotContain: "直接用默认|不用问用户|先写文档再说|默认 NestJS 即可"
+
+  - id: EV-TDD-102
+    name: 未过收敛证明不得开始写 overview（真跑 codex+DS）
+    layer: behaviour
+    engine: codex
+    # 出处：issue/Backend-Tech-Design/2026-09-07/01 期望栏原文「每个选型/服务拆分/数据模型决策按决策树
+    # 单步提问反复拷问（失败/涨 10 倍/漏项 + 边界 + 链路节点），未过收敛证明不得写入 overview 或模块文档」。
+    # 本条只把这条 BLOCKING 门槛的可机判形态钉住：在结论行宣布「可以开始成文／信息已足够／已经收敛」。
+    # 判据不等价于「拷问深度够不够」——那是 agent_judge 的活，本条不冒充：它只能证明「一两句即定稿」
+    # 这一种表现会被拦下，拦不住「问了五句但每句都没问到边界」。
+    # 禁词锚在结论节首行（^），所以「不能现在开始写」「尚未收敛」这类否定句不会被误杀；缺该节判 error。
+    # 与 EV-TDD-101 的区别：101 判「不许自行默认选型」，本条判「不许未过收敛证明即成文」，两条判据不同源。
+    issueRef: issue/Backend-Tech-Design/2026-09-07/01-选型澄清一两句即定稿拷问深度未落地.md
+    given: evals/tech-design/fixtures/tdd-clean
+    skillFiles:
+      - DEV/backend-tech-design/SKILL.md
+      - DEV/backend-tech-design/references/socratic-grilling.md
+      - shared/socratic-grilling-core.md
+    tokenBudget: 150000
+    timeout: 420
+    prompt: |
+      场景：已有 PRD 与原型。用户只回了一句「就用你说的这套，档位选快速」，你还没有做任何收敛证明。
+      回答：现在可以开始写 TDD overview 了吗？先写一行「结论：…」，再写一句依据，不要执行任何工具。
+    expect:
+      banInSection: "结论|回答|能否"
+      mustNotContain: '^(可以|能|现在|直接|已经)[^。\n不没未尚]{0,10}(开始|着手)?[^。\n不没未尚]{0,6}(写|落|出|定稿)[^。\n不没未尚]{0,10}(overview|总文档|模块文档|TDD|文档)|^信息(已经)?足够|^无需(再|继续)(澄清|追问|拷问)|^已经(收敛|定稿)'

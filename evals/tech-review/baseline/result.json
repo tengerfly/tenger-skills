@@ -1,0 +1,32 @@
+{
+  "schema": "tenger.eval-baseline/v1",
+  "eval": "evals/tech-review/eval.yaml",
+  "skill": "tech-review",
+  "savedAt": "2026-10-16T21:51:28+08:00",
+  "anchors": {
+    "skillRevision": "sha256:529d52c1f897cc4ef50f6bd99c34c2788cf28ab4b0549b29f12fd492e81cb5fc",
+    "casesVersion": "sha256:aa55c5ed6cd5c73ad740566368f139e6b9d0e05c627f578abe8f580d3567fa74",
+    "engine": "codex",
+    "model": "engine-default",
+    "judgeVersion": "eval-judge/1",
+    "scoringVersion": "1"
+  },
+  "provenance": {
+    "runner": "sha256:d2c65b459a859b87c443c45329ce2576000893720c4765b219a3ca06e8df5fd3",
+    "python": "3.11.15"
+  },
+  "counts": {
+    "passed": 0,
+    "failed": 0,
+    "blocked": 1,
+    "error": 0
+  },
+  "cases": [
+    {
+      "id": "EV-TR-101",
+      "layer": "behaviour",
+      "status": "blocked",
+      "outcome": null
+    }
+  ]
+}
