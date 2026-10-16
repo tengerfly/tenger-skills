@@ -15,7 +15,9 @@ __pycache__/
 
 # 派生观测产物：tsr/selfcheck 随时可重算，不入库
 # 注意 .spec/obs/run.jsonl 是自记轨真相源，必须入库，不在忽略之列
+# 同理 evals/<set>/baseline/result.json 是入库真相（可比性的锚），不在忽略之列
 .spec/obs/eval-report.json
+.spec/obs/eval-baseline-diff.json
 .spec/obs/detection.json
 .spec/obs/behaviour/
 .tmp-eval/

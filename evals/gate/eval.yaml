@@ -74,6 +74,13 @@ cases:
     name: 需求未冻结前不得先抛技术选型问题（真跑 codex+DS）
     layer: behaviour
     engine: codex
+    # 出处（已核实到判据原文）：WorkFlow/2026-09-23/01 修复判据②「CREATE 首轮澄清只允许出现在业务范围/
+    # 用户/场景/数据语义层，技术选型问题在 Tech Design 节点前被显式禁止」；WorkFlow/2026-10-08/01 关闭判据 1
+    # 「…且首轮澄清不出现技术选型问题」。两条目前都**不是**「已沉淀」，所以这条链接只作溯源，
+    # 不给它们计 L2 回流覆盖。
+    issueRef:
+      - issue/WorkFlow/2026-09-23/01-新建应用请求未触发工作流并跳至架构选型.md
+      - issue/WorkFlow/2026-10-08/01-Agent项目请求未命中入口触发词网致需求域第三次跳过.md
     given: evals/gate/fixtures/ledger-clean
     skillFiles:
       - workflow/SKILL.md

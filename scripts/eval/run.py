@@ -8,6 +8,10 @@ engine, which needs an installed engine, provider credentials and spend, so case
 
 Cases assert on findings, not on exit codes alone, so a checker that fails for an unrelated
 reason cannot be mistaken for a passing regression.
+
+Cases may declare `issueRef` — the repo-relative path of the `issue/` entry the case was
+distilled from (`governance/eval-spec.yaml` caseTiers L2). A reference that does not resolve
+is an `error`, never a pass: coverage numbers must not be paid for with guessed links.
 """
 from __future__ import annotations
 import json, os, re, shutil, sys, tempfile, time
@@ -207,7 +211,28 @@ def run_behaviour(case: dict, spec: dict) -> dict:
         shutil.rmtree(workspace, ignore_errors=True)
 
 
+def issue_ref_problem(case: dict) -> str:
+    """用例声明的 `issueRef` 必须解析到真实条目，解析不到就是 error。
+
+    覆盖率是量具换来的，不能靠猜的关联凑：一句编造的引用会让一条闭环 issue 看起来「已回流」，
+    而实际上没有任何回归在守它——这正是 L2 要闭合的洞，所以这里宁可乐一条也不放空一条。
+    """
+    declared = case.get("issueRef")
+    if not declared:
+        return ""
+    from eval import relay
+    problems = []
+    for ref in (declared if isinstance(declared, list) else [declared]):
+        resolved, reason = relay.resolve_ref(ref, ROOT)
+        if not resolved:
+            problems.append(f"issueRef `{ref}`：{reason}")
+    return "；".join(problems)
+
+
 def run_case(case: dict, spec: dict | None = None) -> dict:
+    problem = issue_ref_problem(case)
+    if problem:
+        return {"id": case["id"], "status": "error", "reason": problem}
     if case["layer"] == "behaviour":
         return run_behaviour(case, spec or {})
     fixture = ROOT / str(case["given"]).replace("\\", "/")
@@ -233,16 +258,48 @@ def run_case(case: dict, spec: dict | None = None) -> dict:
         shutil.rmtree(workspace, ignore_errors=True)
 
 
+def _label(path: Path) -> str:
+    """仓内给仓库相对路径，仓外（临时探针评测集）给绝对路径。
+
+    写死 `relative_to(ROOT)` 会让"仓库外的一套 eval.yaml 根本跑不起来"——那是把量具钉死在
+    这个目录布局上，对照组也就没地方放了。
+    """
+    resolved = Path(path).resolve()
+    try:
+        return resolved.relative_to(ROOT).as_posix()
+    except ValueError:
+        return resolved.as_posix()
+
+
 def run_all(eval_path: Path) -> dict:
     eval_path = eval_path.resolve()
     spec = load_eval(eval_path)
     results = [run_case(case, spec) for case in spec.get("cases") or []]
     counts = {status: sum(1 for item in results if item["status"] == status)
               for status in ("passed", "failed", "blocked", "error")}
-    return {"skill": spec.get("skill"), "eval": str(eval_path.relative_to(ROOT).as_posix()),
+    return {"skill": spec.get("skill"), "eval": _label(eval_path),
             "ranAt": datetime.now().astimezone().isoformat(timespec="seconds"),
             "counts": counts, "results": results,
             "green": counts["passed"] == len(results)}
+
+
+def _print_relay_status() -> None:
+    """把 L2 回流缺口的真实数字打在每次评测输出里，但不改上面用例计数。
+
+    缺回流的红由 `scripts/eval/relay.py` 自己的退出码承担（「未回流不得标闭环」）。把「issue 闭环了
+    却没有用例」混进本套用例的通过/失败里，等于让评测集为一个它并没有判过的东西负责——数字看着严，
+    实际是把两条判据搅在一起。这里只把缺口如实显示出来，让人无法假装没看见。
+    """
+    try:
+        from eval import relay
+        result = relay.audit(ROOT)
+    except (ValueError, OSError) as exc:
+        print(f"L2 回流执法未能核：{exc}", file=sys.stderr)
+        return
+    undecidable = len(result["unknownState"]) + len(result["missingStateField"])
+    print(f"L2 回流执法：P0/P1 已闭环 {len(result['closedP0P1'])} 条 ｜ 已回流 {len(result['covered'])} 条 ｜ "
+          f"缺回流 {len(result['missing'])} 条 ｜ 悬空引用 {len(result['dangling'])} 条 ｜ 判不了 {undecidable} 条"
+          f"（详单 `python scripts/eval/relay.py`；缺回流即红，不影响上面的用例计数）")
 
 
 def main(argv=None) -> int:
@@ -282,6 +339,7 @@ def main(argv=None) -> int:
     print(f"评测 {total} 条：过 {counts['passed']} ｜ 败 {counts['failed']} ｜ 错 {counts['error']} ｜ "
           f"待引擎 {counts['blocked']} ｜ 引擎实耗 token {spent}"
           + (f" ｜ 评测集加载失败 {load_errors} 套" if load_errors else ""))
+    _print_relay_status()
     print(f"报告 → {out.relative_to(ROOT).as_posix()}")
     return 1 if (counts["failed"] or counts["error"] or load_errors) else 0
 

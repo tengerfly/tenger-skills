@@ -39,6 +39,20 @@ caseTiers:
   L2: issue/ 每个 P0/P1 闭环后必须回流成 1 条；未回流不得标闭环
   L3: 改 shared/ 或合并 skill 前全量；红阻断合并
 
+issueRef:
+  # L2 的接线字段：用例声明里的可选键。不新增流程节点，也不要求任何 skill 多产出一份文档
+  field: issueRef
+  value: issue/<skill>/<日期>/<NN>-<标题>.md（仓库相对路径＝本仓条目稳定标识，见 issue/README.md
+    与 shared/templates/issue-template.md；也接受只写到 <NN> 的短写，但必须唯一命中）
+  form: 单条字符串或多条字符串
+  enforcement:
+    - scripts/eval/relay.py 双向核对：已沉淀的 P0/P1 没有任何用例指回 ⇒ 报缺回流、退出码 1（未回流不得标闭环）
+    - scripts/eval/run.py：用例写了 issueRef 却解析不到条目 ⇒ 该条判 error，不判绿（覆盖率不许靠猜的关联凑）
+    - 状态口径照 issue/README.md 状态机读实名字段（「优化状态」，老条目写「状态」也读）；闭环＝已沉淀；
+      已忽略不要求用例；状态词落在枚举外（复发重开、已修规则…）的单列「判不了」如实报数，不默认它通过
+  honesty: 只对得上判据原文的才声明——issue 的「修复方向／修复判据／沉淀位置」要能对上用例的 mustContain
+    或被 tamper 破坏的那一节；对不上就留空并如实报缺口，禁止用弱关联凑覆盖率
+
 judgeRouting:
   rule_based: 硬约束（必含章节、必引用某文件、禁用术语、digest 一致）——默认选择
   script:     结构校验，直接调用 validate_core/tsr 的检查函数返回 0-1
@@ -46,9 +60,21 @@ judgeRouting:
   budgetRule: 单套 case 里 agent_judge 占比 ≤30%；量具能算出的一律不交给模型
 
 comparability:
-  baseline: 每套 eval 首次通过的 result 快照存 evals/<set>/baseline/
+  baseline: 每套 eval 首次通过的 result 快照存 evals/<set>/baseline/result.json（入库真相，不是派生物）
   bind: [skillRevision, casesVersion, engine, model, judgeVersion, scoringVersion]
+  derive: 锚一律从仓库字节算出，不接受手填（手填锚等于又一个自述）。skillRevision＝被测 skill 正文目录
+    （governance/skill-registry.yaml 解析 path）＋ shared/ 的摘要；casesVersion＝用例判据字段
+    （除 name 外全部）＋夹具树的摘要；engine/model＝行为层用例声明的引擎与模型，无行为层记
+    structure-only／engine-default；judgeVersion＝scripts/eval/run.py 判据语义版本，改语义必须手工 +1
+    （run.py 字节另存 provenance，变了却没升版只在 diff 里报警，不进锚）；scoringVersion＝
+    governance/scoring.yaml 的 version。skillRevision 故意不用 commit sha：commit sha 每次无关提交都变，
+    diff 会几乎永远拒绝比较，量具就废在手上；而真改了 SKILL.md 正文那天被测物确实变了，该开新基线
   rule: 锚任一项变化即开新基线；禁止跨锚比总分
+  enforcement:
+    - scripts/eval/baseline.py save —— 只在无 failed 且无 error 时落基线；blocked（行为层未跑）如实记进快照，
+      基线因此只声明结构层，不冒充行为已验收
+    - scripts/eval/baseline.py diff —— 锚不一致 ⇒ 拒绝比较并报错（退出码 2），一个差值都不给；
+      输出必须带口径声明（比的是什么、不比什么、行为层没跑）；派生报告写 .spec/obs/（gitignore）
   holdout: 保留 10–20% 用例不参与优化，仅在验收时跑；总分不降而 holdout 降 ⇒ 判过拟合
 
 verificationOfTheHarness:

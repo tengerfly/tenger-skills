@@ -1,0 +1,50 @@
+{
+  "schema": "tenger.eval-baseline/v1",
+  "eval": "evals/tech-design/eval.yaml",
+  "skill": "backend-tech-design",
+  "savedAt": "2026-10-16T13:21:30+08:00",
+  "anchors": {
+    "skillRevision": "sha256:6b4e61c6d154cc40ababc51f48cec104e9382a30693a556391f64d47fe703009",
+    "casesVersion": "sha256:781fa1c4782b065368b607328810db3bce2ac35e1644414ecad8454dfa2ba3ab",
+    "engine": "codex",
+    "model": "engine-default",
+    "judgeVersion": "eval-judge/1",
+    "scoringVersion": "1"
+  },
+  "provenance": {
+    "runner": "sha256:90dbc87e1cd98a3a70258983edf647d8010c2abc8be61e44b5575c9a2d9dfa2d",
+    "python": "3.11.15"
+  },
+  "counts": {
+    "passed": 3,
+    "failed": 0,
+    "blocked": 1,
+    "error": 0
+  },
+  "cases": [
+    {
+      "id": "EV-TDD-001",
+      "layer": "structure",
+      "status": "passed",
+      "outcome": "green"
+    },
+    {
+      "id": "EV-TDD-002",
+      "layer": "structure",
+      "status": "passed",
+      "outcome": "red"
+    },
+    {
+      "id": "EV-TDD-003",
+      "layer": "structure",
+      "status": "passed",
+      "outcome": "red"
+    },
+    {
+      "id": "EV-TDD-101",
+      "layer": "behaviour",
+      "status": "blocked",
+      "outcome": null
+    }
+  ]
+}

@@ -1,5 +1,9 @@
 schema: tenger.eval/v1
 skill: ui-ux-review
+# issueRef ＝ 这条用例是从哪条 issue 回流来的（L2：闭环的 P0/P1 必须有用例指回，未回流不得标闭环）。
+# 只填核过的关联：issue 正文的「修复方向/沉淀位置」与本仓 governance/artifact-registry.yaml 里
+# validation-report 的 documentSections 出处对得上，才写；对不上一律不写（宁缺毋凑）。
+# `python scripts/eval/relay.py` 双向核对：闭环没用例＝红，用例引用不存在条目＝该条 error。
 cases:
   - id: EV-DR-001
     name: 合规设计评审汇总报告判绿
@@ -11,6 +15,7 @@ cases:
     name: 上游闸门核对表标题被改写必须判红
     layer: structure
     given: evals/design-review/fixtures/review-clean
+    issueRef: issue/UI-UX-Review/2026-10-10/01-作废基线上收口旧周期且Gate限定语写注释.md
     tamper:
       file: .spec/设计评审/批次1-设计稿评审汇总报告.md
       replace: {from: "## 上游闸门核对表（REQUIRED）", to: "## 闸门情况"}
@@ -20,6 +25,8 @@ cases:
     name: 时序核查整节被删必须判红
     layer: structure
     given: evals/design-review/fixtures/review-clean
+    # 同条 issue 修复方向 3：报告模板固定加「上游闸门核对」表与「时序核查」两节，缺节只能记「未验证」
+    issueRef: issue/UI-UX-Review/2026-10-10/01-作废基线上收口旧周期且Gate限定语写注释.md
     tamper:
       file: .spec/设计评审/批次1-设计稿评审汇总报告.md
       replace: {from: "## 时序核查", to: "## 分级计数（重复占位）"}
