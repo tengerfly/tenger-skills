@@ -165,6 +165,36 @@ def cmd_host(args) -> int:
     return 0
 
 
+def cmd_rules(args) -> int:
+    """规则命中率（plan v2 §3 智能化）：只读宿主日志算指标，不跑引擎、不新增流程节点。
+
+    宿主无关：字段名与工具名来自 governance/host-specs/<host>.yaml，口径来自
+    governance/obs-registry.yaml；取不到的维度由 rules.measure 降级成 N/A。
+    """
+    from obs import host_spec, rules
+    root = _project(args)
+    home = Path(args.home).expanduser().resolve()
+    if not home.is_dir():
+        print(f"tsr: host home not found: {home}", file=sys.stderr)
+        return 1
+    spec = host_spec.load(args.host)
+    found = host_spec.discover(spec, home, args.project_slug or "")
+    if not found:
+        print(f"tsr: no {args.host} trace files matched for {args.project_slug or '(any project)'}", file=sys.stderr)
+        return 1
+    spans = host_spec.read_spans(spec, found[:args.sample] if args.sample else found)
+    report = rules.measure(root, spec, spans, skills=args.skill)
+    text = rules.render(report)
+    print(text)
+    if args.write:
+        target = root / ".spec/观测/规则命中率.md"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(text, encoding="utf-8")
+        print(f"规则命中率 → {target.relative_to(root).as_posix()}")
+    # N/A 是诚实降级，不是命令失败：拔掉适配器只让指标少一维，不该把观测链路判红
+    return 0
+
+
 def cmd_score(args) -> int:
     from obs import score
     root = _project(args)
@@ -205,6 +235,10 @@ def cmd_audit(args) -> int:
 
 
 def main(argv=None) -> int:
+    if hasattr(sys.stdout, "reconfigure"):
+        # Windows 控制台默认 GBK：中文口径与 N/A 原因打出去会成乱码，读报告的人只能猜
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
     parser = argparse.ArgumentParser(prog="tsr", description="tenger.trace/v1 run log")
     parser.add_argument("--project-root", default=".")
     parser.add_argument("--project-id")
@@ -241,6 +275,15 @@ def main(argv=None) -> int:
     host.set_defaults(handler=cmd_host)
 
     sub.add_parser("score").set_defaults(handler=cmd_score)
+
+    rules = sub.add_parser("rules")
+    rules.add_argument("--host", required=True)
+    rules.add_argument("--home", required=True)
+    rules.add_argument("--project-slug", default="")
+    rules.add_argument("--sample", type=int, default=0, help="只采前 N 个段文件；0=全部（宿主日志会被驱逐，够用就好）")
+    rules.add_argument("--skill", action="append", help="把 SKILL.md 语料收窄到某个 skill（可重复；shared 仍整体计入分母）")
+    rules.add_argument("--write", action="store_true", help="落 .spec/观测/规则命中率.md（默认只打印）")
+    rules.set_defaults(handler=cmd_rules)
 
     audit = sub.add_parser("audit")
     audit.add_argument("--write", action="store_true", help="persist findings as problem cards")

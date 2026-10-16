@@ -38,6 +38,25 @@ capabilities:
   - id: MODEL_ID
     requires: {types: [model.response.completed]}
     field: data.model
+  # ↓ 两条服务于「规则命中率」（plan v2 §3 智能化）：条款级读取证据 + 引用证据。
+  # 字段名与工具名只写在这里，指标层通过 host_spec.cap_records 取值，换宿主不用改 rules.py。
+  - id: CLAUSE_READS
+    requires: {fields: [data.tool_name, data.args.file_path]}
+    eventKinds: [tool.requested]
+    toolFilter: [Read]
+    pathField: data.args.file_path
+    rangeFields: {offset: data.args.offset, limit: data.args.limit}
+    caveat: >
+      实测本机 3,079 条 Read 里 891 条带 offset/limit ⇒ 行区间可判，其余按整篇读取；
+      其中 301 条落在 SKILL.md / shared / references 正文上。宿主把 skill 正文注入上下文时
+      不留日志 ⇒ 本判据只测「显式读取」，命中率只能当下界。
+  - id: EVIDENCE_TEXT
+    requires: {fields: [data.args]}
+    eventKinds: [tool.requested]
+    argsField: data.args
+    caveat: >
+      args 带命令与正文（实测提到 skill 正文路径的非读取事件：Bash 185 / Edit 163 / Write 83）。
+      正文只做内存内匹配，指标只输出条款 id 与计数，一律不落盘（plan v2 §8 隐私白名单）。
 absent:
   - id: TOKENS
     reason: >

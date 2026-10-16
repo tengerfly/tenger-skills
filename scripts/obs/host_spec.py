@@ -130,6 +130,55 @@ def verify_capabilities(spec: dict, spans: list) -> dict:
     return report
 
 
+def capability(spec: dict, cap_id: str) -> dict:
+    """One capability's declaration, field names and all — they live in the spec, never here."""
+    for cap in spec.get("capabilities") or []:
+        if cap.get("id") == cap_id:
+            return cap
+    return {}
+
+
+def _text(value) -> str:
+    """Flatten every string an argument tree carries. In-memory only: nothing here is persisted."""
+    if isinstance(value, str):
+        return value
+    if isinstance(value, dict):
+        return "\n".join(_text(item) for item in value.values())
+    if isinstance(value, list):
+        return "\n".join(_text(item) for item in value)
+    return ""
+
+
+def cap_records(spec: dict, spans: list, cap_id: str) -> list:
+    """Project raw spans onto the fields a capability declares, so metrics stay host-free.
+
+    Callers must gate this on verify_capabilities: an ungranted capability means the field was
+    never observed, and reading it anyway would turn "not measured" into an empty measurement.
+    """
+    cap = capability(spec, cap_id)
+    if not cap:
+        return []
+    tools = {str(name) for name in cap.get("toolFilter") or []}
+    kinds = {str(kind) for kind in cap.get("eventKinds") or []}
+    path_field, args_field = cap.get("pathField"), cap.get("argsField")
+    ranges = cap.get("rangeFields") or {}
+    records = []
+    for span in spans:
+        if kinds and span["kind"] not in kinds:
+            continue
+        if tools and span["tool"] not in tools:
+            continue
+        raw = span["raw"]
+        records.append({
+            "session": span["session"], "ts": span["ts"], "tool": span["tool"],
+            "path": _dig(raw, path_field) if path_field else None,
+            "offset": _dig(raw, ranges["offset"]) if ranges.get("offset") else None,
+            "limit": _dig(raw, ranges["limit"]) if ranges.get("limit") else None,
+            "text": _text(_dig(raw, args_field)) if args_field else "",
+        })
+    return records
+
+
 def attribute(spans: list, project_root: Path) -> dict:
     """Map host write events onto registered nodes by artifact location (primary signal)."""
     registry = metrics.load_registry()

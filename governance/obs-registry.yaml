@@ -27,3 +27,35 @@ nodes:
   - {id: fidelity-review, skill: fidelity-review, paths: [".spec/页面还原评审/**"]}
   - {id: auto-test, skill: auto-test, paths: [".spec/测试/**", ".spec/evidence/**"]}
   - {id: quality-inspection, skill: quality-inspection, paths: ["scripts/obs/**", "scripts/eval/**", "governance/**", "evals/**", "scripts/tests/**"]}
+# 指标注册表：每个指标声明所需 capability、语料基数与 N/A 口径，代码按本表执行（单一来源）。
+metrics:
+  - id: rule_hit_rate
+    name: 规则命中率
+    pillar: 智能化
+    definition: SKILL.md / shared 契约条款被真实读取或引用的比例（plan v2 §3）
+    use: >
+      只用于「哪些 skill 正文该精简」的数据依据；不参与打分、不是放行依据，
+      低命中只说明「轨迹里没有证据」，不等于该条款无价值（宿主注入正文不留日志 ⇒ 下界）。
+    truthSource: 宿主日志的读取/引用事件，全部经 governance/host-specs/<host>.yaml 取值
+    excludedSource: >
+      不用 .spec/obs/run.jsonl：第一批真实事件只有 1 个节点 2 条，样本撑不起条款基数，
+      用它算命中率就是拿噪声当比例。
+    capabilities:
+      required: [TOOL_EVENTS, CLAUSE_READS]
+      readChannel: CLAUSE_READS
+      citeChannels: [EVIDENCE_TEXT]
+    corpus:
+      - {from: skill-registry, status: active, file: SKILL.md, unit: 二级标题}
+      - {glob: "shared/*.md", unit: 二级标题}
+    minCiteChars: 4
+    judge: >
+      命中 = 条款被显式读取（带 offset/limit 的读取只算行区间覆盖的条款，整篇读取算全部）
+      或被引用（条款标题原文与其文件指针同现于一条被观测到的工具参数里）。
+      shell 文本不解析（各家命令行写法不同，解析即猜测）；引用通道缺 EVIDENCE_TEXT 时记
+      N/A 并把命中率降级为「仅读取通道」，不冒充两通道。
+    naRule: >
+      必需 capability 未授予 ⇒ 整个指标 N/A 并写明缺哪个字段；授予了但零命中 ⇒ 0.0
+      （零命中是真信号，不能写成 N/A）；条款基数为空 ⇒ N/A，禁止退化成 100%。
+    bias: >
+      只统计被采样的 session，未采到的语料按未命中计 ⇒ 报告值是下界，禁止当上界引用；
+      本仓自身的维护会话也在读正文，算之前用 --project-slug 限定被观测项目。
