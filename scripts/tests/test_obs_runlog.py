@@ -1,3 +1,6 @@
+import contextlib
+import hashlib
+import io
 import json
 import sys
 import tempfile
@@ -90,6 +93,150 @@ class RunLogTests(unittest.TestCase):
         self.finish()
         lines = (self.root / schema.RUN_LOG).read_text(encoding="utf-8").splitlines()
         self.assertTrue(all(json.loads(line)["schema"] == schema.SCHEMA for line in lines))
+
+
+class ArtifactBindingTests(unittest.TestCase):
+    """Only the newest node-end binding per artifact path promises anything about today.
+
+    Same 口径 as validate_core.check_digests / subject_bindings: a recorded sha256 is
+    "the bytes this node saw when it closed". Once a later node re-binds the path, the older
+    snapshot stops matching by definition — that is history, not tampering, so it must not
+    join errors (callers grade red/green by len(errors)); it is emitted as an explanation.
+    """
+
+    PATH = ".spec/prd/overview.md"
+
+    def setUp(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        self.root = Path(tmp.name)
+
+    def base(self, execution):
+        return ["--project-root", str(self.root), "--execution-id", execution,
+                "--node", "quality-inspection", "--skill", "quality-inspection"]
+
+    def write_body(self, body, path=None):
+        target = self.root / (path or self.PATH)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(body)
+        return body
+
+    def close(self, execution, path, body):
+        """Open + close one node through the CLI, letting the tool hash `body` as written."""
+        self.write_body(body, path)
+        self.assertEqual(0, tsr.main(self.base(execution) + ["node-start"]))
+        self.assertEqual(0, tsr.main(self.base(execution) + ["node-end", "--gate", "PASS",
+                                                            "--allow-downstream", "true",
+                                                            "--artifact", path]))
+
+    def raw_event(self, name, execution, ts, bindings=(), seq=None):
+        artifacts = [{"path": path, "sha256": hashlib.sha256(body).hexdigest(), "bytes": len(body)}
+                     for path, body in bindings]
+        event = {"schema": schema.SCHEMA, "event": name, "project": "probe", "executionId": execution,
+                 "node": "quality-inspection", "skill": "quality-inspection", "role": "produce",
+                 "actor": "main", "origin": "self", "reqRefs": [], "artifacts": artifacts, "upstream": [],
+                 "gate": "PASS", "allowDownstream": False, "ts": ts}
+        if seq is not None:
+            event["seq"] = seq
+        return event
+
+    def append(self, name, execution, ts, bindings=()):
+        """Append via the ledger contract so seq stays the machine-assigned write order."""
+        schema.append_event(self.root, self.raw_event(name, execution, ts, bindings))
+
+    def binding_errors(self, root):
+        return [e for e in tsr.verify(root) if "edited after node-end" in e or "vanished" in e]
+
+    def test_superseded_snapshot_is_explained_not_reported(self):
+        """①最新绑定一致 + 有一条被超越的旧快照 ⇒ 不判红（P3 关闭后 P4 续改并重新落账）。"""
+        self.close("EXEC-P3", self.PATH, b"# v1 reviewed in P3\n")
+        self.assertEqual([], tsr.verify(self.root))
+        self.close("EXEC-P4", self.PATH, b"# v2 edited later, re-signed in P4\n")
+        notes = []
+        errors = tsr.verify(self.root, notes)
+        self.assertEqual([], errors)
+        self.assertEqual(1, len(notes), notes)
+        self.assertIn("1 条更早绑定已被后续节点超越", notes[0])
+        self.assertIn("run.jsonl#2", notes[0])
+
+    def test_newest_binding_mismatch_is_red_even_when_an_older_one_matches(self):
+        """①的反向对照：只有最新那条对不上才判红，且必须指向最新那条事件。"""
+        self.close("EXEC-P3", self.PATH, b"# v1\n")
+        self.close("EXEC-P4", self.PATH, b"# v2\n")
+        self.write_body(b"# v3 edited behind the ledger\n")
+        drift = [e for e in tsr.verify(self.root) if "edited after node-end" in e]
+        self.assertEqual(1, len(drift), drift)
+        self.assertIn("run.jsonl#4", drift[0])
+        self.assertNotIn("#2:", drift[0])
+
+    def test_body_edited_with_no_later_binding_of_that_path_is_red(self):
+        """④检出力未削弱：后续节点没绑定这个路径就不能替它作保（本仓 P3/P4 的真实形态）。"""
+        self.close("EXEC-P3", self.PATH, b"# v1\n")
+        self.write_body(b"# v1 reworded, never re-signed\n")
+        self.close("EXEC-P4", "governance/other.yaml", b"version: 1\n")
+        notes = []
+        errors = tsr.verify(self.root, notes)
+        self.assertEqual(1, len([e for e in errors if "edited after node-end" in e]), errors)
+        self.assertEqual([], notes, notes)
+
+    def test_deleted_artifact_behind_the_newest_binding_is_still_red(self):
+        self.close("EXEC-P3", self.PATH, b"# v1\n")
+        (self.root / self.PATH).unlink()
+        self.assertTrue(any("artifact vanished" in e for e in tsr.verify(self.root)))
+
+    def test_mixed_timestamp_styles_pick_the_real_newest(self):
+        """③'2026-10-12 09:34' 与 '2026-10-12T09:33' 混排：空格排在 T 前，字符串排序选错最新。"""
+        current = self.write_body(b"# current bytes signed at 09:34\n")
+        self.append("node-start", "EXEC-A", "2026-10-12T09:30:00+08:00")
+        self.append("node-end", "EXEC-A", "2026-10-12T09:33:00+08:00", [(self.PATH, b"# older\n")])
+        self.append("node-start", "EXEC-B", "2026-10-12 09:34:00+08:00")
+        self.append("node-end", "EXEC-B", "2026-10-12 09:34:00+08:00", [(self.PATH, current)])
+        self.assertEqual([], self.binding_errors(self.root))
+        notes = []
+        tsr.verify(self.root, notes)
+        self.assertIn("1 条更早绑定已被后续节点超越", notes[0])
+        self.assertIn("run.jsonl#2", notes[0])
+
+    def test_mixed_timestamp_styles_reverse_control_newest_is_the_one_that_fails(self):
+        """③的反向对照：正文与 09:34 那条不一致时，判红的必须是 09:34（seq 4），不是 09:33。"""
+        self.write_body(b"# edited after the 09:34 node-end\n")
+        self.append("node-start", "EXEC-A", "2026-10-12T09:30:00+08:00")
+        self.append("node-end", "EXEC-A", "2026-10-12T09:33:00+08:00", [(self.PATH, b"# older\n")])
+        self.append("node-start", "EXEC-B", "2026-10-12 09:34:00+08:00")
+        self.append("node-end", "EXEC-B", "2026-10-12 09:34:00+08:00", [(self.PATH, b"# signed\n")])
+        drift = [e for e in tsr.verify(self.root) if "edited after node-end" in e]
+        self.assertEqual(1, len(drift), drift)
+        self.assertIn("run.jsonl#4", drift[0])
+
+    def test_tie_on_seq_is_broken_by_normalised_time_not_string_order(self):
+        """手改台账里 seq 重复时，取最新仍按数字化的时间排，而不是字符串比大小。"""
+        current = self.write_body(b"# newest at 09:34\n")
+        stale = b"# older at 09:33\n"
+        events = [
+            self.raw_event("node-start", "EXEC-A", "2026-10-12T09:30:00+08:00", seq=1),
+            self.raw_event("node-end", "EXEC-A", "2026-10-12 09:34:00+08:00", [(self.PATH, current)], seq=2),
+            self.raw_event("node-start", "EXEC-B", "2026-10-12T09:31:00+08:00", seq=3),
+            self.raw_event("node-end", "EXEC-B", "2026-10-12T09:33:00+08:00", [(self.PATH, stale)], seq=2),
+        ]
+        log = self.root / schema.RUN_LOG
+        log.parent.mkdir(parents=True, exist_ok=True)
+        log.write_text("".join(json.dumps(e, ensure_ascii=False) + "\n" for e in events), encoding="utf-8")
+        self.assertEqual([], self.binding_errors(self.root))
+        self.write_body(b"# nobody signed this\n")
+        self.assertEqual(1, len([e for e in tsr.verify(self.root) if "edited after node-end" in e]))
+
+    def test_superseded_note_is_printed_and_never_counts_as_an_error(self):
+        """说明性输出走 stdout：绿不绿只看 len(errors)，旧快照不得把它染红。"""
+        self.close("EXEC-P3", self.PATH, b"# v1\n")
+        self.close("EXEC-P4", self.PATH, b"# v2\n")
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            code = tsr.main(self.base("EXEC-P4") + ["verify"])
+        self.assertEqual(0, code)
+        self.assertEqual([], tsr.verify(self.root))
+        text = out.getvalue()
+        self.assertIn("run-log verification passed", text)
+        self.assertIn("条更早绑定已被后续节点超越", text)
 
 
 class MetricsTests(unittest.TestCase):

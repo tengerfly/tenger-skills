@@ -6,7 +6,7 @@ timestamp or digest is therefore not expressible through this CLI, which is the 
 ledger fields must be falsifiable against the machine and the disk.
 """
 from __future__ import annotations
-import argparse, json, sys
+import argparse, json, re, sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -69,9 +69,79 @@ def cmd_end(args) -> int:
     return 0
 
 
-def verify(root: Path) -> list:
-    """Re-derive facts from disk and the log itself; trust nothing the caller asserted."""
+def _bind_key(event: dict, index: int):
+    """Sort key that reflects real precedence, never raw string luck.
+
+    The ledger mixes '2026-10-12 09:34' with '2026-10-12T09:33' and a space sorts before
+    'T', so comparing timestamps as strings crowns the older snapshot as the current
+    promise. Write order leads (seq is assigned by this tool at append time and is the
+    replay order); the digit-only timestamp only breaks ties when a hand-authored line
+    repeats or omits seq.
+    """
+    seq = event.get("seq")
+    digits = re.sub(r"\D", "", str(event.get("ts", "")))[:14].ljust(14, "0")
+    return (seq if isinstance(seq, int) and not isinstance(seq, bool) else index, digits)
+
+
+def artifact_bindings(events: list) -> dict:
+    """path -> node-end bindings, oldest first: [(key, where, artifact)].
+
+    The newest binding per path is the only one making a claim about today's bytes;
+    everything before it is a photograph of the moment that node closed.
+    """
+    bindings: dict = {}
+    for index, event in enumerate(events, 1):
+        if event.get("event") != "node-end":
+            continue
+        where = f"{schema.RUN_LOG}#{event.get('seq', index)}"
+        for artifact in event.get("artifacts") or []:
+            path = str(artifact.get("path", "")).replace("\\", "/")
+            bindings.setdefault(path, []).append((_bind_key(event, index), where, artifact))
+    return {path: sorted(rows, key=lambda row: row[0]) for path, rows in bindings.items()}
+
+
+def check_bindings(root: Path, events: list, errors: list, notes: list) -> None:
+    """Re-derive today's bytes against the newest binding per path; older snapshots are history.
+
+    Same 口径 as validate_core.check_digests / subject_bindings: a recorded sha256 means
+    "these are the bytes this node saw when it closed", so a superseded snapshot necessarily
+    stops matching once the artifact legitimately evolves in a later node. Grading every
+    historical snapshot as drift is what buries real findings in noise (13 findings against
+    153 lines over there, and the same shape here).
+
+    Detection power is unchanged for the failure this exists to catch: edit the body and let
+    no later node-end re-bind that path, and the stale record is still the newest binding for
+    the path, so it still fails below.
+    """
+    superseded = []
+    for path, rows in sorted(artifact_bindings(events).items()):
+        target = root / path
+        fresh = schema.digest(target)["sha256"] if target.is_file() else None
+        _, latest_where, latest = rows[-1]
+        if fresh is None:
+            errors.append(f"{latest_where}: artifact vanished: {path}")
+        elif fresh != latest.get("sha256"):
+            errors.append(f"{latest_where}: artifact edited after node-end: {path}"
+                          "（该路径最新一次绑定，此后没有节点重新绑定它 ⇒ 改了正文没落台账）")
+        for _, where, artifact in rows[:-1]:
+            if fresh is None:
+                superseded.append(f"{where}→{path}（文件已不在磁盘）")
+            elif fresh != artifact.get("sha256"):
+                superseded.append(f"{where}→{path}")
+    if superseded:
+        notes.append(f"{len(superseded)} 条更早绑定已被后续节点超越，不算违规"
+                     f"（快照只承诺当时字节）：{'、'.join(superseded)}")
+
+
+def verify(root: Path, notes: list | None = None) -> list:
+    """Re-derive facts from disk and the log itself; trust nothing the caller asserted.
+
+    `notes` is an optional accumulator for honest explanatory output. Superseded snapshots
+    deliberately stay out of the returned errors: callers grade red/green by len(errors),
+    and an older snapshot is a fact about history, not a violation.
+    """
     errors = []
+    explained = notes if notes is not None else []
     events = schema.read_events(root)
     if not events:
         return ["no run-log events: observability is not wired for this project"]
@@ -97,25 +167,22 @@ def verify(root: Path) -> list:
         elif event["event"] == "node-end":
             if key not in opened:
                 errors.append(f"{where}: node-end without matching node-start for {key[0]}/{key[1]}")
-            for artifact in event.get("artifacts") or []:
-                path = root / str(artifact.get("path", "")).replace("\\", "/")
-                if not path.is_file():
-                    errors.append(f"{where}: artifact vanished: {artifact.get('path')}")
-                    continue
-                fresh = schema.digest(path)
-                if fresh["sha256"] != artifact.get("sha256"):
-                    errors.append(f"{where}: artifact edited after node-end: {artifact.get('path')}")
             if event.get("gate") == "PASS" and event.get("allowDownstream"):
                 closed = [u["artifact"] for u in event.get("upstream") or [] if u.get("gate") != "PASS"]
                 if closed:
                     errors.append(f"{where}: PASS with allowDownstream while upstream is closed: {closed}")
+    check_bindings(root, events, errors, explained)
     return errors
 
 
 def cmd_verify(args) -> int:
-    errors = verify(_project(args))
+    notes: list = []
+    errors = verify(_project(args), notes)
     for error in errors:
         print(error, file=sys.stderr)
+    for note in notes:
+        # 说明性输出走 stdout，绝不混进 errors：调用方按 len(errors) 判红绿
+        print(f"说明：{note}")
     if errors:
         print(f"run-log verification failed: {len(errors)} error(s)", file=sys.stderr)
         return 1
@@ -125,7 +192,10 @@ def cmd_verify(args) -> int:
 
 def cmd_report(args) -> int:
     root = _project(args)
-    problems = verify(root)
+    notes: list = []
+    problems = verify(root, notes)
+    for note in notes:
+        print(f"说明：{note}")
     events = schema.read_events(root)
     registered = metrics.load_registry()
     node_errors = sorted({str(event.get("node")) for event in events
