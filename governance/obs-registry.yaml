@@ -26,3 +26,4 @@ nodes:
   - {id: code-review, skill: code-review, paths: [".spec/代码评审/**"]}
   - {id: fidelity-review, skill: fidelity-review, paths: [".spec/页面还原评审/**"]}
   - {id: auto-test, skill: auto-test, paths: [".spec/测试/**", ".spec/evidence/**"]}
+  - {id: quality-inspection, skill: quality-inspection, paths: ["scripts/obs/**", "scripts/eval/**", "governance/**", "evals/**", "scripts/tests/**"]}
