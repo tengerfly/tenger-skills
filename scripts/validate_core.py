@@ -1,5 +1,5 @@
 from __future__ import annotations
-import argparse, hashlib, os, re, sys
+import argparse, hashlib, os, re, shutil, subprocess, sys
 from datetime import datetime, timezone
 from collections import defaultdict, deque
 from pathlib import Path, PureWindowsPath
@@ -781,9 +781,14 @@ def check_fixture(root, kind):
 # 代码只执行；本命令只读台账，绝不改写、绝不替人补指标。
 EVOLUTION_KEYS = ("path", "entryHeading", "fields", "claimWords", "forbiddenWords", "beforePattern",
                   "afterPattern", "sourcePattern", "acceptedSources", "honestVerdict",
-                  "claimingVerdict", "verdictValues", "reasons")
+                  "claimingVerdict", "verdictValues", "reasons", "requiredFields",
+                  "commitPointerPattern", "rollbackTargetPattern", "naToken", "naReasonPattern", "git")
 _ENTRY_FIELD = re.compile(r"^\s*[-*]?\s*\**(?P<name>[^*：:]+?)\**\s*[:：]\s*(?P<value>.*)$")
 _FENCE = re.compile(r"^\s*(```|~~~)")
+# 只读 git 查询。写操作型 git 命令（add/commit/checkout/reset…）在本执法器里一律不存在：
+# 台账只被读，回滚指针只被验真，回滚动作属人。
+_GIT_CAT_FILE = "cat-file"
+_GIT_REV_PARSE = "rev-parse"
 
 
 def evolution_policy(root):
@@ -797,6 +802,42 @@ def evolution_policy(root):
     if missing:
         raise ValueError(f"evolutionLedger 缺必需判据键 {missing} ⇒ 拒绝用默认值冒充实装")
     return section
+
+
+def git_repos(root):
+    """commit 指针在哪些仓里验真：项目根优先，退回校验器所在仓根（台账记的多是本仓 commit）。"""
+    repos = []
+    for candidate in (Path(root), Path(__file__).resolve().parents[1]):
+        if candidate not in repos and (candidate / ".git").exists():
+            repos.append(candidate)
+    return repos
+
+
+def commit_exists(repos, sha):
+    """只读 `git cat-file -e <sha>^{commit}`。返回 True/False；查不了返回 None（不是 False）。
+
+    True/False/None 三态是刻意的：把「git 没装／两处都不是 git 仓」混成 False，
+    报错就会指着一条合法 commit 说它不存在；混成 True 更糟——漂亮 sha 字符串直接过关。
+    """
+    git = shutil.which("git")
+    if not git or not repos:
+        return None
+    answered = False
+    for repo in repos:
+        try:
+            probe = subprocess.run([git, "-C", str(repo), _GIT_CAT_FILE, "-e", f"{sha}^{{commit}}"],
+                                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=20)
+        except (OSError, subprocess.SubprocessError):
+            continue
+        answered = True
+        if probe.returncode == 0:
+            return True
+    return False if answered else None
+
+
+def _sha_pointers(text, pattern):
+    """台账字段值里所有像 commit 指针的连续十六进制串（7–40 位，带词边界）。"""
+    return re.findall(str(pattern), str(text or ""))
 
 
 def _dequote(text):
@@ -820,6 +861,85 @@ def _claim_lines(lines, words):
         cleaned = _dequote(line)
         hits += [(number, word) for word in words if word in cleaned]
     return hits
+
+
+def _side_segment(text, token, stop_token):
+    """取 `before …` / `after …` 各自那一段（before 段止于 after，after 段到行尾）。"""
+    value = str(text or "")
+    index = value.find(str(token))
+    if index < 0:
+        return None
+    tail = value[index + len(str(token)):]
+    if stop_token:
+        cut = tail.find(str(stop_token))
+        if cut >= 0:
+            tail = tail[:cut]
+    return tail
+
+
+def _proof_side_errors(relative, proof_line, proof, proof_value, pol, state, reasons):
+    """before/after 两侧：要么给可核数值＋允许量具，要么显式 N/A（并写清为什么取不到）。"""
+    errors = []
+    na_token = str(pol["naToken"])
+    before_token = str(pol.get("beforeToken", "before"))
+    after_token = str(pol.get("afterToken", "after"))
+    absent = []
+    if not re.search(r"[0-9]", proof_value) and na_token not in proof_value:
+        absent.append(reasons["noNumber"])
+    else:
+        for token, pattern_key, reason_key in ((before_token, "beforePattern", "noBefore"),
+                                               (after_token, "afterPattern", "noAfter")):
+            segment = _side_segment(proof_value, token, after_token if token == before_token else None)
+            if segment is None:
+                absent.append(reasons[reason_key])
+                continue
+            if na_token in segment:
+                if not re.search(str(pol["naReasonPattern"]), segment):
+                    absent.append(f"{reasons['badNaWithoutReason']}（{token} 侧原文：{segment.strip()[:60]}）")
+                if state == "claiming":
+                    absent.append(f"{reasons['naWithClaimed']}（{token} 侧为 N/A）")
+                continue
+            if not re.search(str(pol[pattern_key]), f"{token}{segment}"):
+                absent.append(f"{reasons[reason_key]}（{token} 侧原文：{segment.strip()[:60] or '空'}）")
+    if not absent:
+        sources = [str(src) for src in items(pol["acceptedSources"])]
+        pointers = re.findall(str(pol["sourcePattern"]), proof)
+        if not any(any(src in pointer for src in sources) for pointer in pointers):
+            absent.append(f"{reasons['noSource']}（允许量具：{'、'.join(sources)}）")
+    if absent:
+        errors.append(f"{relative}:{proof_line}: " + "；".join(str(item) for item in absent)
+                      + f"（本行原文：{(proof or '')[:120]}）")
+    return errors
+
+
+def _pointer_errors(relative, line, field_name, value, pol, repos, reasons, require_command):
+    """commit／回滚指针验真：只读 git cat-file；sha 不存在必红，git 查不了也必红（不判绿）。"""
+    commit_name = str(pol["fields"]["commit"])
+    is_commit = str(field_name) == commit_name
+    shas = _sha_pointers(value, pol["commitPointerPattern"])
+    if not shutil.which("git") or not repos:
+        return [f"{relative}:{line}: {reasons['gitUnavailable']}"
+                f"（待验指针：{'、'.join(shas) or '无'}；本执法器只读，不会代跑 git init）"]
+    errors = []
+    if not shas:
+        errors.append(f"{relative}:{line}: {reasons['noRollbackTarget' if not is_commit else 'noCommitPointer']}"
+                      f"（本行原文：{(value or '')[:120]}）")
+    if require_command and not re.search(str(pol["rollbackTargetPattern"]), str(value or "")):
+        errors.append(f"{relative}:{line}: {reasons['noRollbackTarget']}"
+                      f"（判据：需 `git revert`/`git checkout` 形式的可执行目标；本行原文：{(value or '')[:120]}）")
+    probed = []
+    for sha in shas:
+        state = commit_exists(repos, sha)
+        if state is None:
+            errors.append(f"{relative}:{line}: {reasons['gitUnavailable']}（指针 {sha}）")
+        elif state is False:
+            errors.append(f"{relative}:{line}: 「{field_name}」{reasons['commitNotFound']}"
+                          f"（指针 {sha}；查询：{pol['git']['verifyCommand']}）")
+        else:
+            probed.append(sha)
+    if probed and not errors:
+        return []
+    return errors
 
 
 def evolution_audit(root, ledger=None) -> dict:
@@ -850,14 +970,19 @@ def evolution_audit(root, ledger=None) -> dict:
     marks = [(number, line) for number, line in scannable if heading.match(line)]
     proof_name = str(pol["fields"]["proof"])
     verdict_name = str(pol["fields"]["verdict"])
+    commit_name = str(pol["fields"]["commit"])
+    rollback_name = str(pol["fields"]["rollback"])
     claims_words = [str(word) for word in items(pol["claimWords"])]
     forbidden_words = [str(word) for word in items(pol["forbiddenWords"])]
+    repos = git_repos(root)
     entries = []
     for index, (start, title) in enumerate(marks):
         stop = marks[index + 1][0] - 1 if index + 1 < len(marks) else max(start, len(lines))
         body = [(number, line) for number, line in scannable if start < number <= stop]
         verdict_line, verdict = _entry_field(body, verdict_name)
         proof_line, proof = _entry_field(body, proof_name)
+        commit_line, commit = _entry_field(body, commit_name)
+        rollback_line, rollback = _entry_field(body, rollback_name)
         proof_value = _dequote(proof)
         verdict_clean = _dequote(verdict).strip() if verdict else ""
         if not (verdict_line and verdict_clean):
@@ -873,29 +998,37 @@ def evolution_audit(root, ledger=None) -> dict:
                       if hit[1] not in forbidden_words]
         errors = []
         demanding = state == "claiming" or bool(claim_hits) or bool(forbidden_hits)
+
+        # ① 必需字段行本身不许缺——「未验证」是合法态，但合法不等于可以留白。
+        for name in [str(field) for field in items(pol["requiredFields"])]:
+            present = {"效果证据": proof_line, "判定": verdict_line,
+                       "落账 commit": commit_line, "回滚方式": rollback_line}
+            line = present.get(name)
+            if line is not None:
+                continue
+            declared = next((key for key, value in (pol["fields"] or {}).items()
+                             if str(value) == name), None)
+            if declared == "proof" and line is None and (demanding or state == "claiming"):
+                claimed = (verdict or "").strip() or "、".join(w for _, w in claim_hits + forbidden_hits)
+                errors.append(f"{relative}:{start}: {reasons['noProofField']}（本条声称：{claimed[:80]}）")
+                continue
+            errors.append(f"{relative}:{start}: "
+                          + str(reasons["missingField"]).replace("{field}", name))
+
+        # ② before/after：两侧都要有可核数值；取不到只能写 N/A + 原因，且 N/A 不许配「已验证」。
+        if proof_line is not None:
+            errors += _proof_side_errors(relative, proof_line, proof, proof_value, pol, state, reasons)
+
+        # ③ commit 指针与回滚指针：机械验真，引用不存在的 commit 必红。
+        if commit_line is not None:
+            errors += _pointer_errors(relative, commit_line, commit_name, commit, pol,
+                                      repos, reasons, require_command=False)
+        if rollback_line is not None:
+            errors += _pointer_errors(relative, rollback_line, rollback_name, rollback, pol,
+                                      repos, reasons, require_command=True)
+
         for number, word in forbidden_hits:
             errors.append(f"{relative}:{number}: {reasons['forbiddenWord']}（命中原词「{word}」）")
-        if demanding:
-            if proof_line is None:
-                claimed = verdict.strip() or "、".join(word for _, word in claim_hits + forbidden_hits)
-                errors.append(f"{relative}:{start}: {reasons['noProofField']}（本条声称：{claimed[:80]}）")
-            else:
-                absent = []
-                if not re.search(r"[0-9]", proof_value):
-                    absent.append(reasons["noNumber"])
-                else:
-                    if not re.search(str(pol["beforePattern"]), proof_value):
-                        absent.append(reasons["noBefore"])
-                    if not re.search(str(pol["afterPattern"]), proof_value):
-                        absent.append(reasons["noAfter"])
-                if not absent:
-                    sources = [str(src) for src in items(pol["acceptedSources"])]
-                    pointers = re.findall(str(pol["sourcePattern"]), proof)
-                    if not any(any(src in pointer for src in sources) for pointer in pointers):
-                        absent.append(f"{reasons['noSource']}（允许量具：{'、'.join(sources)}）")
-                if absent:
-                    errors.append(f"{relative}:{proof_line}: " + "；".join(absent)
-                                  + f"（本行原文：{proof[:120]}）")
         if state == "honest" and claim_hits:
             number, word = claim_hits[0]
             errors.append(f"{relative}:{number}: {reasons['contradiction']}（命中原词「{word}」）")
@@ -903,9 +1036,15 @@ def evolution_audit(root, ledger=None) -> dict:
             # 同一行已经因禁词报红就不再叠一条「判定值非法」：两条同址的红只会淹没真问题
             errors.append(f"{relative}:{verdict_line}: {reasons['badVerdict']}"
                           f"（判定值：{(verdict or '')[:40]}）")
+        pointer_keys = ("commitNotFound", "noCommitPointer", "noRollbackTarget", "gitUnavailable")
+        pointer_issues = [error for error in errors
+                          if any(str(reasons[key]) in error for key in pointer_keys)]
         entries.append({"line": start, "title": title.strip(), "state": state,
                         "verdict": (verdict or "")[:120], "verdictLine": verdict_line,
                         "proof": (proof or "")[:200], "proofLine": proof_line,
+                        "commit": (commit or "")[:120], "commitLine": commit_line,
+                        "rollback": (rollback or "")[:160], "rollbackLine": rollback_line,
+                        "pointersVerified": bool(commit_line and rollback_line and not pointer_issues),
                         "claims": [f"{number}:{word}" for number, word in claim_hits],
                         "errors": errors})
     flagged = [error for entry in entries for error in entry["errors"]]
@@ -915,6 +1054,7 @@ def evolution_audit(root, ledger=None) -> dict:
         "honest": sum(1 for entry in entries if entry["state"] == "honest" and not entry["errors"]),
         "silent": sum(1 for entry in entries if not entry["errors"] and entry["state"] == "missing"),
         "unknownVerdict": sum(1 for entry in entries if entry["state"] == "unknown"),
+        "pointersVerified": sum(1 for entry in entries if entry["pointersVerified"]),
         "red": len(flagged),
     }
     return {"file": relative, "entries": entries, "errors": flagged, "counts": counts, "policy": pol}
@@ -932,20 +1072,28 @@ def render_evolution(result) -> str:
     counts, entries = result["counts"], result["entries"]
     pol = result.get("policy") or {}
     buckets = (pol.get("verdictBuckets") or {}) if isinstance(pol, dict) else {}
+    git = (pol.get("git") or {}) if isinstance(pol, dict) else {}
     lines = [f"# 进化台账 before/after 执法（{result['file']}）", ""]
-    lines.append(f"- 台账条目 {counts['entries']} 条：挂 before/after 且判绿 **{counts['withProof']}** 条"
+    lines.append(f"- 台账条目 **{counts['entries']}** 条：挂 before/after 且判绿 **{counts['withProof']}** 条"
                  f"｜诚实「{pol.get('honestVerdict','未验证')}」**{counts['honest']}** 条"
-                 f"｜裸声称或判据不合规 **{counts['red']}** 处（可能集中在同一条）"
+                 f"｜commit＋回滚指针已机械验真 **{counts['pointersVerified']}** 条"
+                 f"｜判据不合规 **{counts['red']}** 处（可能集中在同一条）"
                  f"｜未声称生效 {counts['silent']} 条｜判定值枚举外 {counts['unknownVerdict']} 条")
     lines.append(f"- 真相源：{pol.get('truthSource','') if isinstance(pol, dict) else ''}")
+    lines.append(f"- commit 指针验真方式：`{git.get('verifyCommand','') if isinstance(git, dict) else ''}`"
+                 f"（只读；本执法器不执行任何写操作型 git 命令、不自动回滚、不改写台账）")
     lines.append("")
     if entries:
-        lines += ["| 行 | 条目 | 判定 | 效果证据 | 本条结论 |", "|---|---|---|---|---|"]
+        lines += ["| 行 | 条目 | 判定 | 效果证据 | 落账 commit | 回滚 | 本条结论 |",
+                  "|---|---|---|---|---|---|---|"]
         for entry in entries:
             verdict = entry["verdict"] or "N/A（缺判定行）"
             proof = (entry["proof"] or "N/A（缺效果证据行）").replace("|", "／")
+            commit = (entry.get("commit") or "N/A（缺落账 commit 行）").replace("|", "／")
+            rollback = (entry.get("rollback") or "N/A（缺回滚方式行）").replace("|", "／")
             outcome = "⛔ 红" if entry["errors"] else ("✅ 绿" if entry["state"] != "missing" else "— 未声称生效")
-            lines.append(f"| {entry['line']} | {entry['title'][:40]} | {verdict[:24]} | {proof[:60]} | {outcome} |")
+            lines.append(f"| {entry['line']} | {entry['title'][:40]} | {verdict[:24]} | {proof[:60]} "
+                         f"| {commit[:40]} | {rollback[:40]} | {outcome} |")
         lines.append("")
         for entry in entries:
             for error in entry["errors"]:
@@ -963,8 +1111,9 @@ def render_evolution(result) -> str:
                 lines.append(f"- 口径：{buckets[key]}")
         lines.append("")
     else:
-        lines.append("台账里还没有任何进化条目（0 条）⇒ 没有可判对象。这是「没测」，不是「没问题」：")
+        lines.append("台账里还没有任何进化条目（0 条）⇒ 没有可判对象。**这是「空集通过」，不是达标**：")
         lines.append("执法器本身由 `scripts/tests` 的合成夹具做反向对照钉住，真实条目一出现就按同一判据判。")
+        lines.append("把 `passed` 读成「进化都验证过了」就是本仓要防的自欺——今天之前它正是这么骗过人的。")
         lines.append("")
     lines.append("复算：`./.venv/Scripts/python.exe scripts/validate_core.py evolution --project-root .`")
     return "\n".join(lines) + "\n"
@@ -1037,9 +1186,16 @@ def main(argv=None):
             print(render_evolution(result))
             for error in result["errors"]:
                 print(error, file=sys.stderr)
-            print(f"evolution validation "
-                  + (f"failed: {len(result['errors'])} error(s)" if result["errors"] else "passed"))
-            return 1 if result["errors"] else 0
+            counts = result["counts"]
+            tally = (f"条目 {counts['entries']} 条｜指针验真 {counts['pointersVerified']} 条"
+                     f"｜红 {counts['red']} 处")
+            if not result["errors"]:
+                print("evolution validation passed"
+                      + (f"（空集通过：{tally} ⇒ 没有条目可判，不等于达标）" if not counts["entries"]
+                         else f"（{tally}）"))
+                return 0
+            print(f"evolution validation failed: {len(result['errors'])} error(s)（{tally}）")
+            return 1
         elif args.command == "skill-contract":
             errors = check_skill_contract(root, args.include_legacy)
         elif args.command == "knowledge":

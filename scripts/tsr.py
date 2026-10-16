@@ -309,9 +309,15 @@ def cmd_candidates(args) -> int:
     result = candidates.collect(root, max_age_hours=args.max_age_hours)
     print(candidates.render_report(result))
     for card in result["cards"][:args.preview]:
+        attribution = card.get("attribution") or {}
+        where = ""
+        if attribution.get("clauses"):
+            clause = attribution["clauses"][0]
+            where = f" ｜ 条款 {clause['file']}:{clause['startLine']}"
         print(f"  [{card['kind']}] {card['id']} ｜ executionId {card['executionId'] or 'N/A'}"
               f" ｜ 窗口 {card['window'].get('start') or 'N/A'} → {card['window'].get('end') or 'N/A'}"
-              f" ｜ 涉事产物 {len(card['artifacts'])} 个")
+              f" ｜ 涉事产物 {len(card['artifacts'])} 个"
+              f" ｜ 归因 {attribution.get('verdict', 'N/A（归因段没跑成）')}{where}")
     if len(result["cards"]) > args.preview:
         print(f"  （其余 {len(result['cards']) - args.preview} 张未预览；--preview 调大）")
     if args.write:

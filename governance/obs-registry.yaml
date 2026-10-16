@@ -99,16 +99,89 @@ candidates:
     artifactGone: "产物已从磁盘消失"
     contract: "run-log 契约违规"
     noObservability: "观测未接入"
-# ── 闭环中间段②：进化台账 before/after 执法（plan v2 §3 台账规则 + §6 M6）。
+# ── 闭环后段①：候选卡 → 具体 skill 的具体条款（plan v2 §5「归因到具体 skill 的具体条款（读轨迹原文）」）。
+# 归因只走注册表反查：每一跳都要能点回原文核对。找不到可证据化条款就落「未归因」，禁止猜、
+# 禁止用标题冒充条款、禁止把「最像的那段」当成责任条款；多命中全部列出并交人裁决。
+attribution:
+  version: 1
+  label: "归因（条款级）"
+  truthSource: "候选卡的涉事产物指针 + governance 注册表反查 + skill 正文原文（全程只读，不改任何正文）"
+  recompute: "./.venv/Scripts/python.exe scripts/tsr.py --project-root . candidates"
+  verdicts:
+    attributed: "归因（唯一条款证据）"
+    multiple: "多归属，需人裁决"
+    none: "未归因（无条款证据）"
+  # 路径 → 节点/skill 的每一跳。多条路由同时命中不同 skill ⇒ 多归属，不自行挑一个。
+  routes:
+    - id: artifactPathsGlob
+      source: "governance/obs-registry.yaml:nodes[].paths"
+      evidence: "obs-registry.yaml 的该节点声明行"
+      detail: "涉事产物路径按 nodes[].paths 的 glob 反查节点 ⇒ 节点声明的 skill；一个路径可被多个节点 glob 覆盖，全部列出"
+    - id: runLogNode
+      source: "governance/obs-registry.yaml:nodes[].id"
+      evidence: "obs-registry.yaml 的该节点声明行"
+      detail: "候选卡自带的 node 字段（取自 run-log 事件，不是回忆）反查同 id 节点 ⇒ 节点声明的 skill"
+    - id: issuePoolDir
+      source: "governance/skill-registry.yaml:skills[].id + legacyAliases"
+      evidence: "skill-registry.yaml 的该 skill 声明块行号"
+      detail: "issue 池路径的 <Skill目录名> 段与注册表 id/legacyAliases 逐字相等（仅大小写折叠）才算命中；差一个字母就不算"
+      schema: "issue/<Skill目录名>/<日期>/<序号>-<标题>.md"
+      directorySegment: 1
+  # 条款语料：该 skill 自己的正文，加上「该 skill 正文里逐字引用到文件名」的仓根 shared 契约。
+  # 不默认把全仓 shared 塞进语料：那样任何一条 shared 措辞都会伪装成每个 skill 的责任条款。
+  # 口径按 plan v2 §5 的字面范围收窄到 SKILL.md + shared/*.md（宁窄勿宽）：references/assets 里
+  # 的相似措辞不算责任条款，宁可落「未归因」也不把最像的那段当结论。
+  corpus:
+    skillFiles: ["{skillPath}/SKILL.md", "{skillPath}/shared/*.md"]
+    sharedGlob: "shared/*.md"
+    sharedGate: "只有该 skill 的 SKILL.md 正文逐字出现该 shared 文件名，才把它纳入该 skill 的语料"
+  # 条款 = 一个「## 二级标题 + 到下一个二级标题前的正文」。needle 必须落在**正文**（不含标题行）。
+  clauseUnit: h2-section
+  headingPattern: '^##\s+\S'
+  bodyOnly: true
+  caseSensitive: true
+  maxClauseChars: 900
+  # 每类候选 kind 的 needle 组（逐字命中即算条款证据）。needle 取判据原文里的 operative 词，
+  # 或由卡面指针机械代入（{issueDir} = 涉事产物的 issue 池目录段）。空列表 ⇒ 该 kind 无从归因，如实落未归因。
+  kinds:
+    缺回流用例:
+      needles: ["回流", "回归用例", "反哺记录"]
+      basis: "判据原文（governance/eval-spec.yaml:caseTiers.L2「闭环后必须回流成 1 条；未回流不得标闭环」）"
+      ruleSource: "governance/eval-spec.yaml:caseTiers.L2"
+      note: "needle 只取判据原文里的 operative 词；不用「反哺」这类泛词——它在 skill 正文 12 个文件里命中，"
+      note2: "多数说的是 OSS-Radar 选型反哺，与回流义务无关（把最像的那段当责任条款就是本仓要防的造假）"
+    产物改了没落台账:
+      needles: ["没落台账", "改了正文", "重新绑定", "重签", "contentDigest", "内容指纹"]
+      basis: "判据原文「artifact edited after node-end ⇒ 改了正文没落台账」的 operative 词"
+      codeEnforcedBy: "scripts/tsr.py:check_bindings（该判据由脚本执法；skill 正文无对应条款时落未归因，不硬凑一段正文当责任条款）"
+    节点名未注册:
+      needles: ["节点名", "未注册"]
+      codeEnforcedBy: "scripts/obs/metrics.py:summarize + governance/obs-registry.yaml:nodes[].id"
+    节点未收口:
+      needles: ["node-end", "收口"]
+      codeEnforcedBy: "scripts/obs/candidates.py:unclosed_pairs"
+    改动未提交:
+      needles: ["改动未提交", "未提交"]
+      codeEnforcedBy: "scripts/obs/gitlog.py:find_gaps"
+    悬空 issueRef:
+      needles: ["issueRef", "悬空"]
+      codeEnforcedBy: "scripts/eval/relay.py:audit"
+    评测集读不动:
+      needles: []
+      codeEnforcedBy: "scripts/eval/relay.py:audit"
+    run-log 契约违规:
+      needles: ["run-log", "tenger.trace/v1"]
+      codeEnforcedBy: "scripts/tsr.py:verify"
+    观测未接入:
+      needles: ["instrumentation-guide", "tsr"]
+      codeEnforcedBy: "shared/instrumentation-guide.md"
+# ── 闭环后段②：进化台账 before/after 执法（plan v2 §3 台账规则 + §6 M6）。
 # 规则原文：每条进化必须挂 before/after，无指标一律标「未验证」，禁止写「已优化」。此前纯纸面。
 evolutionLedger:
   version: 1
   path: "evolution/进化台账.md"
   truthSource: "台账正文（只读；本命令不改写台账、不替人补指标）"
   entryHeading: '^#{2,4}\s+E-\S+'
-  fields:
-    proof: "效果证据"
-    verdict: "判定"
   honestVerdict: "未验证"
   claimingVerdict: "已验证"
   verdictValues: ["已验证", "未验证"]
@@ -122,6 +195,23 @@ evolutionLedger:
   acceptedSources: ["tsr report", "tsr score", "tsr verify", "tsr audit", "tsr candidates",
                     "validate_core", "detection.json", "eval-report.json",
                     "eval-baseline-diff.json", "baseline/result.json", "relay.py"]
+  fields:
+    proof: "效果证据"
+    verdict: "判定"
+    commit: "落账 commit"
+    rollback: "回滚方式"
+  # 每条进化记录（含「未验证」）都必须具备这四项：before/after 走「效果证据」行，判定走「判定」行。
+  # 「未验证」是合法态，但合法不等于可以空白：数值取不到就写 N/A + 原因，字段行本身不许缺。
+  requiredFields: ["效果证据", "判定", "落账 commit", "回滚方式"]
+  naToken: "N/A"
+  naReasonPattern: 'N/A[^0-9\n]*（[^）\n]{4,}）'
+  commitPointerPattern: '\b[0-9a-fA-F]{7,40}\b'
+  rollbackTargetPattern: 'git\s+(revert|checkout)\b'
+  git:
+    readonly: true
+    verifyCommand: "git -C <repo> cat-file -e <sha>^{commit}"
+    repoOrder: ["项目根", "校验器所在仓根"]
+    repoOrderReason: "项目根不是 git 仓时退回校验器所在仓根（台账记的多是本仓 commit）；两处都不是 git 仓 ⇒ 判红，不得把「查不了」读成「过了」"
   reasons:
     missingLedger: "进化台账不存在 ⇒ 无从判定，不算通过（不得把「没台账」读成「没问题」）"
     unreadable: "台账读不动 ⇒ 无法执法，本条按红处理"
@@ -134,6 +224,13 @@ evolutionLedger:
     forbiddenWord: "台账禁止写「已优化」（plan v2 §3：无指标一律标「未验证」）"
     contradiction: "判定=未验证 却在正文声称生效 ⇒ 自相矛盾"
     badVerdict: "判定值不在枚举内（已验证|未验证）⇒ 判不了不算通过"
+    missingField: "缺必需字段行「{field}」⇒ 台账条目不许只写结论（plan v2 §3 台账规则 + §5 回滚指针）"
+    noCommitPointer: "「落账 commit」里没有可机械验真的 commit 指针（判据：要含 7–40 位十六进制 sha）"
+    commitNotFound: "「落账 commit」引用的 commit 在 git 里不存在 ⇒ 漂亮字符串不算指针"
+    noRollbackTarget: "「回滚方式」没有可执行回滚目标（判据：要含 `git revert`/`git checkout` 且指向可验真的 commit）"
+    badNaWithoutReason: "before/after 写了 N/A 却没写原因 ⇒ N/A 必须是「取不到且说明为什么取不到」，不是留白"
+    naWithClaimed: "判定=已验证 却有一侧是 N/A ⇒ 没有实测数值就不许标已验证"
+    gitUnavailable: "只读 git 查询跑不了（未装 git 或两处都不是 git 仓）⇒ commit 指针无法验真，判红不判绿"
   verdictBuckets:
     claimedWithProof: "声称生效且挂了 before/after（判绿）"
     honestUnverified: "写「未验证」的诚实态（判绿，不要求指标）"

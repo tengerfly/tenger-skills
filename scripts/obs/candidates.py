@@ -141,6 +141,8 @@ def _new_card(pol: dict, *, kind: str, evidence: str, surface: str, judge: str,
         "window": {"start": start, "end": end, "note": window_note},
         "runLogRefs": list(run_log_refs or []), "artifacts": list(artifacts or []),
         "na": list(na or []), "boundary": boundary or "",
+        # 归因由 obs.attribution 在 collect() 末尾统一填入；没有它时渲染段自己会报「没跑」
+        "attribution": None,
     }
 
 
@@ -441,10 +443,18 @@ def collect(root: Path, max_age_hours: float = 4.0) -> dict:
                 known["window"] = card["window"]
     for card in cards.values():
         card["na"] = _na_fields(pol, card)
+    # 闭环后段：归因到具体条款（plan v2 §5）。注册表没声明判据就如实报「这没跑」，不静默跳过。
+    attribution_summary = None
+    try:
+        from obs import attribution
+        attribution_summary = attribution.attribute_all(root, list(cards.values()), None, pol)
+    except ValueError as exc:
+        attribution_summary = {"error": str(exc)}
+        broken.append(f"归因段：N/A —— {exc}（没归因不等于归因通过）")
     return {"root": root, "policy": pol,
             "cards": sorted(cards.values(), key=lambda card: (card["kind"], card["evidence"])),
             "surfaces": surfaces, "broken": broken, "verifyErrors": errors,
-            "verifyNotes": notes, "events": len(events)}
+            "verifyNotes": notes, "events": len(events), "attribution": attribution_summary}
 
 
 def render(card: dict, pol: dict) -> str:
@@ -489,11 +499,23 @@ def render(card: dict, pol: dict) -> str:
                   *[f"- {item}" for item in card["na"]], ""]
     if card.get("boundary"):
         lines += ["## 边界", f"- {card['boundary']}", ""]
+    lines += [_attribution_section(card), ""]
     lines += ["## 下一步（属人的判定）",
               "- 确认这条是否成立：成立才由人升级为正式问题卡并定级（P0/P1）；不成立就删掉本卡。",
               f"- 复算命令（1 条 CLI 调用）：`{pol['recompute']}`",
               f"- {pol.get('boundary', '')}"]
     return "\n".join(lines) + "\n"
+
+
+def _attribution_section(card: dict) -> str:
+    """归因段由 obs.attribution 渲染；它没跑成时就如实写「没跑」，绝不留白让人读成「没有归属」。"""
+    attribution = card.get("attribution")
+    if not attribution:
+        return ("## 归因（条款级）\n\n"
+                "N/A —— 本轮没有跑归因（注册表未声明 attribution 判据或生成器未被调用）；"
+                "「没归因」不等于「没有条款可归」，也不等于「归属已确认」。")
+    from obs import attribution as module
+    return module.render_block(attribution)
 
 
 def _assert_allowed(root: Path, out_dir: Path, pol: dict) -> None:
@@ -530,6 +552,30 @@ def write(root: Path, cards: list, pol: dict | None = None) -> dict:
             "updated": updated, "unchanged": unchanged, "stale": stale}
 
 
+def _attribution_lines(summary) -> list:
+    """归因三分类如实报数。命中率低也照报——把「没归因上」写成「都归好了」才是造假。"""
+    if not summary or summary.get("error"):
+        reason = (summary or {}).get("error", "归因段本轮没有被调用")
+        return [f"- 归因：**N/A —— {reason}**（没归因不等于没问题，也不等于都已归属）"]
+    buckets, counts = summary["buckets"], summary["counts"]
+    total = counts["cards"]
+    parts = "｜".join(f"{name} {buckets.get(name, 0)} 张" for name in
+                      ("归因（唯一条款证据）", "多归属，需人裁决", "未归因（无条款证据）"))
+    rate = f"{buckets.get('归因（唯一条款证据）', 0) / total:.0%}" if total else "N/A"
+    lines = [f"- 归因（条款级，逐字命中才算证据）：{parts or 'N/A'}"
+             f"｜证据化命中率 {rate}（共 {total} 张）"]
+    lines.append(f"- 路径→skill 一跳都没命中的卡 {counts['noSkill']} 张"
+                 f"；涉及多个 skill 的卡 {counts['multiSkillCards']} 张"
+                 f"；累计条款证据 {counts['clauses']} 处，去重后落在 "
+                 f"{counts.get('distinctClauses', 0)} 个不同条款上"
+                 f"（{('、'.join(f'`{name}`' for name in counts.get('distinctClauseFiles') or [])) or 'N/A'}）")
+    if counts.get("distinctClauses") == 1 and counts.get("clauses", 0) > 1:
+        lines.append("- 注意：多张卡归到**同一条**条款 ⇒ 该义务只在共享契约/治理判据里，"
+                     "各 skill 正文没有自己的承接条款；这是「判据有执法者、正文无承接」的缺口，"
+                     "不是 24 个各自独立的条款问题。")
+    return lines
+
+
 def render_report(result: dict) -> str:
     pol, cards = result["policy"], result["cards"]
     lines = [f"# 候选问题卡生成（{pol['label']}）", ""]
@@ -542,6 +588,7 @@ def render_report(result: dict) -> str:
         lines.append("- 本轮没跑成的检出面（如实报，不当已通过）：")
         lines += [f"  - {item}" for item in result["broken"]]
     lines.append(f"- 去重后候选：**{len(cards)} 张**（同一事实被两处命中只出一张；等级一律留空）")
+    lines += _attribution_lines(result.get("attribution"))
     lines.append(f"- 落点：`{pol['outputDir']}/`（派生区，**不写 `issue/`**）")
     lines.append("")
     if cards:
