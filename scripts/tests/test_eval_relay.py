@@ -170,6 +170,99 @@ class DanglingReferenceTests(ProbeRepoMixin):
         self.assertIn("无法确定唯一", reason)
 
 
+class TriageTests(ProbeRepoMixin):
+    """分诊核对：缺回流要么接成用例、要么写明不可机械化的结论——新增缺口没分诊就报红。
+
+    方向要摆对：名单里已不再缺的条目（用例接上了）只报「过期」不报红，否则就是把判据调反、
+    惩罚进展。尺子本身读不动（缺 l2Triage 或 declared 为空）也不许当成「没有未分诊」。
+    """
+
+    def spec(self, root: Path, declared) -> None:
+        import yaml
+        path = root / "governance" / "eval-spec.yaml"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        section = {"l2Triage": {"rule": "每条 missing 都要在 declared 里", "declared": declared,
+                                "texts": {"undeclared": "UNDECLARED-判据文本", "stale": "STALE-判据文本",
+                                          "clean": "CLEAN-判据文本", "missingPolicy": "MISSINGPOLICY-判据文本"}}}
+        if declared == "drop-section":
+            section = {"version": 1}
+        path.write_text(yaml.safe_dump(section, allow_unicode=True), encoding="utf-8")
+
+    def second_gap(self, root: Path) -> None:
+        path = root / "issue" / "Probe" / "2026-01-02" / "01-y.md"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(TABLE.format(grade="P1", state="已沉淀"), encoding="utf-8")
+
+    def test_undocumented_gap_is_undeclared(self):
+        root = self.build({"issue/Probe/2026-01-01/01-x.md": TABLE.format(grade="P0", state="已沉淀")}, EVAL_YAML)
+        self.second_gap(root)
+        self.spec(root, [{"issue": "issue/Probe/2026-01-01/01-x.md", "verdict": "需 agent_judge",
+                          "reason": "语义判断，结构层无等价尺子"}])
+        result = relay.audit(root)
+        self.assertEqual(result["triage"]["covered"], ["issue/Probe/2026-01-01/01-x.md"])
+        self.assertEqual(result["triage"]["undeclared"], ["issue/Probe/2026-01-02/01-y.md"],
+                         "新增缺口没进名单就必须点名，不能只报「还差两条」")
+        self.assertEqual(result["triage"]["stale"], [])
+        text = relay.render(result)
+        self.assertIn("UNDECLARED-判据文本", text)
+        self.assertIn("issue/Probe/2026-01-02/01-y.md", text)
+
+    def test_triaged_gap_reads_clean_and_shows_the_verdict(self):
+        root = self.build({"issue/Probe/2026-01-01/01-x.md": TABLE.format(grade="P0", state="已沉淀")}, EVAL_YAML)
+        self.spec(root, [{"issue": "issue/Probe/2026-01-01/01-x.md", "verdict": "证据双侧交集为空",
+                          "reason": "真实文档侧 0 命中（附扫描计数）"}])
+        result = relay.audit(root)
+        self.assertEqual(result["triage"]["undeclared"], [])
+        text = relay.render(result)
+        self.assertIn("CLEAN-判据文本", text)
+        self.assertIn("证据双侧交集为空", text, "分诊结论要能看见，不能只报一个条数")
+
+    def test_wired_entry_makes_the_list_stale_but_not_undeclared(self):
+        # 反向对照：把回流用例接上 ⇒ 缺口消失，名单里这一条变「过期」；过期不许冒充未分诊
+        root = self.build({"issue/Probe/2026-01-01/01-x.md": TABLE.format(grade="P0", state="已沉淀")}, WITH_REF)
+        self.spec(root, [{"issue": "issue/Probe/2026-01-01/01-x.md", "verdict": "证据双侧交集为空",
+                          "reason": "旧结论，现已接上"}])
+        result = relay.audit(root)
+        self.assertEqual(result["missing"], [])
+        self.assertEqual(result["triage"]["stale"], ["issue/Probe/2026-01-01/01-x.md"])
+        self.assertEqual(result["triage"]["undeclared"], [])
+        text = relay.render(result)
+        self.assertIn("STALE-判据文本", text)
+        self.assertNotIn("UNDECLARED-判据文本", text)
+
+    def test_empty_declared_uses_the_registry_text(self):
+        root = self.build({"issue/Probe/2026-01-01/01-x.md": TABLE.format(grade="P0", state="已沉淀")}, EVAL_YAML)
+        self.spec(root, [])
+        result = relay.audit(root)
+        self.assertEqual(result["triage"]["error"], "MISSINGPOLICY-判据文本")
+        self.assertIn("MISSINGPOLICY-判据文本", relay.render(result))
+
+    def test_absent_section_is_red_not_skipped(self):
+        root = self.build({"issue/Probe/2026-01-01/01-x.md": TABLE.format(grade="P0", state="已沉淀")}, EVAL_YAML)
+        self.spec(root, "drop-section")
+        result = relay.audit(root)
+        self.assertIn("未声明 l2Triage", result["triage"]["error"])
+
+    def test_unreadable_spec_says_could_not_check(self):
+        root = self.build({"issue/Probe/2026-01-01/01-x.md": TABLE.format(grade="P0", state="已沉淀")}, EVAL_YAML)
+        result = relay.audit(root)   # 临时仓里没有 governance/eval-spec.yaml
+        self.assertTrue(result["triage"]["error"].startswith("分诊核对读不动"),
+                        "文件不在也要如实说「没能核」，不能悄悄当通过")
+
+
+class RealPoolTriageTests(unittest.TestCase):
+    def test_real_gaps_are_triaged_one_to_one(self):
+        result = relay.audit(ROOT)
+        triage = result["triage"]
+        self.assertEqual(triage["error"], "")
+        self.assertEqual(triage["undeclared"], [], "现仓缺回流必须逐条有分诊结论")
+        self.assertEqual(triage["stale"], [], "名单不许留着已闭合的条目骗下一轮")
+        self.assertEqual(len(triage["covered"]), len(result["missing"]))
+        self.assertEqual(sorted(triage["declared"]), sorted(triage["covered"]))
+        for ident, item in triage["declared"].items():
+            self.assertTrue(item["verdict"] and item["reason"], f"{ident} 的分诊结论不能空着")
+
+
 class RealPoolWiringTests(unittest.TestCase):
     """执法器必须真的对着本仓现状工作——只在临时夹具里绿，等于没接上。"""
 

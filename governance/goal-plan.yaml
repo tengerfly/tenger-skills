@@ -33,10 +33,10 @@ nextRules:
   blockedNeedsReason: "条目停在 doing/todo 必须写 blockedBy，否则红：没写原因的进行中等于没人认领"
   ledgerMustQuoteTask: "台账「下一格」那一行必须逐字抄 next.task 原文 ⇒ 指针有两份抄本就一定会漂（本仓已漂过两轮），以本文件为源"
 next:
-  cell: loop-l2
-  task: "排序第 3 格（台账第 6 项④用例回流）：剩余 6 条缺回流的机械化只有三条路——新的真实文档证据（本轮已逐条给出两侧标题命中数，别再重扫）、实现 agent_judge（run.py 未实现，且夜间不得接引擎）、授权行为层真跑。下一轮若三者都没有新增，本格按停下条件 c 正式收口，不再占指针"
-  why: "⑥今晚 7→6（#20 靠双侧交集翻案接线，判据进 artifact-registry 的 documentSections）；④本轮把反哺有效率的 N/A 从「两侧没交集」细化成落点层次：4 条反哺记录的落账 commit 全部只改工具层、0 条触达 skill 正文 ⇒ 与按 skill 归属的复发链天然对不上（判据出处 docs/observability-evaluation-plan-v2.md:124 把反哺有效率定义为「问题闭环 → SKILL.md 落规则 → 同场景错误率变化」），要出数缺的是「改到某 skill 正文且两侧可核的反哺记录」＋第二条显式复发链，两者都不是夜间会话能造的；①仍只等用户开业务节点（实测 24 个项目目录里只有本仓有 .spec/obs/run.jsonl）"
-  notDo: "不再把超时空输出当「没有」——结论要附扫描范围与文件计数；不为出百分比借别的链凑分母；不设 TSR_ALLOW_ENGINE、不调引擎；不编造反哺记录、不代用户批准进化台账条目；夜间不自行确认候选卡"
+  cell: loop-data
+  task: "排序第 1 格（台账第 1 项①客观数据）：等用户在真实业务项目里跑一次业务节点（prd-design/dev/review 之一）完整 start→end，report 才出得了该节点的墙钟与产物 sha；本轮实测 24 个项目目录里只有本仓有 .spec/obs/run.jsonl ⇒ 三条 ◐（①④⑥）全部属【不许自行解除】硬阻塞、原因逐条挂在 blockedBy，停下条件 b 成立"
+  why: "⑥已在 2026-10-17 第五轮按停下条件 c 收口，三条出口逐条核过而不是凭印象：业务侧 12 个 .spec 根／862 个 md 里 03:00（上一轮双侧扫描时刻）之后新增或改动 0 个文件 ⇒ 六条判据的双侧交集现状未变，别再重扫；agent_judge 在 run.py 仍未实现且夜间不得接引擎；行为层真跑需用户授权。本轮把 6 条分诊结论从散文搬进 governance/eval-spec.yaml 的 l2Triage，由 relay.py 核对（未分诊判红、名单过期只报数不判红、尺子读不动判红）。④要一条改到 skill 正文且两侧可核的反哺记录（造记录须用户批准）＋第二条显式复发链。①只等用户开业务节点"
+  notDo: "不再把超时空输出当「没有」——结论要附扫描范围与文件计数；不为把缺回流 6 压成 0 去声明不等价 issueRef，也不把已分诊的条目从名单里删掉来冒充进展；不为出百分比借别的链凑分母；不设 TSR_ALLOW_ENGINE、不调引擎；不编造反哺记录、不代用户批准进化台账条目；夜间不自行确认候选卡"
   stopWhen: "11 项全部 ☑，或剩余项全部已在本文件 blockedBy 写明属【不许自行解除】的硬阻塞——除此之外不得停下向用户提问"
 goals:
   - id: loop-data
@@ -115,8 +115,9 @@ goals:
       commits: [a8f7ac6, 43aa723, e64fd1a, e171aab]
       files: ["scripts/eval/relay.py:1", "docs/L2回流机械化判定清单.md:1", "evals/recording/eval.yaml:1",
               "evals/crossrefs/eval.yaml:1", "evals/design-review/eval.yaml:1",
-              "governance/artifact-registry.yaml:1", "scripts/validate_core.py:1"]
-    blockedBy: "剩 7 条缺口（#2/#5/#6/#11/#12/#16/#20）：全是必含式或纯语义判据——结构层没有等价判据入口，行为层要真跑且需用户授权引擎，或要有真实文档证据才能新增 documentSections（铁律 4 不许凭声明罚合规产物）。上一版这里写的「#17/#19 检出者绑宿主安装视图 ⇒ 撞硬约束 A」是未核实的转述，本轮读代码已推翻并把这两条接进 CHECKS。2026-10-17 第三轮按停下条件 c 收口：把 validate_core 里未接进 CHECKS 的 7 把尺子逐条对过这 7 条判据，没有一把能等价表达（对表见判定清单「收口前审计」）⇒ 本格当晚见底。2026-10-17 第四轮更正：本条里「#20 缺真实文档证据」被推翻——那句依据来自一次超时被杀的跨项目递归 grep，空输出被我当成「没有」；改用单进程遍历＋打印扫描计数（12 个 .spec 根／862 个 md）后真实侧 5 处命中（knowledge-bases 4／travel-agent 1，扫描计数 380／54 个 md）、声明侧 dimension-review-template.md:27 同在，已接成 artifact-registry 的 documentSections＋EV-DR-006/007，缺回流 7→6。剩余 6 条这次按同一把尺子给出两侧命中数（表在判定清单「第四轮」节）：#2/#5 只有声明侧有标题、真实侧 0；#6/#16 两侧 0；#11 两侧 0；#12 命中的是 oss-radar 与 learning-assistant 的对象——交集为空是数出来的，不再凭印象"
+              "governance/artifact-registry.yaml:1", "governance/eval-spec.yaml:1",
+              "scripts/tests/test_eval_relay.py:1", "scripts/validate_core.py:1"]
+    blockedBy: "剩 7 条缺口（#2/#5/#6/#11/#12/#16/#20）：全是必含式或纯语义判据——结构层没有等价判据入口，行为层要真跑且需用户授权引擎，或要有真实文档证据才能新增 documentSections（铁律 4 不许凭声明罚合规产物）。上一版这里写的「#17/#19 检出者绑宿主安装视图 ⇒ 撞硬约束 A」是未核实的转述，本轮读代码已推翻并把这两条接进 CHECKS。2026-10-17 第三轮按停下条件 c 收口：把 validate_core 里未接进 CHECKS 的 7 把尺子逐条对过这 7 条判据，没有一把能等价表达（对表见判定清单「收口前审计」）⇒ 本格当晚见底。2026-10-17 第四轮更正：本条里「#20 缺真实文档证据」被推翻——那句依据来自一次超时被杀的跨项目递归 grep，空输出被我当成「没有」；改用单进程遍历＋打印扫描计数（12 个 .spec 根／862 个 md）后真实侧 5 处命中（knowledge-bases 4／travel-agent 1，扫描计数 380／54 个 md）、声明侧 dimension-review-template.md:27 同在，已接成 artifact-registry 的 documentSections＋EV-DR-006/007，缺回流 7→6。剩余 6 条这次按同一把尺子给出两侧命中数（表在判定清单「第四轮」节）：#2/#5 只有声明侧有标题、真实侧 0；#6/#16 两侧 0；#11 两侧 0；#12 命中的是 oss-radar 与 learning-assistant 的对象——交集为空是数出来的，不再凭印象。2026-10-17 第五轮按停下条件 c 正式收口（本轮没降，仍是 6 条）：三条出口都核过而不是猜——业务侧 12 个 .spec 根／862 个 md 在上一轮双侧扫描时刻（03:00）之后新增或改动 0 个文件，agent_judge 仍未实现且夜间不得接引擎，真跑需授权；同时把这 6 条分诊结论搬进 governance/eval-spec.yaml 的 l2Triage，由 scripts/eval/relay.py 的 triage_check 核对（未分诊判红／名单过期只报数／尺子读不动判红），从此「不可机械化者留在清单里写明原因」这半句判据有了执行者"
   - id: loop-sink
     ledgerRow: 7
     order: 5

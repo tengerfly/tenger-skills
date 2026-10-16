@@ -6,7 +6,10 @@ L2 case，没有则拒绝闭环」。在这之前这句话没有任何执行者�
 全仓没有任何机械核对问过它有没有对应回归。本文件就是那个核对者，两个方向都查：
 
 1. 闭环却没有用例指回来 ⇒ 报缺回流（退出码 1）；
-2. 用例写了 `issueRef` 却指向不存在的条目 ⇒ 算 error（run.py 逐条判 error，这里汇总报出）。
+2. 用例写了 `issueRef` 却指向不存在的条目 ⇒ 算 error（run.py 逐条判 error，这里汇总报出）；
+3. 缺回流的每一条都要有**分诊结论**（`governance/eval-spec.yaml` 的 `l2Triage`）：新增缺口没分诊 ⇒ 报红；
+   名单里已不再缺的 ⇒ 报「名单过期」但**不判红**——那说明用例接上了，惩罚进展等于把判据调反。
+   分诊名单本身读不动 ⇒ 也报红（尺子取不到不许默认通过）。
 
 口径全部抄仓库现状，不发明字段：
 - 条目 id ＝ 仓库相对路径（`issue/README.md` 的写入约定与 `shared/templates/issue-template.md`
@@ -133,6 +136,42 @@ def refs_by_case(root: Path = ROOT) -> tuple:
     return rows, load_errors
 
 
+def triage_policy(root: Path = ROOT) -> dict:
+    """读 governance/eval-spec.yaml 的 l2Triage；读不动／缺节／declared 为空都返回带 error 的空表。
+
+    这里刻意不「缺了就当没有缺口」：尺子取不到时默认通过，就是把漏分诊洗成绿（本仓犯过的那族）。
+    """
+    path = Path(root) / "governance/eval-spec.yaml"
+    try:
+        import yaml
+        section = (yaml.safe_load(path.read_text(encoding="utf-8")) or {}).get("l2Triage")
+    except (OSError, ValueError) as exc:
+        return {"error": f"分诊核对读不动：{path.name}: {exc}", "declared": {}, "texts": {}}
+    if not isinstance(section, dict) or not section.get("declared"):
+        missing = (section or {}).get("texts", {}).get("missingPolicy") if isinstance(section, dict) else None
+        return {"error": missing or "governance/eval-spec.yaml 未声明 l2Triage.declared ⇒ 缺口无法核对是否已分诊",
+                "declared": {}, "texts": (section or {}).get("texts", {}) if isinstance(section, dict) else {}}
+    declared = {}
+    for item in section["declared"]:
+        ident = str(item.get("issue") or "").strip()
+        if ident:
+            declared[ident] = {"verdict": str(item.get("verdict") or "").strip(),
+                               "reason": str(item.get("reason") or "").strip()}
+    return {"error": "", "declared": declared, "texts": section.get("texts") or {}, "rule": section.get("rule")}
+
+
+def triage_check(result: dict, root: Path = ROOT) -> dict:
+    """缺回流的每一条都必须有分诊结论；名单里已不再缺的如实报「过期」，但不算红。"""
+    policy = triage_policy(root)
+    missing_ids = [entry["id"] for entry in result["missing"]]
+    declared = policy["declared"]
+    undeclared = [ident for ident in missing_ids if ident not in declared]
+    stale = [ident for ident in declared if ident not in set(missing_ids)]
+    return {"error": policy["error"], "texts": policy["texts"], "declared": declared,
+            "undeclared": undeclared, "stale": stale,
+            "covered": [ident for ident in missing_ids if ident in declared]}
+
+
 def audit(root: Path = ROOT) -> dict:
     entries = issue_entries(root)
     rows, load_errors = refs_by_case(root)
@@ -140,17 +179,19 @@ def audit(root: Path = ROOT) -> dict:
     by_id = {entry["id"]: entry for entry in entries}
     missing = [entry for entry in entries if entry["required"] and entry["id"] not in linked]
     dangling = [row for row in rows if not row["resolved"]]
-    return {"root": str(root), "entries": entries,
-            "closedP0P1": [entry for entry in entries if entry["required"]],
-            "covered": [entry for entry in entries if entry["required"] and entry["id"] in linked],
-            "missing": missing, "dangling": dangling, "loadErrors": load_errors,
-            "unknownState": [entry for entry in entries if entry["classification"] == "unknown"],
-            "missingStateField": [entry for entry in entries if entry["classification"] == "missing"],
-            "ignored": [entry for entry in entries if entry["classification"] == "ignored"],
-            "openGraded": [entry for entry in entries if entry["grade"] in L2_GRADES
-                           and entry["classification"] in ("open", "unknown", "missing")],
-            "linkedNotRequired": [row for row in rows if row["resolved"]
-                                  and by_id.get(row["resolved"], {}).get("required") is False]}
+    result = {"root": str(root), "entries": entries,
+              "closedP0P1": [entry for entry in entries if entry["required"]],
+              "covered": [entry for entry in entries if entry["required"] and entry["id"] in linked],
+              "missing": missing, "dangling": dangling, "loadErrors": load_errors,
+              "unknownState": [entry for entry in entries if entry["classification"] == "unknown"],
+              "missingStateField": [entry for entry in entries if entry["classification"] == "missing"],
+              "ignored": [entry for entry in entries if entry["classification"] == "ignored"],
+              "openGraded": [entry for entry in entries if entry["grade"] in L2_GRADES
+                             and entry["classification"] in ("open", "unknown", "missing")],
+              "linkedNotRequired": [row for row in rows if row["resolved"]
+                                    and by_id.get(row["resolved"], {}).get("required") is False]}
+    result["triage"] = triage_check(result, root)
+    return result
 
 
 def render(result: dict) -> str:
@@ -172,6 +213,27 @@ def render(result: dict) -> str:
         lines.append(f"## ⛔ 缺回流（{len(result['missing'])} 条）——按 L2「未回流不得标闭环」，这些条目现在不算闭合")
         lines += [f"- `{entry['id']}`（{entry['grade']}｜{entry['state']}）" for entry in result["missing"]]
         lines.append("")
+    triage = result.get("triage") or {}
+    lines.append("## 分诊核对（缺口要么接成用例，要么写明不可机械化的结论）")
+    if triage.get("error"):
+        lines.append(f"- ⛔ {triage['error']}")
+    else:
+        lines.append(f"- 名单内已分诊：{len(triage.get('covered') or [])} 条｜未分诊：{len(triage.get('undeclared') or [])} 条"
+                     f"｜名单过期（已不再缺回流）：{len(triage.get('stale') or [])} 条")
+        if triage.get("undeclared"):
+            lines.append(f"- ⛔ {triage['texts'].get('undeclared', '')}")
+            lines += [f"  - `{ident}`：不在 governance/eval-spec.yaml 的 l2Triage.declared 里"
+                      for ident in triage["undeclared"]]
+        if triage.get("stale"):
+            lines.append(f"- ⚠ {triage['texts'].get('stale', '')}")
+            lines += [f"  - `{ident}`（结论曾是「{(triage['declared'].get(ident) or {}).get('verdict', 'N/A')}」）"
+                      for ident in triage["stale"]]
+        if not triage.get("undeclared") and not triage.get("stale") and triage.get("covered"):
+            lines.append(f"- {triage['texts'].get('clean', '')}")
+    if triage.get("declared"):
+        for ident, item in triage["declared"].items():
+            lines.append(f"  - `{ident}` ⇒ {item['verdict']}｜{item['reason']}")
+    lines.append("")
     if result["dangling"]:
         lines.append(f"## ⛔ 悬空引用（{len(result['dangling'])} 条）——用例声明了没核实的关联")
         lines += [f"- {row['eval']} / {row['case']} → `{row['ref']}`：{row['reason']}" for row in result["dangling"]]
@@ -212,8 +274,9 @@ def main(argv=None) -> int:
                          ensure_ascii=False, indent=2))
     else:
         print(render(result))
-    blocking = bool(result["missing"] or result["dangling"] or result["loadErrors"])
-    print(f"\n结论：{'缺回流或悬空引用，红' if blocking else '闭环 issue 全部有回流用例'}")
+    blocking = bool(result["missing"] or result["dangling"] or result["loadErrors"]
+                    or (result.get("triage") or {}).get("undeclared") or (result.get("triage") or {}).get("error"))
+    print(f"\n结论：{'缺回流、悬空引用或缺口未分诊，红' if blocking else '闭环 issue 全部有回流用例且逐条分诊'}")
     return 1 if blocking else 0
 
 

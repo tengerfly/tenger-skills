@@ -349,9 +349,16 @@ def _print_relay_status() -> None:
         print(f"L2 回流执法未能核：{exc}", file=sys.stderr)
         return
     undecidable = len(result["unknownState"]) + len(result["missingStateField"])
+    triage = result.get("triage") or {}
     print(f"L2 回流执法：P0/P1 已闭环 {len(result['closedP0P1'])} 条 ｜ 已回流 {len(result['covered'])} 条 ｜ "
           f"缺回流 {len(result['missing'])} 条 ｜ 悬空引用 {len(result['dangling'])} 条 ｜ 判不了 {undecidable} 条"
           f"（详单 `python scripts/eval/relay.py`；缺回流即红，不影响上面的用例计数）")
+    if triage.get("error"):
+        print(f"L2 分诊核对未能核：{triage['error']}（缺尺子按红处理，不默认通过）", file=sys.stderr)
+    else:
+        print(f"L2 分诊核对：缺回流中已分诊 {len(triage.get('covered') or [])} 条 ｜ "
+              f"未分诊 {len(triage.get('undeclared') or [])} 条（未分诊即红）｜ "
+              f"名单过期 {len(triage.get('stale') or [])} 条（过期只报数，不惩罚进展）")
 
 
 def main(argv=None) -> int:
