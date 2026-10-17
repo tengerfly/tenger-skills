@@ -261,10 +261,13 @@ Run when the user explicitly requests this capability or when `WorkFlow/` routes
 1. Read the request, current state, manifest, and upstream handoff.
 2. Load only the retained legacy resources needed for this execution.
 3. Execute the domain action and keep assumptions separate from evidence.
-4. Validate the output against its repair or acceptance criteria.
-5. Register artifacts, evidence, decisions, and open items.
-6. Write the execution record and `.spec/workflow.yaml`.
-7. Emit exactly one Gate and one explicit next action.
+4. 同型场景（按 FTDD 逐页落地、工程已有 token 与口径对账产物）进编码前先过三道强制位：① 逐页输入瘦身——只读本页设计稿 + FTDD §3~§5 + 本页契约段，全局 `design-system` 与组件惯例不重读，口径冲突先查 PROJECT 口径表（§4.9）表内直接套；② 视图模型先行——契约缺口一律 `XxxExt` 扩展 + 留痕注释，禁静默造字段，登记 PROJECT.md 并在联调前清零；③ 项目已有验收脚本则 REQUIRED 先跑脚本取全部产物（多档宽双开截图 + 逐像素断言），人工只补验脚本未覆盖的状态。任一未过不得进下一页／下个功能点。（出处：issue/Frontend-Dev/2026-09-16/02-案例升级为主流程标准SOP.md）
+5. 沉淀落点：本轮试做验证过的多步流程（下一轮会被默认复用的）不得只落 `references/case-library/`——必须升格为本文正文的强制位（S 步／`§x.y` REQUIRED 行／错误对照表行，三选一），案例库只留细则与背景，索引行写明「必按此执行」。（出处同上）
+6. 升格验收（不通过不算沉淀完成）：正文 `grep` 到具体行号（S 步号／§ 号／错误表行）＋ 回读安装副本同一行（副本同步用仓库根 `scripts/sync-skills.sh --target <宿主 skills 根>`）；只有案例库索引命中 = 未落位，不得写「已沉淀」。（出处同上）
+7. Validate the output against its repair or acceptance criteria.
+8. Register artifacts, evidence, decisions, and open items.
+9. Write the execution record and `.spec/workflow.yaml`.
+10. Emit exactly one Gate and one explicit next action.
 
 ## Outputs
 
