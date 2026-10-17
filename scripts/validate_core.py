@@ -1131,8 +1131,13 @@ GOALPLAN_SECTIONS = ("purpose", "sources", "statuses", "proofRules", "countRules
 GOAL_ENTRY_KEYS = ("id", "ledgerRow", "panelId", "layer", "label", "status", "criteria", "basis")
 PROOF_RULE_KEYS = ("doneNeeds", "naIsNotProof", "unverifiableIsRed")
 NEXT_RULE_KEYS = ("required", "cellMustExist", "doneCellIsRed", "ledgerMustQuoteTask")
+# 台账表格的结构判据：并行编辑（两个会话同改一张表）最容易产出「重复行」与「一行拆成多行」，
+# 而按行号读的执法器会把这两种畸形都吞掉，所以文案与检查都得有。
+COUNT_RULE_KEYS = ("mustEqualLedgerRows", "statusMustMatchLedger", "countsMustMatch",
+                   "uniqueLedgerRows", "oneRowPerLine")
 STATUS_MARKS = {"done": "☑", "doing": "◐", "todo": "☐"}
 _LEDGER_ROW = re.compile(r"^\|\s*(?P<row>\d+)\s*\|")
+_LEDGER_HEADER = re.compile(r"^\|\s*#\s*\|")   # 目标级表格的表头（排序表用的是「序」，不会误开区）
 _COUNT_LINE = re.compile(r"☑\s*完成\s*(?P<done>\d+).*?◐\s*进行中\s*(?P<doing>\d+).*?☐\s*未完成\s*(?P<todo>\d+)")
 
 
@@ -1148,11 +1153,60 @@ def goalplan_policy(root):
     unknown = [key for key in data["statuses"] if key not in STATUS_MARKS]
     if unknown:
         raise ValueError(f"{GOALPLAN_FILE}.statuses 出现三态之外的值 {unknown} ⇒ 不允许「部分完成算完成」")
-    for section, keys in (("proofRules", PROOF_RULE_KEYS), ("nextRules", NEXT_RULE_KEYS)):
+    for section, keys in (("proofRules", PROOF_RULE_KEYS), ("nextRules", NEXT_RULE_KEYS),
+                          ("countRules", COUNT_RULE_KEYS)):
         absent = [key for key in keys if not (data.get(section) or {}).get(key)]
         if absent:
             raise ValueError(f"{GOALPLAN_FILE}.{section} 缺判据文案 {absent} ⇒ 拒绝执行没有凭据的红口")
     return data
+
+
+def ledger_table_integrity(root, relative):
+    """目标级表格的两条硬结构：同一行号只许出现一次；一行必须是物理单行。
+
+    并行编辑（两个会话改同一张表）最容易产出这两种畸形：本仓 2026-10-17 真的出现过
+    「行被整行弄丢后恢复成重复行、同时把另一版拆成 6 个物理行」，而按行号去重的读法
+    把重复与拆行都吞掉了（dict 后写覆盖前写），所以这里单独检一遍结构。
+    """
+    path = Path(root) / str(relative)
+    if not path.is_file():
+        return [], []
+    duplicates, wrapped = [], []
+    seen: dict = {}
+    pending: list = []
+    region = False                      # 目标级表格块：表头 `| # |` 起，到首个空行止
+    for index, line in enumerate(path.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
+        stripped = line.strip()
+        if not region:
+            region = bool(_LEDGER_HEADER.match(stripped))
+            continue
+        if not stripped:
+            if pending:
+                wrapped.append(f"表格行被拆成多行（续行起于 {pending[0]}，止于第 {index - 1} 行）")
+                pending = []
+            region = False
+            continue
+        if stripped.startswith("| ---") or stripped.startswith("|--"):
+            continue
+        match = _LEDGER_ROW.match(stripped)
+        cells = [cell.strip() for cell in stripped.strip("|").split("|")]
+        if match and len(cells) >= 4 and cells[3][:1] in STATUS_MARKS.values():
+            if pending:
+                wrapped.append(f"第 {index - len(pending)} 行被拆成 {len(pending) + 1} 个物理行"
+                               f"（续行起于 {pending[0]}）")
+                pending = []
+            number = int(match.group("row"))
+            if number in seen:
+                duplicates.append(f"行号 {number} 出现两次（第 {seen[number]} 行与第 {index} 行）")
+            else:
+                seen[number] = index
+        elif not stripped.startswith("|"):
+            pending.append(index)       # 表格行被从中间拆开后留下的续行
+        else:
+            wrapped.append(f"第 {index} 行落在目标级表格里却不是完整的一行（缺状态列）⇒ 表格行被拆或被改坏")
+    if pending:
+        wrapped.append(f"表格行被拆成多行（续行起于 {pending[0]}）")
+    return duplicates, wrapped
 
 
 def ledger_goal_rows(root, relative):
@@ -1282,6 +1336,14 @@ def goalplan_audit(root, data=None):
         errors.append(f"goal-plan: goals[].id 缺失或重复（{ids}）⇒ 指针与面板都无法唯一对号")
     ledger_rows, ledger_counts, ledger_lines = ledger_goal_rows(
         root, (data.get("sources") or {}).get("ledger", ""))
+    duplicated, wrapped = ledger_table_integrity(root, (data.get("sources") or {}).get("ledger", ""))
+    tally_rules = data.get("countRules") or {}
+    if duplicated:
+        errors.append(f"goal-plan: 台账目标级表格出现重复行号：{'；'.join(duplicated)}"
+                      f" ⇒ {tally_rules.get('uniqueLedgerRows', '')}")
+    if wrapped:
+        errors.append(f"goal-plan: 台账目标级表格有被拆成多个物理行的行：{'；'.join(wrapped)}"
+                      f" ⇒ {tally_rules.get('oneRowPerLine', '')}")
     real = {"done": 0, "doing": 0, "todo": 0}
     repos = git_repos(root)
     for entry in goals:
