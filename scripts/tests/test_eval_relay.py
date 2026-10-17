@@ -146,8 +146,11 @@ class DanglingReferenceTests(ProbeRepoMixin):
         self.assertEqual(evaluator.run_case(drifted)["status"], "error")
 
     def test_behaviour_case_with_a_bad_ref_errors_before_any_engine_runs(self):
-        # 引用核对在分派之前：解析不到就 error，绝不能先把引擎拉起来花钱
-        drifted = copy.deepcopy(evaluator.load_eval(GATE_SPEC)["cases"][-1])
+        # 引用核对在分派之前：解析不到就 error，绝不能先把引擎拉起来花钱。
+        # 按 layer 取而不是按下标取最后一条：用例集尾部随时会新增结构层用例（2026-10-17 加了 resign 两条），
+        # 下标取法会静默变成「拿一条结构层用例测行为层前置」——测试还在绿，判据已经没在测。
+        cases = evaluator.load_eval(GATE_SPEC)["cases"]
+        drifted = copy.deepcopy(next(case for case in reversed(cases) if case["layer"] == "behaviour"))
         self.assertEqual(drifted["layer"], "behaviour")
         drifted["issueRef"] = ["issue/Nope/2026-01-01/01-ghost.md"]
         result = evaluator.run_case(drifted)

@@ -100,6 +100,16 @@ class FixtureExemptionScopeTests(unittest.TestCase):
         self.assertEqual(len(hits), 1, f"同一句放在真实 skill 路径必须报：{core.check_crossrefs(self.tmp)}")
         self.assertIn("../../UI/probe-b/", hits[0])
 
+    def test_scratch_dir_is_exempt_but_real_skill_dir_is_not(self):
+        # .tmp-eval/ 是 .gitignore 的临时探针区（脚手架脚本）：探针常故意写 ../x.js 探测解析行为，
+        # 不该让 system 门禁红在垃圾上；但同一句放进真实 skill 路径仍必须报（豁免不能外溢）。
+        self.write(".tmp-eval/_probe.py", "target = '../api-exception.filter.js'\n")
+        self.assertEqual(core.check_crossrefs(self.tmp), [],
+                         ".tmp-eval 是临时探针区，不是会被宿主加载的 skill 正文")
+        self.write("PRD/probe-a/SKILL.md", "# Probe\n" + LAYER_REF + "\n")
+        hits = [item for item in core.check_crossrefs(self.tmp) if item.startswith("禁用写法")]
+        self.assertEqual(len(hits), 1, f"同一句放在真实 skill 路径必须报：{core.check_crossrefs(self.tmp)}")
+
 
 if __name__ == "__main__":
     unittest.main()

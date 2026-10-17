@@ -29,7 +29,11 @@ EXCL = ('.git', '.spec', '.codebuddy', '.zcode', '.codex', '.messages', 'node_mo
         # 评测夹具与用例正文是被测数据，不是宿主会加载的 skill 正文：
         # 红用例必须故意写坏路径（例如指一个不存在的规范文件），把它们当真引用扫就等于自己抓自己。
         # 与既有豁免 `*/tests/`、`scripts/tests/` 同一类；代价是 evals/ 里的真断链不会被这面量具抓到。
-        'evals')
+        'evals',
+        # .tmp-eval/ 是 .gitignore 里的临时探针区（一次会话的脚手架脚本），不是会被宿主加载的 skill 正文；
+        # 探针常故意用两级回退去指不存在的文件（探测解析行为），把它们当真引用扫会让整条 system 门禁红在垃圾上。
+        # 真要藏一个真 skill 到这里，registry 侧「path is not a Skill directory」仍会兜（与 fixtures 同一类风险）。
+        '.tmp-eval')
 TEXT_EXT = ('.md', '.markdown', '.py', '.ps1', '.sh', '.yaml', '.yml', '.txt')
 REF = re.compile(r'(?<![\w./-])((?:\.\./)+(?:[A-Za-z0-9_.-]+/)*?[A-Za-z0-9_.-]+\.'
                  r'(?:md|markdown|py|mjs|cjs|js|ts|json|ya?ml|ps1|sh|html|txt))')

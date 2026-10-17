@@ -2,9 +2,9 @@
   "schema": "tenger.eval-baseline/v1",
   "eval": "evals/sediment/eval.yaml",
   "skill": "skill-optimizer",
-  "savedAt": "2026-10-17T10:47:52+08:00",
+  "savedAt": "2026-10-18T01:07:38+08:00",
   "anchors": {
-    "skillRevision": "sha256:f9aba0416c25ba8a5df95f8deb07555a664aa5da5398f049463bd69c881a6668",
+    "skillRevision": "sha256:0572e51941ce1d3d4b4b205fd3b9ff6157da33715a43e7b8ec4a7e6b9494a62f",
     "casesVersion": "sha256:42488334e5683773805b16db4d78b05f60ff430009c1699d49e50fb6742d1069",
     "engine": "codex",
     "model": "engine-default",
@@ -12,7 +12,7 @@
     "scoringVersion": "1"
   },
   "provenance": {
-    "runner": "sha256:0d10d076ed391a89f41743f7c90df26b57b125e588739d053ea12b26aec51485",
+    "runner": "sha256:d7ee5770d35bb1abaf551f8147bb2ded45353f6cd565d62073933d124c6768d1",
     "python": "3.11.15"
   },
   "counts": {

@@ -2,9 +2,9 @@
   "schema": "tenger.eval-baseline/v1",
   "eval": "evals/design-review/eval.yaml",
   "skill": "ui-ux-review",
-  "savedAt": "2026-10-17T03:22:35+08:00",
+  "savedAt": "2026-10-18T01:07:29+08:00",
   "anchors": {
-    "skillRevision": "sha256:97d6bdc9a2ee993d63259a10ef0a3f90f16c8fc803ff2acf7c0ea641f14ada98",
+    "skillRevision": "sha256:98bbd4410cf7cf9be657eac70516b594c6d5286faa2af8bcc0964b665381da0c",
     "casesVersion": "sha256:9f6dcdb5eb762c2b655318c7d6f5040be87f9c51526db0ddc1914682c2d85748",
     "engine": "structure-only",
     "model": "engine-default",
@@ -12,7 +12,7 @@
     "scoringVersion": "1"
   },
   "provenance": {
-    "runner": "sha256:8f199d0c2f58379faaa7eb44e03edcc2c75c41d6ab01dc8bef461bd7dbd0fb1e",
+    "runner": "sha256:d7ee5770d35bb1abaf551f8147bb2ded45353f6cd565d62073933d124c6768d1",
     "python": "3.11.15"
   },
   "counts": {
