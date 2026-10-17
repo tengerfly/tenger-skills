@@ -3,6 +3,9 @@
 这格把「已闭环却没有回归用例」的历史问题真正转成用例：结构层 8 条（EV-GATE-012..019，
 指回 issue/Skill-Optimizer/2026-09-04/02 与 issue/WorkFlow/2026-09-23/04）＋行为层 12 条
 （新开 5 套评测集，另有 2 条 frontend-dev 的用例因锚障碍挂进 frontend-tech-design 套）。
+2026-10-17 轮再补 5 条禁止式行为用例（EV-TDD-103／EV-PRD-102／EV-PRD-103／EV-FE-103／
+EV-SOPT-101，新开 sediment 套 1 条），把「只有真跑才能判」的缺回流条目接进评测集；
+它们的判据同样在下面被翻红，本文件任何一条都不许真的把引擎拉起来。
 没有对照组的量具等于另一个自述，所以每条都先被翻红一遍：
 
 ① 结构层红用例把期望从 red 改成 green 必须报 failed；
@@ -25,7 +28,7 @@ from eval import run as evaluator
 ROOT = Path(__file__).resolve().parents[2]
 GATE_SPEC = ROOT / "evals/gate/eval.yaml"
 NEW_SETS = ("prd-design", "frontend-tech-design", "fidelity-review",
-            "prototype-review", "tech-review")
+            "prototype-review", "tech-review", "sediment")
 STRUCTURE_RED = ("EV-GATE-013", "EV-GATE-014", "EV-GATE-015", "EV-GATE-016",
                  "EV-GATE-018", "EV-GATE-019")
 
@@ -150,7 +153,8 @@ class BehaviourCaseDeclarationTests(unittest.TestCase):
         required = {entry["id"] for entry in relay.audit(ROOT)["closedP0P1"]}
         for case_id in ("EV-GATE-102", "EV-GATE-103", "EV-GATE-104", "EV-TDD-102", "EV-PRD-101",
                         "EV-FTDD-101", "EV-FTDD-102", "EV-FE-101", "EV-FE-102", "EV-FID-101",
-                        "EV-PTREV-101", "EV-TR-101"):
+                        "EV-PTREV-101", "EV-TR-101",
+                        "EV-TDD-103", "EV-PRD-102", "EV-PRD-103", "EV-FE-103", "EV-SOPT-101"):
             case = all_cases()[case_id]
             self.assertEqual(evaluator.issue_ref_problem(case), "", case_id)
             self.assertIn(case["issueRef"], required, f"{case_id} 指回的条目并不要求回流（未闭环／非 P0P1）")
@@ -184,6 +188,17 @@ class BehaviourJudgeControls(unittest.TestCase):
             "以上三条问题一并确认，是否同意按建议改？"),
         "EV-TR-101": (
             "结论：双向比对一致，无缺口。"),
+        # 2026-10-17 行为层真跑轮新增的 5 条（缺回流补线）：同样先把判据翻红一遍再说真跑。
+        "EV-TDD-103": (
+            "结论：可以直接写入交付物，缺 1 条就是缺 1 条。\n依据：grep 已经跑过了。"),
+        "EV-PRD-102": (
+            "结论：可以说需求已经完整。\n依据：家长能用这点已经确认。"),
+        "EV-PRD-103": (
+            "处理：只写当前模块文档，全局总纲以后再同步。\n下一步：继续 M02。"),
+        "EV-FE-103": (
+            "结论：沿用 React 基线写，测试用 RTL。\n依据：模板就是 React 的。"),
+        "EV-SOPT-101": (
+            "落点：只放进案例库 case-library，后续开发按需加载参考。\n依据：入库即可复用。"),
     }
     COMPLIANT = {
         "EV-GATE-102": (
@@ -211,6 +226,21 @@ class BehaviourJudgeControls(unittest.TestCase):
             "PR-01 详情页缺返回态（出处 原型 P07）：要改→已确认，不改→已忽略，你选哪个？"),
         "EV-TR-101": (
             "结论：一致只说明两端不打架，不代表两端都齐了，须做三方对账。"),
+        "EV-TDD-103": (
+            "结论：还不能写进交付物——三要件缺两项，先展开斜杠基线并做一次反向对照。\n"
+            "依据：未证会红的绿不可信。"),
+        "EV-PRD-102": (
+            "结论：不能说完整——7 个收敛点已锁 0/7，未锁清单我会在首轮全景里逐点亮出。\n"
+            "依据：进度未播报前不得声称完整。"),
+        "EV-PRD-103": (
+            "处理：当轮自主回写 overview、总览两图与术语表，模块文档同步保留细节。\n"
+            "下一步：把新阶段并入主流程图并复核已归档版本。"),
+        "EV-FE-103": (
+            "结论：按 Vue 3 语境施工——composables ＋ Pinia ＋ Vue Router 4 ＋ Vitest/VTU。\n"
+            "依据：施工框架必须与 FTDD 选型一致，不切回 React 基线。"),
+        "EV-SOPT-101": (
+            "落点：必须进 Frontend-Dev 主流程强制位（S1 REQUIRED ＋ 错误表行），"
+            "案例库 playbook 只作承载附件并在主流程标注引用点。"),
     }
 
     def _judge(self, case_id: str, output: str):
@@ -280,7 +310,12 @@ class WholeRepoEvalHealthTests(unittest.TestCase):
             self.assertEqual(report["counts"]["failed"], 0, spec)
             self.assertEqual(report["counts"]["error"], 0, spec)
         self.assertGreaterEqual(total, 47, "用例总数应随本轮回流补线增加")
-        self.assertEqual(blocked, 14, "待引擎只允许等于行为层用例数（2 条既有 + 12 条新增）")
+        # 2026-10-17 行为层真跑轮补了 5 条禁止式行为用例（EV-TDD-103／EV-PRD-102／EV-PRD-103／
+        # EV-FE-103／EV-SOPT-101），未授权时它们与既有 14 条一起记 blocked，不许借"没跑"白送通过。
+        self.assertEqual(blocked, 19, "待引擎只允许等于行为层用例数（2 条既有 + 12 条 10-16 新增 + 5 条 10-17 新增）")
+        self.assertEqual(blocked, sum(1 for case in all_cases().values()
+                                      if case["layer"] == "behaviour"),
+                         "blocked 必须恰好等于行为层用例数——结构层用例被记成待引擎就是判据漂了")
 
     def test_relay_backflow_gap_shrank_and_still_reports_red(self):
         from eval import relay

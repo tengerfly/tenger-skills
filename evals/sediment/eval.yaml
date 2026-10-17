@@ -1,0 +1,38 @@
+# 行为层评测集 · 沉淀落点分层（skill-optimizer）
+#
+# issue/Skill-Optimizer/2026-09-16/01 的判据原文是「下次不读这篇参考是否就会照旧做错」——纯语义反事实，
+# 任何字符串／结构尺子都不等价（该条分诊结论：需人裁决）。所以结构层没有对象：documentSections 受
+# 「双侧交集」铁律限制（见 docs/L2回流机械化判定清单.md），check_recording 判的是承接节在不在，
+# 判不出落点选错。只有把 skill 正文喂给引擎真跑，才能判它会不会把「后续都按此执行」的流程落进被动参考。
+# 本套只钉住该义务的撒谎形态：落点行把义务缩进案例库/references。是否真的进了主流程强制位
+# （REQUIRED／Gate／错误表行）要读 diff 与轨迹，属 agent_judge 与人工复核，本条不冒充覆盖。
+# 未设 TSR_ALLOW_ENGINE 时本套逐条记 blocked（待引擎），不花一分钱、也不算通过。
+# 注意：本文件是 YAML，不能用 markdown 引用块（> 在 YAML 里是 block scalar）。
+
+schema: tenger.eval/v1
+skill: skill-optimizer
+cases:
+  - id: EV-SOPT-101
+    name: 「后续都按此执行」不得只落案例库（真跑 codex+DS）
+    layer: behaviour
+    engine: codex
+    # 出处：issue/Skill-Optimizer/2026-09-16/01 期望栏原文「沉淀约定能区分『记录下来』（案例库可）与
+    # 『后续都按此执行』（必须进主流程 REQUIRED／Gate）」；已落地强制位＝
+    # `Other/skill-optimizer/SKILL.md` §七-6「改动必须落到目标 skill 主流程强制位……仅落案例库＝未完成」。
+    # 姊妹条目 ../../issue/Frontend-Dev/2026-09-16/02 是同一教训的业务侧记法。
+    # 可机判形态＝在落点节首行把落点缩进案例库／references；锚 ^ 且跨不过 不/没/未 与逗号，
+    # 「案例库只作承载附件」这类合规句不会被误杀（它不在首行开头），缺该节判 error，不退化成全文匹配
+    # （全文会抓到 §七-6 自己写的"案例库/references 只作承载正文的附件"）。
+    issueRef: issue/Skill-Optimizer/2026-09-16/01-沉淀落点分层.md
+    given: evals/sediment/fixtures/sink-ask
+    skillFiles:
+      - Other/skill-optimizer/SKILL.md
+    tokenBudget: 150000
+    timeout: 420
+    prompt: |
+      场景：见 .spec/优化记录/SOPT-REQ-001.md。用户原话是「把这套好流程沉淀成标准 SOP，
+      后续开发都按照这个流程来，能提高质量」，经验正文已经在 case-library 的 playbook 里写好了。
+      回答：这条沉淀的落点定在哪里？先写一行「落点：…」，再写一句依据，不要执行任何工具。
+    expect:
+      banInSection: "落点|处理|做法|结论"
+      mustNotContain: '^(只|仅)?(放|落|沉淀|写|记录|存)(到|入|进|在)?\s*(案例库|case-library|references/|references)|^(案例库|case-library)(就行|即可|足够|可以)|^(维持|沿用)现状[^。，\n不没未]{0,8}(案例库|playbook)'

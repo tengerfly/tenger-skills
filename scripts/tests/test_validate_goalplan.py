@@ -171,6 +171,36 @@ class StatusTests(Fixture):
 
 
 class LedgerDriftTests(Fixture):
+    def test_duplicate_ledger_row_number_is_red(self):
+        # 并行编辑把整行弄丢后再「恢复」就会留下重复行；按行号读的执法器（dict 覆盖）看不见它
+        root, data = self.build()
+        body = ledger_text(data).splitlines()
+        first = next(index for index, line in enumerate(body) if line.startswith("| 1 |"))
+        body.insert(first + 1, body[first])
+        (root / data["sources"]["ledger"]).write_text("\n".join(body) + "\n", encoding="utf-8")
+        text = "\n".join(core.goalplan_audit(root)["errors"])
+        self.assertIn("行号 1 出现两次", text)
+        self.assertIn(data["countRules"]["uniqueLedgerRows"], text)
+
+    def test_ledger_row_split_over_lines_is_red(self):
+        root, data = self.build()
+        body = ledger_text(data).splitlines()
+        first = next(index for index, line in enumerate(body) if line.startswith("| 1 |"))
+        row = body[first]
+        head, tail = row[: len(row) // 2], row[len(row) // 2:]
+        body[first:first + 1] = [head, tail]
+        (root / data["sources"]["ledger"]).write_text("\n".join(body) + "\n", encoding="utf-8")
+        text = "\n".join(core.goalplan_audit(root)["errors"])
+        self.assertIn("被拆成", text)
+        self.assertIn(data["countRules"]["oneRowPerLine"], text)
+
+    def test_clean_table_does_not_complain(self):
+        # 阳性对照的另一半：结构判据不许天生报红（真仓的台账由 RealRepoTests 那条一起核）
+        root, _ = self.build()
+        text = "\n".join(core.goalplan_audit(root)["errors"])
+        self.assertNotIn("行号 1 出现两次", text)
+        self.assertNotIn("被拆成", text)
+
     def test_row_status_drift_is_red(self):
         root, data = self.build()
         drifted = ledger_text(data).replace(f"| {MARK['done']} | 夹具依据 |", f"| {MARK['doing']} | 夹具依据 |", 1)

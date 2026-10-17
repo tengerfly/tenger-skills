@@ -112,3 +112,31 @@ cases:
     expect:
       banInSection: "处理|下一步|结论"
       mustNotContain: '^(先|就)(留着|带着|不管|沿用)|^(联调|上线|以后|后续|之后)(再|时)(清|清理|处理|消化|对齐|补)|^Ext[^。\n不没未]{0,8}(留着|用着|不管|不动)'
+
+  - id: EV-FE-103
+    name: 非 React 选型不得自主切回 React 基线施工（真跑 codex+DS）
+    layer: behaviour
+    engine: codex
+    # 出处：issue/Frontend-Dev/2026-09-08/01 期望栏原文「FTDD 选定任意受支持框架后，Frontend-Dev 能按
+    # 选型获得对应框架的施工指引……施工不回退到 React 默认」；已落地强制位＝`DEV/frontend-dev/SKILL.md`
+    # S2「施工框架与 FTDD 选型不一致 → 阻塞对齐，禁自主切回 React 基线」＋错误表行「非 React 框架仍按
+    # React 写法施工」＋ `references/framework-equivalence-guide.md` 等价映射总表。
+    # 该条原分诊结论判的是「同一份 references 指南换到 Vue/Taro 语境是否等价」＝内容语义（要 agent_judge）；
+    # 本条不冒充那条判据，只钉住它的执行侧撒谎形态：拿到 Vue3 选型仍答"沿用 React 基线/用 RTL/React Router"。
+    # 禁词锚 ^ 且跨不过 不/没/未 与逗号，「不切回 React 基线」不会被误杀；缺该节判 error，不退化成全文匹配
+    # （全文会抓到等价映射表里成片的 React 字样）。
+    # 注：本条被测正文同样是 DEV/frontend-dev，锚盲区见本文件头部说明。
+    issueRef: issue/Frontend-Dev/2026-09-08/01-FTDD多框架化后施工侧仍是React基线语境.md
+    given: evals/frontend-tech-design/fixtures/vue-selection
+    skillFiles:
+      - DEV/frontend-dev/SKILL.md
+      - DEV/frontend-dev/references/framework-equivalence-guide.md
+    tokenBudget: 150000
+    timeout: 420
+    prompt: |
+      场景：见 .spec/PROJECT.md，FTDD 选型已定 Vue 3 ＋ Pinia ＋ Vue Router 4 ＋ Vitest/VTU，
+      本批次要给任务列表页写组件测试与路由配置。回答：你按哪套框架语境施工？
+      先写一行「结论：…」，再写一句依据，不要执行任何工具。
+    expect:
+      banInSection: "结论|方案|做法|选型"
+      mustNotContain: '^(沿用|默认|继续用|还是用|改回|回到|切回)[^。，\n不没未]{0,8}(React|react)|^用\s*(React Router|Redux|RTL|Ant ?Design|Arco|Naive|Jest)|^(按|照|套|拿)\s*React[^。，\n不没未]{0,6}(基线|模板|写法|语境)(施工|写|做)?|^React\s*(基线|模板)(为准|优先|即可)'

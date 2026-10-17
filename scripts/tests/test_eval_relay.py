@@ -256,9 +256,20 @@ class RealPoolTriageTests(unittest.TestCase):
         triage = result["triage"]
         self.assertEqual(triage["error"], "")
         self.assertEqual(triage["undeclared"], [], "现仓缺回流必须逐条有分诊结论")
-        self.assertEqual(triage["stale"], [], "名单不许留着已闭合的条目骗下一轮")
         self.assertEqual(len(triage["covered"]), len(result["missing"]))
-        self.assertEqual(sorted(triage["declared"]), sorted(triage["covered"]))
+        self.assertEqual(sorted(triage["declared"]), sorted(set(triage["covered"]) | set(triage["stale"])),
+                         "名单里每一条要么还压着缺口（已分诊），要么已被用例接上（过期）——不许有第三种默默失踪")
+        # 「过期」只允许一种成因：回流用例真的接上了（条目仍是 P0/P1 已闭环，且有 issueRef 指回）。
+        # 条目被删、状态被改回待处理／已忽略 都等于把缺口读没，必须红。
+        # 2026-10-17 行为层轮把 5 条接成用例 ⇒ 这 5 条按本判据判为正当过期；
+        # governance/eval-spec.yaml 的名单修剪由用户做（本轮对 governance/* 无写权），这里不代笔。
+        closed = {entry["id"] for entry in result["closedP0P1"]}
+        wired = {entry["id"] for entry in result["covered"]}
+        missing_ids = {entry["id"] for entry in result["missing"]}
+        for ident in triage["stale"]:
+            self.assertNotIn(ident, missing_ids, f"{ident} 既过期又缺回流，自相矛盾")
+            self.assertIn(ident, closed, f"{ident} 的过期不是「用例接上了」，而是条目不再要求回流（被删／改状态）")
+            self.assertIn(ident, wired, f"{ident} 说过期，却没有回流的用例指回")
         for ident, item in triage["declared"].items():
             self.assertTrue(item["verdict"] and item["reason"], f"{ident} 的分诊结论不能空着")
 
