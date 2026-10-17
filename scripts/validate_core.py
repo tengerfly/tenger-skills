@@ -1219,6 +1219,53 @@ def panel_goal_statuses(root, declared):
     return found
 
 
+def goalproof_machine(root, source, rules):
+    """跑条目声明的检出面，返回 (状态, 说明)。
+
+    状态：pass＝判满足；fail＝判未满足（标 ☑ 就是假绿）；red＝尺子取不到或没实现（也不许当通过）；
+    na＝这一面对该仓不适用（只有显式声明了判据的仓才受检，业务仓不该被本仓纪律判红）。
+    """
+    named = rules.get("machineProofs") or {}
+    if source not in named:
+        return "red", (f"machineProof 源 `{source}` 未在 proofRules.machineProofs 声明"
+                       " ⇒ 不猜该拿哪把尺子判这条 ☑")
+    root = Path(root)
+    try:
+        scripts_dir = str(Path(__file__).resolve().parent)
+        if scripts_dir not in sys.path:
+            sys.path.insert(0, scripts_dir)
+        import importlib
+        metrics = importlib.import_module("obs.metrics")
+        schema = importlib.import_module("obs.schema")
+    except ImportError as exc:
+        return "red", f"尺子模块导入不了：{exc}"
+    if source == "objectiveData":
+        try:
+            status = metrics.objective_status(schema.read_events(root), metrics.load_objective_policy())
+        except (ValueError, OSError) as exc:
+            return "red", f"尺子跑不动：{exc}"
+        return ("pass" if status["satisfied"] else "fail"), str(status["reason"])
+    if source == "delivery":
+        gitlog = importlib.import_module("obs.gitlog")
+        try:
+            pol = gitlog.delivery_policy(root)
+        except ValueError as exc:
+            return "red", f"交付判据读不动：{exc}"
+        if pol is None:
+            return "na", "该仓没有声明 delivery 节 ⇒ 交付面对它不适用（不判红也不判绿）"
+        if not gitlog.is_repo(root):
+            return "red", "声明了 delivery 判据但这里不是 git 仓 ⇒ 无法核对领先数，不当已通过"
+        status = gitlog.delivery_status(root, pol)
+        if not status["applicable"]:
+            return "red", f"上游不存在：{pol['notApplicable']}"
+        if status["count"] is None:
+            return "red", pol["unreadable"]
+        return (("pass", f"领先 {status['count']} 个提交＝已推齐（{status['upstream']}）")
+                if status["count"] == 0 else
+                ("fail", pol["aheadDetail"].format(count=status["count"], upstream=status["upstream"])))
+    return "red", f"machineProof 源 `{source}` 已声明但执法器没实现它 ⇒ 拒绝当作已通过（宁可红在明处）"
+
+
 def goalplan_audit(root, data=None):
     """逐条核对：状态枚举、与台账行/计数一致、☑ 依据可机器回查、◐/☐ 写了阻塞原因、next 指针有效。"""
     root = Path(root).resolve()
@@ -1230,6 +1277,7 @@ def goalplan_audit(root, data=None):
     rules = data.get("proofRules") or {}
     pointer_rules = data.get("nextRules") or {}
     errors, entries, ids = [], [], [str(entry.get("id") or "") for entry in goals]
+    notes = []
     if len(set(ids)) != len(ids) or "" in ids:
         errors.append(f"goal-plan: goals[].id 缺失或重复（{ids}）⇒ 指针与面板都无法唯一对号")
     ledger_rows, ledger_counts, ledger_lines = ledger_goal_rows(
@@ -1268,6 +1316,18 @@ def goalplan_audit(root, data=None):
         elif problems:
             errors.append(f"goal-plan: `{entry.get('id')}` 的依据有 {len(problems)} 条回查失败"
                           f"（没标 ☑ 也如实报，别攒到收口才炸）：{'；'.join(problems)}")
+        declared = str(entry.get("machineProof") or "").strip()
+        if declared and mark == "☑":
+            # 尺子只在「要标 ☑」时跑：◐ 的现值由看板自己报，这一条只防假绿、不催进度
+            state, why = goalproof_machine(root, declared, rules)
+            if state == "fail":
+                errors.append(f"goal-plan: `{entry.get('id')}` 标 ☑(done) 而检出面判未满足：{why}"
+                              f" ⇒ {rules.get('machineProofRule', '')}")
+            elif state == "red":
+                errors.append(f"goal-plan: `{entry.get('id')}` 声明了 machineProof `{declared}` 但尺子没跑成：{why}"
+                              f" ⇒ {rules.get('machineProofRule', '')}")
+            elif state == "na":
+                notes.append(f"`{entry.get('id')}` 的 machineProof `{declared}`：{why}")
         if mark in ("◐", "☐") and not str(entry.get("blockedBy") or "").strip():
             errors.append(f"goal-plan: `{entry.get('id')}` 停在 {entry.get('status')} 却没写 blockedBy"
                           " ⇒ 没写原因的「进行中」等于没人认领")
@@ -1313,6 +1373,7 @@ def goalplan_audit(root, data=None):
                 errors.append(f"goal-plan: 面板 `{key}` 状态 {panel_status[key]} ≠ goal-plan {entry.get('status')}"
                               " ⇒ 面板与台账必须同批改（两处漂移已经骗过两轮）")
     return {"file": GOALPLAN_FILE, "applies": True, "entries": entries, "errors": errors,
+            "machineNotes": notes,
             "counts": {**real, "goals": len(goals), "ledgerRows": len(ledger_rows),
                        "verified": sum(item["verified"] for item in entries)},
             "panel": note, "policy": data}
@@ -1336,6 +1397,7 @@ def render_goalplan(result) -> str:
               f"｜☑ {counts['done']}｜◐ {counts['doing']}｜☐ {counts['todo']}"
               f"｜依据回查通过 {counts['verified']} 处",
               f"- 面板核对：{result['panel'] or '已按 panelId 逐条比对'}",
+              f"- 检出面（machineProof）：{'；'.join(result.get('machineNotes') or []) or '声明了尺子的 ☑ 条目都已真跑并判满足'}",
               f"- 下一格：`{pointer.get('cell', 'N/A')}` —— {pointer.get('task', 'N/A')}", "",
               "| id | 状态 | 依据回查 | 备注 |", "|---|---|---|---|"]
     for entry in entries:

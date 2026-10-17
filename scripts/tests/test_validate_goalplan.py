@@ -260,6 +260,93 @@ class PanelTests(Fixture):
         self.assertEqual(result["errors"], [])
 
 
+class MachineProofTests(Fixture):
+    """声明了 machineProof 的条目：标 ☑ 必须检出面当前判满足；尺子取不到也判红，不默认通过。"""
+
+    def business_run(self, root):
+        import json
+        log = root / ".spec/obs/run.jsonl"
+        log.parent.mkdir(parents=True, exist_ok=True)
+        events = [{"schema": "tenger.trace/v1", "event": "node-start", "project": "p",
+                   "executionId": "EXEC-BIZ-1", "node": "prd-design", "skill": "prd-design",
+                   "role": "produce", "actor": "main", "origin": "self",
+                   "ts": "2026-10-17T09:00:00+08:00", "artifacts": [], "upstream": []},
+                  {"schema": "tenger.trace/v1", "event": "node-end", "project": "p",
+                   "executionId": "EXEC-BIZ-1", "node": "prd-design", "skill": "prd-design",
+                   "role": "produce", "actor": "main", "origin": "self",
+                   "ts": "2026-10-17T09:40:00+08:00", "gate": "PASS", "allowDownstream": True,
+                   "artifacts": [{"path": ".spec/prd/overview.md", "sha256": "b" * 64, "bytes": 20}],
+                   "upstream": []}]
+        log.write_text("\n".join(json.dumps(e, ensure_ascii=False) for e in events) + "\n", encoding="utf-8")
+
+    def claim_done(self, data):
+        entry = entry_of(data, "loop-data")
+        entry["status"] = "done"
+        entry.setdefault("basis", {})["commits"] = [FALLBACK_COMMIT]
+        entry.pop("blockedBy", None)
+
+    def test_unsatisfied_detector_blocks_a_claimed_checkmark(self):
+        root, data = self.build(self.claim_done, with_panel=False)
+        text = self.errors()
+        self.assertIn("标 ☑(done) 而检出面判未满足", text)
+        self.assertIn("①客观数据判据：未满足", text, "要说清是哪一格没过，不能只说「☑ 不成立」")
+        self.assertIn(data["proofRules"]["machineProofRule"], text)
+
+    def test_satisfied_detector_allows_the_claim(self):
+        # 阳性对照（本轮记过的规矩）：断言「不报错」之前必须证明同一把尺子真的会亮
+        root, data = self.build(self.claim_done, with_panel=False)
+        self.assertIn("标 ☑(done) 而检出面判未满足", self.errors())
+        self.business_run(root)
+        self.assertNotIn("而检出面判未满足", self.errors())
+
+    def test_unknown_source_refuses_to_guess_the_yardstick(self):
+        def mutate(data):
+            self.claim_done(data)
+            entry_of(data, "loop-data")["machineProof"] = "ghostCheck"
+        root, _ = self.build(mutate, with_panel=False)
+        text = self.errors()
+        self.assertIn("未在 proofRules.machineProofs 声明", text)
+        self.assertIn("ghostCheck", text)
+
+    def test_unsupported_source_is_red_not_skipped(self):
+        # 名字声明了、执法器却没实现 ⇒ 不能当成「这条不用核」
+        def mutate(data):
+            self.claim_done(data)
+            data["proofRules"]["machineProofs"]["somedayCheck"] = "将来才会实现的检出面"
+            entry_of(data, "loop-data")["machineProof"] = "somedayCheck"
+        root, _ = self.build(mutate, with_panel=False)
+        self.assertIn("已声明但执法器没实现它 ⇒ 拒绝当作已通过", self.errors())
+
+    def test_doing_entry_is_never_nagged_by_this_gate(self):
+        self.build()
+        text = self.errors()
+        self.assertNotIn("machineProof", text)
+        self.assertNotIn("而检出面判未满足", text)
+
+    def test_delivery_proof_is_na_when_the_repo_does_not_declare_it(self):
+        # 交付面只认被测仓自己声明的 delivery 节：没声明就是不适用（不判红也不判绿），业务仓不该被本仓纪律绑住
+        root, _ = self.build()
+        result = core.goalplan_audit(root)
+        self.assertNotIn("delivery", "\n".join(result["errors"]))
+        self.assertTrue(any("delivery" in note for note in result["machineNotes"]), result["machineNotes"])
+
+    def test_declared_delivery_but_not_a_git_repo_is_red(self):
+        import yaml
+        root, _ = self.build()
+        shipped = yaml.safe_load((ROOT / "governance/obs-registry.yaml").read_text(encoding="utf-8"))
+        (root / "governance/obs-registry.yaml").write_text(
+            yaml.safe_dump({"delivery": shipped["delivery"]}, allow_unicode=True, sort_keys=False), encoding="utf-8")
+        errors = "\n".join(core.goalplan_audit(root)["errors"])
+        self.assertIn("声明了 delivery 判据但这里不是 git 仓", errors)
+        self.assertIn("不当已通过", errors)
+
+    def test_real_repo_delivery_proof_actually_passes(self):
+        # 阳性对照：真仓此刻不领先上游 ⇒ 必须真判 pass，而不是因为哪里读不到而蒙过去
+        state, text = core.goalproof_machine(ROOT, "delivery", REAL["proofRules"])
+        self.assertEqual(state, "pass", text)
+        self.assertIn("已推齐", text)
+
+
 class RealRepoTests(unittest.TestCase):
     def test_this_repo_must_keep_the_plan_file(self):
         # 「删掉文件就能免检」正是本执法要防的漏洞，所以先钉住文件在不在

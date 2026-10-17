@@ -22,6 +22,10 @@ proofRules:
   fileLineForm: "path:line（path 相对仓根，行号是正整数）"
   gitReadOnly: "只允许 git cat-file / rev-parse；本执法器不执行任何写操作型 git 命令"
   unverifiableIsRed: "git 查不动（没装 git／不在仓里）也判红，不得读成通过"
+  machineProofs:
+    objectiveData: "①客观数据的现值由 scripts/obs/metrics.py:objective_status 按 governance/obs-registry.yaml 的 objectiveData 判（业务节点完整 start→end＋最后一次 node-end 的产物 sha＋墙钟可解析）"
+    delivery: "交付的现值由 scripts/obs/gitlog.py:delivery_status 按 governance/obs-registry.yaml 的 delivery 节判（本地不领先上游跟踪分支）；上游不存在或领先数读不动 ⇒ 判红，不当通过"
+  machineProofRule: "条目声明了 machineProof ⇒ 标 ☑ 必须该检出面当前判满足；检出面判未满足却标 ☑ ⇒ 红；尺子取不到／源名未声明 ⇒ 也判红（「取不到就当通过」是本仓反复犯的那族）。没声明的条目不受这条约束，◐/☐ 更不受——它只防假绿，不催进度"
 countRules:
   mustEqualLedgerRows: "条目数必须等于台账目标级表格的行数（现 11），逐条按 ledgerRow 对号"
   statusMustMatchLedger: "每条 status 必须等于台账该行的 ☑／◐／☐，两处不一致即红（历史快照当承诺的同族）"
@@ -33,10 +37,10 @@ nextRules:
   blockedNeedsReason: "条目停在 doing/todo 必须写 blockedBy，否则红：没写原因的进行中等于没人认领"
   ledgerMustQuoteTask: "台账「下一格」那一行必须逐字抄 next.task 原文 ⇒ 指针有两份抄本就一定会漂（本仓已漂过两轮），以本文件为源"
 next:
-  cell: loop-intelligence
-  task: "排序第 4 格（台账第 5 项④智能化指标）：反哺有效率要出数，缺的是「一条改到 skill 正文、两侧可核、并经用户批准的反哺记录」＋「第二条显式复发链」；落点判据已接好（tsr feedback 会点名这是落点问题还是 skill 不同），而夜间会话既不能代用户批准也不能造链 ⇒ 若下一轮这两样还没有，本格按停下条件 c 收口、不再占指针"
-  why: "①已在第七轮按条件 c 移交（复合判据两半都实现、看板会自报 ✅/⛔，等的只是用户真跑一条业务节点；本轮实测业务侧 24 个项目目录仍只有本仓有 run.jsonl）；⑥在第六轮按条件 c 收口（6 条分诊结论进 eval-spec 的 l2Triage，由 relay 核未分诊／过期／尺子读不动）；本轮补的是第 11 项交付面的执法——delivery 节接进 tsr audit，「ahead 0」从此有检出面而不只靠我手动跑 rev-list。三条 ◐ 全部属【不许自行解除】⇒ 停下条件 b 成立"
-  notDo: "不编造反哺记录、不代用户批准进化台账条目、不自行确认候选卡；不把量具红点率当反哺有效率；不动 opsNodes／minEvidenceCards 这类闸门配置去让数字变好看；不设 TSR_ALLOW_ENGINE、不调引擎；不为把缺回流压成 0 去声明不等价 issueRef；不再把超时的空输出当「不存在」——结论要附扫描范围与计数"
+  cell: loop-data
+  task: "排序第 1 格（台账第 1 项①客观数据）：三条 ◐ 现已全部按停下条件 c 收口或移交（⑥第六轮、④第八轮、①第七轮），本格的解锁只剩用户动作——在真实业务项目里跑一条业务节点（prd-design/dev/review 等注册节点）完整 start→end；本轮已把「标 ☑ 必须检出面判满足」接进 goalplan（条目声明 machineProof: objectiveData，尺子取不到或未满足却标 ☑ ⇒ 红）⇒ 停下条件 b 成立，夜间会话无进一步可自做的事"
+  why: "④本轮复跑实测仍是：2 条反哺记录落在 quality-inspection｜显式复发链 1 条（WorkFlow，3 节点）｜可归属关联 0 条｜落点触达 skill 正文 0 条——两样欠账（用户批准的反哺记录、第二条链）都不是会话能造的；⑥的 6 条已进 eval-spec 的 l2Triage 由 relay 核对；①的机制两半齐备且现在有 goalplan 的 machineProof 兜底，不会再被口头标成 ☑"
+  notDo: "不编造事件、不代用户批准进化台账条目、不自行确认候选卡；不把量具红点率当反哺有效率；不动 opsNodes／minEvidenceCards／machineProof 这类闸门配置去让数字或状态变好看；不为把缺回流压成 0 去声明不等价 issueRef；不设 TSR_ALLOW_ENGINE、不调引擎；结论要附扫描范围与计数，不许把超时空输出当「不存在」"
   stopWhen: "11 项全部 ☑，或剩余项全部已在本文件 blockedBy 写明属【不许自行解除】的硬阻塞——除此之外不得停下向用户提问"
 goals:
   - id: loop-data
@@ -47,12 +51,13 @@ goals:
     label: 自记轨产出真实 run-log，指标层不再靠估算
     status: doing
     criteria: "run-log 里除运维节点外至少 1 个业务节点（prd-design/dev/review 等注册节点）完整 start→end，且 report 能算出该节点的墙钟与产物 sha"
+    machineProof: objectiveData
     notDo: "不编造事件、不用运维节点冒充业务节点"
     basis:
       commits: [59af8b0, 27d6657]
       files: ["scripts/tsr.py:1", "scripts/obs/metrics.py:1", "governance/obs-registry.yaml:1",
               "scripts/tests/test_obs_objective_data.py:1"]
-    blockedBy: "业务节点要真跑起来才有依据，而真实业务节点属用户的在研项目；夜间会话不得造事件，也不得拿本仓运维节点冒充 ⇒ 允许长期 ◐。2026-10-17 第六轮把「没有业务数据」也改成数出来的：扫 /d/project 下 24 个项目目录，有 .spec 的 13 个、有 .spec/obs 的 1 个、有 .spec/obs/run.jsonl 的 1 个且就是本仓；同轮还查出一个真缺口——判据要「墙钟与产物 sha」，而 metrics.summarize 里此前没有 sha 字段（看板只有字节数），现已补 sha 列并把达成与否做成看板上一行 ✅/⛔（现值 ⛔：轨上只有运维节点 quality-inspection，76 事件／38 执行）。同轮再加一道防假绿：opsNodes 里点名了未注册的节点（拼错一个字母）⇒ load_objective_policy 直接 ValueError 拒绝开工，因为写错的排除名单会把元工作轨悄悄读成业务数据、让①凭空变 ✅。2026-10-17 第七轮按停下条件 c 移交本格：连续两轮同因（业务侧 24 个项目目录里仍只有本仓有 .spec/obs/run.jsonl），机制侧已无可补，等的是用户真跑一条业务节点"
+    blockedBy: "业务节点要真跑起来才有依据，而真实业务节点属用户的在研项目；夜间会话不得造事件，也不得拿本仓运维节点冒充 ⇒ 允许长期 ◐。2026-10-17 第六轮把「没有业务数据」也改成数出来的：扫 /d/project 下 24 个项目目录，有 .spec 的 13 个、有 .spec/obs 的 1 个、有 .spec/obs/run.jsonl 的 1 个且就是本仓；同轮还查出一个真缺口——判据要「墙钟与产物 sha」，而 metrics.summarize 里此前没有 sha 字段（看板只有字节数），现已补 sha 列并把达成与否做成看板上一行 ✅/⛔（现值 ⛔：轨上只有运维节点 quality-inspection，76 事件／38 执行）。同轮再加一道防假绿：opsNodes 里点名了未注册的节点（拼错一个字母）⇒ load_objective_policy 直接 ValueError 拒绝开工，因为写错的排除名单会把元工作轨悄悄读成业务数据、让①凭空变 ✅。2026-10-17 第七轮按停下条件 c 移交本格；同轮给本格加上 goalplan 的 machineProof 执法（proofRules.machineProofs 声明尺子、标 ☑ 却判未满足或尺子取不到 ⇒ 红）⇒ 「①只能由看板说了才算」从此是门禁而不是我的措辞：连续两轮同因（业务侧 24 个项目目录里仍只有本仓有 .spec/obs/run.jsonl），机制侧已无可补，等的是用户真跑一条业务节点"
   - id: loop-locate
     ledgerRow: 2
     order: null
@@ -102,7 +107,7 @@ goals:
       commits: [1519904, 0b80d2b]
       files: ["scripts/obs/recurrence.py:1", "scripts/obs/attribution.py:458", "scripts/obs/feedback.py:1",
               "governance/obs-registry.yaml:420"]
-    blockedBy: "反哺有效率要有「改动前/后同型错误率」两个可核数才许计；排序表红线写死「无 after 数据只能标未验证」，夜间会话不得为了出数把 检出条数 冒充 错误率。2026-10-17 第五轮把 N/A 的原因说细了一层：新增落点判据（obs-registry 的 feedbackRate.landing，代码只执行），实测 4 条反哺记录的落账 commit 全部只改工具层（scripts/、evals/、docs/），0 条触达 skill 正文 ⇒ 与按 skill 归属的 issue 池复发链天然对不上；判据出处是目标文档 plan v2:124 自己的定义「问题闭环 → SKILL.md 落规则 → 同场景错误率变化」。所以要出数缺的是「改到某 skill 正文、两侧可核的反哺记录」＋第二条显式复发链，两者都不能由夜间会话造（造记录要用户批准，链要真跑出来才有）"
+    blockedBy: "反哺有效率要有「改动前/后同型错误率」两个可核数才许计；排序表红线写死「无 after 数据只能标未验证」，夜间会话不得为了出数把 检出条数 冒充 错误率。2026-10-17 第五轮把 N/A 的原因说细了一层：新增落点判据（obs-registry 的 feedbackRate.landing，代码只执行），实测 4 条反哺记录的落账 commit 全部只改工具层（scripts/、evals/、docs/），0 条触达 skill 正文 ⇒ 与按 skill 归属的 issue 池复发链天然对不上；判据出处是目标文档 plan v2:124 自己的定义「问题闭环 → SKILL.md 落规则 → 同场景错误率变化」。所以要出数缺的是「改到某 skill 正文、两侧可核的反哺记录」＋第二条显式复发链，两者都不能由夜间会话造（造记录要用户批准，链要真跑出来才有）。2026-10-17 第八轮按停下条件 c 收口本格：连续两轮同因——本轮复跑 tsr feedback 与 tsr recurrence 实测仍是「2 条反哺记录落在 quality-inspection｜复发链 1 条（WorkFlow，3 节点）｜可归属关联 0 条｜落点触达 skill 正文 0 条」，两样欠账都没有新增，也不是会话能自造的 ⇒ 不再占指针"
   - id: loop-l2
     ledgerRow: 6
     order: 3
@@ -175,6 +180,7 @@ goals:
     label: 代码推到远端分支
     status: done
     criteria: "代码推到 origin 的长期分支，且每轮收口后本地领先数为 0"
+    machineProof: delivery
     notDo: "不 force push、不改写已入库 commit message"
     basis:
       commits: [6d0ec12]
