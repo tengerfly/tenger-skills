@@ -1,6 +1,6 @@
 from __future__ import annotations
 import argparse, hashlib, json, os, re, shutil, subprocess, sys
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from collections import defaultdict, deque
 from pathlib import Path, PureWindowsPath
 from typing import Any
@@ -1607,6 +1607,62 @@ def check_system(root, skip_fixtures=False, skip_knowledge=False, strict=False):
                 errors.extend(f"fixture {f.name} traceability: {e}" for e in check_fixture(f,"trace"))
     return errors
 
+def _ctl_ts(value):
+    """把控制文件里的时间戳解析成可比较的时刻；解析不了返回 None（不猜）。"""
+    if not isinstance(value, str):
+        return None
+    text = value.strip()
+    if not text:
+        return None
+    try:
+        stamp = datetime.fromisoformat(text.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    return stamp.replace(tzinfo=timezone(timedelta(hours=8))) if stamp.tzinfo is None else stamp
+
+
+def control_drift(root):
+    """控制文件与产物时点对账（workflow.yaml / manifest.yaml ↔ manifest.artifacts）。
+
+    为什么要有这条：一次工作只写两个控制文件中的一个，或写了文件却没改 `updatedAt` 时，
+    下一个会话读到的进度就落后于磁盘事实，而现有校验器全都不看时间。
+    实测（knowledge-bases 2026-10-17）：manifest 已登记第 3 轮产物（producedAt 11:07），
+    workflow.yaml 仍停在 10-15 第 2 轮；且 manifest 自己的 updatedAt 也停在 10-15 —— 两处都红。
+    """
+    workflow_path = root / ".spec/workflow.yaml"
+    manifest_path = root / ".spec/manifest.yaml"
+    missing = [p.relative_to(root).as_posix() for p in (workflow_path, manifest_path) if not p.is_file()]
+    if missing:
+        return [f"controldrift: 缺 {', '.join(missing)} —— 无法对账，不是通过"]
+    try:
+        workflow = load_yaml(workflow_path) or {}
+        manifest = load_yaml(manifest_path) or {}
+    except ValueError as exc:
+        return [f"controldrift: {exc}"]
+    newest = None  # (timestamp, label, field)
+    for artifact in manifest.get("artifacts") or []:
+        if not isinstance(artifact, dict):
+            continue
+        for field in ("updatedAt", "producedAt"):
+            stamp = _ctl_ts(artifact.get(field))
+            if stamp and (newest is None or stamp > newest[0]):
+                newest = (stamp, artifact.get("artifactId") or artifact.get("path") or "<unknown>", field)
+    if newest is None:
+        return []
+    errors = []
+    workflow_ts = _ctl_ts(workflow.get("updatedAt"))
+    if workflow_ts is not None and workflow_ts < newest[0]:
+        errors.append(
+            f"controldrift: workflow.yaml updatedAt={workflow.get('updatedAt')} 早于最新产物 "
+            f"{newest[1]} {newest[2]}={newest[0].isoformat()} —— 当前状态落后于磁盘产物，先对账再交接")
+    manifest_ts = _ctl_ts(manifest.get("updatedAt"))
+    if manifest_ts is not None and manifest_ts < newest[0]:
+        errors.append(
+            f"controldrift: manifest.yaml updatedAt={manifest.get('updatedAt')} 早于自己登记的最新产物 "
+            f"{newest[1]} {newest[2]}={newest[0].isoformat()} —— 文件被写过但 updatedAt 没更新")
+    return errors
+
+
 def main(argv=None):
     if hasattr(sys.stdout, "reconfigure"):
         # Windows 控制台默认 GBK，中文判据会被打成乱码，读报告的人只能猜
@@ -1616,7 +1672,7 @@ def main(argv=None):
     commands = {"registry": check_registry, "artifact": check_artifact, "trace": check_trace,
                 "refs": check_refs, "gate": check_gate, "transition": check_transitions,
                 "graph": check_graph, "task": check_task, "recording": check_recording,
-                "crossrefs": check_crossrefs}
+                "crossrefs": check_crossrefs, "controldrift": control_drift}
     parser.add_argument("command", choices=[*commands, "skill-contract", "knowledge", "system", "drift",
                                             "evolution", "goalplan"])
     parser.add_argument("--project-root", default=".")
