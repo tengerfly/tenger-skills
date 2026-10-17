@@ -238,6 +238,52 @@ class ArtifactBindingTests(unittest.TestCase):
         self.assertIn("run-log verification passed", text)
         self.assertIn("条更早绑定已被后续节点超越", text)
 
+    def test_run_log_self_binding_is_explained_not_red(self):
+        """追加式台账绑自己 ⇒ 永不满足的承诺：不判红，但必须单列说明；同一条款里真漂移仍要红（防洗白）。"""
+        self.close("EXEC-P5", self.PATH, b"# v1\n")
+        import yaml
+        (self.root / "governance").mkdir(parents=True, exist_ok=True)
+        (self.root / "governance/obs-registry.yaml").write_text(yaml.safe_dump(
+            {"appendOnlyLedgers": {"paths": [schema.RUN_LOG, ".spec/obs/behaviour-runs.jsonl"],
+                                   "rule": "夹具口径", "refusal": "夹具拒收文案"}},
+            allow_unicode=True), encoding="utf-8")
+        ledger = io.open(self.root / schema.RUN_LOG, encoding="utf-8").read().strip()
+        body = ledger.encode("utf-8")
+        self.append("node-end", "EXEC-P6", "2026-10-17T10:00:00+08:00",
+                    bindings=[(schema.RUN_LOG, body), (".spec/obs/behaviour-runs.jsonl", b'{"a":1}\n'),
+                              (self.PATH, b"# stale-victim\n")])
+        errors = self.binding_errors(self.root)
+        self.assertEqual([self.PATH], [e.split(": ", 2)[-1].split("（")[0] for e in errors],
+                         "豁免只许给注册表点名的追加式台账；真改了没落台账的那条必须照旧红")
+        notes: list = []
+        tsr.verify(self.root, notes)
+        text = "；".join(notes)
+        self.assertIn("绑定的是追加式台账自身", text)
+        self.assertIn(".spec/obs/behaviour-runs.jsonl", text, "两条台账都要点名，不能只报数量")
+
+    def test_append_only_list_falls_back_to_the_run_log(self):
+        """没有注册表的临时仓也要保守：只认 run-log 一条，不放宽成「什么都不豁免」。"""
+        tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(lambda: __import__("shutil").rmtree(tmp, ignore_errors=True))
+        self.assertEqual([schema.RUN_LOG], schema.append_only_ledgers(tmp))
+        shipped = Path(__file__).resolve().parents[2]
+        self.assertIn(".spec/obs/behaviour-runs.jsonl", schema.append_only_ledgers(shipped))
+
+    def test_node_end_refuses_to_bind_the_run_log(self):
+        """写入口就拒：绑定台账自己没有意义，留着只让 verify 长红、把真问题埋掉。"""
+        self.write_body(b"# v1\n", self.PATH)
+        self.assertEqual(0, tsr.main(self.base("EXEC-P7") + ["node-start"]))
+        # tsr.main 会对 stderr 调 reconfigure（GBK 控制台的对策），所以只能重定向到真文件描述
+        sink = self.root / "stderr.txt"
+        with io.open(sink, "w", encoding="utf-8") as handle, contextlib.redirect_stderr(handle):
+            code = tsr.main(self.base("EXEC-P7") + ["node-end", "--gate", "PASS",
+                                                    "--allow-downstream", "true",
+                                                    "--artifact", schema.RUN_LOG])
+        self.assertEqual(1, code)
+        text = io.open(sink, encoding="utf-8").read()
+        self.assertIn("refusing to bind an append-only ledger", text)
+        self.assertIn("台账每写一条事件就改一次字节", text)
+
 
 class MetricsTests(unittest.TestCase):
     """Synthetic run logs only — real numbers must come from real node executions."""

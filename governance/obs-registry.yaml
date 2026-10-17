@@ -27,6 +27,13 @@ nodes:
   - {id: fidelity-review, skill: fidelity-review, paths: [".spec/页面还原评审/**"]}
   - {id: auto-test, skill: auto-test, paths: [".spec/测试/**", ".spec/evidence/**"]}
   - {id: quality-inspection, skill: quality-inspection, paths: ["scripts/obs/**", "scripts/eval/**", "governance/**", "evals/**", "scripts/tests/**"]}
+# ── 追加式台账不许当产物绑定（tsr node-end 与 tsr verify 共用这一条口径）。
+# 这类文件每跑一次就变字节：绑它等于立一个永远兑现不了的承诺 ⇒ verify 长期红、真漂移反被埋掉。
+# 本仓 2026-10-17 实测：并发会话补绑时把 run-log 自己与 behaviour-runs 都列进了 --artifact。
+appendOnlyLedgers:
+  paths: [".spec/obs/run.jsonl", ".spec/obs/behaviour-runs.jsonl"]
+  rule: "追加式台账是记录本身、不是被观测的产物：node-end 拒收对它们的绑定；verify 对历史遗留的这类绑定跳过并单列说明（不静默豁免）"
+  refusal: "台账每写一条事件就改一次字节 ⇒ 这条绑定永远对不上；产物请列被观测的文件"
 # ── 「①客观数据达成没有」的机械口径（排序第 1 格的 ☑ 判据）。
 # 判据原文＝「run-log 里除运维节点外至少 1 个业务节点完整 start→end，且 report 能算出该节点的墙钟与产物 sha」。
 # 以前这句话只能靠人读看板判断，看板对「元工作轨」和「业务轨」长得一模一样 ⇒ 达成与否变成我的转述。

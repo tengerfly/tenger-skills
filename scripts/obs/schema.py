@@ -21,6 +21,25 @@ REVIEW_ROLES = {"review", "recheck"}
 ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:-]*$")
 
 
+def append_only_ledgers(root: Path) -> list:
+    """追加式台账清单（obs-registry 的 appendOnlyLedgers.paths）；读不到就只认 run-log 自己。
+
+    这类文件每写一条事件就变字节，绑定它们等于立一个永远兑现不了的承诺 —— 本仓 2026-10-17 实测
+    被并发会话当产物绑过，之后 `tsr verify` 长红。缺清单时保守到 run-log 一条，不放宽成「什么都不豁免」。
+    """
+    import yaml
+    path = Path(root) / "governance/obs-registry.yaml"
+    fallback = [RUN_LOG]
+    if not path.is_file():
+        return fallback
+    try:
+        section = (yaml.safe_load(path.read_text(encoding="utf-8")) or {}).get("appendOnlyLedgers") or {}
+    except (OSError, yaml.YAMLError):
+        return fallback
+    paths = [str(item).replace("\\", "/") for item in (section.get("paths") or []) if str(item).strip()]
+    return sorted(set(paths) | {RUN_LOG})
+
+
 def now() -> str:
     """Machine clock, local timezone, millisecond precision — never hand-authored."""
     return datetime.now().astimezone().isoformat(timespec="milliseconds")

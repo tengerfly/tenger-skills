@@ -56,6 +56,12 @@ def cmd_end(args) -> int:
         if not path.is_file():
             print(f"declared artifact does not exist: {raw}", file=sys.stderr)
             return 1
+        if raw.replace("\\", "/") in schema.append_only_ledgers(root):
+            # 台账是记录本身：绑它等于立一个永远兑现不了的承诺（verify 会长期假红，把真漂移埋掉）
+            print(f"refusing to bind an append-only ledger: {raw}"
+                  "（台账每写一条事件就改一次字节 ⇒ 这条绑定永远对不上；产物请列被观测的文件）",
+                  file=sys.stderr)
+            return 1
         bound = schema.digest(path)  # hash the resolved absolute path; record the portable form
         bound["path"] = raw.replace("\\", "/")
         event["artifacts"].append(bound)
@@ -114,7 +120,14 @@ def check_bindings(root: Path, events: list, errors: list, notes: list) -> None:
     the path, so it still fails below.
     """
     superseded = []
+    self_bound = []
+    append_only = set(schema.append_only_ledgers(root))
     for path, rows in sorted(artifact_bindings(events).items()):
+        if path in append_only:
+            # 追加式台账不能当产物：每写一条事件它的字节就变 ⇒ 这个承诺永远无法兑现。
+            # 跳过但单列说明，不静默豁免——否则下一步就有人把它开成洗白口。
+            self_bound.append(f"{path}（{rows[-1][1]}）")
+            continue
         target = root / path
         fresh = schema.digest(target)["sha256"] if target.is_file() else None
         _, latest_where, latest = rows[-1]
@@ -128,6 +141,9 @@ def check_bindings(root: Path, events: list, errors: list, notes: list) -> None:
                 superseded.append(f"{where}→{path}（文件已不在磁盘）")
             elif fresh != artifact.get("sha256"):
                 superseded.append(f"{where}→{path}")
+    if self_bound:
+        notes.append(f"{len(self_bound)} 条绑定的是追加式台账自身（{'、'.join(self_bound)}）⇒ 不检："
+                     "每条事件都会改写台账，这个承诺永远无法满足；node-end 现在也会拒收这类绑定")
     if superseded:
         notes.append(f"{len(superseded)} 条更早绑定已被后续节点超越，不算违规"
                      f"（快照只承诺当时字节）：{'、'.join(superseded)}")
