@@ -79,8 +79,27 @@ class Fixture(unittest.TestCase):
         ledger_path.write_text(ledger if ledger is not None else ledger_text(data), encoding="utf-8")
         if with_panel:
             (root / "panel.canvas.tsx").write_text(self.panel_of(data, panel_overrides), encoding="utf-8")
+        # 真实台账里已有标 ☑ 且声明 machineProof 的条目：基线夹具若不带业务证据就会被"假绿"判红。
+        # 一律补一条业务 run；需要"未满足"形态的对照自己把事件删掉（见 MachineProofTests）。
+        self.business_run(root)
         self.root, self.data = root, data
         return root, data
+
+    def business_run(self, root):
+        import json
+        log = root / ".spec/obs/run.jsonl"
+        log.parent.mkdir(parents=True, exist_ok=True)
+        events = [{"schema": "tenger.trace/v1", "event": "node-start", "project": "p",
+                   "executionId": "EXEC-BIZ-1", "node": "prd-design", "skill": "prd-design",
+                   "role": "produce", "actor": "main", "origin": "self",
+                   "ts": "2026-10-17T09:00:00+08:00", "artifacts": [], "upstream": []},
+                  {"schema": "tenger.trace/v1", "event": "node-end", "project": "p",
+                   "executionId": "EXEC-BIZ-1", "node": "prd-design", "skill": "prd-design",
+                   "role": "produce", "actor": "main", "origin": "self",
+                   "ts": "2026-10-17T09:40:00+08:00", "gate": "PASS", "allowDownstream": True,
+                   "artifacts": [{"path": ".spec/prd/overview.md", "sha256": "b" * 64, "bytes": 20}],
+                   "upstream": []}]
+        log.write_text("\n".join(json.dumps(e, ensure_ascii=False) for e in events) + "\n", encoding="utf-8")
 
     @staticmethod
     def panel_of(data, overrides=()):
@@ -213,7 +232,8 @@ class LedgerDriftTests(Fixture):
 
     def test_count_line_drift_is_red(self):
         root, data = self.build()
-        body = ledger_text(data).replace("**计数**：☑ 完成 8", "**计数**：☑ 完成 9", 1)
+        done = sum(1 for entry in data["goals"] if entry["status"] == "done")
+        body = ledger_text(data).replace(f"☑ 完成 {done}", f"☑ 完成 {done + 1}", 1)
         self.assertNotEqual(body, ledger_text(data))
         (root / data["sources"]["ledger"]).write_text(body, encoding="utf-8")
         text = "\n".join(core.goalplan_audit(root)["errors"])
@@ -317,6 +337,7 @@ class MachineProofTests(Fixture):
 
     def test_unsatisfied_detector_blocks_a_claimed_checkmark(self):
         root, data = self.build(self.claim_done, with_panel=False)
+        (root / ".spec/obs/run.jsonl").unlink()  # 造"有 ☑ 声明但尺子无证据"的形态
         text = self.errors()
         self.assertIn("标 ☑(done) 而检出面判未满足", text)
         self.assertIn("①客观数据判据：未满足", text, "要说清是哪一格没过，不能只说「☑ 不成立」")
@@ -325,6 +346,7 @@ class MachineProofTests(Fixture):
     def test_satisfied_detector_allows_the_claim(self):
         # 阳性对照（本轮记过的规矩）：断言「不报错」之前必须证明同一把尺子真的会亮
         root, data = self.build(self.claim_done, with_panel=False)
+        (root / ".spec/obs/run.jsonl").unlink()  # 先造"无证据"形态，证明尺子会亮
         self.assertIn("标 ☑(done) 而检出面判未满足", self.errors())
         self.business_run(root)
         self.assertNotIn("而检出面判未满足", self.errors())

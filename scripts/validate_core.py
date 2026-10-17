@@ -1298,8 +1298,13 @@ def goalproof_machine(root, source, rules):
             # policy 按 root 取：夹具 root 没有 governance/obs-registry.yaml 就退回全局默认，
             # 于是 externalSources 天然只在被配置的仓生效，不会把真实项目事件灌进夹具测试。
             registry = root / "governance/obs-registry.yaml"
-            policy = load_yaml(registry).get("objectiveData") if registry.is_file() else None
-            policy = policy or metrics.load_objective_policy()
+            policy = dict(metrics.load_objective_policy())
+            # externalSources 只认 root 自己声明的：全局默认里若带了它，夹具会去聚合真实项目事件。
+            policy.pop("externalSources", None)
+            if registry.is_file():
+                declared = load_yaml(registry).get("objectiveData")
+                if isinstance(declared, dict):
+                    policy.update(declared)  # root 声明覆盖默认，而不是整节替换掉默认键
             events = schema.read_events(root)
             own_track = (root / ".spec/obs/run.jsonl").resolve()
             for relative in policy.get("externalSources") or []:
