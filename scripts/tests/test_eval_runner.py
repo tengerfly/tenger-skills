@@ -1,5 +1,6 @@
 import copy
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -56,6 +57,37 @@ class EvalRunnerTests(unittest.TestCase):
         with self.assertRaises(ValueError) as caught:
             evaluator.load_eval(Path(__file__).resolve())
         self.assertIn(str(Path(__file__).name), str(caught.exception))
+
+
+class EvalSetShapeTests(unittest.TestCase):
+    """用例 id 是基线对账与台账引用的键：同 id 两条会让比较互相覆盖，计数却看着更多。
+
+    2026-10-17 新增 resign 用例时直接撞了已有的 EV-GATE-008/009，跑起来是 25 条全绿、
+    但基线里同一 id 只能留一条 —— 这类「数量看着涨、其实没多检」必须当场拒绝加载。
+    """
+
+    def test_duplicate_case_ids_are_rejected_at_load_time(self):
+        body = ("schema: tenger.eval/v1\n"
+                "cases:\n"
+                "  - id: EV-DUP\n"
+                "    layer: structure\n"
+                "    given: x\n"
+                "    expect: {validator: artifact, outcome: red}\n"
+                "  - id: EV-DUP\n"
+                "    layer: structure\n"
+                "    given: x\n"
+                "    expect: {validator: artifact, outcome: red}\n")
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / "eval.yaml"
+            path.write_text(body, encoding="utf-8")
+            with self.assertRaises(ValueError) as caught:
+                evaluator.load_eval(path)
+            self.assertIn("用例 id 重复", str(caught.exception))
+
+    def test_every_shipped_eval_set_loads_with_unique_ids(self):
+        # 不抛异常＝每套都能过 id 唯一性这一关；新增用例撞号会在这里红，而不是在基线对账时静默覆盖
+        for path in sorted((Path(__file__).resolve().parents[2] / "evals").glob("*/eval.yaml")):
+            evaluator.load_eval(path)
 
 
 class SectionScopeTests(unittest.TestCase):

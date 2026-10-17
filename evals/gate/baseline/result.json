@@ -2,21 +2,21 @@
   "schema": "tenger.eval-baseline/v1",
   "eval": "evals/gate/eval.yaml",
   "skill": "workflow",
-  "savedAt": "2026-10-16T21:51:25+08:00",
+  "savedAt": "2026-10-18T01:07:34+08:00",
   "anchors": {
-    "skillRevision": "sha256:073d6b355402c6663381cfe17d9b65398dc69e5e6577ebecfbf09964e847da2f",
-    "casesVersion": "sha256:03b4cd2c5abde15e2cb2b724b481047301ab6eeab694888e8faee579f7101b9c",
+    "skillRevision": "sha256:2f10eb0293a29ad7faedf11989121797263dc47b841829a2d11912b3f4a9f198",
+    "casesVersion": "sha256:8a600f07c62737c32e510801003da3b40c249ee87682ff50a9956497d031eebf",
     "engine": "codex",
     "model": "engine-default",
     "judgeVersion": "eval-judge/1",
     "scoringVersion": "1"
   },
   "provenance": {
-    "runner": "sha256:d2c65b459a859b87c443c45329ce2576000893720c4765b219a3ca06e8df5fd3",
+    "runner": "sha256:d7ee5770d35bb1abaf551f8147bb2ded45353f6cd565d62073933d124c6768d1",
     "python": "3.11.15"
   },
   "counts": {
-    "passed": 19,
+    "passed": 21,
     "failed": 0,
     "blocked": 4,
     "error": 0
@@ -159,6 +159,18 @@
       "layer": "behaviour",
       "status": "blocked",
       "outcome": null
+    },
+    {
+      "id": "EV-GATE-020",
+      "layer": "structure",
+      "status": "passed",
+      "outcome": "red"
+    },
+    {
+      "id": "EV-GATE-021",
+      "layer": "structure",
+      "status": "passed",
+      "outcome": "green"
     }
   ]
 }

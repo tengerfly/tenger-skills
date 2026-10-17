@@ -1663,6 +1663,102 @@ def control_drift(root):
     return errors
 
 
+def resign_bindings(root, apply=False, decision=None, verbose=True):
+    """把 subjectDigests 重签到磁盘现值；默认 dry-run，写盘必须给 --decision。
+
+    「哪条记录、哪个 subject、旧值、新值」逐行给出，因为只有一句「12 error」时，
+    现场分不清是 PRD 漂了还是历史绑定过期（issue/WorkFlow/2026-10-17/01 的现场形态）。
+    """
+    import hashlib, re as _re
+
+    def say(message=""):
+        if verbose:
+            print(message)
+
+    # 台账位置只有一处：.spec/manifest.yaml（shared/artifact-contract.md:12）。
+    # 不再猜 governance/ 下的同名文件——猜错时会把另一份清单当成台账静默改签。
+    manifest = root / ".spec" / "manifest.yaml"
+    if not manifest.exists():
+        raise ValueError(f"manifest not found: {manifest}")
+    lines = manifest.read_text(encoding="utf-8").split("\n")
+    starts = [i for i, l in enumerate(lines) if l.startswith("  - artifactId: ")]
+    blocks = []
+    for k, s in enumerate(starts):
+        e = starts[k + 1] if k + 1 < len(starts) else len(lines)
+        blocks.append((lines[s].split(":", 1)[1].strip(), s, e))
+    path_of = {}
+    for aid, s, e in blocks:
+        seg = "\n".join(lines[s:e])
+        m = _re.search(r'^    path:\s*"?([^"\n]+)"?', seg, _re.M)
+        path_of[aid] = m.group(1).strip() if m else ""
+
+    def _sha(rel):
+        if not rel:
+            return None
+        try:
+            return hashlib.sha256((root / rel).read_bytes()).hexdigest()
+        except OSError:
+            return None
+
+    pending, unresolved = [], []
+    for aid, s, e in blocks:
+        in_sd = False
+        for i in range(s, e):
+            line = lines[i]
+            if _re.match(r"^    subjectDigests:\s*$", line):
+                in_sd = True
+                continue
+            if in_sd:
+                m = _re.match(r'^      ([A-Za-z0-9\-]+):\s*"?([0-9a-f]{64})"?\s*$', line)
+                if m:
+                    want = _sha(path_of.get(m.group(1), ""))
+                    if want is None:
+                        # 查不到≠一致：subject 不在台账里或产物读不动，必须报出来
+                        unresolved.append((m.group(1), aid, m.group(2), i))
+                    elif want != m.group(2):
+                        pending.append((m.group(1), aid, m.group(2), want, i))
+                elif not line.startswith("      "):
+                    in_sd = False
+    if not pending and not unresolved:
+        say("resign: 无需重签（所有 binding 与磁盘一致）")
+        return []
+    if pending:
+        say(f"resign: {len(pending)} 条 binding 与磁盘不符")
+        say("| subject | 记录 | 台账现值 | 磁盘现值 |")
+        say("| --- | --- | --- | --- |")
+        for subj, aid, old, new, _ in pending:
+            say(f"| {subj} | {aid} | {old[:12]}… | {new[:12]}… |")
+    if unresolved:
+        say(f"resign: {len(unresolved)} 条 binding 无法核（subject 不在台账里或产物读不动），不自动改", )
+        for subj, aid, old, _ in unresolved:
+            say(f"| {subj} | {aid} | {old[:12]}… | 读不到 |")
+    if not apply:
+        say("（dry-run）确认后加 --apply --decision <DEC-id> 写盘")
+        return pending + [(subj, aid, old, None, i) for subj, aid, old, i in unresolved]
+    if unresolved:
+        raise ValueError("有 binding 无法核对（subject 不在台账里或产物读不动）：先清理台账，重签不得跳过")
+    if not decision:
+        raise ValueError("写盘必须给 --decision <DEC-id>：重签＝批准行为，不能无授权改台账")
+    new_by_subject = {subj: new for subj, _aid, _old, new, _i in pending}
+    for subj, _aid, _old, _new, i in pending:  # 同一行只会出现一次
+        lines[i] = f"      {subj}: {new_by_subject[subj]}"
+    manifest.write_text("\n".join(lines), encoding="utf-8")
+    say(f"resign: 已写盘 {len(pending)} 条（依据 {decision}）；请重跑 artifact 复核")
+    return pending
+
+
+def resign_findings(root):
+    """重签队列的判定面（评测/门禁用）：与磁盘不符与无法核的 binding 都是红，不互相顶替。"""
+    findings = []
+    for subj, aid, _old, new, _i in resign_bindings(root, verbose=False):
+        if new is None:
+            findings.append(f"{subj} binding 无法核对（记录 {aid}）：subject 不在台账里或产物读不动")
+        else:
+            findings.append(f"{subj} binding 与磁盘不符（记录 {aid}）")
+    return findings
+
+
+
 def main(argv=None):
     if hasattr(sys.stdout, "reconfigure"):
         # Windows 控制台默认 GBK，中文判据会被打成乱码，读报告的人只能猜
@@ -1674,13 +1770,15 @@ def main(argv=None):
                 "graph": check_graph, "task": check_task, "recording": check_recording,
                 "crossrefs": check_crossrefs, "controldrift": control_drift}
     parser.add_argument("command", choices=[*commands, "skill-contract", "knowledge", "system", "drift",
-                                            "evolution", "goalplan"])
+                                            "evolution", "goalplan", "resign"])
     parser.add_argument("--project-root", default=".")
     parser.add_argument("--include-legacy", action="store_true")
     parser.add_argument("--strict", action="store_true")
     parser.add_argument("--skip-fixtures", action="store_true")
     parser.add_argument("--skip-knowledge", action="store_true")
     parser.add_argument("--ledger", help="只覆盖台账路径；判据仍从 governance/obs-registry.yaml 读")
+    parser.add_argument("--apply", action="store_true", help="resign 专用：真正写盘（默认 dry-run）")
+    parser.add_argument("--decision", default=None, help="resign 写盘时的批准依据（DEC id），缺则拒绝")
     args = parser.parse_args(argv)
     root = Path(args.project_root).resolve()
     try:
@@ -1698,6 +1796,9 @@ def main(argv=None):
             print(f"待重签 {len(rows)} 条 ｜ 台账结构错误 {len(structural)} 条"
                   f" ｜ 重签需人工批准（decisionRefs），本命令不改写台账")
             return 1 if (rows or structural) else 0
+        elif args.command == "resign":
+            pending = resign_bindings(root, args.apply, args.decision)
+            return 0 if not pending else (0 if args.apply else 1)
         elif args.command == "evolution":
             result = evolution_audit(root, args.ledger)
             print(render_evolution(result))

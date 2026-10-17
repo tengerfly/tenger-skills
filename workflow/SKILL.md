@@ -115,6 +115,8 @@ CREATE 行的 `UI Design -> UI Review` 是**必经节点**（`ui-ux-design` → 
 
 **开工前闸门核对（REQUIRED，先于任何节点调度与状态前移）**：调度任一专业 Skill 之前，先读该节点所依赖的上游 artifact 在 `.spec/manifest.yaml` / `.spec/gates/` 的 `status`、`version`、`gate`、`allowDownstream`、`blockedBy`（口径见 `../shared/gate-policy.md` §6）。任一上游为 `SUPERSEDED`、`gate` 非 `PASS`、或 `allowDownstream: false` ⇒ ① 不启动该节点；② `currentState` 与 `nextAction` 不得指向关闸上游的下游，状态停在阻塞点并用已注册状态（如 `WORKFLOW_BLOCKED`），不为此新增状态名；③ 在 `workflow.yaml.blockedItems` 记 `BLK-*`（含 `owner`、`requiredInput`、`clearCondition`），`nextAction` 指回上游 owner。**禁止**以「下游先往前赶、上游慢慢补」「并行不空等」「先把能做的做了」越过未清阻塞：闸门既是数据也是检查点，不靠执行方自觉。
 
+**摘要漂移必须先修再交接（REQUIRED）**：`validate_core.py artifact` 报 `subjectDigests mismatch` 时，**不得**用「写一条 EXC 放行」绕过——先跑 `python scripts/validate_core.py resign --project-root <项目>`（dry-run）拿到「哪个 subject / 哪条记录 / 旧值 / 新值」清单，向用户确认「以现字节为新基线」后，用 `--apply --decision <DEC-id>` 重签（**无 decision 一律拒绝**，重签＝批准行为），再重跑 `artifact` 转绿。台账里每个 subject 只应留一条现行绑定，历史失效绑定要清掉，否则审计时会把旧差异误读成现行差异（`issue/WorkFlow/2026-10-17/01`）。
+
 **基线作废即清点沉没产出（REQUIRED）**：方向 / 基线类 DEC（如 `DEC-*-PRODUCT-DIRECTION`）把已批准基线转为 `SUPERSEDED` 的同一轮，必须输出「引用该基线的下游产物清单 + 逐项处置（回炉重写／增量更新／作废）」并登记，不得留到下游节点自己发现；清单靠下游产物按 `../shared/artifact-contract.md` §2 登记的 `sourceRefs` 反查得到。
 
 **视觉基线准入**：CREATE 流程进入技术设计或前端开发前，须存在设计稿批准记录（`UI_APPROVED`，或已批准的 `.spec/设计稿/` + `design-system.md`）。缺失时只有经用户显式批准的例外（EXC）可放行；凡输入基线自称「设计稿：无」「本批不涉及视觉」「缺省回退低保真原型」而无 EXC 引用，判 `BLOCKED` 并停下报告，不得把缺失写成批次说明后继续推进（规则见 `../shared/product-workflow-contract.md` §5.1）。

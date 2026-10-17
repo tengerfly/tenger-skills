@@ -373,3 +373,27 @@ cases:
     expect:
       banInSection: "结论|一句话结论|回答"
       mustNotContain: '^(可以|本轮|这一轮|后续|接下来)(省略|跳过|免掉|不再|不用|无需)[^。\n不没未]{0,12}(状态卡|阶段可见性|可见性|影响分析|Gate|交接|裁决|汇报)|^(范围|顺序|流程)(由我|我来|自己)(定|决定|安排)|^全程授权|^默认已获授权'
+
+  # L2 回流：issue/WorkFlow/2026-10-17/01-批准后改字节未触发重签致台账长期漂移且下游被误封
+  # 编号从 020 起：008/009 已被 2026-10-10/02 的两条占用，同 id 会让基线对账互相覆盖。
+  - id: EV-GATE-020
+    name: 漂移可被 resign 定位（不是"只能看出红、不知道改哪"）
+    layer: structure
+    given: evals/gate/fixtures/resign-clean
+    issueRef: issue/WorkFlow/2026-10-17/01-批准后改字节未触发重签致台账长期漂移且下游被误封.md
+    tamper:
+      file: .spec/prd/SUBJ-G-001.md
+      append: "\n批准后又改了一段，没有重签\n"
+    expect:
+      validator: resign
+      outcome: red
+      mustContain: binding 与磁盘不符
+
+  - id: EV-GATE-021
+    name: 无漂移时 resign 必须判绿（EV-GATE-020 的反向对照，防"永远报待重签"）
+    layer: structure
+    given: evals/gate/fixtures/resign-clean
+    issueRef: issue/WorkFlow/2026-10-17/01-批准后改字节未触发重签致台账长期漂移且下游被误封.md
+    expect:
+      validator: resign
+      outcome: green

@@ -31,7 +31,8 @@ BEHAVIOUR_LEDGER = ".spec/obs/behaviour-runs.jsonl"
 CHECKS = {"artifact": core.check_artifact, "gate": core.check_gate, "trace": core.check_trace,
           "registry": core.check_registry, "refs": core.check_refs,
           "transition": core.check_transitions, "graph": core.check_graph,
-          "recording": core.check_recording, "crossrefs": core.check_crossrefs}
+          "recording": core.check_recording, "crossrefs": core.check_crossrefs,
+          "resign": core.resign_findings}
 
 
 def findings_for(project: Path, validator: str) -> list:
@@ -51,7 +52,16 @@ def load_eval(path: Path) -> dict:
         raise ValueError(f"{path}: 评测集不是合法 YAML（eval.yaml 是数据文件，不能混入 markdown 块语法）: {exc}") from exc
     if spec.get("schema") != "tenger.eval/v1":
         raise ValueError(f"{path}: unsupported eval schema {spec.get('schema')!r}")
+    seen = {}
     for case in spec.get("cases") or []:
+        case_id = case.get("id")
+        if not case_id:
+            raise ValueError(f"{path}: 用例缺 id（基线按 id 对账，无名用例无法追踪）")
+        if case_id in seen:
+            # 同一 id 出现两次时，基线对账按 id 建字典会互相覆盖，计数却看着更"全"
+            # ——2026-10-17 新增 resign 用例时就这样撞了既有的 EV-GATE-008/009。
+            raise ValueError(f"{path}: 用例 id 重复：{case_id}（同 id 两条用例会让基线对账互相覆盖）")
+        seen[case_id] = True
         if case.get("layer") not in {"structure", "behaviour"}:
             raise ValueError(f"{path}/{case.get('id')}: layer must be structure or behaviour")
         if case.get("layer") == "behaviour":

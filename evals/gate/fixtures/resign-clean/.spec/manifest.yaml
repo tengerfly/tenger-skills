@@ -1,0 +1,20 @@
+artifacts:
+  - artifactId: SUBJ-G-001
+    type: prd
+    path: .spec/prd/SUBJ-G-001.md
+    lifecycle: CHANGE
+    owner: agent
+    status: REVIEW
+    producedBy: fixture
+    producedAt: "2026-10-01T00:00:00+08:00"
+
+  - artifactId: EVID-G-001
+    type: validation-report
+    path: .spec/prd/SUBJ-G-001.md
+    lifecycle: CHANGE
+    owner: agent
+    status: REVIEW
+    producedBy: fixture
+    producedAt: "2026-10-01T00:00:00+08:00"
+    subjectDigests:
+      SUBJ-G-001: 0996c1cd9d7e3ecd73ba5a05aa0dba3b2dad2b4903cacf044ceb5870d13b6107
