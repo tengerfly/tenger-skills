@@ -107,6 +107,8 @@ CREATE 行的 `UI Design -> UI Review` 是**必经节点**（`ui-ux-design` → 
 
 后台研究未回传期间，本轮交付物只能是「已登记事实 + 当前在等什么 + 回来后给你什么」，不得同时向用户追加索取答案依赖该研究的题目；用户可见的交付顺序必须与研究的交付顺序一致。提问本身的合法性判据（只问只有用户能回答的题）见 `../shared/product-workflow-contract.md` §2.2，本处不另立规则。
 
+**等待态收窄（REQUIRED）**：除 `../shared/ruling-policy.md` 五类硬停外，不得以「等用户确认」「等你想清楚」「等你回来再定」为由停住——按裁决记录继续推进，收敛后一次汇报。停等本身是成本，且由用户买单。
+
 ### 4. 守门与交接
 
 正式交接的每个 Skill 必须输出 `PASS`、`CONDITIONAL` 或 `BLOCKED`，并声明 `allowDownstream`。**〔REQUIRED · 交接留轨〕**标准/完整流程每个节点开工前跑 `python scripts/tsr.py --project-root <项目> --execution-id <E> --node <节点> --skill <skill> --role <produce|fix|review|recheck> [--round n --batch n] node-start`，交接时同参数跑 `node-end --gate … --allow-downstream … --artifact <产物路径> [--upstream <id>:<gate>]`；时钟、序号、产物摘要由脚本生成，不得手写（口径 `../shared/gate-policy.md` §6 第 7 条，`verify` 复算不过即视同交接未完成）。轻量任务不要求正式 Envelope，但同样不因此获得下游执行权限。轻量仅报告完成内容、真实验证和剩余限制，不输出正式 Gate/状态，也不授予下游自动执行权限。只允许 `PASS` 或显式允许下游的 `CONDITIONAL` 交接；任何 P0/P1 未处理、证据缺失、未授权或产物不完整均停止推进。

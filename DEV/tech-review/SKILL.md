@@ -68,7 +68,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 4. **关联专项**：按 `references/integration-checklist.md` 核查接口契约、数据模型、状态枚举、数据流、权限 / 错误处理；命中项归因后端 / 前端 / 双方。**⑩-后 只验后端侧自洽；⑩-前 做「FTDD 页面字段清单 ⇄ fetch ↔ TDD 出参」三方对账并收口**：「清单有、TDD 出参无」= 契约完备性缺口（两端文档一致地一起缺失，双向比对查不出），归因入任务清单；FTDD 模块 §5 无字段清单 = 方案缺失（该写没写）。
 5. **角色文档落盘**：按 `assets/role-review-template.md` 写本批次角色文档（⑩-后 → `后端技术方案评审.md`；⑩-前 → `前端技术方案评审.md`）至 `.spec/技术方案评审/`。
 6. **汇总**：按 `assets/summary-template.md` 合并去重，重点标前后端关联错误，按 P0/P1/P2 统计。
-7. **任务清单 + 用户确认**：按 `assets/issue-list-template.md` 生成任务清单（状态 `待确认`）；每条附**修复判据**；逐条确认（要改 → `已确认`；不改 → `已忽略` + 理由）；P0/P1 阻断、P2 可留后续；确认后交 Backend/Frontend-Tech-Design 修改并回填。
+7. **任务清单 + 分级裁决**：按 `assets/issue-list-template.md` 生成任务清单（状态 `待确认`）；每条附**修复判据**；**P0 阻断且须用户确认**，P1/P2 由执行方按 `../../shared/ruling-policy.md` 裁决（修 → `已确认`；延/弃 → `已忽略` + 理由 + 回退方式，记 `.spec/rulings.md`），不逐条等用户；裁决后交 Backend/Frontend-Tech-Design 修改并回填。
 8. **闭环复核 + 双向沉淀判定**：修改方回填 `已修复` 后只验本轮 `已确认` 项；新发现降 P2；同批满 3 轮不收敛：P0 残留保持 BLOCKED；P1 残留不得 PASS，只能经授权并登记例外后 CONDITIONAL；不自动开启第 4 轮
 
 > 门禁闭环、防评审死循环三招（含轮次上限 3：满 3 轮未收敛：P0 残留 BLOCKED；P1 残留只能经授权 CONDITIONAL，不得 PASS；不自动放行

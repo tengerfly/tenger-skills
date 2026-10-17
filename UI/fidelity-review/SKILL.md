@@ -76,7 +76,7 @@ metadata:
 5. **超长文案专项**：按 `references/overflow-guide.md`，识别动态文本位，用真实业务文案 + 更极端长文案替换后截图判定；给出 min-width / ellipsis / flex 收缩等修改方向。
 6. **分级输出报告**：按 `assets/review-report-template.md` 生成报告；每条含编号 / 页面 / 基准出处 / 现象+截图 / 期望 vs 实际 / 成因 / 严重度 / 建议 / 修改方；分组统计 P0/P1/P2。
 7. **三模式收尾**：
-   - **独立模式**：按 `assets/issue-list-template.md` 生成任务清单（自足可读 + 修复判据 + 修改方 + P0/P1 阻断 + 逐条确认裁决；要改 → `已确认`，不改 → `已忽略` + 理由；复核只验本轮清单）；放行后按 `../../shared/anti-deadloop.md` §五 判定（P0 双向必沉）——**A 防复发**：还原类问题改 `Frontend-Dev`、设计稿缺陷改 `UI-UX-Design`（记其 CONTEXT D-xx）；**B 检出力**：本 skill `references/known-issue-patterns.md` 按模板加一条（含「检出方法」）。
+   - **独立模式**：按 `assets/issue-list-template.md` 生成任务清单（自足可读 + 修复判据 + 修改方 + **P0 阻断且须用户确认**；P1/P2 由执行方按 `../../shared/ruling-policy.md` 裁决，修 → `已确认`，延/弃 → `已忽略` + 理由 + 回退，记 `.spec/rulings.md`；复核只验本轮清单）；放行后按 `../../shared/anti-deadloop.md` §五 判定（P0 双向必沉）——**A 防复发**：还原类问题改 `Frontend-Dev`、设计稿缺陷改 `UI-UX-Design`（记其 CONTEXT D-xx）；**B 检出力**：本 skill `references/known-issue-patterns.md` 按模板加一条（含「检出方法」）。
    - **auto-test 场景**：按 `assets/mini-issue-template.md` 就地出轻量清单，不生成任务清单。
    - **代码评审场景**：报告落 `.spec/代码评审/前端页面还原度评审.md`，问题清单交 Code-Review 合并（标来源）；不单独确认、不单独计轮次；**双向沉淀判定交 Code-Review 统一执行**（含本 skill 的 `known-issue-patterns.md`）。
 
@@ -88,7 +88,7 @@ metadata:
 |---|---|---|---|
 | P0 | 整体结构 / 布局严重不符、主视觉走样、核心入口点不动或跳错、长文案大面积崩坏 | 阻断交付，修复并通过复核 | 列表页实现成卡片流且主按钮消失；整页配色脱离设计稿；按钮点了无反应 |
 | P1 | 局部偏差明显、单元素不可点、交互方式不同、状态缺失、长文案破坏局部布局 | 必须进任务清单，原则上全修 | 弹框确认按钮点不动；卡片标题两行排版崩开 |
-| P2 | 像素级微差、次要细节、轻微换行可接受 | 记录，由用户裁决 | 间距差 2px；图标色偏一档 |
+| P2 | 像素级微差、次要细节、轻微换行可接受 | 记录，执行方裁决（默认延后，附理由与回退） | 间距差 2px；图标色偏一档 |
 
 **4.2 逐区块断言（页面级截图无法暴露的局部偏离必须单列）**：标题字号体系一致；空态唯一且间距正确；弹框 / Tab 方向与设计稿一致；Loading 居中；设计稿状态稿（空 / 错 / 禁用 / 断网等）与实现页逐态一致；错误 / 选择状态在切换时重置；文案逐字取自设计稿；待确认等入口位于设计稿指定的 icon 位。
 **4.2.1 token 搬运对账断言（通道 A 必做，视觉漂移高发口）**：设计稿是 HTML + Tailwind 类、实现是 CSS 变量，载体不同——必须逐条核对实现侧 `styles/variables` 与 `design-system.md` §7 Token 汇总的**条数 / 值 / 命名**；实现页 computed style 取值与 token 必须相符（spacing 是否落在 4px 网格、typography 是否落在定义阶梯）。**缺项、手抄错值、间距网格走样**均按视觉偏差计 P0/P1；本条是「视觉整体差一截」最常见的漏网点，**未做对账不得判通道 A 视觉达标**。

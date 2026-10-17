@@ -26,7 +26,7 @@ A modular Skill repository for product discovery, PRD, UI, development, testing,
 - **需求按需读取**：现有 PRD 速查表作为 Wiki 导航，固定版本后读取相关原文/AC/依赖，不维护第二套需求摘要。
 - **UI 自写 B**：新设计/延展/局部修改分流，继承现有风格；检查通过的首版可交付。Superdesign A 保持原流程。
 
-运行规则：`shared/execution-profiles.md`、`shared/requirements-context.md`。规则由 Agent 执行，现有脚本只校验正式契约，不是自动路由器；轻量不会赋予正式状态、绕过相关阻塞或发布授权。
+运行规则：`shared/ruling-policy.md`（停等是稀缺动作，除五类硬停外一律裁决+记账+继续）、`shared/execution-profiles.md`、`shared/requirements-context.md`。规则由 Agent 执行，现有脚本只校验正式契约，不是自动路由器；轻量不会赋予正式状态、绕过相关阻塞或发布授权。
 
 ## 可独立复制的 Skill 维护闭环
 
@@ -83,6 +83,7 @@ All Skills share the safety and evidence rules. The Gate/state/artifact requirem
 
 Read the contracts before changing a Skill:
 
+- `shared/ruling-policy.md`
 - `shared/execution-profiles.md`
 - `shared/requirements-context.md`
 - `shared/skill-contract.md`

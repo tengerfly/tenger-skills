@@ -81,7 +81,7 @@ metadata:
 5. **契约专项**：按 `references/contract-checklist.md` 做前端 fetch ↔ 后端实现 ↔ 共享类型三方比对，逐接口核对；命中项按 §二 归因。
 6. **角色文档落盘**：按 `assets/role-review-template.md` 写本批次角色文档至 `.spec/代码评审/`；P0 按 `assets/patch-template.md` 附建议补丁（仅代码块，不落盘源码）。
 7. **汇总**：按 `../../shared/problem-recording.md` 将本批次清单及问题 ID/范围登记至项目 `.spec/问题日志.md`；Code-Review 负责合并 Fidelity-Review 结果后的唯一索引，复核同步状态，主方中断时保留待合并引用。按 `assets/summary-template.md` 合并去重（⑬-前 含 Fidelity-Review 并行结果），重点标「前后端契约错误」，按 P0/P1/P2 统计；**零问题也要写清覆盖边界**（见 §一）。
-8. **任务清单 + 用户确认**：按 `assets/issue-list-template.md` 生成任务清单，状态 `待确认`，按归因填修改方（Backend-Dev / Frontend-Dev / 双方）；每条附**修复判据**；逐条请用户确认（要改 → `已确认`；不改 → `已忽略` + 理由）；P0/P1 阻断、P2 可留后续；确认后交对应 Dev skill 修改并回填状态。
+8. **任务清单 + 分级裁决**：按 `assets/issue-list-template.md` 生成任务清单，状态 `待确认`，按归因填修改方（Backend-Dev / Frontend-Dev / 双方）；每条附**修复判据**；**P0 阻断且须用户确认**，P1/P2 由执行方按 `../../shared/ruling-policy.md` 裁决（修 → `已确认`；延/弃 → `已忽略` + 理由 + 回退方式，记 `.spec/rulings.md`），不逐条请用户确认；裁决后交对应 Dev skill 修改并回填状态。
 9. **闭环复核 + 双向沉淀判定**：修改方回填 `已修复` 后只验本轮 `已确认` 项；新发现降 P2；同批满 3 轮不收敛：P0 残留保持 BLOCKED；P1 残留不得 PASS，只能经授权并登记例外后 CONDITIONAL；不自动开启第 4 轮
 
 > 防评审死循环三招、门禁闭环放行判据与任务清单状态机的定义见仓库根 `../../shared/anti-deadloop.md`，本 skill 只保留流程参数，不重复定义。

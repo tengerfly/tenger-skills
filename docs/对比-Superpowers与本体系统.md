@@ -208,6 +208,23 @@ R=5 → 逐条裁决 → 只有 load-bearing 的才继续问；其余「停靠�
 
 我的建议：**先做 1，用真实项目验一周**。因为"停太多"是你现在唯一的硬痛点，其余都是它的衍生。若一周后停等明显下降，再做 2。
 
+### 6.1 已执行：选项 1（2026-10-17）
+
+| 改动 | 文件 | 内容 |
+|---|---|---|
+| 新增契约 | `shared/ruling-policy.md` | 五类硬停 / 一句话判据 / 裁决格式 / 六条越权判据 / 与 Gate 的关系 / 失败对照 |
+| 新增台账模板 | `shared/templates/rulings-template.md` | 一行一条，只增不改；列明「不该出现在台账里的东西」 |
+| 评审处置权改分级 | `shared/templates/review-issue-list-template.md`、`ui-ux-review`、`tech-review`、`code-review`、`fidelity-review`、`prototype-review/README` | **P0 须用户确认；P1/P2 执行方裁决 + 记账，不逐条等用户**；用户可事后否决 |
+| 状态卡不再等于停等 | `shared/workflow-visibility.md` | 卡片仍强制输出，但范围内可直接进入下一单元 |
+| 「继续」语义 | `shared/execution-profiles.md` | 范围内连续推进；只有越界才重新确认 |
+| 等待态收窄 | `workflow/SKILL.md` §3.1 | 除五类硬停外不得以「等用户确认」停住 |
+
+**验收（当日）**：`validate_core {refs, registry, skill-contract, transition}` 全过；`check-installed-refs.py` 519 条引用 0 断；`eval/run.py` 64 条 = 45 过 / 0 败 / 0 错 / 19 待引擎（与基线一致）。
+
+**回归待验**：真实项目跑一周，观察「非硬停提问数 / 工作单元」与「到 D3 的日历天」是否下降。**未验证前不声称这套改动有效。**
+
+**未动**：`prototype-review/references/legacy-skill.md`（带 LEGACY COMPATIBILITY NOTICE，按兼容策略只读）、`bug-fix` 的根因 Gate（链外，下一轮再议）、`skill-evolver` 的逐条确认（改的是体系自身规则，保留人工）。
+
 ---
 
 ## 附：证据索引

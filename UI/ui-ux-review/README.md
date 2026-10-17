@@ -21,7 +21,7 @@
 
 ## 三、闭环
 
-问题 → 任务清单（待确认）→ 用户逐条裁决 → UI-UX-Design / Prototype-Design / PRD-Design 修复 → 复核只验本轮，轮次上限 3。
+问题 → 任务清单（P0 须用户确认；P1/P2 由执行方按 `../../shared/ruling-policy.md` 裁决并记 `.spec/rulings.md`）→ UI-UX-Design / Prototype-Design / PRD-Design 修复 → 复核只验本轮，轮次上限 3。
 
 ## 四、目录与产出
 
