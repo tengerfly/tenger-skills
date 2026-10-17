@@ -51,7 +51,7 @@ goals:
     panelId: loop-data
     layer: 闭环①客观数据
     label: 自记轨产出真实 run-log，指标层不再靠估算
-    status: doing
+    status: done
     criteria: "run-log 里除运维节点外至少 1 个业务节点（prd-design/dev/review 等注册节点）完整 start→end，且 report 能算出该节点的墙钟与产物 sha"
     machineProof: objectiveData
     notDo: "不编造事件、不用运维节点冒充业务节点"

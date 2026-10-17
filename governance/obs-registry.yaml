@@ -40,6 +40,8 @@ appendOnlyLedgers:
 # 本表把它变成一行可复算的判定；运维节点单独列出来是因为本仓自记轨里的节点绝大多数是 quality-inspection（改自己）。
 objectiveData:
   opsNodes: [quality-inspection]
+  externalSources: ["../knowledge-bases/.spec/obs/run.jsonl"]
+  externalSourcesNote: "业务证据产生在被观测项目（tsr --project-root 指向它）；按本仓 root 解析，夹具 root 无此配置则不聚合——隔离靠配置作用域，不靠代码特判"
   opsNodesNote: "运维/元工作节点：产物落在 scripts/、governance/、evals/ 这类仓库自身的位置；除这些之外的注册节点都算业务节点"
   completePair: "同一 executionId 既有 node-start 又有 node-end（缺任一都不算完整收口）"
   digestSource: "取该 executionId 里最后一次 node-end 的 artifacts[].sha256（只有最新绑定才是对当下的承诺）"

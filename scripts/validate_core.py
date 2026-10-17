@@ -1,5 +1,5 @@
 from __future__ import annotations
-import argparse, hashlib, os, re, shutil, subprocess, sys
+import argparse, hashlib, json, os, re, shutil, subprocess, sys
 from datetime import datetime, timezone
 from collections import defaultdict, deque
 from pathlib import Path, PureWindowsPath
@@ -1295,7 +1295,19 @@ def goalproof_machine(root, source, rules):
         return "red", f"尺子模块导入不了：{exc}"
     if source == "objectiveData":
         try:
-            status = metrics.objective_status(schema.read_events(root), metrics.load_objective_policy())
+            # policy 按 root 取：夹具 root 没有 governance/obs-registry.yaml 就退回全局默认，
+            # 于是 externalSources 天然只在被配置的仓生效，不会把真实项目事件灌进夹具测试。
+            registry = root / "governance/obs-registry.yaml"
+            policy = load_yaml(registry).get("objectiveData") if registry.is_file() else None
+            policy = policy or metrics.load_objective_policy()
+            events = schema.read_events(root)
+            own_track = (root / ".spec/obs/run.jsonl").resolve()
+            for relative in policy.get("externalSources") or []:
+                extra = (root / str(relative)).resolve()
+                if extra.is_file() and extra != own_track:
+                    events += [json.loads(line) for line in
+                               extra.read_text(encoding="utf-8").splitlines() if line.strip()]
+            status = metrics.objective_status(events, policy)
         except (ValueError, OSError) as exc:
             return "red", f"尺子跑不动：{exc}"
         return ("pass" if status["satisfied"] else "fail"), str(status["reason"])
