@@ -37,6 +37,10 @@ L2_GRADES = ("P0", "P1")
 CLOSED = "已沉淀"
 IGNORED = "已忽略"
 OPEN_STATES = ("待处理", "处理中")
+# 注册表没声明时的兜底文案：只有行为层用例指回时，必须标「待授权」而不是并进「能拦住」。
+BEHAVIOUR_ONLY_TEXT = (
+    "这些条目的 issueRef 用例全是 behaviour 层，未授权时一律 blocked ⇒ 只证明「用例已登记」，"
+    "不证明「规则现在能拦住」；标「待授权」，不得并进「已拦住」的读数")
 
 # 表行（模板口径）与行内/front-matter（池内老口径）两种写法都要认；键名按出现的实名列，
 # 长名在前，避免「优化状态」被「状态」抢先匹配。
@@ -132,7 +136,8 @@ def refs_by_case(root: Path = ROOT) -> tuple:
             for ref in refs:
                 resolved, reason = resolve_ref(ref, root)
                 rows.append({"eval": spec_path.relative_to(root).as_posix(), "case": case.get("id"),
-                             "ref": str(ref), "resolved": resolved, "reason": reason})
+                             "layer": case.get("layer"), "ref": str(ref),
+                             "resolved": resolved, "reason": reason})
     return rows, load_errors
 
 
@@ -176,12 +181,25 @@ def audit(root: Path = ROOT) -> dict:
     entries = issue_entries(root)
     rows, load_errors = refs_by_case(root)
     linked = {row["resolved"] for row in rows if row["resolved"]}
+    rows_by_ref = {}
+    for row in rows:
+        if row["resolved"]:
+            rows_by_ref.setdefault(row["resolved"], []).append(row)
+    covered = [entry for entry in entries if entry["required"] and entry["id"] in linked]
+    # 「已回流」必须分两层报：结构层用例当场就能判，行为层用例未授权时一律 blocked
+    # （2026-10-17 并发会话把 5 条接成行为层用例，混进「已回流 26 条」会被读成「这些规则现在能拦住」）。
+    structure_ids = {entry["id"] for entry in covered
+                     if any(row.get("layer") == "structure" for row in rows_by_ref.get(entry["id"], []))}
     by_id = {entry["id"]: entry for entry in entries}
     missing = [entry for entry in entries if entry["required"] and entry["id"] not in linked]
     dangling = [row for row in rows if not row["resolved"]]
     result = {"root": str(root), "entries": entries,
               "closedP0P1": [entry for entry in entries if entry["required"]],
-              "covered": [entry for entry in entries if entry["required"] and entry["id"] in linked],
+              "covered": covered,
+              "coveredStructure": [entry for entry in covered if entry["id"] in structure_ids],
+              "coveredBehaviourOnly": [entry for entry in covered if entry["id"] not in structure_ids],
+              "coveredCases": {entry["id"]: [row["case"] for row in rows_by_ref.get(entry["id"], [])]
+                               for entry in covered},
               "missing": missing, "dangling": dangling, "loadErrors": load_errors,
               "unknownState": [entry for entry in entries if entry["classification"] == "unknown"],
               "missingStateField": [entry for entry in entries if entry["classification"] == "missing"],
@@ -200,6 +218,8 @@ def render(result: dict) -> str:
     lines.append(f"- issue 条目：{len(entries)} 条；其中 P0/P1 已闭环（状态以「{CLOSED}」开头）"
                  f"**{len(result['closedP0P1'])} 条**")
     lines.append(f"- 有 `issueRef` 指回的：**{len(result['covered'])} 条**"
+                 f"（结构层可判 {len(result.get('coveredStructure') or [])} 条"
+                 f"｜仅行为层 {len(result.get('coveredBehaviourOnly') or [])} 条）"
                  f"｜缺回流：**{len(result['missing'])} 条**")
     lines.append(f"- 悬空 `issueRef`（指向不存在条目）：{len(result['dangling'])} 条"
                  f"｜读不动的评测集：{len(result['loadErrors'])} 套")
@@ -212,6 +232,16 @@ def render(result: dict) -> str:
     if result["missing"]:
         lines.append(f"## ⛔ 缺回流（{len(result['missing'])} 条）——按 L2「未回流不得标闭环」，这些条目现在不算闭合")
         lines += [f"- `{entry['id']}`（{entry['grade']}｜{entry['state']}）" for entry in result["missing"]]
+        lines.append("")
+    behaviour_only = result.get("coveredBehaviourOnly") or []
+    if behaviour_only:
+        lines.append(f"## ⚠ 仅行为层回流（{len(behaviour_only)} 条）——用例已登记，但未授权未跑，"
+                     f"不得读成「现在能拦住」")
+        lines.append("- " + (((result.get("triage") or {}).get("texts") or {}).get("behaviourOnly")
+                             or BEHAVIOUR_ONLY_TEXT))
+        for entry in behaviour_only:
+            cases = "、".join(result.get("coveredCases", {}).get(entry["id"]) or [])
+            lines.append(f"- `{entry['id']}`（{entry['grade']}）← {cases}")
         lines.append("")
     triage = result.get("triage") or {}
     lines.append("## 分诊核对（缺口要么接成用例，要么写明不可机械化的结论）")
@@ -244,7 +274,10 @@ def render(result: dict) -> str:
         lines.append("")
     if result["covered"]:
         lines.append(f"## 已接线（{len(result['covered'])} 条）")
-        lines += [f"- `{entry['id']}`（{entry['grade']}）" for entry in result["covered"]]
+        behaviour_ids = {entry["id"] for entry in behaviour_only}
+        lines += [f"- `{entry['id']}`（{entry['grade']}）"
+                  + ("｜仅行为层（待授权）" if entry["id"] in behaviour_ids else "")
+                  for entry in result["covered"]]
         lines.append("")
     noise = result["unknownState"] + result["missingStateField"]
     if noise:

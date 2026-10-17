@@ -173,6 +173,81 @@ class DanglingReferenceTests(ProbeRepoMixin):
         self.assertIn("无法确定唯一", reason)
 
 
+class BackflowLayerTests(ProbeRepoMixin):
+    """「已回流」必须分结构层／仅行为层两列：行为层用例夜间一律 blocked。
+
+    2026-10-17 并发会话把 5 条接成行为层用例（EV-FE-103／EV-PRD-102／EV-PRD-103／EV-SOPT-101／EV-TDD-103），
+    混在「已回流 26 条」里会被读成「这些规则现在都能拦住」——只登记了用例，拦截力没有增加。
+    """
+
+    BEHAVIOUR_REF = """schema: tenger.eval/v1
+skill: workflow
+cases:
+  - id: EV-P-101
+    layer: behaviour
+    given: evals/gate/fixtures/ledger-clean
+    prompt: "跑一遍"
+    tokenBudget: 1000
+    expect: {mustNotContain: "X"}
+    issueRef: issue/Probe/2026-01-01/01-x.md
+"""
+
+    MIXED_REF = """schema: tenger.eval/v1
+skill: workflow
+cases:
+  - id: EV-P-001
+    layer: structure
+    given: evals/gate/fixtures/ledger-clean
+    expect: {validator: artifact, outcome: green}
+    issueRef: issue/Probe/2026-01-01/01-x.md
+  - id: EV-P-101
+    layer: behaviour
+    given: evals/gate/fixtures/ledger-clean
+    prompt: "跑一遍"
+    tokenBudget: 1000
+    expect: {mustNotContain: "X"}
+    issueRef: issue/Probe/2026-01-01/01-x.md
+"""
+
+    ISSUE = "issue/Probe/2026-01-01/01-x.md"
+
+    def test_behaviour_only_backflow_is_split_out_and_marked_pending_authorization(self):
+        root = self.build({self.ISSUE: TABLE.format(grade="P0", state="已沉淀")}, self.BEHAVIOUR_REF)
+        result = relay.audit(root)
+        self.assertEqual([entry["id"] for entry in result["covered"]], [self.ISSUE])
+        self.assertEqual(result["coveredStructure"], [])
+        self.assertEqual([entry["id"] for entry in result["coveredBehaviourOnly"]], [self.ISSUE])
+        self.assertEqual(result["coveredCases"][self.ISSUE], ["EV-P-101"])
+        text = relay.render(result)
+        self.assertIn("仅行为层回流", text)
+        self.assertIn("待授权", text)
+        self.assertIn("EV-P-101", text, "只报条数看不出是哪条用例在顶")
+
+    def test_structure_backflow_counts_as_blocking_coverage(self):
+        root = self.build({self.ISSUE: TABLE.format(grade="P0", state="已沉淀")}, WITH_REF)
+        result = relay.audit(root)
+        self.assertEqual([entry["id"] for entry in result["coveredStructure"]], [self.ISSUE])
+        self.assertEqual(result["coveredBehaviourOnly"], [])
+        self.assertNotIn("仅行为层回流", relay.render(result), "结构层能当场判，就不该挂待授权横幅")
+
+    def test_mixed_layers_count_as_structure_and_list_every_case(self):
+        root = self.build({self.ISSUE: TABLE.format(grade="P0", state="已沉淀")}, self.MIXED_REF)
+        result = relay.audit(root)
+        self.assertEqual([entry["id"] for entry in result["coveredStructure"]], [self.ISSUE])
+        self.assertEqual(result["coveredBehaviourOnly"], [])
+        self.assertEqual(sorted(result["coveredCases"][self.ISSUE]), ["EV-P-001", "EV-P-101"])
+
+    def test_real_pool_covered_entries_expose_layer_and_cases(self):
+        result = relay.audit(ROOT)
+        covered = {entry["id"] for entry in result["covered"]}
+        structure = {entry["id"] for entry in result["coveredStructure"]}
+        behaviour = {entry["id"] for entry in result["coveredBehaviourOnly"]}
+        self.assertEqual(covered, structure | behaviour)
+        self.assertEqual(structure & behaviour, set())
+        for ident in covered:
+            self.assertTrue(result["coveredCases"].get(ident), f"{ident} 说已回流却没有可报的用例 id")
+
+
 class TriageTests(ProbeRepoMixin):
     """分诊核对：缺回流要么接成用例、要么写明不可机械化的结论——新增缺口没分诊就报红。
 

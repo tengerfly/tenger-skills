@@ -360,8 +360,10 @@ def _print_relay_status() -> None:
         return
     undecidable = len(result["unknownState"]) + len(result["missingStateField"])
     triage = result.get("triage") or {}
-    print(f"L2 回流执法：P0/P1 已闭环 {len(result['closedP0P1'])} 条 ｜ 已回流 {len(result['covered'])} 条 ｜ "
-          f"缺回流 {len(result['missing'])} 条 ｜ 悬空引用 {len(result['dangling'])} 条 ｜ 判不了 {undecidable} 条"
+    print(f"L2 回流执法：P0/P1 已闭环 {len(result['closedP0P1'])} 条 ｜ 已回流 {len(result['covered'])} 条"
+          f"（结构层 {len(result.get('coveredStructure') or [])}｜仅行为层 "
+          f"{len(result.get('coveredBehaviourOnly') or [])}，后者待授权未跑）"
+          f" ｜ 缺回流 {len(result['missing'])} 条 ｜ 悬空引用 {len(result['dangling'])} 条 ｜ 判不了 {undecidable} 条"
           f"（详单 `python scripts/eval/relay.py`；缺回流即红，不影响上面的用例计数）")
     if triage.get("error"):
         print(f"L2 分诊核对未能核：{triage['error']}（缺尺子按红处理，不默认通过）", file=sys.stderr)

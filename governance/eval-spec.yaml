@@ -58,38 +58,17 @@ l2Triage:
   # 本节的职责：让「缺回流」的每一条都必须有一个**当场分诊过的结论**，新增缺口若未分诊就报红；
   # 反过来，名单里已经不再缺的条目要报「名单过期」——但那是好消息，不因此判红（惩罚进展就是把判据调反）。
   rule: "audit().missing 的每一条 issue 必须在本节 declared 里出现（verdict 三值之一）；不在 ⇒ 未分诊、判红。"
+  coverageRule: >-
+    已回流必须分「结构层可判」与「仅行为层」两列报。只有行为层用例指回时标「待授权（未跑）」，
+    不得并进「已拦住」的读数——行为层在夜间一律 blocked 是常态，混着报就是新的假绿面。
   declared:
-    - issue: issue/Backend-Tech-Design/2026-09-23/01-求差核对三次假信号两次由自造量具造成.md
-      verdict: 证据双侧交集为空
-      reason: >-
-        声明侧有标题（DEV/backend-tech-design/references/diff-verification.md:1「求差类核对三要件」），
-        真实文档侧 0 命中（12 个 .spec 根／862 个 md，逐关键词打印计数）⇒ 加 documentSections 等于单方面罚合规产物（铁律 4）；
-        最接近的尺子 check_evolution 核的是优化台账条目，不是临时求差结论要附的三要件，对象与字段都不同
-    - issue: issue/Frontend-Dev/2026-09-08/01-FTDD多框架化后施工侧仍是React基线语境.md
-      verdict: 需 agent_judge
-      reason: >-
-        判据要判「同一份 references 指南换到 Vue/Taro 语境内容是否等价」＝内容语义；check_skill_contract 只核章节在不在。
-        标题侧真实文档 0 命中（framework-equivalence-guide.md 只在声明侧），agent_judge 在 run.py 未实现，且夜间会话不得接引擎
+    # 2026-10-17 并发会话把 5 条接成行为层用例（EV-FE-103／EV-PRD-102／EV-PRD-103／EV-SOPT-101／EV-TDD-103），
+    # 缺口消失、名单过期（relay 只报数不判红）；本轮据「名单过期」清单逐条摘除，只留仍缺回流的这一条。
     - issue: issue/Frontend-Dev/2026-09-16/02-案例升级为主流程标准SOP.md
       verdict: 证据双侧交集为空
       reason: >-
         判据是「义务有没有落进主流程强制位（REQUIRED／Gate／错误表行）」；两侧标题都 0 命中
         （真实侧「落点」35 处指的是评审「修复落点」，不同义）⇒ 交集为空是数出来的，不是推断的
-    - issue: issue/PRD-Design/2026-09-09/01-澄清进度不透明.md
-      verdict: 结构层无对象
-      reason: >-
-        必含式行为输出（首轮亮 7 点全景、每锁一点播报），两侧标题 0 命中；结构层没有可检对象，
-        行为层要 agent_judge ＋ 授权真跑
-    - issue: issue/PRD-Design/2026-09-09/02-全局结论不同步全局文档.md
-      verdict: 对象不对
-      reason: >-
-        判的是「当轮自主回写全局文档」这个动作；「回写」命中全部属 oss-radar 台账节与 learning-assistant PIPELINE，
-        不是 PRD 产物 ⇒ 拿它当锚会罚合规产物。check_digests 只能证明文件变过，判不出哪条结论属全局
-    - issue: issue/Skill-Optimizer/2026-09-16/01-沉淀落点分层.md
-      verdict: 需人裁决
-      reason: >-
-        判据原文是「下次不读这篇参考是否就会照旧做错」——纯语义反事实，任何字符串／结构尺子都不等价；
-        且它要求的是落盘前的自检纪律，不是产物里某一节
   texts:
     undeclared: >-
       分诊核对：新增缺回流未分诊 ⇒ 每条缺口要么接成用例、要么写明不可机械化的结论与证据，
@@ -98,6 +77,9 @@ l2Triage:
       分诊核对：名单里有条目已不再缺回流（用例接上了或 issue 状态变了）⇒ 名单过期，
       本轮只如实报数不判红——惩罚进展会把判据调反
     clean: "分诊核对：缺回流逐条都有分诊结论，未分诊 0 条"
+    behaviourOnly: >-
+      仅行为层回流：这些条目的 issueRef 用例全是 behaviour 层，未授权时一律 blocked ⇒
+      只证明「用例已登记」，不证明「规则现在能拦住」；标「待授权」，不得并进「已拦住」的读数
     missingPolicy: >-
       分诊核对读不动：governance/eval-spec.yaml 未声明 l2Triage 或 declared 为空 ⇒
       「清单外默认通过」正是量具腐烂的方式，本轮按红处理而不是跳过
