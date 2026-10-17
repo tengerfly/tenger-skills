@@ -1307,8 +1307,10 @@ def goalproof_machine(root, source, rules):
                     policy.update(declared)  # root 声明覆盖默认，而不是整节替换掉默认键
             events = schema.read_events(root)
             own_track = (root / ".spec/obs/run.jsonl").resolve()
-            for relative in policy.get("externalSources") or []:
-                extra = (root / str(relative)).resolve()
+            for slug in policy.get("externalSources") or []:
+                # 兄弟项目约定：<root 的父目录>/<slug>/.spec/obs/run.jsonl。注册表只写 slug，
+                # 不写 ../ 路径——仓内引用完整性检查禁止 registry 指向仓外。
+                extra = (root.parent / str(slug) / ".spec/obs/run.jsonl").resolve()
                 if extra.is_file() and extra != own_track:
                     events += [json.loads(line) for line in
                                extra.read_text(encoding="utf-8").splitlines() if line.strip()]
