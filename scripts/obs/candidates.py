@@ -470,6 +470,15 @@ def from_gitlog(pol: dict, root: Path, events: list, findings: list) -> list:
                 na=[f"ts 窗口（止）：N/A —— {na_text['noCloseTs']}"] if not end else [],
                 boundary=finding.get("boundary", "")))
             continue
+        if finding.get("cardKind") == "unpushed":
+            # 交付面没有 execution 也没有涉事文件：卡面照实留 N/A，绝不能落到「改动未提交」那一类里去
+            cards.append(_new_card(
+                pol, kind=finding["kind"], evidence=str(finding["evidence"]), surface="gitlog",
+                judge=detail, execution=None, node=None, start=None, end=None, artifacts=[],
+                na=[f"executionId：N/A —— {na_text['noExecution'].format(surface='git 轨巡检·交付面')}",
+                    f"ts 窗口：N/A —— 交付核对看的是分支领先数，不是某次执行的时间窗（不拿提交时刻冒充节点窗口）"],
+                boundary=finding.get("boundary", "")))
+            continue
         paths = [item.strip() for item in str(finding["evidence"]).split(",") if item.strip()]
         stamps = [stamp for stamp in (_mtime(root, path) for path in paths) if stamp]
         artifacts = []
