@@ -6,6 +6,7 @@
 - :root 变量与规范一致，无缺项/私改/另起炉灶。
 - 所有色值可溯源（grep #hex/rgb/hsl 与 token 表；token 派生透明度除外）。
 - 字号字重只用规范层级；间距符合 4px 网格；圆角/阴影取规范定义。
+- **声明落位（不是取值越界）**：共享样式表并入块逐条核 `rule.style.getPropertyValue(prop)` 非空——非法值（中文／全角／箭头混入值串）会被解析器整条丢弃，grep 与 computed 都可能看不出（见 `known-issue-patterns.md` 模式 15）；命中即 P1。
 
 ## 组件与资源
 - 组件样式符合组件规范（按钮三态/行高/弹框/badge/输入框）。

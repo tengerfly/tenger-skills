@@ -8,7 +8,7 @@
 |---|---|
 | 等级 | P1 |
 | 标签 | `流程缺陷` / `产物格式` / `检出力不足` |
-| 优化状态 | 待处理（用户 2026-10-13 指示：**只记录问题，正文改动等其统一优化 skill 时一起处理**） |
+| 优化状态 | 处理中（2026-10-18：A 并入不变式＋B 检出力已落；项目侧 `newClassPolicy`/DEC 改造与两条产物复扫未执行） |
 
 > 定级理由：缺陷**三重静默**（解析器丢弃声明不报错、`{`/`}` 计数不变、computed 静默回退到继承值），且三条既有护栏判据全部判绿；任何一次「把登记项合并进共享样式表」或「回填裁决」都会再犯，复发面 100%。产物已交付并被下游（`Frontend-Tech-Design`／`Frontend-Dev`）消费后才发现，纠正成本＝重绑批准摘要＋全站复扫。
 
@@ -71,3 +71,12 @@
 - `.spec/evidence/EVID-20261013-UIX-B3-ORCH.md` §一（缺陷与前后实测）／§三（CSSOM 判据与 42 条断言）／§六（量具自我纠错四次）
 - `.spec/设计稿/_tools/orch_b3_effective.py`（可参考的 CSSOM 层实现与单位归一口径）、`out/b3-effective.json`
 - `.spec/decisions/DEC-20261013-UIX-B3MERGE.yaml`／`DEC-20261013-UIX-B3-REBIND.yaml`（摘要演进链 SD-B3-1 裁决原文）
+
+## 沉淀记录（2026-10-18）
+
+| 字段 | 值 |
+|---|---|
+| 沉淀目标 | A · 产出方不变式：共享样式表并入时声明串必须合法且逐条落位；B · 检出力：把「声明静默丢弃」变成评审可执行判据 |
+| 沉淀位置 | A：`UI/ui-ux-design/references/self-write-sop.md` §四 第 9 条（决策 `CONTEXT.md` D-39）；B：`UI/ui-ux-review/references/known-issue-patterns.md` 模式 15＋`visual-spec-consistency-checklist.md`「声明落位」一条（决策 `CONTEXT.md` D-21） |
+| 未收口 | 修复方向 1／2／4／5 的项目侧改造（`newClassPolicy` 登记字段拆分、并入后两步校验成为 REQUIRED、DEC 摘要演进链预告）与两条被污染产物的复扫——在业务项目侧，本仓未执行 |
+| 验证状态 | 未验证：规则尚未经历一次真实「并入→复核」复跑，无 before／after 可核数；`tsr feedback` 不把它计为反哺记录（不造数） |
