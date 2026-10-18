@@ -62,6 +62,9 @@ metadata:
 
 **S1 开工判定与解析**：
 - **三路判定**：续做（有 PROJECT.md + PLAN.md → 读后从进行中/待做续）；既有项目盘点（有代码无两文档 → 按仓库根 `../../shared/dev-common.md` §一沉淀「项目现状基线」，严格按现状落地，不套默认模板）；全新开发 → 完整流程建两文档。
+- **仓库前置（REQUIRED）**：确认项目有 git 仓库；无则在允许修改范围内 `git init` + 提交基线（不 push、不改远端），否则铁律 6「一功能点一提交」、回滚基线与评审按提交定位都无法执行——无 git 不是跳过提交纪律的理由。
+- **契约开工清单（REQUIRED，标准/完整）**：开工前按本次模块一次性列全「所需错误码 / 枚举值 / 共享字段 / 跨模块接口」，报授权方批量补齐；实现期不硬编码新错误码，也不每个模块各停一次等裁决（knowledge-bases 第 41 轮实测：缺 SET_NAME_CONFLICT/SET_NOT_FOUND/EvalSetOrigin 造成多次 round-trip）。
+- **续做输入瘦身（REQUIRED）**：续做/多模块并行时，只读「本次要改模块」的 TDD 分篇 §4~§6 + 契约分册相关节 + 该模块现有代码与测试；跨模块依赖按 S2 关联图定点读，不按目录顺序通读全部 TDD/PRD/FTDD。判据：读入量以「能开工当前功能点」为限；读完一个模块的施工图就落一个模块，不为「先看全貌」把六七个模块的文档串行读完再动手（knowledge-bases 第 41 轮实测：全量通读使首个模块落地延迟 15+ 分钟，而分模块推进的参考实现同时间已交付 2 个模块）。
 - 读 `.spec/`：TDD（选型/表结构/接口/边界/测试）、FTDD（fetch 清单）、PRD（先读速查表）、原型；检查评审任务清单并纳入 PLAN。
 - **技术栈锁定**：有 TDD → 逐项采用 TDD「技术选型总览」，不重选不追问；无 TDD + 既有代码 → 盘点现状为基线；无 TDD + 全新 → 开工前一次敲定（默认 TypeScript + NestJS / `@nestjs/microservices` / Prisma（备选 TypeORM）/ pnpm workspace / Jest+Supertest / `@nestjs/config`），记入 PROJECT.md 关键决策。
 - **组件决策链（调度 AI 知识库，涉业务能力模块/新组件/基建/通用能力 REQUIRED；命中即复用或适配复用，禁重复手写同类业务模块）**：① 盘点本仓已有基建（AGENTS.md / 依赖清单，已有必须用）→ ② 检索外部 AI 知识库 `D:\project\agent-project\skills-knowledge\asset-library\`（blueprints 判型收敛 → capabilities → patterns/composites → adapters；使用入口与同步协议见仓库根 `../../skill-knowledge/README.md`）→ ③ **命中 → 锁版本（pattern@x + adapter@x）直接复用并记录 selected / rejected / unresolved；命中但不完全适用 → 兼容性适配优先**（扩参数 / 加 adapter / 版本演进既有资产），**禁新建并列冗余组件（硬性条件）**；确实无法适配 → 记 asset-gap 说明与既有资产的差异、经用户确认才新建，或采用其他方案留在项目内不进库；未命中 → 走封装七步法（`asset-library/shared/component-authoring.md`，造前写 asset-gap；新组件七步全走，小改动轻量通道①+⑥）→ ④ 交付时做沉淀判断（四出口：Case / Candidate / 更新既有 / 反模式；**沉淀前必查重**，见 S10），并回写 asset-usage（实际使用版本，偏差记 deviation）与 evidence（命令/结果/局限，无证据视为未完成）。五门禁（检索/选择/实现/验证/沉淀）由 Workflow 据 `pipeline-state.yaml` 拦截。全程受目标项目 AGENTS.md 映射表 + lint/CI 机器兜底约束。
@@ -147,6 +150,9 @@ metadata:
 | 改业务提示词不同步 mock seed matcher | 提示词常量改动后，把全部 registerStream/script/registerJson 的 matcher 拿到新提示词实文里 grep 验证命中（CR-02 教训：讲解链路 mock 必失败）|
 | 脚本批量改码遇混合换行（CRLF/LF）锚点错位 | 逐文件探测换行类型；多处插入原串定位倒序应用；优先 Edit 工具改单文件，脚本批改即改即编译（../../bug-patterns/2026-09-15/01） |
 | heredoc / re.sub 转义吞噬生成坏源码 | 反斜杠字面量用 chr(92) 拼接；re.sub 替换串含反斜杠改用 lambda；生成后立即编译（../../bug-patterns/2026-09-15/02） |
+| run_code/模板字符串二次转义把 `\b` 写成控制字符 | 生成源码后立即扫控制字符 + 编译；正则优先 `new RegExp`/`includes`（../../shared/dev-common.md §四） |
+| PowerShell 文本管线改 UTF-8 源码致中文损坏 | 源码编辑只用 read/edit/write；禁 `Get-Content -Raw \| Set-Content` 改源码（../../shared/dev-common.md §四） |
+| SSE/流式端点被全局响应拦截器包成 JSON 信封 | 新增 SSE/流式出口先查全局 interceptor：按 `Accept: text/event-stream` 或路径放行原样输出；e2e 必须断言事件名与 data 不是信封（knowledge-bases M04 实测：不豁免则 event 名丢失） |
 | Nest provider 构造参数用投影类型/接口/type-only 导入 → 运行时 DI 解析失败（tsc 全绿） | 非类类型参数显式 @Inject(token)；DI 参数禁 import type；forFeature 实体清单与 token 对应；回归必含全 AppModule 启动冒烟（../../bug-patterns/2026-09-15/03） |
 | 构造器加参后 spec 位置参数错位（as never 掩盖）→ 批量假失败 | grep 全部 new 调用点逐一补参；批量同症状假失败先查槽位错位；提交前 eslint --fix + commitlint 预检（../../bug-patterns/2026-09-15/04、05） |
 | 同类业务能力模块不检索直接重写 | S1 组件决策链先查外部 AI 知识库，命中复用 |

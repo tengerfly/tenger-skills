@@ -2,9 +2,9 @@
   "schema": "tenger.eval-baseline/v1",
   "eval": "evals/workflow-graph/eval.yaml",
   "skill": "workflow",
-  "savedAt": "2026-10-18T12:34:10+08:00",
+  "savedAt": "2026-10-18T16:33:19+08:00",
   "anchors": {
-    "skillRevision": "sha256:6d3b68b99ac2fa562aa5655a75c35eeb0996d43b7ea205452dcad518493aee97",
+    "skillRevision": "sha256:e714a0c209fe8179c0cc85f384968da6e0a232c2f86419efe1fd94162150c136",
     "casesVersion": "sha256:8bfc98d2345eb7add64116ab02bd69042b0817919d84c1219e8eaac8326f6d22",
     "engine": "structure-only",
     "model": "engine-default",
