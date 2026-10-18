@@ -30,5 +30,5 @@
 ├── SKILL.md / README.md / CONTEXT.md
 ├── references/（四清单 + browser-inspection-guide + known-issue-patterns 案例库）
 ├── assets/（dimension-review / summary / issue-list 模板）
-└── .spec/设计评审/（四份报告 + 汇总 + 任务清单 + screenshots）
+└── .spec/设计评审/（四份报告 + 汇总 + 任务清单 + screenshots；落被评审项目根，非本 skill 目录）
 ```

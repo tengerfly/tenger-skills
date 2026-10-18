@@ -4,7 +4,7 @@ GitHub 开源情报采集 → 提炼 → 反哺：定时或按需扫描优秀的
 
 ## 文件结构
 
-- `SKILL.md` — 主流程：双泳道（skill/项目）× 双模式（交互/无人值守）× 五步（装载→发现→采集→提炼→反哺→台账）+ 铁律
+- `SKILL.md` — 主流程：双泳道（skill/项目）× 双模式（交互/无人值守）× 六步（装载→发现→采集→提炼→反哺→台账）+ 铁律
 - `references/github-api-playbook.md` — GitHub API 通道/限流/查询语法/增量技巧（①② 执行时加载）
 - `assets/watchlist-template.md` — watchlist 初始化模板（配置 + 台账）
 - `assets/report-template.md` — 轮次报告结构 + 发现/任务条目格式

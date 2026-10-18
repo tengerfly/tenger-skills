@@ -86,19 +86,25 @@ Research can produce `EVIDENCE` and `RECOMMENDATION`; it cannot create a product
 
 ## 4. Product artifact contract
 
+产品产物的 manifest 条目与 `shared/artifact-contract.md` §2、`governance/schemas/artifact-manifest.schema.yaml` 完全同构（字段名与必填项以那两个文件为准，本节只说明产品域用法）：
+
 ```yaml
-artifactId: PROD-YYYYMMDD-001
-kind: intake | discovery-brief | research | product-definition | application-blueprint | feature-decision | prd | prototype
-projectId: <project-id>
-lifecycle: CREATE | CHANGE | OPTIMIZE
+artifactId: ART-YYYYMMDD-001          # 产品域常用 PROD- 前缀，但登记键名固定为 artifactId
+type: discovery-brief | research | product-definition | application-blueprint | journey-map | feature-decision | scope-decision | prd | prototype | prototype-review
+path: .spec/<阶段目录>/<文件>
+lifecycle: CREATE | CHANGE | OPTIMIZE   # 产品阶段常用值；完整枚举见 artifact-contract
+owner: <user-or-agent>
 status: DRAFT | REVIEW | APPROVED | SUPERSEDED
 sourceRefs: []
 evidenceRefs: []
 decisionRefs: []
-openItems: []
-gate: PASS | CONDITIONAL | BLOCKED
-allowDownstream: true | false
+producedBy: <registry-skill-id>
+producedAt: <ISO-8601-with-offset>
+supersedes: null
 ```
+
+- `type` 的完整枚举与逐型 required 以 `governance/artifact-registry.yaml` 为唯一源（含 `journey-map`、`scope-decision`）；表中未列的产品域新类型必须先登记注册表再使用。
+- `gate` / `allowDownstream` / `openItems` 不写进 manifest：Gate 与放行记在 `.spec/workflow.yaml` 与 `.spec/gates/`；开放项记 workflow.yaml 或 `.spec/decisions/`。把 Gate 写进产物条目会让下游把「文件存在」误读成「已放行」。
 
 ## 5. Handoff rule
 

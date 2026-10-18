@@ -1,3 +1,5 @@
+> LEGACY COMPATIBILITY NOTICE: This file preserves historical material. The active Skill, Gate, state, artifact, and evidence rules are defined by `shared/skill-contract.md`, `shared/gate-policy.md`, `shared/anti-deadloop.md`, `shared/artifact-contract.md`, `governance/`, and `.spec/workflow.yaml`.
+
 # CONTEXT.md —— Prototype-Review 术语与决策记录
 
 > Prototype-Review 的术语对齐源与决策日志；概念须与 SKILL/assets/references 一致。
@@ -20,7 +22,7 @@
 | 修复判据 | 修到什么表现算完成 | 不是修改建议 |
 | 分级冻结 | P0/P1 阻断、P2 用户裁决 | 不是标注本身 |
 | 复核只验本轮 | 不无限新增同级问题 | 不是每轮全量重扫 |
-| 轮次上限 3 | 满 3 轮不收敛 → 强制清 P0 后放行，残留 P1 记遗留 | 不是硬跑 3 次、也不是停下交用户 |
+| 轮次上限 3 | 满 3 轮不收敛：残留 P0 ⇒ `BLOCKED`；残留 P1 不得 `PASS`，仅可完整授权 `CONDITIONAL`；不自动第 4 轮（口径 `../../shared/anti-deadloop.md` §3） | 不是硬跑 3 次、不是停下交用户，也不得强制放行 |
 | 成因必写 | 结合代码剖析；推不出标成因未明 | 不是现象复述 |
 | 建议修改方 | 原型→Prototype-Design；PRD→PRD-Design；双方→协同 | 不是自己修 |
 
@@ -33,7 +35,7 @@
 | D-03 | 09-05 | 六大索引枚举与 PRD-Design 对齐 | 简写语义偏窄 | ✅ |
 | D-04 | 09-05 | 双通道独立互证显式化 | Vibe Coding 心法 4（评审独立性） | ✅ |
 | D-05 | 09-09 | 体检修复 3 项：README「不防加戏」语义反转修正；速查表索引更名连锁；浏览器策略/三招/埋点收口 shared 引用 + issue-list 薄壳化（R9） | 全仓冗余专项体检（用户裁决全量修复 + R9 评审模板参数化） | ✅ |
-| D-06 | 09-10 | 门禁闭环改造 + 双向沉淀：①步骤 7 末补「双向沉淀判定」（A 改 ../prototype-design/PRD-Design 防复发；B 本 skill `references/known-issue-patterns.md` 加模式含检出方法）；②超限动作由「停下交用户」改「强制清 P0 后放行，残留 P1 记遗留」；③步骤 4 补案例库对照；④新增案例库 + README/术语表同步 | 用户要求评审循环门禁 + 问题双向沉淀反哺 skill | ✅ |
+| D-06 | 09-10 | 门禁闭环改造 + 双向沉淀：①步骤 7 末补「双向沉淀判定」（A 改 prototype-design / prd-design 防复发；B 本 skill `references/known-issue-patterns.md` 加模式含检出方法）；②超限动作由「停下交用户」改「强制清 P0 后放行，残留 P1 记遗留」；③步骤 4 补案例库对照；④新增案例库 + README/术语表同步 | 用户要求评审循环门禁 + 问题双向沉淀反哺 skill | ✅（已撤销：按 shared/anti-deadloop.md §3，残留 P0⇒BLOCKED、P1⇒仅授权 CONDITIONAL） |
 | D-07 | 09-10 | **结构重构（统一骨架）**：章节 6 → 7——§一 定位与铁律（四维评审范围 + 铁律 5 条）；§二 输入与前置（输入表含缺失处理 + 输出目录清单）；§三 主流程 7 步 → **6 步**（「产出四份维度报告」并入「四维对照评审」，报告落盘不再是独立步骤）；§四 评审规范（严重度分级）；**§五 错误表（新增，此前缺失）**；**§六 资源清单（新增，此前缺失）**；§七 埋点。old-vs-new 审计：原条目全部有归属，且补上了缺失的两节 | 用户要求：整理成顺畅流程（Skill-Optimizer 全量体检） | ✅ |
 | D-08 | 09-15 | 全仓一致性纠偏：summary-template 补沉淀判定节（SKILL 承诺未落地）、维度模板与汇总表补修复判据列；cases 步骤编号纠正（步骤 3~5/6 → 随步骤 4 同步、汇总步骤 5 前）；README 流程补双向沉淀判定；dimension/summary 编号对齐公共模板 SUM-xx；browser-inspection-guide 标题错别字「审批」→「走查」 | 四代理并行七维体检 | ✅ |
 

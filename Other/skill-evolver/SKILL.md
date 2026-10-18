@@ -44,6 +44,8 @@ metadata:
 | `进化台账.md` | 每次进化一条记录：改了什么/依据哪条信号/谁确认/如何回滚，追加式 |
 | `README.md` | 池规则与增量标记位置说明 |
 
+**安装副本 / 其它项目运行时**：不写源仓 `../../evolution/`，改用用户指定的维护目录或项目本地目录（首次使用登记路径），待反馈后统一回写源仓本池。
+
 ## 三、流程
 
 ### ⓪ 装载
@@ -117,7 +119,7 @@ metadata:
 2. 目标 skill `CONTEXT.md` 追加 D-xx（改了什么、依据哪条信号）；
 3. 信号源自 issue 的 → 回填 issue 状态 `已沉淀` + 落点；源自偏好的 → 偏好条目标「已反哺 <日期>」；
 4. `进化台账.md` 追加一条（模板 `assets/evolution-log-entry-template.md`）；
-5. 同步安装副本：先源仓库，再用仓库根 `python scripts/install-skills.py --target <宿主 skills 目录>` 同步（或 `scripts/sync-skills.sh`），**不要手写死路径**；同步后核对源仓与副本一致性（哈希校验口径对齐 Skill-Optimizer §七.3）；
+5. 同步安装副本：先源仓库，再用仓库根 `python scripts/install-skills.py --target <宿主 skills 目录>` 同步（或遗留脚本 `scripts/sync-skills.sh`，仅 Git Bash 场景），**不要手写死路径**；同步后核对源仓与副本一致性（哈希校验口径对齐 Skill-Optimizer §七.3）；
 6. 更新增量标记，报告本轮进化摘要。
 
 ## 四、与 Skill-Optimizer 的分工（防重叠）
@@ -184,7 +186,7 @@ Preserve the mature capability of `Skill-Evolver` while exposing it through the 
 
 ## Trigger
 
-Run when the user explicitly requests this capability or when `WorkFlow/` routes a compatible stage to this wrapper.
+Run when the user explicitly requests this capability or when the `workflow` orchestrator routes a compatible stage to this wrapper.
 
 ## Inputs
 
@@ -247,4 +249,4 @@ Downstream Skills may consume only manifest entries whose status and Gate allow 
 
 ## State Changes
 
-Record the old state, new state, actor, timestamp, reason, evidence references, Gate, and next action in `.spec/workflow.yaml`. The exact state names come from `governance/state-registry.yaml`.
+Record the old state, new state, actor, timestamp, reason, evidence references, Gate, and next action in `.spec/workflow.yaml`. The exact state names come from `governance/state-registry.yaml` in the source repository; an installed copy without that repository must use the state names already present in the project `.spec/workflow.yaml` and must not invent new states.

@@ -27,7 +27,7 @@ release-planning 通过并获得执行授权。
 - 变更前健康检查通过。
 
 ## Responsibilities
-执行计划、记录时间线和命令结果、按条件暂停/回滚、将异常路由给 ../release-verification/incident-response。
+执行计划、记录时间线和命令结果、按条件暂停/回滚、将异常路由给 `release-verification` / `incident-response`（按异常性质择一，附证据）。
 
 ## Non-goals
 不改代码、不临时加未批准变更、不跳过迁移检查、不将命令成功当成业务健康。

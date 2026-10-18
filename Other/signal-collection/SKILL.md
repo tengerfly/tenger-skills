@@ -34,7 +34,7 @@ web-monitor、server-log、server-monitor、产品分析导出及其接口/权�
 2. 按统一关联键归一字段和时间。
 3. 去重相同事件并保留原始引用。
 4. 分为错误、性能、可用性、用户行为、安全和资源信号。
-5. 输出信号包和质量说明，交给 ../signal-triage/product-analytics。
+5. 输出信号包和质量说明，交给 `signal-triage` / `product-analytics`（按用途择一）。
 
 ## Outputs
 `.spec/signals/<window>/signal-pack.md`、脱敏索引、关联质量和采集缺口。
@@ -46,7 +46,7 @@ web-monitor、server-log、server-monitor、产品分析导出及其接口/权�
 PASS：来源、窗口、关联和脱敏可复核；CONDITIONAL：已声明采样/关联缺口；BLOCKED：无权限、数据不可解读或敏感信息无法安全处理。
 
 ## Failure Route
-安全/权限问题转 incident-response；关联缺失转 Observability-Design；高影响信号直接转 signal-triage。
+安全/权限问题转 incident-response；关联缺失：在信号包登记 `OBSERVABILITY_GAP`，转 `quality-inspection` 补埋点巡检；高影响信号直接转 signal-triage。
 
 ## Downstream Contract
 下游收到原始引用、规范化字段、窗口、版本关联、质量限制，不得丢失不确定性。

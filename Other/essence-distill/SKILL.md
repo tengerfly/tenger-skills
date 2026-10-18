@@ -38,7 +38,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ### ① 取源与结构摸底（**此步加载** `references/extract-playbook.md`）
 
-按输入类型取文本（playbook：PDF/EPUB 抽取、网页存档、转写获取、仓库浅克隆与瘦身——克隆策略复用 `../source-reading/references/clone-playbook.md`）。摸清结构：书 = 目录章节，仓库 = 文件树 + README + docs，资料 = 小节标题。规模分档：小 = 单文件直读；中 = 分块精读；大 = 高密度区预算集中。产出**结构地图 + 文本可得性结论**（哪来的文本、什么格式、怎么定位）。
+按输入类型取文本（playbook：PDF/EPUB 抽取、网页存档、转写获取、仓库浅克隆与瘦身——克隆策略复用 `source-reading/references/clone-playbook.md`（逻辑引用，按 skill id 定位））。摸清结构：书 = 目录章节，仓库 = 文件树 + README + docs，资料 = 小节标题。规模分档：小 = 单文件直读；中 = 分块精读；大 = 高密度区预算集中。产出**结构地图 + 文本可得性结论**（哪来的文本、什么格式、怎么定位）。
 
 ### ② 通读与精华定位
 

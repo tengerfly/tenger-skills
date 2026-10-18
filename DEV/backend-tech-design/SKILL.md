@@ -54,7 +54,7 @@ metadata:
 
 **S1 解析输入**：读上表输入，抽取模块清单、PRD AC、业务约束；**读同域开源调研报告（`.spec/开源情报/`，有则 REQUIRED）**——同域项目的架构/选型/测试基建做法反哺 S3 选型候选与 S6 模块设计（报告三元组中「建议落点=本方案」的条目逐条纳入并留出处；无报告先建议跑 OSS-Radar，快速档经用户确认跳过并留痕）。
 
-**S1.5 资产检索与选择（AI 知识库门禁）**：检索外部 AI 知识库 `$env:SKILLS_KNOWLEDGE_ROOT/asset-library/`（使用入口与同步协议见仓库根 `../../skill-knowledge/README.md`；**未配置 `$env:SKILLS_KNOWLEDGE_ROOT` 时按 `../../skill-knowledge/README.md` 的降级规则跳过检索并登记，不伪造命中**）——先判项目类型命中 `blueprints/`（可叠加取严）收敛范围，再按 capabilities → patterns/composites → adapters 检索；**命中 → 命中资产直接进方案**（技术选型总览与模块设计标注资产来源与版本），记录 selected/rejected/unresolved 并锁版本（pattern@x + adapter@x）；**命中但不完全适用 → 方案层即做兼容性适配**（扩参数 / 加 adapter / 版本演进既有资产），禁并列冗余资产（防冗余硬条件）；无法适配 → 记缺口并说明与既有资产的差异，交 Dev 走封装七步法（造前 asset-gap）。产物落 `.spec/<feature>/` 的 `asset-needs.yaml`、`asset-selection.yaml`、`composition.yaml`（模板在组件库 `templates/project-side/`）；组合图须满足「下游 requires ⊆ 前置 provides」，Tech-Review 据此检查组合契约。
+**S1.5 资产检索与选择（AI 知识库门禁）**：检索外部 AI 知识库（环境变量 `SKILLS_KNOWLEDGE_ROOT` 指向的目录）的 `asset-library/`（使用入口与同步协议见仓库根 `../../skill-knowledge/README.md`；**未配置 `SKILLS_KNOWLEDGE_ROOT` 时跳过检索，并在 PROJECT.md 或本次执行摘要登记「外部知识库未配置、检索跳过」，不伪造命中**）——先判项目类型命中 `blueprints/`（可叠加取严）收敛范围，再按 capabilities → patterns/composites → adapters 检索；**命中 → 命中资产直接进方案**（技术选型总览与模块设计标注资产来源与版本），记录 selected/rejected/unresolved 并锁版本（pattern@x + adapter@x）；**命中但不完全适用 → 方案层即做兼容性适配**（扩参数 / 加 adapter / 版本演进既有资产），禁并列冗余资产（防冗余硬条件）；无法适配 → 记缺口并说明与既有资产的差异，交 Dev 走封装七步法（造前 asset-gap）。产物落 `.spec/<feature>/` 的 `asset-needs.yaml`、`asset-selection.yaml`、`composition.yaml`（模板在组件库 `templates/project-side/`）；组合图须满足「下游 requires ⊆ 前置 provides」，Tech-Review 据此检查组合契约。
 
 **S2 非功能需求（设计输入，先于选型）**：问清并写进元数据——① 规模预期（数据量/并发/QPS）② 延迟要求（p95）③ 一致性需求（强一致 vs 最终一致）④ 安全与合规约束 ⑤ 可用性/容灾要求。**每个关键选型都要能回答「它满足哪条非功能需求」。**
 
@@ -83,7 +83,7 @@ metadata:
 
 **S7 全局一致性**：表结构命名统一；接口路径与入参出参一致；模块依赖与总文档关联图一致；测试编号连续且可追溯 PRD AC。**机械核对先证会红、再信会绿**：任何「零承接/缺 N 条/存在非法边」结论，先按 `references/diff-verification.md` 三要件出具，并用注入违规样本证明检查器会红，再采信其绿；结构块外正文不参与状态机/枚举解析。
 
-**S8 归档 + 回填**：落盘 `.spec/TDD/VN/`；处理过的评审任务改 `已修复` + 修改说明（只改本 skill 负责部分）。回填后须触发 `Tech-Review` 复核，不得自判通过（闭环与上限规则见仓库根 `../../shared/anti-deadloop.md` §一/§二）。
+**S8 归档 + 回填**：落盘 `.spec/TDD/VN/`；处理过的评审任务改 `已修复` + 修改说明（只改本 skill 负责部分）。回填后须触发 `Tech-Review` 复核，不得自判通过（闭环与上限规则见仓库根 `../../shared/anti-deadloop.md` §2/§3）。
 
 ## 四、关键设计规范
 
@@ -131,6 +131,7 @@ metadata:
 | 关键链路只设计正常主路径 | 逐节点补失败/回滚/幂等/补偿 |
 | 增量修订只改模块文档、总文档同口径句漏同步 | 修订后对被改关键词全文档 grep 一遍核对各处口径（TDD V2 复核 R-01 教训） |
 | 新增内层预算（超时/步数）与既有外层预算叠床架屋 | 预算分层清单化：数值内<外 + 外层击穿时内层终态回填责任方写明（BE-07/R-02 教训） |
+| 契约字段凭记忆写、与存储列不对应 | 逐列 grep 建表脚本/ORM schema 核对；契约字段与存储列的别名映射（AS）必须显式（BE-TDD-01 教训） |
 | 方案层引入与库内既有资产并列的新组件 | S1.5 命中但不适用先兼容性适配（扩参数/加 adapter），禁并列冗余资产（防冗余硬条件） |
 | 用区间/斜杠折叠写法登记 AC↔用例（如 `A~C`、`AC-M03-001/002/003`） | 覆盖矩阵一律逐条编号，禁止区间/斜杠折叠（它同时是假绿与假红来源） |
 | 求差核对只报「零承接/缺 N 条/存在非法边」却不附量具三要件 | 附①求差命令原文②基线集合取法（哪些文件、是否展开区间/斜杠）③反向对照（注入违规证明会红），三者缺一不得写进交付物 |
@@ -224,4 +225,4 @@ Downstream Skills may consume only manifest entries whose status and Gate allow 
 
 ## State Changes
 
-Record the old state, new state, actor, timestamp, reason, evidence references, Gate, and next action in `.spec/workflow.yaml`. The exact state names come from `governance/state-registry.yaml`.
+Record the old state, new state, actor, timestamp, reason, evidence references, Gate, and next action in `.spec/workflow.yaml`. The exact state names come from `governance/state-registry.yaml` in the source repository; an installed copy without that repository must use the state names already present in the project `.spec/workflow.yaml` and must not invent new states.

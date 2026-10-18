@@ -13,16 +13,16 @@
 
 | 项 | 内容 |
 |---|---|
-| 输入 | 前端页面 + 设计稿基准（A：`.spec/设计稿/`＝视觉唯一应然；B：外部稿，需标注目测；C：无设计稿回退原型＝降级）+ PRD/原型辅助（判「该不该有」） |
-| 输出 | 独立：报告 + 任务清单 + screenshots；Testing 场景：轻量 mini-issue |
-| 边界 | 只评实现页 vs 设计稿；业务逻辑归 Testing、契约/架构归 Code-Review、设计稿本身归 UI-UX-Review |
+| 输入 | 前端页面 + 设计稿基准（A：`.spec/设计稿/`＝视觉唯一应然；B：外部稿，需标注目测；C：无设计稿且已登记用户批准 EXC 才回退原型＝降级）+ PRD/原型辅助（判「该不该有」） |
+| 输出 | 独立：报告 + 任务清单 + screenshots；auto-test 场景：轻量 mini-issue；代码评审场景：报告落 `.spec/代码评审/前端页面还原度评审.md`，问题交 Code-Review 合并（标来源=Fidelity-Review） |
+| 边界 | 只评实现页 vs 设计稿；业务逻辑归 auto-test、契约/架构归 Code-Review、设计稿本身归 UI-UX-Review |
 | 浏览器 | 硬依赖，全无报错停 |
 
 ## 三、流程
 
 ```
 输入解析 → 浏览器预检 → 页面×基准映射（用户确认）→ 双开截图+点击验证 → 视觉+交互走查
-→ 长文案专项 → 分级报告 → 独立（任务清单）或 Testing（mini-issue）
+→ 长文案专项 → 分级报告 → 独立（任务清单）/ auto-test（mini-issue）/ 代码评审并行（交 Code-Review 合并）
 ```
 
 P0/P1 阻断、P2 用户裁决；复核只验本轮，轮次上限 3。
@@ -34,5 +34,5 @@ P0/P1 阻断、P2 用户裁决；复核只验本轮，轮次上限 3。
 ├── SKILL.md / README.md / CONTEXT.md
 ├── references/（visual / interaction / overflow / design-source / browser / decision-rules / case-library / known-issue-patterns）
 ├── assets/（review-report / issue-list / mini-issue 模板）
-└── .spec/页面还原评审/
+└── .spec/页面还原评审/        # 落被评审项目根（非本 skill 目录）
 ```

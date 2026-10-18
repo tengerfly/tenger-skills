@@ -1,6 +1,8 @@
 # CONTEXT.md —— Workflow 术语与决策记录
 
 > Workflow 术语对齐源 + 决策日志。
+>
+> **口径基线（2026-10-18 订正）**：术语表已对齐 `shared/anti-deadloop.md` v2 与 `shared/gate-policy.md` v2；Gate 只有 `PASS | CONDITIONAL | BLOCKED`，当前状态源是 `.spec/workflow.yaml`。决策日志 D-01~D-26 保留历史原文；与现行 `shared/` 契约冲突处以 `shared/` 为准（含 D-18 的旧「清 P0 后放行」口径，已撤销）。
 
 ## 一、角色与边界
 
@@ -13,13 +15,13 @@
 | 术语 | 定义 |
 |---|---|
 | 节点/链 | 节点=一 skill；链=默认顺序，节点可任意起点 |
-| 起点/终点/路径 | 起点可推断；终点不指定=只跑起点；路径扣除跳过 |
+| 起点/终点/路径 | 起点可推断；终点不指定=完成用户要求的可验收结果（默认不含发布/运维，不每完成一小步等「继续」）；路径扣除跳过 |
 | 跳过 | 用户决定不做某节点，标记已跳过 |
 | 前置 | 产物缺失即阻塞；门禁节点的前置含「上游门禁已放行」 |
-| 交接记录 | PIPELINE 追加：产物/下游输入/遗留/用户决定 |
+| 交接记录 | `.spec/workflow.yaml`（唯一当前状态源）+ `.spec/gates/` Gate 记录 + 执行摘要；`.spec/PIPELINE.md`、`.spec/WORKFLOW.yaml` 是只读 legacy 输入 |
 | 门禁闭环 | 「产物 ⇄ 评审」配对：产物→评审→修复→复核，收敛才进下行（③⑤⑦⑩⑬，分端两批 ⑩-后/⑩-前、⑬-后/⑬-前） |
 | 放行判据 | P0 全已修复 + P1 全已修复（已忽略须用户确认理由）+ 复核通过；P2 记遗留不阻塞 |
-| 上限 3 | 同批修复→复核满 3 轮不收敛：强制清 P0 后直接放行，残留 P1 记遗留 |
+| 上限 3 | 同批「修复→复核」最多 3 轮：残留 P0 ⇒ `BLOCKED`；残留 P1 不得 `PASS`，只能出完整授权 `CONDITIONAL`（exceptionId/risk/owner/dueAt/remediation/allowDownstream/approvalRef）；不自动第 4 轮（定义见 `../shared/anti-deadloop.md` §3） |
 | 并行评审 | ⑬-前 内 Code-Review（前端视角）∥ Fidelity-Review，问题合并同一清单、共用轮次 |
 | 沉淀判定 | 门禁放行后对问题判定是否反哺 skill：**P0 双向必沉**，P1/P2 由模型判「会再犯的一类问题」 |
 | 双向沉淀 | 方向 A 产出方 skill（防复发）+ 方向 B 评审方 skill 案例库（检出力，`references/known-issue-patterns.md`） |
@@ -39,7 +41,7 @@
 | D-15 | 09-08 | 全仓体检修复：SKILL 补「十、运行问题埋点」节（此前 18 skill 中唯一缺失，调度/守门/PIPELINE 问题入 issue/WorkFlow/）——Skill-Optimizer 模式④全仓体检，✅ |
 | D-16 | 09-09 | 体检修复 2 项：CONTEXT 决策日志 D-14/D-15 行列数修正；埋点统一格式（全仓冗余专项体检（用户裁决全量修复 + R9 评审模板参数化），✅） |
 | D-17 | 09-09 | 终检修复 1 项：pipeline-template 项目信息表拆 5 列规范格式（全仓终检（冗余专项体检修复后复审，用户裁决全修），✅） |
-| D-18 | 09-10 | 门禁闭环改造（用户裁决）：①每个「产物 ⇄ 评审」节点内成循环，P0 清零；P1 需修复，超限只能授权 CONDITIONAL 才能下行；②⑩/⑬ 分端两批执行（⑧清零起⑨、⑪清零起⑫）——写一个审一个；③满 3 轮不收敛 → 强制清 P0 后**直接放行**，残留 P1 记遗留（原「停下交用户」废弃）；④⑬-前 前端代码评审 ∥ Fidelity-Review 并行，问题合并同一清单、共用轮次；⑤新增门禁闭环沉淀判定（P0 必沉；优先当场改产出方 skill 防复发规则，改不了入 `issue/` 池交 Skill-Optimizer 提炼）；⑥PIPELINE 加门禁轮次/门禁结果/遗留问题段。定义权威落仓库根 `../shared/anti-deadloop.md`（扩为门禁闭环口径）| 用户要求「评审-修改-再评审直到问题清零才进下一节点」+ 问题沉淀反哺 skill 正向循环 | ✅ |
+| D-18 | 09-10 | 门禁闭环改造（用户裁决）：①每个「产物 ⇄ 评审」节点内成循环，P0 清零；P1 需修复，超限只能授权 CONDITIONAL 才能下行；②⑩/⑬ 分端两批执行（⑧清零起⑨、⑪清零起⑫）——写一个审一个；③满 3 轮不收敛 → 残留 P0 记 `BLOCKED`、残留 P1 只能经完整授权 `CONDITIONAL`（本句 2026-10-18 订正；历史原文「强制清 P0 后放行」已被 `../shared/anti-deadloop.md` §3 撤销）；④⑬-前 前端代码评审 ∥ Fidelity-Review 并行，问题合并同一清单、共用轮次；⑤新增门禁闭环沉淀判定（P0 必沉；优先当场改产出方 skill 防复发规则，改不了入 `issue/` 池交 Skill-Optimizer 提炼）；⑥PIPELINE 加门禁轮次/门禁结果/遗留问题段。定义权威落仓库根 `../shared/anti-deadloop.md`（扩为门禁闭环口径）| 用户要求「评审-修改-再评审直到问题清零才进下一节点」+ 问题沉淀反哺 skill 正向循环 | ✅ |
 | D-19 | 09-10 | 沉淀双向化（用户补充）：同一问题同时反哺两端——方向 A 产出方 skill（防复发：错误表/references/Gate 预检项）+ 方向 B **发现问题的那一个评审 skill**（检出力：`references/known-issue-patterns.md` 评审方案例库，每条含「检出方法」可执行判据）。P0 双向必沉；当场改优先（A/B 各记 D-xx、同步部署副本），改不了入池并写明双向落点。6 个评审 skill 各建案例库骨架；模板 `../shared/templates/known-issue-patterns-template.md` | 用户：开发 skill 的 P0 问题应同时沉淀到开发 skill（防下次出现）与代码评审 skill（案例库，下次能查出） | ✅ |
 | D-20 | 09-10 | **结构重构（统一骨架）**：章节 10 → 8——§一 核心模型（角色/目标/边界 + 流向图 + 参数表）；§二 节点速查（大表 + 硬串行）；§三 起点确定；§四 调度规程（启动 / 执行一个节点 / 交接摘要 / 阻塞格式）；§五 **门禁闭环与放行**（闭环模型 + 守门规则 + 门禁点表 + 分端与并行 + 沉淀反哺 + 裁剪判据）；§六 PIPELINE.md；§七 错误表（原「铁律」并入错误表与流程约束，消除与 §五 的重复）；§八 资源清单；§九 埋点。old-vs-new 审计：原 10 章内容全部有归属（原 §七 铁律 9 条已按职责分流到 §一 角色边界 / §四 调度 / §五 守门），无功能丢失 | 用户要求：整理成顺畅流程（Skill-Optimizer 全量体检） | ✅ |
 | D-21 | 09-15 | 视觉基准口径纠偏：§二节点表 ⑫ 补「另需输入：设计稿=视觉基准、原型=结构基线；设计稿缺少不阻塞但须明示降级」（保持在「前置」列的可选语义，不与 ⑥⑦ 可选节点冲突）、⑬-前 标注「设计稿视觉唯一应然」；§五 分端与并行补「还原度判定基准：视觉以设计稿为应然、结构对原型；有设计稿却只与原型比对 = 无效还原结论」；§七 错误表加「有设计稿却按原型判视觉还原」行 | 用户反馈设计稿 OK 但实现页差别大；编排层须把基准口径写进节点契约与守门规则，避免子 skill 口径漂移 | ✅ |
@@ -50,6 +52,7 @@
 
 | D-25 | 2026-10-10 | **建档结构与量具可达入主流程**（`issue/WorkFlow/2026-10-10/02` 规则层）：§1「标准/完整」步加〔REQUIRED · 建档结构与量具可达〕——`.spec/workflow.yaml`、`.spec/manifest.yaml` 的根结构与字段名以 `../shared/templates/workflow.yaml`、`../shared/templates/project-manifest.yaml` 为准，取值以 `governance/` 注册表与 `../shared/artifact-contract.md` §2 为准；首次建档或改动后跑 `python scripts/validate_core.py gate --project-root <项目>` 与 `artifact --project-root <项目>`，**解析失败或字段非法即停 `WORKFLOW_BLOCKED` 并如实报告，不得在「校验器读不通」的状态下继续正式交接**（校验器不通 ⇒ §6 全部闸门规则只剩执行方自觉）。**本轮自纠一处**：初稿写的是 `system`，实测对业务项目会因项目内缺 `governance/state-registry.yaml`、`.spec/traceability.yaml`、`../shared/templates/task-envelope.yaml` 报 10 条无关红——`system` 只适用于本仓自检，业务项目改用 `gate` + `artifact` 两条（fixture 实测：漂移样本报 `cannot parse YAML ... duplicate YAML key` + `workflow has invalid gate: None`，合规样本报通过）。`../shared/artifact-contract.md` §2 同步加「Status vocabulary」映射：`REGISTERED`→`DRAFT`、`READY`→`REVIEW`（有批准 DEC 才 `APPROVED`）、`APPROVED_SUPERSEDED`→`SUPERSEDED`（批准历史走 `decisionRefs`、取代关系走 `supersedes`），轮次 `round: n/3` 属 Gate 记录不属 `status` | `issue/WorkFlow/2026-10-10/02`（实测 `validate_core.py gate` 对 knowledge-bases 报 `cannot parse YAML ... duplicate YAML key: 'sourceRefs'` + `workflow has invalid gate: None`；`artifactId` 出现 0 次、`- id:` 24 条、枚举外状态 13 条）；**项目侧 8 步迁移仍未执行**（业务项目改动需单独授权） | ✅ 规则已改｜◐ 迁移与真实复跑待授权 |
 | D-26 | 2026-10-18 | **派发拆单与预算纪律入主流程**（承接 `issue/WorkFlow/2026-10-13/01`）：§3.1 新增两条 REQUIRED——① 派发拆单：单元含 ≥2 个互不依赖子项默认先拆，判据＝是否共享同一被写文件／是否各自需要独立取证；拆后每单元带 `budgetDiscipline`＋`progressArtifact`（每验收点立即落盘、预算将尽停止扩范围并写已验/未验、「落盘完整」优先于「覆盖全部」）。② `failed` 单元终态不采信自述：先做残留标记 grep／被改文件字节重算／结构等式三项复算，结论写进 `workflow.gates`。`../shared/templates/task-envelope.yaml` 增 `progressArtifact` 与 `budgetDiscipline`（schema 暂不加必填，避免打断存量 Envelope；新派发单元按 skill 正文 REQUIRED） | `issue/WorkFlow/2026-10-13/01`（四单撞 150 轮上限返回 failed，产物实际已落盘；判定靠事后复算） | ✅ 规则已改｜◐ 真实派发复跑未验证 |
+| D-27 | 2026-10-18 | **术语表与历史口径订正（评审组 A-03/A-26）**：术语表「交接记录」改为 `.spec/workflow.yaml` 唯一状态源（PIPELINE 为只读 legacy）；「上限 3」改为 anti-deadloop v2 §3（残留 P0⇒BLOCKED、P1 仅授权 CONDITIONAL、无自动第 4 轮）；「起点/终点」与 SKILL 的连续执行语义对齐；D-18 旧 force-pass 表述加「已撤销」注记；文件头补口径基线声明。旧版 `references/legacy-pipeline.md` 同步加「历史口径、Gate/放行以 shared/ 为准」标注 | `.spec/体系评审/2026-10-18/A-prd-workflow.md` A-03/A-26；`shared/anti-deadloop.md` §3 | ✅ 已订正 |
 
 ## 四、待决问题
 

@@ -36,7 +36,7 @@
 ../prototype-design/
 ├── SKILL.md
 ├── README.md
-├── CONTEXT.md                  # D-01~D-18
+├── CONTEXT.md                  # 决策日志 D-xx（编号不连续说明见文件头）
 ├── references/                 # html-spec / completeness-check / iteration-regression-guard / case-library
 ├── assets/                     # layout-inventory / prototype-readme 模板
 └── .spec/原型/                  # 布局清单 + README + HTML

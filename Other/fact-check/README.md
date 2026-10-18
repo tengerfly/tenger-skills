@@ -35,5 +35,5 @@ AI 说「Node 18 起 fs.promises.readFile 能直接读目录」，对吗？
 
 ## 边界
 
-- 已写代码的验收 → `Testing` / `auto-test`；代码评审 → `Code-Review`；方案文档（TDD/FTDD）评审 → `Tech-Review`
+- 已写代码的验收 → `auto-test`；代码评审 → `Code-Review`；方案文档（TDD/FTDD）评审 → `Tech-Review`
 - 本 skill 只管「断言对不对」，不审文档结构、不重写完整方案

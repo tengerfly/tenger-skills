@@ -24,7 +24,7 @@ metadata:
 
 | 模式 | 触发 | 做什么 | 产物 |
 |---|---|---|---|
-| ① 记录 | 记问题/复盘运行 | 问题写入 issue 池 | `../../issue/<skill>/<日期>/<序号>.md` |
+| ① 记录 | 记问题/复盘运行 | 问题写入 issue 池 | `../../issue/<skill>/<日期>/<序号>-<标题>.md` |
 | ② 挖掘 | 提供 ../../chats/ 或粘贴聊天 | 提取优化点 | 提取清单 → 确认后落 issue |
 | ③ 优化 | 优化/精简/迭代 XX | 按八维优化并沉淀；含从 ../../bug-patterns/ 与**评审闭环沉淀项**提炼 | SKILL.md / references / CONTEXT 改动 |
 | ④ 体检 | 体检/检查 XX 自洽 | 七维自洽体检 | 问题清单 → 用户逐条裁决 |
@@ -40,7 +40,7 @@ metadata:
 - 路径 `../../issue/`，结构 `../../issue/<skill>/<日期目录>/<序号>-<标题>.md`，序号当日从 01 递增。
 - 每文件字段：标题、归属 skill、来源（埋点/挖掘/体检/用户/**评审闭环**）、等级（P0/P1/P2）、标签（10 枚举）、现象、期望 vs 实际、修复方向、**双向落点**（来源=评审闭环时必填：A 产出方 skill / B 评审方 skill）、状态（待处理/处理中/已沉淀/已忽略）、沉淀目标/位置（已沉淀必填）。
 
-> 来源「评审闭环」= 门禁闭环放行后沉淀判定中「当场改不了」的项（成因不明/影响面大/不确定普遍性）；规则见仓库根 `../../shared/anti-deadloop.md` §五。
+> 来源「评审闭环」= 门禁闭环放行后沉淀判定中「当场改不了」的项（成因不明/影响面大/不确定普遍性）；规则见仓库根 `../../shared/anti-deadloop.md` §4（Bidirectional learning）。
 
 | 等级 | 含义 |
 |---|---|
@@ -55,7 +55,7 @@ metadata:
 **错误模式池（真实 bug 错误模式，`../../bug-patterns/`）**——记录各被修项目暴露的「会再犯的一类错 + 防复发规则」，消费方 = 方案/开发 skill（经本 skill 模式③ 提炼）：
 
 - 写入方：Bug-Fix 收尾沉淀（有预防价值才沉，用户确认后落池），各项目修复都直接写入本池。
-- **位置 = 本 skill 源仓库根集中池**：`../../bug-patterns/<日期>/<序号>-<标题>.md`（仓库根相对写法，可移植；池只此一处，用户在本仓库即可统一提炼，无需去各项目拉取）。模板见 `../bug-fix/assets/pattern-card-template.md`，状态 `待提炼 → 已提炼/已忽略`。
+- **位置 = 本 skill 源仓库根集中池**：`../../bug-patterns/<日期>/<序号>-<标题>.md`（仓库根相对写法，可移植；池只此一处，用户在本仓库即可统一提炼，无需去各项目拉取）。模板见 `bug-fix/assets/pattern-card-template.md`（逻辑引用；被 ≥2 skill 需要，提升 shared/ 待 Lead），状态 `待提炼 → 已提炼/已忽略`。
 - **安装副本运行时不写源仓**：在宿主 skills 目录或其它项目里运行时，错误模式记录在用户指定的维护目录 / 项目本地（待反馈），经用户确认后再回写源仓本池，不因安装副本改写源仓路径。
 - 分工：问题出在「skill 怎么干活」→ `../../issue/`；问题出在「写出的代码/方案有哪类坑」→ `../../bug-patterns/`。池规则详见 `../../bug-patterns/README.md`。
 
@@ -126,7 +126,7 @@ metadata:
 2. 两端各自记 CONTEXT D-xx；回填 issue 状态 `已沉淀` + 沉淀目标/位置（A、B 都要填）。
 3. 判定「无普遍性」→ `已忽略` + 理由。
 
-> 为什么双向：只改产出方 → 下次不做错但评审查不出；只改评审方 → 查得出但产出方照犯。两端齐备才形成正向循环（定义见 `../../shared/anti-deadloop.md` §五）。
+> 为什么双向：只改产出方 → 下次不做错但评审查不出；只改评审方 → 查得出但产出方照犯。两端齐备才形成正向循环（定义见 `../../shared/anti-deadloop.md` §4）。
 
 ## 六、模式④ 体检
 
@@ -139,7 +139,7 @@ metadata:
 ⑥ 简洁不落俗；
 ⑦ 安全审计（危险指令/硬编码凭据/依赖/外联风险，带脚本的 skill 重点查）。
 
-范围（默认）：目标 skill 全套文件 + 全仓交叉引用（根 README/WorkFlow/其他 skill/issue）。
+范围（默认）：目标 skill 全套文件 + 全仓交叉引用（根 README/workflow/其他 skill/issue）。
 
 流程：定位（显式路径 / 当前目录 / 名称匹配三方式）→ 按七维机械 grep + AI 通读 → **先列 ≥2 条「做得好」（引用具体位置，禁填充式恭维）** → 问题清单（等级+位置+现象+修复方向+判据）→ **逐条交用户裁决**（当场修→记 D-xx；记 issue→来源填体检；忽略→说明）→ 小结确认。
 
@@ -187,10 +187,10 @@ metadata:
 
 ## 十、资源清单
 
-- `../../shared/templates/issue-template.md`、`signal-checklist.md`、`skill-writing-standard.md`、`vibe-principles-mapping.md`、`optimize-checklist.md`、`self-audit-checklist.md`
+- `../../shared/templates/issue-template.md`；`assets/signal-checklist.md`、`assets/skill-writing-standard.md`、`assets/vibe-principles-mapping.md`、`assets/optimize-checklist.md`、`assets/self-audit-checklist.md`
 - `../../shared/instrumentation-guide.md`
 - `../../shared/templates/known-issue-patterns-template.md`（仓库根）：评审方案例库模板
-- `../../issue/`：skill 自身问题池（源仓库根，含来源=评审闭环项）；`../../bug-patterns/`：错误模式集中池（源仓库根，池规则 `../../bug-patterns/README.md`、案例卡模板 `../bug-fix/assets/pattern-card-template.md`）；`../../evolution/`：用户偏好与进化信号池（源仓库根，Skill-Evolver 维护）；`../../chats/`：待挖掘目录
+- `../../issue/`：skill 自身问题池（源仓库根，含来源=评审闭环项）；`../../bug-patterns/`：错误模式集中池（源仓库根，池规则 `../../bug-patterns/README.md`、案例卡模板 `bug-fix/assets/pattern-card-template.md`（逻辑引用））；`../../evolution/`：用户偏好与进化信号池（源仓库根，Skill-Evolver 维护）；`../../chats/`：待挖掘目录
 - 关联：`Skill-Evolver`（进化引擎——模式②偏好信号采集、模式③进化管线执行时内部调用）；`OSS-Radar`（外部情报输出口，反哺经本 skill 模式③）
 
 ## 十一、运行问题埋点
@@ -210,7 +210,7 @@ Preserve the mature capability of `Skill-Optimizer` while exposing it through th
 
 ## Trigger
 
-Run when the user explicitly requests this capability or when `WorkFlow/` routes a compatible stage to this wrapper.
+Run when the user explicitly requests this capability or when the `workflow` orchestrator routes a compatible stage to this wrapper.
 
 ## Inputs
 
@@ -273,4 +273,4 @@ Downstream Skills may consume only manifest entries whose status and Gate allow 
 
 ## State Changes
 
-Record the old state, new state, actor, timestamp, reason, evidence references, Gate, and next action in `.spec/workflow.yaml`. The exact state names come from `governance/state-registry.yaml`.
+Record the old state, new state, actor, timestamp, reason, evidence references, Gate, and next action in `.spec/workflow.yaml`. The exact state names come from `governance/state-registry.yaml` in the source repository; an installed copy without that repository must use the state names already present in the project `.spec/workflow.yaml` and must not invent new states.

@@ -18,11 +18,11 @@ metadata:
 发现失败、阻塞或用户纠正时，在下一安全节点按 `../../shared/problem-recording.md` 记录；根因未明不丢事实。恢复/交付前核对未决项，沿用已有详情与唯一索引。此规则优先于旧的仅收尾埋点/不确定不记表述，不增加轻量任务的正式建档要求。
 
 **闭环回流（L2）**：P0/P1 条目要标「已沉淀」前，必须先回流 1 条评测用例，并在该用例声明里用 `issueRef` 指回本条问题（值＝本条问题的仓库相对路径，形如 issue/<skill>/<日期>/<NN>-<标题>.md）；没有这条用例就按「未验证」处理，优化状态停在待处理/处理中，不得写「已沉淀」。
-判据与字段口径的单一来源是仓库根 `governance/eval-spec.yaml`（`caseTiers.L2` + `issueRef` 节），机械核对由 `scripts/eval/relay.py` 执行；本节只承接义务，不复述其条文。
+判据与字段口径的单一来源是仓库根 `governance/eval-spec.yaml`（`caseTiers.L2` + `issueRef` 节），机械核对由 `scripts/eval/relay.py` 执行；本节只承接义务，不复述其条文（仓库级工具：宿主副本若不含 `governance/` 与 `scripts/`，改人工核对并在报告注明降级）。
 
 ## B 稿复核口径（A 不变）
 
-README 稿源为 AI 自写（B）时，先读 `../ui-ux-design/references/self-write-review-gate.md` 与本次需求上下文。以已确认业务/结构/Token 和真实渲染判质量，不套用 A 的云端导入格式、相对链接禁令、em-dash 零容忍或不适用的风格偏好。B 的局部修改只查变更与必要关联回归；新多页稿仍覆盖本次全部交付页。新方向的审美选择不能改写业务需求。
+当归档 README 的「稿源」标记为 AI 自写（B）时，先读 `ui-ux-design/references/self-write-review-gate.md` 与本次需求上下文。以已确认业务/结构/Token 和真实渲染判质量，不套用 A 的云端导入格式、相对链接禁令、em-dash 零容忍或不适用的风格偏好。B 的局部修改只查变更与必要关联回归；新多页稿仍覆盖本次全部交付页。新方向的审美选择不能改写业务需求。
 
 本 Skill 的只审不改、真实浏览器硬依赖、独立复核和正式 Gate 规则不变；无浏览器不能给待验收 B 草稿补发视觉通过。A 稿继续原规则。消费需求按 `../../shared/requirements-context.md` 固定版本、索引定位后读相关原文。
 
@@ -56,10 +56,10 @@ README 稿源为 AI 自写（B）时，先读 `../ui-ux-design/references/self-w
 | `.spec/设计稿/design-system.md`（**归档副本即交付基准**） | 视觉规范基准（`.superdesign/design-system.md` 为 CLI 工作源，仅追溯时对照） | ⛔ 停下提示 |
 | 设计稿工程（HTML + README） | 被审对象 | ⛔ 停下提示 |
 | **上游闸门有效性**（`manifest.yaml` 中 PRD / 原型 / design-system 各条的 `status`、`version`、`gate`、`allowDownstream`） | 输入必须是**现行批准版本**，不只是文件存在（`../../shared/gate-policy.md` §6） | 任一 `SUPERSEDED` / 非 `PASS` / `false` → ⛔ 停下，本周期不得出放行 Gate |
-| **上游内容指纹**（同条 `contentDigest`；跑 `python scripts/validate_core.py gate --project-root <项目>` 即机械复算） | 字段全绿只证明**批准过**，不证明**正文还是那份**。批准后被盗改的基线，字段层永远看不出来（`gate-policy.md` §6 第 6 条） | 任一 `contentDigest`/`subjectDigests` mismatch → 所依据的基线已不存在：本轮结论对漂移输入**判失效**并重跑；重签摘要须有覆盖该次改动的批准记录 |
+| **上游内容指纹**（同条 `contentDigest`；跑 `python scripts/validate_core.py gate --project-root <项目>` 即机械复算；仓库级校验器，宿主副本无 `scripts/` 时改人工复核并注明） | 字段全绿只证明**批准过**，不证明**正文还是那份**。批准后被盗改的基线，字段层永远看不出来（`gate-policy.md` §6 第 6 条） | 任一 `contentDigest`/`subjectDigests` mismatch → 所依据的基线已不存在：本轮结论对漂移输入**判失效**并重跑；重签摘要须有覆盖该次改动的批准记录 |
 | 浏览器工具（**硬依赖**） | 渲染截图 + 点击验证 | 全无 → 报错停止 |
 
-**输出**（`.spec/设计评审/`）：四份维度报告、`设计稿评审汇总报告.md`、`任务清单.md`（`待确认` → `已确认` → `已修复`/`已忽略`）、`screenshots/`（硬性）、**`跨页宽度实测表`**（多页交付硬性，逐页含导航外壳 / 页内标题栏 / 主内容列三组值 + 宽屏两档，随第四维报告落盘；无此表则 §七 各条只能标「未验证」）、**`可见层内部语扫描表`**（多页交付硬性，默认渲染态命中清单 + 计数 + 走查开关核验，随第四维报告落盘；无此表则 §八 只能标「未验证」）、**`上游闸门核对表` + `时序核查`**（硬性，随汇总报告落盘；无此表则 Gate 只能记「未验证」，不得 `PASS`）。
+**输出**（`.spec/设计评审/`）：四份维度报告、`设计稿评审汇总报告.md`、`任务清单.md`（`待确认` → `已确认` → `已修复`/`已忽略`）、`screenshots/`（硬性）、**`跨页宽度实测表`**（多页交付硬性，逐页含导航外壳 / 页内标题栏 / 主内容列三组值 + 宽屏两档，随第四维报告落盘；无此表则 §七 各条只能标「未验证」）、**`可见层内部语扫描表`**（多页交付硬性，默认渲染态命中清单 + 计数 + 走查开关核验，随第四维报告落盘；无此表则 §八 只能标「未验证」）、**`上游闸门核对表` + `时序核查`**（硬性，随汇总报告落盘；无此表则 Gate 只能记 `BLOCKED`（缺上游闸门核对证据），不得 `PASS`）。
 
 ## 三、主流程（8 步）
 
@@ -68,15 +68,15 @@ README 稿源为 AI 自写（B）时，先读 `../ui-ux-design/references/self-w
 3. **渲染走查 + 静态源码审查**：静态服务渲染逐页截图（异常处截入 `screenshots/`）；逐入口点击验证；静态读 HTML 结构 / `<a>` / CSS token / 脚本作证据。**〔REQUIRED · 多页交付〕跨页宽度实测**：真实浏览器逐页量（**全局导航外壳 x·width——跨页必须全等** / 页内标题栏内容行内缘 / 主内容列 x·width·中心 / 1440 与 1920 两档主列宽）并横向比对，按 `references/rendered-quality-checklist.md` §七 出「跨页宽度实测表」；**量测前先按 §5.11 分角色**（承载跨页入口的顶栏/侧栏＝导航外壳，走跨页恒定判据；仅含本页 h1/页头＝页内标题栏，走与内容列对齐判据）——**拿"顶栏跟内容列对齐"去判导航缩宽，会把缺陷判成正确**。**〔REQUIRED〕界面可见层内部语扫描**：默认渲染态（未开走查模式）下按 §八 扫原型说明层（编号牌 / `【设计假设】` / `台账 §x` / `AC-Mxx` / 元信息徽标 / 演示切换条 / 清单对照块）的计算样式，输出命中清单 + 计数，并实测走查开关能否恢复可见。没有这两张表，§七/§八 各条一律标「未验证」，不得计入已查。两条通道独立完成、最后合并互证；**不参考生成过程，不轻信内部门禁**。
 4. **四维对照评审**：按 `references/layout-freeze-checklist.md`、`copywriting-consistency-checklist.md`、`visual-spec-consistency-checklist.md`、`rendered-quality-checklist.md` 逐条过筛（每份含**查漏 + 查多**）；**量测型检项（`rendered-quality-checklist.md` §七 跨页不变量、§八 可见层内部语扫描）必须拿步骤 3 的实测表作证据，缺证据只能标「未验证」，不得判「已查」**；另对照 `references/known-issue-patterns.md`（评审方案例库）过一遍，命中即入相应维度清单。
 5. **四份维度报告**：按 `assets/dimension-review-template.md` 落盘四份报告。
-6. **汇总 + 出 Gate**：按 `assets/summary-template.md` 合并去重、归纳跨页面共性问题（如整批 token 偏差）、统计 P0/P1/P2。**汇总报告必含「上游闸门核对」表**（上游 artifact id｜当时版本｜mtime｜`gate`｜`allowDownstream`｜`contentDigest` 复算结果｜结论）**与「时序核查」节**（基线作废时刻 vs 被审产物 mtime）——缺此表本周期 Gate 只能记「未验证」，不得记 `PASS`。收口语固定：基线有效时写「本周期判据全闭（轮次 n/3），放行 <Gate>」；基线已作废或上游关闸时写「本周期判据全闭（轮次 n/3）；放行状态 `BLOCKED`，缺 <上游批准 + 增量>」，**不得留下裸 `PASS` 字样供下游截读**。
+6. **汇总 + 出 Gate**：按 `assets/summary-template.md` 合并去重、归纳跨页面共性问题（如整批 token 偏差）、统计 P0/P1/P2。**汇总报告必含「上游闸门核对」表**（上游 artifact id｜当时版本｜mtime｜`gate`｜`allowDownstream`｜`contentDigest` 复算结果｜结论）**与「时序核查」节**（基线作废时刻 vs 被审产物 mtime）——缺此表本周期 Gate 只能记 `BLOCKED`（缺上游闸门核对证据），不得记 `PASS`。收口语固定：基线有效时写「本周期判据全闭（轮次 n/3），放行 <Gate>」；基线已作废或上游关闸时写「本周期判据全闭（轮次 n/3）；放行状态 `BLOCKED`，缺 <上游批准 + 增量>」，**不得留下裸 `PASS` 字样供下游截读**。
 7. **任务清单 + 归档**：按 `assets/issue-list-template.md` 生成任务清单——每条自足可读（出处 + 现象 + 成因 + 方向）、附修复判据、状态 `待确认`、标注修改方；P0 阻断且须用户确认；P1/P2 由执行方按 `../../shared/ruling-policy.md` 裁决（修 → `已确认`；延/弃 → `已忽略` + 理由 + 回退方式，记 `.spec/rulings.md`），**不逐条等用户**，用户可事后否决；复核只验本轮清单，不无限新增。**证据回勾自检（出报告前必做，防规则空转）**：把本轮引用的清单条目**逐条回勾**有无对应证据产物（截图 / 实测值 / 命令输出 / 实测表）；无证据的条目一律标「未验证」并计入交付边界，**不得计入「已查」**（案例库模式 5）。**问题日志**：归档同时在项目 `.spec/问题日志.md` 台账追加一行索引（日期｜来源｜问题产物｜轮次｜状态｜反哺出口；格式见 skill 源仓库 `../../shared/templates/problem-log-template.md`）。
-8. **双向沉淀判定**：放行后按 `../../shared/anti-deadloop.md` §五 执行——**A 防复发**：设计稿问题改 `UI-UX-Design`、布局 / 载体问题改 `Prototype-Design`、PRD 口径问题改 `PRD-Design`（记其 CONTEXT D-xx）；**B 检出力**：本 skill `references/known-issue-patterns.md` 按模板加一条（含「检出方法」）。改不了的落 `../../issue/<目标 skill>/<日期>/`（来源=评审闭环，写明双向落点）。判定结果记入汇总报告「沉淀判定」节。
+8. **双向沉淀判定**：放行后按 `../../shared/anti-deadloop.md` §4 双向沉淀执行——**A 防复发**：设计稿问题改 `UI-UX-Design`、布局 / 载体问题改 `Prototype-Design`、PRD 口径问题改 `PRD-Design`（记其 CONTEXT D-xx）；**B 检出力**：本 skill `references/known-issue-patterns.md` 按模板加一条（含「检出方法」）。改不了的落 `../../issue/<目标 skill>/<日期>/`（来源=评审闭环，写明双向落点）。判定结果记入汇总报告「沉淀判定」节。
 
-> 门禁闭环、防评审死循环三招（含轮次上限 3：满 3 轮未收敛：P0 残留 BLOCKED；P1 残留只能经授权 CONDITIONAL，不得 PASS；不自动放行
+> 门禁闭环、防评审死循环三招（判据 + P0/P1 冻结 + 复核只验本轮）+ 轮次上限 3：满 3 轮未收敛 ⇒ 残留 P0 记 `BLOCKED`；残留 P1 不得 `PASS`，仅可完整授权 `CONDITIONAL`；不自动第 4 轮（口径 `../../shared/anti-deadloop.md` §3 与 `../../shared/gate-policy.md` §3/§4）。
 
 ## 四、评审规范
 
-**4.1 严重度分级（只标注，不设门禁）**——P0/P1/P2 定义与处理口径见 `../../shared/anti-deadloop.md` §三，下表为本域典型示例：
+**4.1 严重度分级（只标注，不设门禁）**——P0/P1/P2 定义与处理口径见 `../../shared/gate-policy.md` §1，下表为本域典型示例：
 
 | 级别 | 定义 | 处理 | 典型 |
 |---|---|---|---|
@@ -193,4 +193,4 @@ Downstream Skills may consume only manifest entries whose status and Gate allow 
 
 ## State Changes
 
-Record the old state, new state, actor, timestamp, reason, evidence references, Gate, and next action in `.spec/workflow.yaml`. The exact state names come from `governance/state-registry.yaml`.
+Record the old state, new state, actor, timestamp, reason, evidence references, Gate, and next action in `.spec/workflow.yaml`. The exact state names come from `governance/state-registry.yaml` in the source repository; an installed copy without that repository must use the state names already present in the project `.spec/workflow.yaml` and must not invent new states.

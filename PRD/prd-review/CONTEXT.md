@@ -1,4 +1,4 @@
-> LEGACY COMPATIBILITY NOTICE: This file preserves historical material. The active Skill, Gate, state, artifact, and evidence rules are defined by `shared/skill-contract.md`, `shared/gate-policy.md`, `shared/anti-deadloop.md`, `shared/artifact-contract.md`, `governance/`, and `.spec/workflow.yaml`.
+> LEGACY COMPATIBILITY NOTICE: This file preserves historical material. The active Skill, Gate, state, artifact, and evidence rules are defined by `shared/skill-contract.md`, `shared/gate-policy.md`, `shared/anti-deadloop.md`, `shared/artifact-contract.md`, `governance/`, and `.spec/workflow.yaml`. 现行流程与边界见 [SKILL.md](SKILL.md)。
 
 # CONTEXT.md —— PRD-Review 术语与决策记录
 
@@ -8,7 +8,7 @@
 
 - 人设：前端 / 后端 / 测试**一审三角色** + **产品专家总审层（兼调度者）**。
 - 目标：找 PRD「价值无源、逻辑不通、规则缺仲裁、叫法不统一、文案不准确、无处兜底、无法落地」的点。
-- 边界：只审不改；无 Pass/Fail；修改经任务清单交 PRD-Design。
+- 边界：只审不改；无 Pass/Fail；修改经任务清单交 `prd-design`。
 - 归口：术语与文案的**正确性**由产品专家唯一认领（含调度时从 FE / BE 归并的同类问题）；FE-3 / FE-5 只判「反馈有无 / 是否可开发」，BE-5 收窄数据口径、TE-5 收窄可量化性。
 - 调度：产品专家对三角色问题做归并去重 / 定级校准 / 冲突裁决 / 归属指派 / 补漏扫描，结果逐条入 `产品评审.md`。
 
@@ -26,7 +26,7 @@
 | 修复判据 | 修到什么表现算完成 |
 | 分级冻结 | P0/P1 阻断，P2 留后续 |
 | 复核只验本轮 | 不无限新增同级问题 |
-| 轮次上限 3 | 满 3 轮不收敛 → 强制清 P0 后放行，残留 P1 记遗留 |
+| 轮次上限 3 | 同一问题批最多 3 轮「修复→复核」；超限后残留 P0 ⇒ BLOCKED，残留 P1 不得 PASS、只能经完整授权 CONDITIONAL；无自动第 4 轮，无 force-pass（shared/anti-deadloop.md §3） |
 | 成因必写 | 推不出标成因未明，禁臆造 |
 | 共性问题 | 多角色命中 = 系统性缺陷，标命中角色 |
 
@@ -42,11 +42,11 @@
 | D-06 | 09-09 | 产品专家清单扩为 **7 维两档**：核心必查 PM-1 目标与价值闭环 / PM-2 业务逻辑闭环 / PM-3 业务规则完整性 / PM-4 术语 / PM-5 文案 / PM-6 一致性与矛盾（每次全查）；扩展档 PM-7 异常与业务兜底，带触发条件（资金交易 / 审核审批 / 第三方对接 / 不可逆操作 / 存量数据），未触发标「不适用」。A2 范围与优先级、A3 用户与角色、A4 数据与指标、B3 权限与合规、B4 运营与影响面 **用户未勾选，不纳入**（零加戏） | 用户纠偏：「业务逻辑闭环只是我说的，对整个产品应更全面」→ 按产品专家专业全集重设维度，用户勾选 A1 / B1 / B2 / C1~C4，粒度取「核心必查 + 按需扩展」两档 | ✅ |
 | D-07 | 09-09 | 模式④体检 6 条**全部当场修**：①D-06 扩维后 4 处旧维度描述同步（SKILL description / §七资源清单 / README 视角表 / README 流程图）；②归口声明由「BE / TE」扩为「FE / BE / TE 只判有无，正确性归产品专家」，FE-3 / FE-5 加注、前端「不检查」列补「文案写法」；③role-review 模板 §3 结论列补 `N/A` 枚举以承载「不适用（未触发）」；④CONTEXT §一 目标行补新维度；⑤D-05 半角直引号改中文「」；⑥SKILL §一「检查」列拆为「审查维度 / 调度动作」。**产品专家新增「调度者」职责**（用户定：除审查外还调度三角色问题 = 归并 / 定级校准 / 冲突裁决 / 归属指派 / 补漏），调度结果逐条入 `产品评审.md`，步骤 5 汇总以调度结果为准 | 用户裁决：体检 6 条全部当场修；#2 不静态切分，改由**调度机制**吸收——FE 保留「是否可开发」判据，正确性由产品专家在调度时收归 PM-5 | ✅ |
 | D-08 | 09-09 | **D-07 修复后复审**（模式④第二轮）7 条全修：①P1——`role-review-template` 新增 §4「调度处理记录」（原编号 / 命中角色 / 调度动作 / 结果 / 关联编号，原 §4 角色小结顺延 §5），补齐 SKILL 步骤 4 与清单承诺的调度结果落点，并在两处注明「写入 `产品评审.md` §4」；②description 调度动作补第五项「补漏」；③常见错误表「照抄不调度」改五动作 + 落点 §4；④SKILL 流水线图补「（审查 + 调度）」与 README 流程图对齐；⑤README 视角表补「兜底档按需」；⑥模板 §3 `N/A` 说明限定「仅产品专家扩展档未触发时使用」；⑦模板 §5 角色小结措辞改为「能否据此 {{开发 / 测试 / 判定需求立得住}}」以适配产品专家；⑧收尾 grep 追加：铁律 4 调度动作枚举漏「补漏」，同批补修 | 复审发现：调度结果**无模板承载**（声明-落地缺口，P1）+ 5 处边角位置枚举/详略失同步（description、常见错误表、两处流程图、README 视角表、模板措辞） | ✅ |
-| D-09 | 09-10 | 门禁闭环改造 + 双向沉淀：①新增步骤 7「双向沉淀判定」（A 改 PRD-Design 防复发；B 本 skill `references/known-issue-patterns.md` 加模式含检出方法），原归档顺延步骤 8；②超限动作由「仍有 P0/P1 未修即停止」改「满 3 轮强制清 P0 后放行，残留 P1 记遗留」；③步骤 2 三角色补案例库对照；④流水线补「闭环复核 → 沉淀判定」；⑤新增案例库 + 资源清单同步 | 用户要求评审循环门禁 + 问题双向沉淀反哺 skill | ✅ |
+| D-09 | 09-10 | 门禁闭环改造 + 双向沉淀：①新增步骤 7「双向沉淀判定」（A 改 PRD-Design 防复发；B 本 skill `references/known-issue-patterns.md` 加模式含检出方法），原归档顺延步骤 8；②超限动作由「仍有 P0/P1 未修即停止」改「满 3 轮强制清 P0 后放行，残留 P1 记遗留」；③步骤 2 三角色补案例库对照；④流水线补「闭环复核 → 沉淀判定」；⑤新增案例库 + 资源清单同步（已撤销：按 shared/anti-deadloop.md §3，残留 P0⇒BLOCKED、P1⇒仅授权 CONDITIONAL） | 用户要求评审循环门禁 + 问题双向沉淀反哺 skill | ✅ |
 | D-10 | 09-10 | **结构重构（统一骨架）**：章节 8 → 7——§一 定位与铁律（角色层级表 + 铁律 7 条）；§二 输入与前置（**评审基线唯一性检查从步骤 1 提升为前置必做项**，命中即 P0 阻断）；§三 主流程 8 步；§四 评审规范 4.1 严重度 + **4.2 产品专家总审与调度**（核心必查 / 扩展档 / 调度五动作 / 术语判定基准，从步骤 4 内联抽出）；§五 错误表 / §六 资源 / §七 埋点。old-vs-new 审计：原条目全部有归属，无功能丢失 | 用户要求：整理成顺畅流程（Skill-Optimizer 全量体检） | ✅ |
-| D-11 | 09-15 | 全仓一致性纠偏：CONTEXT 术语表轮次口径改「满 3 轮强制清 P0 后放行」；summary-template 补 §6 沉淀判定节（SKILL 承诺未落地）；README 流程补双向沉淀判定；严重度引用 §二→§三（README + product-checklist）；「模板参数卡」→assets/issue-list-template.md；双清单红线 4→3 | 四代理并行七维体检；与 ../../shared/anti-deadloop.md 对齐 | ✅ |
-
+| D-11 | 09-15 | 全仓一致性纠偏：CONTEXT 术语表轮次口径改「满 3 轮强制清 P0 后放行」；summary-template 补 §6 沉淀判定节（SKILL 承诺未落地）；README 流程补双向沉淀判定；严重度引用 §二→§三（README + product-checklist）；「模板参数卡」→assets/issue-list-template.md；双清单红线 4→3（已撤销：按 shared/anti-deadloop.md §3，残留 P0⇒BLOCKED、P1⇒仅授权 CONDITIONAL） | 四代理并行七维体检；与 ../../shared/anti-deadloop.md 对齐 | ✅ |
 | D-12 | 2026-10-10 | Procedure 步骤 1 加〔REQUIRED · 开工前闸门核对〕：逐条读上游条目（功能范围确认／蓝图／产品定义）的 `status`、`version`、`gate`、`allowDownstream`，任一 `SUPERSEDED`／非 `PASS`／`false` ⇒ 本批只能 `BLOCKED`；判据全闭只作事实、限定条件只能落 `gate`/`allowDownstream`/`blockedBy` 字段；并明确 **`APPROVED_SUPERSEDED` 这类枚举外状态词不得当批准依据**（`../../shared/artifact-contract.md` §2 状态词收编）；`assets/summary-template.md` 结构基线行加公共 §0 硬性小节指针。口径统一指 `../../shared/gate-policy.md` §6 | `issue/WorkFlow/2026-10-10/01`＋`issue/WorkFlow/2026-10-10/02`（业务项目实测出现 `status: APPROVED_SUPERSEDED` 枚举外值）＋ 对称补齐；用户裁决「先要解决这些问题」 | ✅ 规则已改｜◐ 未经真实场景 fresh 复跑验证 |
+| D-13 | 2026-10-18 | 审计修复：README/CONTEXT 旧流程加 LEGACY COMPATIBILITY NOTICE 并指向 SKILL.md；轮次上限口径改 v2（残留 P0⇒BLOCKED、残留 P1 仅授权 CONDITIONAL、无自动第 4 轮），D-09/D-11 旧 force-pass 行标已撤销；anti-deadloop 节号订正（§三→gate-policy §1 严重度、§五→§4 双向沉淀）；summary/issue-list 模板与 README 的 PRD-Design/PRD-Review 改 canonical kebab；description 补触发词 | 审计 A-10、A-13、A-24 + anti-deadloop 节号/force-pass 历史注记 | ✅ 已修 |
 
 ## 四、待决问题
 

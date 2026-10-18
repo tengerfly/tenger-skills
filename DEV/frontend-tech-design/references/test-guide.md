@@ -24,7 +24,7 @@ export default defineConfig({
   plugins: [react()],
   test: {
     environment: 'jsdom',
-    setupFiles: ['./src/Test/setup.ts'],
+    setupFiles: ['./src/test/setup.ts'],
     globals: true,
     coverage: {
       provider: 'v8',
@@ -35,7 +35,7 @@ export default defineConfig({
 ```
 
 ```ts
-// src/Test/setup.ts
+// src/test/setup.ts
 import '@testing-library/jest-dom/vitest';
 import { cleanup } from '@testing-library/react';
 import { afterEach } from 'vitest';

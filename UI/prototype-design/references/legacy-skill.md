@@ -21,7 +21,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 4. **极简视觉**：极简中性色（白 / 浅灰 + 深灰文字 + 单一主色点缀）+ 标题/正文/辅助三级字号；**禁** emoji 当图标（用简单 SVG 或文字）、装饰渐变 / 光斑 / 玻璃拟态 / 重阴影。
 5. **真实文案**：用 PRD 真实文案，不用 Lorem / 假数据。
 6. **断链不可接受**：入口接真实 `<a>`，跳转可点击闭环。
-7. **闭环检测 Gate**：`references/completeness-check.md` 6 项全绿才落盘。
+7. **闭环检测 Gate**：`completeness-check.md` 6 项全绿才落盘。
 8. **清单 ↔ 原型一致**：调整原型必须**同步回写布局清单**。
 
 **适用范围**：适用「已有 PRD，生成原型 / 低保真 / 交互 / 页面原型」，需求定稿后开发前快速验证；不适用写需求（PRD-Design）、评审需求（PRD-Review）、高保真视觉 / 营销素材 / Logo。
@@ -49,19 +49,19 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 > ◉ = 强制暂停等用户确认。
 
-**1. 解析 PRD**：读上表输入；自行提取产品定位、用户画像、核心主流程、页面功能区块素材（**不逐项问用户**）。PRD 的「页面」≠ 原型独立页面——**载体划分留给步骤 3，本步只收集素材不拍板**。多文件改动（script / 数据 / 弹框链 / 交互）落盘前按 `references/iteration-regression-guard.md` 跑 Regression Gate（console 零错误 + 动态内容 DOM 断言 + 关键态截图人工核验）。
+**1. 解析 PRD**：读上表输入；自行提取产品定位、用户画像、核心主流程、页面功能区块素材（**不逐项问用户**）。PRD 的「页面」≠ 原型独立页面——**载体划分留给步骤 3，本步只收集素材不拍板**。多文件改动（script / 数据 / 弹框链 / 交互）落盘前按 `iteration-regression-guard.md` 跑 Regression Gate（console 零错误 + 动态内容 DOM 断言 + 关键态截图人工核验）。
 
 **2. 端类型确认**：问 Web / 移动 / 双端同步，推荐并默认 Web；选双端再问「两套独立原型」还是「一套响应式」，由用户决定。
 
-**3. ◉ 布局清单 Gate（核心，强制）**：AI 基于 PRD 推导《布局清单》（载体类型 / 名称 / 内容 / 宿主页面 / 入口 / 出口 + 页面跳转），按 `assets/layout-inventory-template.md` 呈现；**用户确认增删后才生成原型**。
+**3. ◉ 布局清单 Gate（核心，强制）**：AI 基于 PRD 推导《布局清单》（载体类型 / 名称 / 内容 / 宿主页面 / 入口 / 出口 + 页面跳转），按 `../assets/layout-inventory-template.md` 呈现；**用户确认增删后才生成原型**。
 - **竞品布局调研（Gate 内置前置动作，尽力而为）**：推导清单前先联网检索同类 / 相似产品的公开页面，提炼 2~4 个竞品的布局结构（导航方式、信息架构、核心流程的载体形态）作为参考依据；**有明确同类竞品时必做**。无法联网或找不到强相关竞品时跳过，并在清单注明「无竞品参考，按通用布局模式推导」。调研结论只落在清单的引用标注里（备注列标 `参考竞品：<产品名> <页面/模式>`）——**不单独产出调研文档、不新增用户确认环节**。
 - 载体重合与时判定见 §4.1；后续若改载体划分 → 回本步骤重出清单并重新确认。
 
-**4. 生成低保真 HTML**：按 `references/html-spec.md`——独立页一个 HTML，弹框 / 抽屉等内嵌宿主页，页面间真实链接跳转；视觉按 §4.2；双端按步骤 2 方案产出（`web/` + `mobile/` 或单套响应式）。
+**4. 生成低保真 HTML**：按 `html-spec.md`——独立页一个 HTML，弹框 / 抽屉等内嵌宿主页，页面间真实链接跳转；视觉按 §4.2；双端按步骤 2 方案产出（`web/` + `mobile/` 或单套响应式）。
 
-**5. ◉ 逻辑闭环检测 Gate（强制）**：按 `references/completeness-check.md` 自检 6 项（载体完整 / 防加戏 / 跳转闭环 / 状态覆盖 / 端类型匹配 / 假设标注），**全绿才落盘**。
+**5. ◉ 逻辑闭环检测 Gate（强制）**：按 `completeness-check.md` 自检 6 项（载体完整 / 防加戏 / 跳转闭环 / 状态覆盖 / 端类型匹配 / 假设标注），**全绿才落盘**。
 
-**6. 落盘归档 + 回写**：落盘 `.spec/原型/`（结构见 §4.3）；回填评审任务清单——归本 skill 的 `已确认` 任务改 `已修复` 并写修改说明，未处理项保留并注明原因；**回填后须触发 `Prototype-Review` 复核，不得自判通过**（闭环与上限规则见 `../../../shared/anti-deadloop.md` §一/§二）。用户看原型后的调整 → 改原型并**同步回写布局清单**，两者保持一致。
+**6. 落盘归档 + 回写**：落盘 `.spec/原型/`（结构见 §4.3）；回填评审任务清单——归本 skill 的 `已确认` 任务改 `已修复` 并写修改说明，未处理项保留并注明原因；**回填后须触发 `Prototype-Review` 复核，不得自判通过**（闭环与上限规则见 `../../../shared/anti-deadloop.md` §2/§3）。用户看原型后的调整 → 改原型并**同步回写布局清单**，两者保持一致。
 
 ## 四、关键规范
 
@@ -113,9 +113,9 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ## 六、资源清单
 
-- `references/html-spec.md` / `completeness-check.md` / `iteration-regression-guard.md`
-- `references/case-library/`：方法学（保真度分级 / 反模式 / 可用性 / AI 边界 / 生命周期状态）+ 工具 + 动作型范本（按需加载）
-- `assets/layout-inventory-template.md` / `prototype-readme-template.md`
+- `html-spec.md` / `completeness-check.md` / `iteration-regression-guard.md`
+- `case-library`：方法学（保真度分级 / 反模式 / 可用性 / AI 边界 / 生命周期状态）+ 工具 + 动作型范本（按需加载）
+- `../assets/layout-inventory-template.md` / `../assets/prototype-readme-template.md`
 - `../../../shared/anti-deadloop.md`、`../../../shared/receiving-review.md`（仓库根）：门禁闭环与上限规则、接收评审纪律（先验证再实施、逐项测、禁感谢式回应）
 - `.spec/原型/`：产出目录
 

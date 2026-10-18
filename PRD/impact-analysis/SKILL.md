@@ -1,6 +1,6 @@
 ---
 name: impact-analysis
-description: 分析已登记变更对产品行为、接口、数据、权限、测试、发布和运行指标的影响。
+description: 分析已登记变更对产品行为、接口、数据、权限、测试、发布和运行指标的影响。触发：影响分析、改动影响、要改哪些地方、变更评估。
 metadata:
   short-description: 分析已登记变更对产品行为、接口、数据、权限、测试、发布和运行指标的影响。
 ---
@@ -12,8 +12,6 @@ metadata:
 发现失败、阻塞或用户纠正时，在下一安全节点按 `../../shared/problem-recording.md` 记录；根因未明不丢事实。恢复/交付前核对未决项，沿用已有详情与唯一索引。此规则优先于旧的仅收尾埋点/不确定不记表述，不增加轻量任务的正式建档要求。
 
 ## Purpose
-Use the common Gate contract: PASS requires no unresolved P0/P1; residual P0 is BLOCKED; residual P1 may only be an authorized CONDITIONAL with exceptionId, owner, dueAt, remediation, allowDownstream, and approvalRef. There is no force-pass rule.
-
 在改变外部行为前形成影响面和交付策略，防止下游只改一个文件而遗漏契约、迁移、回滚和监控。
 
 ## Trigger
@@ -35,7 +33,7 @@ Use the common Gate contract: PASS requires no unresolved P0/P1; residual P0 is 
 - 列出受影响产物、模块、用户旅程、接口、数据、权限、测试、发布和可观测性；
 - 区分事实影响、推断影响和待验证影响；
 - 给出最小变更路径、风险、回滚和需要确认的决策；
-- 将任务路由到 PRD/UI/DEV/auto-test/Release。
+- 将任务路由到对应产品、UI、DEV、auto-test 或 release 阶段。
 
 ## Non-goals
 - 不写最终技术实现；
@@ -64,7 +62,7 @@ Use the common Gate contract: PASS requires no unresolved P0/P1; residual P0 is 
 `PASS`：影响面、验证和回滚清楚；`CONDITIONAL`：可控缺口已登记且允许下游；`BLOCKED`：关键影响未知、存在不可接受风险或需要的用户决策未确认。
 
 ## Failure Route
-产品规则冲突转 PRD；接口/数据不一致转技术方案；高影响线上变化转 Incident/Release；证据无法取得则停止，不用猜测推进。
+产品规则冲突转 `prd-workflow`；接口/数据不一致转技术方案（`tech-review`）；高影响线上变化转 `incident-response` 与 `release-planning`；证据无法取得则停止，不用猜测推进。
 
 ## Downstream Contract
 下游收到受影响对象、批准范围、不可改变行为、变更切片、风险、验证、回滚、研究证据、保护指标和 Gate；不得把未影响对象当作无需检查。

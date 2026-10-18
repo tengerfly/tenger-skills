@@ -29,7 +29,7 @@
 | 口径表 | PROJECT.md 内冲突裁定表（冲突场景 / 口径 / 首次裁定）：表内直接套、首见落表、同类二次现场考证 = 违规（§4.9） | 不是每次冲突都现场考证 |
 | 输入瘦身 | 续做页只读本页设计稿 + FTDD 模块 §3~§5 + 本页 shared 契约段（S1 REQUIRED） | 不是每页重读全局文档 |
 | 视图扩展 `XxxExt` | 契约缺口在 `features/<模块>/types.ts` 以 `XxxExt` 补位 + ⚠️ 留痕注释（S7）；**临时态，联调前必须清零转正（S7/S8）** | 禁静默造字段；禁存活到联调后 |
-| AI 知识库引用层 | skill-knowledge | 外部 AI 知识库 `$env:SKILLS_KNOWLEDGE_ROOT/`（仓库根 `../../skill-knowledge/` 为调度侧引用层）的调度侧引用：S1/S2 组件决策链检索复用，S10 按四件套（职责边界 / 窄接口 / 最小示例 / 自测证据）沉淀进外部库 | 防冗余硬条件：已有近似组件 → 兼容性适配/更新既有，禁新建并列组件；项目特有组件不沉；不是项目内 `src/components`（那归组件抽离铁律管） |
+| AI 知识库引用层 | skill-knowledge | 外部 AI 知识库（环境变量 `SKILLS_KNOWLEDGE_ROOT` 指向的目录；仓库根 `../../skill-knowledge/` 为调度侧引用层）的调度侧引用：S1/S2 组件决策链检索复用，S10 按四件套（职责边界 / 窄接口 / 最小示例 / 自测证据）沉淀进外部库 | 防冗余硬条件：已有近似组件 → 兼容性适配/更新既有，禁新建并列组件；项目特有组件不沉；不是项目内 `src/components`（那归组件抽离铁律管） |
 
 ## 三、决策日志
 
@@ -47,7 +47,7 @@
 | D-10 | 09-08 | 新增 decision-rules（组件模式/状态/样式/数据表单/测试/工程化规范硬规则）+ case-library（组件模式/框架写法/质量规范/同行样本 4 文件） | 用户提供前端开发案例库资源清单，要求系统增强；借鉴 lobehub/qumge 范本 | ✅ |
 | D-11 | 09-09 | 体检修复 9 项：孤立代码围栏删除；FTDD §9/§10 一词两义 5 处归位；双开对象表述统一；Flutter 补枚举；api 收敛 src/api/ 口径；commitlint Test 小写；tech-stack-guide token 内存化+悬空编号修正；CONTEXT hooks 补 list 别名；README VN/设计稿+下游 Code-Review；现状基线/澄清协议/错误表收口 ../../shared/dev-common.md（R7）+双基准引用（R6）+埋点统一 | 全仓冗余专项体检（用户裁决全量修复 + R9 评审模板参数化） | ✅ |
 | D-12 | 09-09 | 终检修复 2 项：tech-stack-guide RN 请求列 axios 口径收敛（FTDD 选 axios 时经统一契约层接入）；CONTEXT/fidelity-guide 弯引号统一「」 | 全仓终检（冗余专项体检修复后复审，用户裁决全修） | ✅ |
-| D-13 | 09-10 | 门禁闭环配套：步骤 11 交付补「回填 `.spec/代码评审/任务清单.md` 归本 skill 的已确认项 → 重跑 `Code-Review` 复核（含 Fidelity-Review 还原度项），不得自判通过」；满 3 轮按仓库根 `../../shared/anti-deadloop.md` §二 处理 | Workflow 门禁闭环改造配套（用户要求前端代码评审固定带还原度 + 循环到清零） | ✅ |
+| D-13 | 09-10 | 门禁闭环配套：步骤 11 交付补「回填 `.spec/代码评审/任务清单.md` 归本 skill 的已确认项 → 重跑 `Code-Review` 复核（含 Fidelity-Review 还原度项），不得自判通过」；满 3 轮按仓库根 `../../shared/anti-deadloop.md` §3 处理 | Workflow 门禁闭环改造配套（用户要求前端代码评审固定带还原度 + 循环到清零） | ✅ |
 | D-14 | 09-10 | 吸收外部精华：步骤 10「全局一致性」扩为「**全局一致性 + 质量验收**」——①**性能验收对预算**（构建产物分析 + Lighthouse/性能面板核对 Core Web Vitals 与首屏包体，大列表/图片/字体/按需加载逐项确认，**结论要有实测数据**）；②**无障碍验收**（axe-core 无严重问题、键盘可完成主流程含 Tab 顺序与焦点可见、语义化与表单 label、对比度 AA）；③两项结果写进 PROJECT.md 留痕（对接 `../../shared/evidence-before-claims.md`）。另同日早前已落计划规范与接收评审（步骤 6/1） | 来源：`inskillflow/claude-code-skills` 的 `frontend-developer`（Core Web Vitals / WCAG AA / axe-core / 审计驱动验证） | ✅ |
 | D-15 | 09-10 | **结构重构（统一骨架）**：章节 15 → 7——§一 定位与铁律（Iron Law「设计稿是唯一基准，禁止自创」+ 铁律瘦身 8 条）；§二 输入与前置（表格化，含产出位置必问 / 评审清单与接收评审纪律 / 浏览器硬依赖）；§三 主流程 10 步（**组件抽离落地检查并入 S7 编码当下**；S9 = 一致性 + 性能验收 + 无障碍验收）；§四 关键规范 4.1~4.8（端差异适配 / monorepo 与共享类型 / 模块化与组件抽离 / 代码规范 / 接口实现 / 测试 / 还原度校验 / 不确定即问）；§五 错误表 / §六 资源 / §七 埋点。old-vs-new 审计：原 15 章内容全部有归属，无功能丢失 | 用户要求：整理成顺畅流程（Skill-Optimizer 全量体检） | ✅ |
 | D-16 | 09-15 | **视觉基准口径纠偏（P0）**：①铁律 6、§一角色、§二输入表、S4、§4.7 全部改为「**设计稿是视觉唯一应然**，原型只作结构对照」，删除「基准=原型，有设计稿时加开」的降级语气；②§4.7 明确必须并排「设计稿 ↔ 实现页」，只对原型比对不算还原完成；③S4 新增 **token 搬运对账（REQUIRED）**——design-system §7 ↔ `styles/variables` 逐条核对条数/值/命名，记录进 PROJECT.md；④S6 DoD 与 S5 Scope Gate 补还原证据与基准标注；⑤错误表加「有设计稿却按原型做视觉」「跳过 token 对账」两行；⑥`references/fidelity-guide.md` 重写（基准口径表按维度标注对照基准、脚本模板加 `DESIGN_BASE`、结论表加视觉基准行、失败模式加第 6/7 条）；⑦templates/skills 同步（module-code / project-status / project-structure / tech-stack-guide / code-style-guide / README） | 用户反馈：设计稿 OK 但前端画出来差别大；根因 = `fidelity-guide` 与 §4.7 主述以低保真原型为视觉基准（原型仅中性色+单一主色+基础字号），比对必过而视觉必然走样；中央口径 `../../shared/baseline-terms.md` 同批补「还原度定义 + 下游执行口径 + token 对账」 | ✅ |
@@ -61,6 +61,8 @@
 
 | D-24 | 2026-09-19 | 组件闭环统一外部 AI 知识库：S1 检索与 S2 组件决策链双轨合一（S1 指向 S2，决策链补 blueprints 判型 + 引用层入口）；增防冗余硬条件（命中但不适用 → 兼容性适配优先，禁新建并列冗余组件；无法适配须 asset-gap 差异说明 + 用户确认，或留项目内不进库）；S10 沉淀落点由本仓 `../../skill-knowledge/业务组件/frontend/` 改为外部库 asset-library 沉淀闭环 + 沉淀前必查重；错误表 +1 行；description/资源清单/README 同步；术语表改「AI 知识库引用层」 | 用户拍板：AI 组件统一在外部仓 skills-knowledge 作 AI 知识库，skill 侧只留引用+映射表，两边同步更新映射表；防冗余为硬性条件 | ✅ |
 | D-25 | 2026-10-18 | **外部 AI 知识库路径可移植化**：S2 组件决策链、S10 沉淀判定、资源清单、术语表四处的外部库路径由本机绝对路径改为环境变量 `$env:SKILLS_KNOWLEDGE_ROOT/`；组件决策链补「未配置 `$env:SKILLS_KNOWLEDGE_ROOT` 时按 `../../skill-knowledge/README.md` 的降级规则跳过检索并登记，不伪造命中」；顺带清掉术语表路径中的控制字符 | 用户 2026-10-18 要求可移植 / 换机可用（其他机器 / 宿主 / 项目直接可用） | ✅ 已确认 |
+| D-26 | 2026-10-18 | 评审修复（audit C 组）：C-03 S1 输入瘦身补 §9 适用状态/§10 用例；C-05/C-04 设计稿缺失改为「须已登记 EXC，无 EXC 即 BLOCKED」；C-06 anti-deadloop 节号按 §2/§3 校正；C-09 外部知识库降级内联（跳过检索 + 登记落点）；C-14 环境变量写法去 PowerShell 前缀；C-16 README 流程删独立「组件抽离检查」；C-17 README 下游 Testing→auto-test；C-24 Procedure 源仓步骤移入 §4.11、删行号引用；C-28 补 RN axios 例外；C-10 test-guide 大小写修正；C-11 project-status 模板沉淀路径改外部 asset-library。 | 来源 `.spec/体系评审/2026-10-18/C-dev.md`；用户要求体系可直接被他机/宿主使用 | ✅ 已确认 |
+
 ## 四、待决问题
 
 无。

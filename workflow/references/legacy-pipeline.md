@@ -2,7 +2,7 @@
 
 ﻿---
 name: Workflow
-description: 全流程开发编排。把 15 个链上专业 Skill 串成链（竞品→PRD→评审→原型→UI→开源调研→方案→开发→代码评审→测试；14 个编号节点 + ⑧⑨ 技术方案前的 OSS-Radar 同域调研步），每个节点都可作起点；默认从 ① 跑 0-1 全流程，已有 PRD 则从 ④ 起跑，只点名某节点则只跑该节点并停下。每个「产物 ⇄ 评审」节点内成门禁闭环：P0/P1 清零才进下一节点（满 3 轮清 P0 后放行）；闭环问题双向沉淀反哺 skill。每完成一节点停下等用户决定（继续/跳过/重做/停）。触发：从零开发、按流程开发、根据 PRD 生成原型/走后续、按方案写代码、评审代码、测试项目、继续、接着做。
+description: 全流程开发编排（历史版本）。把 15 个链上专业 Skill 串成链（竞品→PRD→评审→原型→UI→开源调研→方案→开发→代码评审→测试；14 个编号节点 + ⑧⑨ 技术方案前的 OSS-Radar 同域调研步），每个节点都可作起点；默认从 ① 跑 0-1 全流程，已有 PRD 则从 ④ 起跑，只点名某节点则只跑该节点并停下。每个「产物 ⇄ 评审」节点内成门禁闭环：P0/P1 清零才进下一节点；闭环问题双向沉淀反哺 skill。每完成一节点停下等用户决定（继续/跳过/重做/停）。触发：从零开发、按流程开发、根据 PRD 生成原型/走后续、按方案写代码、评审代码、测试项目、继续、接着做。
 compatibility: Claude Code / Agent SDK / OpenCode
 ---
 
@@ -28,7 +28,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 → ⑭ 测试
 ```
 
-- `⇄` = **门禁闭环**：产物 → 评审 → 修复 → 复核，P0/P1 清零才进下行；满 3 轮清 P0 后强制放行（定义见仓库根 `../../shared/anti-deadloop.md`）。
+- `⇄` = **门禁闭环**：产物 → 评审 → 修复 → 复核，P0/P1 清零才进下行。**上限 3 轮的现行口径**（历史原文「满 3 轮清 P0 后强制放行」已废止）：残留 P0 ⇒ `BLOCKED`；残留 P1 不得 `PASS`，只能完整授权 `CONDITIONAL`；不自动第 4 轮（`../../shared/anti-deadloop.md` §3）。
 - `∥` = **并行评审**：⑬-前 由 Code-Review（前端视角）与 Fidelity-Review 并行审，问题合并进同一份任务清单、共用循环与轮次。
 - ⑩ 与 ⑬ 按端拆两批执行（写一个审一个）：⑧ 清零才起 ⑨；⑨ 清零才起 ⑪；⑪ 清零才起 ⑫；⑫ 清零才起 ⑭。
 - **⑧⑨ 前置调研步（OSS-Radar）**：写技术方案前先跑 `OSS-Radar`（项目泳道，按 PRD 关键词定向同域开源项目，看同类项目怎么做）→ 产出 `.spec/开源情报/` → 再写 TDD/FTDD；⑨ 复用 ⑧ 轮报告或按前端视角补一轮；快速档或用户明确跳过时留痕放行。
@@ -114,7 +114,7 @@ PIPELINE：<路径>
 
 ## 五、门禁闭环与放行（③⑤⑦⑩⑬）
 
-评审 skill 只审不改、不设门禁；**循环推进与放行判定由本编排负责**，规则定义见仓库根 `../../shared/anti-deadloop.md`（§一 门禁闭环 / §二 上限 3 / §五 沉淀）。
+评审 skill 只审不改、不设门禁；**循环推进与放行判定由本编排负责**，现行规则见 `../../shared/anti-deadloop.md`（§2 评审轮次协议 / §3 上限与残留处置 / §4 双向沉淀）；本节下方旧口径仅作历史对照。
 
 **闭环模型**：
 
@@ -128,7 +128,7 @@ PIPELINE：<路径>
 **守门规则**：
 
 - **放行判据**：P0 全 `已修复` + P1 全 `已修复`（`已忽略` 须有用户确认的理由）+ 复核通过；P2 只记录、留后续，**不阻塞放行**。
-- **上限 3**：同批「修复 → 复核」满 3 轮仍未收敛 → 先**强制清零 P0**，再**直接放行**；残留 P1 记入 PIPELINE「遗留问题」，留痕并告知用户。
+- **上限 3（现行口径，已替换旧 force-pass）**：同批「修复 → 复核」最多 3 轮；残留 P0 ⇒ `BLOCKED`；残留 P1 不得 `PASS`，只能出完整授权 `CONDITIONAL`；不自动第 4 轮。历史原文「强制清零 P0 后直接放行」已废止，不得再作为放行规则。
 - **未放行不得起下游**：门禁节点的下游在门禁结果非 `已放行/强制放行` 前一律阻塞。
 
 **门禁点表**：
@@ -145,7 +145,7 @@ PIPELINE：<路径>
 
 修改方 skill 内含清单检测与回填，编排器只指定入口。门禁点可跳过（用户指令直接跳，PIPELINE 标 `已跳过` + 原因）。
 
-**资产五门禁（对接外部 AI 知识库 asset-library）**：涉及功能实现的任务，在既有门禁外加验五项——① **检索门禁**：候选分析完成（asset-needs/候选记录存在）；② **选择门禁**：selected/rejected/unresolved 三类齐备；③ **实现门禁**：asset-usage 记录实际使用版本（与锁定版本有偏差须有 deviation 说明）；④ **验证门禁**：证据可定位（命令/结果/截图）；⑤ **沉淀门禁**：Case / Pattern Candidate / 更新既有 / 反模式 四出口判断完成，**含查重防冗余（硬性条件）**——库内已有近似资产 → 一律走「更新既有 / 兼容性适配」出口，禁新建并列冗余资产；确需新建须 asset-gap 差异说明并经用户确认。项目侧状态记 `.spec/<feature>/pipeline-state.yaml`（模板在组件库 `templates/project-side/`）；双状态机分开推进：项目任务态（REQUIREMENT→…→USAGE_RECORDED）与资产变更态（DRAFT→…→RETIRED）。组件库位置：`D:\project\agent-project\skills-knowledge\asset-library\`（调度侧引用层与映射表 = 仓库根 `skill-knowledge/`，资产变更时双仓同步更新映射表）。
+**资产五门禁（对接外部 AI 知识库 asset-library）**：涉及功能实现的任务，在既有门禁外加验五项——① **检索门禁**：候选分析完成（asset-needs/候选记录存在）；② **选择门禁**：selected/rejected/unresolved 三类齐备；③ **实现门禁**：asset-usage 记录实际使用版本（与锁定版本有偏差须有 deviation 说明）；④ **验证门禁**：证据可定位（命令/结果/截图）；⑤ **沉淀门禁**：Case / Pattern Candidate / 更新既有 / 反模式 四出口判断完成，**含查重防冗余（硬性条件）**——库内已有近似资产 → 一律走「更新既有 / 兼容性适配」出口，禁新建并列冗余资产；确需新建须 asset-gap 差异说明并经用户确认。项目侧状态记 `.spec/<feature>/pipeline-state.yaml`（模板在组件库 `templates/project-side/`）；双状态机分开推进：项目任务态（REQUIREMENT→…→USAGE_RECORDED）与资产变更态（DRAFT→…→RETIRED）。组件库位置：环境变量 `SKILLS_KNOWLEDGE_ROOT` 指向的外部 AI 知识库 `asset-library/`（未配置时按降级口径跳过检索并登记，不伪造命中；调度侧引用层与映射表 = 仓库根 `skill-knowledge/`，资产变更时双仓同步更新映射表）。
 
 **分端与并行**：
 
@@ -154,7 +154,7 @@ PIPELINE：<路径>
 - **并行派发四要素**（同一响应内发多个调用 = 并行）：① 具体范围 ② 明确目标 ③ 约束（不得改范围外） ④ 期望产出。范围过宽、无上下文、无约束、产出含糊 = 派发无效。
 - **并行结果必须收口验证**：读每份产出 → 查**冲突**（是否改了同一处 / 结论互斥）→ 跑一次**全量**复核 → **抽查**（并行评审者会犯系统性错误，不能全量采信；结论须主线独立复核，见 `../../shared/evidence-before-claims.md`）。
 
-**沉淀反哺（双向）**：门禁放行后按 `../../shared/anti-deadloop.md` §五 判定（**P0 双向必沉**）——**A 防复发**：改产出方 skill 的防复发规则（错误表加行 / references / Gate 预检项），记其 CONTEXT D-xx；**B 检出力**：改发现问题的那一个评审 skill 的 `references/known-issue-patterns.md` 加一条（含「检出方法」）。**当场沉淀优先**（成因明确、改动增量 → 直接改 A/B 两个 skill + 同步部署副本）；改不了的落 `issue/<目标 skill>/<日期>/`（来源=评审闭环，写明双向落点）交 Skill-Optimizer 提炼。PIPELINE 记沉淀痕迹（A 落点 + B 落点 + 入池路径）。
+**沉淀反哺（双向）**：门禁放行后按 `../../shared/anti-deadloop.md` §4 判定（**P0 双向必沉**）——**A 防复发**：改产出方 skill 的防复发规则（错误表加行 / references / Gate 预检项），记其 CONTEXT D-xx；**B 检出力**：改发现问题的那一个评审 skill 的 `references/known-issue-patterns.md` 加一条（含「检出方法」）。**当场沉淀优先**（成因明确、改动增量 → 直接改 A/B 两个 skill + 同步部署副本）；改不了的落 `issue/<目标 skill>/<日期>/`（来源=评审闭环，写明双向落点）交 Skill-Optimizer 提炼。PIPELINE 记沉淀痕迹（A 落点 + B 落点 + 入池路径）。
 
 **运行期信号（正向循环第二入口）**：已接入日志/监控基建的项目（server-log 统一日志 / server-monitor 后端监控 / web-monitor 前端监控）在开发与运行中记录的问题，是评审闭环之外的问题来源——回流路径：**日志/监控记录 → `Bug-Fix` 诊断（根因 Gate → 委托方案/开发/回归修复闭环）→ 有预防价值的错误模式沉淀 `bug-patterns/` 池 / skill 方法论问题入 `issue/` 池 → `Skill-Optimizer` 模式③提炼反哺 skill 或对应项目修复**。两类入口（门禁评审 / 运行日志监控）最终汇入同一组池，构成「开发 → 记录 → 修复 → 沉淀 → skill 进化 → 下一项目受益」的正向循环。
 
@@ -175,7 +175,7 @@ PIPELINE：<路径>
 | 点名单节点却跑全链 | 终点未定 = 只跑起点 |
 | 前置缺失造占位继续 | 阻塞提示 |
 | P0/P1 未清放行 | 门禁闭环未收敛不放行 |
-| 满 3 轮无限重试 | 强制清 P0 后放行，残留 P1 记遗留 |
+| 满 3 轮无限重试 | 残留 P0 ⇒ BLOCKED；残留 P1 只能完整授权 CONDITIONAL；不自动第 4 轮 |
 | TDD/FTDD 或前后端并行 | 写一个审一个：⑧ 清零起 ⑨、⑪ 清零起 ⑫ |
 | ⑩⑬ 合并一次性审 | 分端两批：⑩-后/⑩-前、⑬-后/⑬-前 |
 | 前端代码评审漏还原度 | ⑬-前 = Code-Review（前端）∥ Fidelity-Review |
@@ -193,11 +193,11 @@ PIPELINE：<路径>
 
 - `assets/pipeline-template.md`
 - 同级子 skill：Competitive-Analysis、PRD-Design、PRD-Review、Prototype-Design、Prototype-Review、UI-UX-Design、UI-UX-Review、OSS-Radar（⑧⑨ 前置同域调研）、Backend-Tech-Design、Frontend-Tech-Design、Tech-Review、Backend-Dev、Frontend-Dev、Code-Review、auto-test（⑭ 测试节点）
-- 链外（不入主链编号，独立触发）：`Fidelity-Review`（还原验收；⑭ auto-test L2 内嵌 + ⑬-前 并行）、`Bug-Fix`（修复闭环，承接 ⑭ 发现的可运行性问题与运行期日志/监控信号）、`Testing`（传统项目测试·人工走查备用，源码保留，主链测试节点已由 auto-test 接替）
+- 链外（不入主链编号，独立触发）：`Fidelity-Review`（还原验收；⑭ auto-test L2 内嵌 + ⑬-前 并行）、`Bug-Fix`（修复闭环，承接 ⑭ 发现的可运行性问题与运行期日志/监控信号）。`Testing` 已归档（仅历史资料；旧请求重定向 auto-test），不再作为备用执行入口。
 - 公共约定：`../../shared/anti-deadloop.md`（门禁闭环 / 上限 3 / 分级 / 沉淀）、`../../shared/browser-policy.md`（浏览器两级策略 / 检测顺序 / 报错文案）、`../../shared/baseline-terms.md`（双基准术语）、`../../shared/evidence-before-claims.md`（取证口径）
 - 产物归档：被开发项目 `.spec/`；竞品分析产物 `.spec/<主题>竞品分析/`
 
 ## 九、运行问题埋点
 
-收尾按 `../../shared/instrumentation-guide.md` 自查上报 `issue/WorkFlow/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `../../shared/templates/issue-template.md`mplates/issue-template.md`；调度/守门/PIPELINE 状态侧）。不确定不记，不打断主流程。
+收尾按 `../../shared/instrumentation-guide.md` 自查上报 `issue/WorkFlow/<日期>/<序号>-<标题>.md`（来源=埋点；字段/等级/标签按其规范，模板 `../../shared/templates/issue-template.md`；调度/守门/PIPELINE 状态侧）。不确定不记，不打断主流程。
 

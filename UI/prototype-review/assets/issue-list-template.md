@@ -5,4 +5,4 @@
 > - 编号规则：`ISSUE-xx`（维度报告 → 汇总 → 本清单沿用）
 > - 修改方枚举：`Prototype-Design`（原型问题）/ `PRD-Design`（PRD 自相矛盾）/ `双方协同`（口径不一）
 > - 产物目录：`.spec/原型评审/`
-> - skill 专属：问题摘要含「现象+成因」，自足可读、不依赖原型/PRD 原文；只对 P0/P1 关键缺陷截图（截图规范见 `references/browser-inspection-guide.md`）
+> - skill 专属：问题摘要含「现象+成因」，自足可读、不依赖原型/PRD 原文；只对 P0/P1 关键缺陷截图（截图规范见 `../references/browser-inspection-guide.md`）

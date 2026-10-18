@@ -2,7 +2,7 @@
 
 > 用途：UI-UX-Design 步骤 5 产出物。**任何页面生成之前**必须沉淀并经用户确认，落盘 `.superdesign/design-system.md`（〔A〕CLI 硬性路径）或 `.spec/设计稿/design-system.md`（〔B〕自写路径）。
 > 强制消费：〔A〕所有生成调用必带 `--context-file` 指向本文件 + 保真约束语（只允许本规范内定义的视觉值）；〔B〕每页成稿的 token 唯一来源同为本文件。
-> 组件规范对齐 `references/open-source-design-systems.md` 所选开源体系基线，不自造无依据的值。
+> 组件规范对齐 `../references/open-source-design-systems.md` 所选开源体系基线，不自造无依据的值。
 
 ---
 
@@ -221,11 +221,11 @@ design_tokens:
 - **限宽只能落在内容主列容器上**：`max-width` 加在承载导航外壳的页框／根容器＝P1 缺陷（导航跟着缩）；
 - 限宽值是「当前屏基准」非死值：大屏断点放大（如 ≥1536 → N2），禁单一 `max-w` 死锁、禁不同页写法不一致；
 - 限宽页内容主列禁止内部二次窄列；
-- **跨页不变量实测**：全部页面的导航外壳左缘／宽度三值（1280/1440/1920）必须逐一相等，无测量值只能标「未验证」。
+- **跨页不变量实测**：全部页面的导航外壳左缘／宽度在 1440 与 1920 两档下必须逐一相等，无测量值只能标「未验证」。
 
 ## 6. 动效原则（Motion）
 
-> 判据见 `references/motion-design-guide.md`（决策四问 / 强度档 / 曲线与时长 token）；本节定档，§7 落 token。
+> 判据见 `../references/motion-design-guide.md`（决策四问 / 强度档 / 曲线与时长 token）；本节定档，§7 落 token。
 
 | 项 | 值 |
 |---|---|

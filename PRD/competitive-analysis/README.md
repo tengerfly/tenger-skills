@@ -3,9 +3,11 @@
 > 给定产品想法，用全球中英文数据驱动调研，客观呈现五层竞争全貌，输出工业级竞品分析报告。判断交给用户，本 skill 不下可行性结论。
 > 状态：✅ 完成
 
+> LEGACY COMPATIBILITY NOTICE: This file preserves historical material. The active Skill, Gate, state, artifact, and evidence rules are defined by `shared/skill-contract.md`, `shared/gate-policy.md`, `shared/anti-deadloop.md`, `shared/artifact-contract.md`, `governance/`, and `.spec/workflow.yaml`. 现行交付与边界见 [SKILL.md](SKILL.md)；旧版 11 模块报告与数据红线全文见 references/legacy-skill.md。
+
 ## 一、交付
 
-- `.spec/<主题>竞品分析/`：报告（11 模块）+ 验收结果详细说明（三段式 Pass Gate）。
+- active 交付：research 产物（研究范围、竞品选择、带来源的功能全景/对比矩阵、限制与未知项、裁剪依据 scopeBasis）+ 功能清单；旧版 11 模块报告模板见 assets/report-template.md，按需复用。
 - 纪律：一切结论有据可依；禁编造；预测必标；多方口径并列。
 
 ## 二、五层框架
@@ -16,16 +18,15 @@
 
 ## 三、Pass Gate
 
-- Use the common Gate contract: PASS requires no unresolved P0/P1; residual P0 is BLOCKED; residual P1 may only be an authorized CONDITIONAL with exceptionId, owner, dueAt, remediation, allowDownstream, and approvalRef. There is no force-pass rule.
-- Use the common Gate contract: PASS requires no unresolved P0/P1; residual P0 is BLOCKED; residual P1 may only be an authorized CONDITIONAL with exceptionId, owner, dueAt, remediation, allowDownstream, and approvalRef. There is no force-pass rule.
+- Gate 口径见 ../../shared/gate-policy.md：仅 PASS/CONDITIONAL/BLOCKED；残留 P0⇒BLOCKED；残留 P1 不得 PASS，仅完整授权 CONDITIONAL（exceptionId/risk/owner/dueAt/remediation/allowDownstream/approvalRef）；无 force-pass。
 - BLOCKED: fabricated, conflated, or materially incomplete evidence; record the missing evidence and Failure Route.
 
-数据红线 8 条见 SKILL.md。
+数据红线 8 条见 SKILL.md §Evidence；全文见 references/legacy-skill.md。
 
 ## 四、目录
 
 ```
-../competitive-analysis/
+competitive-analysis/
 ├── SKILL.md
 ├── references/（dimensions / frameworks / decision-rules / case-library）
 ├── assets/（report / matrix / eval 模板）

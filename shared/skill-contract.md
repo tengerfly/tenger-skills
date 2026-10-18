@@ -46,7 +46,7 @@ A local Skill must not redefine Gate values, lifecycle states, evidence labels, 
 name: example-skill
 description: One sentence describing the trigger and responsibility.
 metadata:
-  contract-level: v2 | legacy-wrapper
+  contract-level: v2 | v1 | legacy-wrapper | legacy-adapter | external-reference
   legacy-alias: null
 ---
 ```

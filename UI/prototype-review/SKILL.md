@@ -1,6 +1,6 @@
 ---
 name: prototype-review
-description: 对结构原型做页面完整性、交互闭环和状态覆盖评审的兼容入口。
+description: 低保真原型评审（Prototype-Review 兼容入口）。对照 PRD 对已生成的低保真原型做四维只读评审：页面/载体完整性（防漏+防加戏）、文案与字段逐字一致、交互与流程闭环、原型自身实现质量（不查视觉）。浏览器工具硬前置，全无则报错停用。触发：评审原型、走查原型、原型验收、查页面遗漏、查交互闭环、对照 PRD 查原型。
 metadata:
   legacy-alias: Prototype-Review
   migration-target: prd-workflow
@@ -33,6 +33,7 @@ metadata:
 - 上游输入的**批准状态现行有效**：逐条读 `.spec/manifest.yaml` 上游条目的 `status`、`version`、`gate`、`allowDownstream`，任一 `SUPERSEDED`／非 `PASS`／`false` ⇒ 本轮只能 `BLOCKED`（判据全闭只作事实；限定条件只能落字段，`../../shared/gate-policy.md` §6），汇总报告须含公共基线 §0 的上游闸门核对表；
 - 工作区边界已检查，不覆盖未提交内容；
 - 读取产品契约和 Gate 规则；
+- 浏览器工具为**硬依赖**：按 `../../shared/browser-policy.md` §一/§二 预检（任一可用即开工；全无 → 先按 §五 获取，仍全无 → 报错停止，不产出评审文档；报错文案模板见 §四，本 skill 只声明级别与动作、不重复定义）；
 - 评审类入口必须只审不改。
 
 ## Responsibilities
@@ -67,10 +68,10 @@ metadata:
 PASS：输入、产物、证据和关键确认齐全；CONDITIONAL：风险、责任人、期限、补证动作和 allowDownstream 已登记；BLOCKED：关键证据、授权、范围或上游 Gate 缺失。文件存在不等于 Gate 通过。
 
 ## Failure Route
-证据/用户问题不足回 `prototype-design`；产品定位/核心价值回 `product-definition`；业务流程/状态回 `application-blueprint`；MVP/功能范围回 `feature-decision`；技术未知交 DEV Workflow；页面/视觉问题交 `ui-workflow`。
+证据/用户问题不足回 `prototype-design`；产品定位/核心价值回 `product-definition`；业务流程/状态回 `application-blueprint`；MVP/功能范围回 `feature-decision`；技术未知交 DEV Workflow；页面/视觉问题交 `ui-ux-design` / `ui-ux-review`。
 
 ## Downstream Contract
 下游只能消费 manifest 中状态明确的 artifact，必须读取 sourceRefs、evidenceRefs、decisionRefs 和 openItems，不得从聊天上下文补齐未确认结论。
 
 ## State Changes
-`WORKFLOW_BLOCKED → INTAKE_REQUESTED → DISCOVERY_IN_PROGRESS → INTAKE_READY`。
+`PROTOTYPE_REVIEW_IN_PROGRESS → PROTOTYPE_APPROVED`；仅当 Gate 为 `PASS` 且上游批准现行有效时由编排器写入，评审方不得自判放行。

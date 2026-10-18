@@ -47,7 +47,7 @@ metadata:
 - 调度原子 Skill 和领域 Workflow，并在调度前执行上游闸门核对（`../shared/gate-policy.md` §6）；
 - 验证产物元数据、追踪关系、状态转移和 Gate；
 - 在失败时按问题归属回退到正确上游；
-- 保留旧 `PIPELINE.md`/线性 15 节点链路的兼容读取能力。
+- 保留旧 `PIPELINE.md` 与「15 个链上 Skill / 14 个编号节点」线性链路的兼容读取能力（口径见 `references/legacy-pipeline.md`）。
 
 ## Non-goals
 
@@ -72,7 +72,7 @@ metadata:
 
 ### 2. 选择正式流程入口与基线（标准/完整）
 
-- **先判产品意图（最高优先）**：目标目录为空、无 `.spec/`、无已有实现，且请求含产品意图（目标用户、功能、形态）⇒ 归 CREATE 并进入需求域（`idea-intake`），强度按 `../shared/execution-profiles.md` 落到标准/完整档。此时禁止从探查兄弟项目工程栈、盘点技术栈或抛技术选型问题开始；起点由该判据决定，不由执行方自行发挥。对标应用与从零新应用共用本判据；
+- **先判产品意图（最高优先）**：目标目录为空、无 `.spec/`、无已有实现，且请求含产品意图（目标用户、功能、形态）⇒ 归 CREATE 并进入**产品域编排 `prd-workflow`**（由其按注册顺序调度 `idea-intake` 起的原子 Skill），强度按 `../shared/execution-profiles.md` 落到标准/完整档。此时禁止从探查兄弟项目工程栈、盘点技术栈或抛技术选型问题开始；起点由该判据决定，不由执行方自行发挥。对标应用与从零新应用共用本判据；
 - 新项目或陌生旧项目：`project-onboarding`；
 - “旧项目按现在体系重跑/接入新流程/工程流程补齐”：先 `project-onboarding` 产出阶段缺口矩阵，再让用户确认补齐范围；不是自动 REFACTOR，也不是只跑测试。仅补工程基线按 CHANGE 记录，若实际目标是重构/缺陷/优化则按相应生命周期；不新增迁移状态、不重写旧 PIPELINE、不默认改代码或发布；
 - “全流程测试/全量回归”仅测试已有实现：直接 `auto-test`，缺失基准如实列出，不扩成需求重做；
@@ -84,7 +84,7 @@ metadata:
 ### 3. 路由领域 Workflow（标准/完整）
 
 ```text
-CREATE  -> PRD -> Prototype -> UI Design -> UI Review -> Tech Design -> DEV -> auto-test -> Release -> Operations
+CREATE  -> prd-workflow（idea-intake→…→prototype-review）-> ui-workflow（ui-ux-design→ui-ux-review）-> Tech Design -> DEV -> auto-test -> Release -> Operations
 CHANGE  -> Intake -> Impact -> affected domain -> Tech Design -> DEV -> auto-test -> Release -> Operations
 DEFECT  -> Triage -> Tech Design (when needed) -> DEV -> auto-test -> Release -> Operations
 REFACTOR -> Refactor -> Tech Design -> DEV -> auto-test -> Release -> Operations
@@ -191,7 +191,7 @@ PEOS v2 is an incremental refactor. It preserves the proven controls from the pr
 ```text
 ONBOARDING_REQUESTED | INTAKE_REQUESTED -> DISCOVERY_IN_PROGRESS
 -> ONBOARDING_BASELINE_READY | INTAKE_READY
--> PRD_IN_PROGRESS -> PRD_APPROVED -> UI_IN_PROGRESS -> UI_APPROVED
+-> PRD_IN_PROGRESS -> PRD_REVIEW_IN_PROGRESS -> PRD_APPROVED -> UI_IN_PROGRESS -> UI_APPROVED
 -> TECH_DESIGN_IN_PROGRESS -> TECH_DESIGN_APPROVED -> DEV_IN_PROGRESS
 -> CODE_REVIEW_PASSED -> TEST_IN_PROGRESS -> TEST_PASSED
 -> RELEASE_PLANNING_IN_PROGRESS -> RELEASE_PLAN_READY
@@ -202,7 +202,7 @@ ONBOARDING_REQUESTED | INTAKE_REQUESTED -> DISCOVERY_IN_PROGRESS
 -> DEV_IN_PROGRESS | INCIDENT_ROUTED | INSPECTION_RECORDED | COMPLETED
 ```
 
-详细旧版节点与脚本兼容规则见 `references/legacy-pipeline.md`；通用契约见仓库根目录 `../shared/`。
+旧版节点编号与脚本名的兼容读取见 `references/legacy-pipeline.md`（只读历史；其 Gate/放行口径已废止，Gate、轮次与残留处置一律以 `../shared/gate-policy.md` 与 `../shared/anti-deadloop.md` 为准）；通用契约见仓库根目录 `../shared/`。
 ## Execution Envelope（正式交接 required）
 
 标准/完整流程中的 Skill 调用及任何正式状态转换前必须创建或更新 `task-envelope.yaml` 的实例。低风险独立调用按 `../shared/execution-profiles.md` 使用任务摘要，不要求 Envelope，也不能写入正式批准或状态。Envelope 是执行边界，不是普通说明文档；至少声明 `taskId`、`projectId`、`executionId`、`lifecycle`、`currentState`、允许/禁止路径、输入/产物/证据/决策引用、授权、期望输出、Gate 和 `nextAction`。正式执行缺少 Envelope、授权或路径范围时，必须停在 `WORKFLOW_BLOCKED`，不能以轻量名义继续正式转换或下游执行。

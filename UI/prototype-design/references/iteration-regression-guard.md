@@ -45,11 +45,12 @@
        --enable-logging=stderr --v=0 --dump-dom <URL>
      ```
    - 从 stderr 检索 `CONSOLE` 行中的 `SyntaxError` / `ReferenceError` / `Uncaught`——**必须为 0**；
+   - 跨平台：上例为 Windows `msedge`；macOS 用 `/Applications/Google Chrome.app/Contents/MacOS/Google Chrome`，Linux 用 `google-chrome` / `chromium`；或统一改用 `shared/browser-policy.md` 的 Playwright / MCP 浏览器工具。
 3. **动态内容 DOM 断言**：对渲染产物断言关键元素数量/坐标有值，例如图谱断言 `svg#graph` 内 `<g>`/`<line>` 数量等于数据集预期、连线 `x1` 坐标已被动画更新（非全 0）；
 4. **交互态截图人工核验**：关键弹框/图形/切换态**人工看图**（不是看文件大小 > N KB）。可对临时副本注入自动触发脚本（`window.addEventListener('load', …)`）再截图，不污染原型文件；
 5. **资源/断链复扫**：正则扫描全站 `href/src` 本地引用是否存在（注意 JS 字符串拼接 `' + x.href + '` 会被正则误报，需人工排除）。
 
-**PowerShell 中文路径坑**：Windows 下命令行/临时 ps1 传中文路径会乱码（目录找不到、文件名非法字符）。**一切含中文路径/文件名的操作改由 Python 脚本执行**（`write_to_file` 写 UTF-8 源文件再运行），浏览器截图输出到英文临时名、再由 Python 归档为中文名。
+**PowerShell 中文路径坑**：Windows 下命令行/临时 ps1 传中文路径会乱码（目录找不到、文件名非法字符）。**一切含中文路径/文件名的操作改由 Python 脚本执行**（`write_to_file` 写 UTF-8 源文件再运行），浏览器截图输出到英文临时名、再由 Python 归档为中文名。（跨平台：macOS/Linux 无此坑；含中文路径的操作一律用 Python/Node 脚本处理，避免 shell 包装。）
 
 ---
 

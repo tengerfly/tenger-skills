@@ -27,7 +27,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ### ① 取源
 1. `gh api repos/<owner>/<repo>`（或免认证 `api.github.com`）查元信息：默认分支、主语言、规模（size KB）、是否 monorepo。
-2. 浅克隆到工作区外临时目录（**绝不克隆进在研项目、绝不改动源码**）：
+2. 浅克隆到**在研项目工作区之外**的临时目录（**绝不克隆进在研项目、绝不改动源码**）：
    - 常规：`git clone --depth 1`
    - 大仓（size > 200MB 或包很多）：`--depth 1 --filter=blob:none` + `sparse-checkout` 排除 `tests / docs / examples / e2e / fixtures / benchmarks`
    - monorepo（react/vue3 级）：先只检出 `packages/` + 根配置，逐章需要时再扩

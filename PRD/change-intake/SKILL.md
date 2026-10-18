@@ -1,6 +1,6 @@
 ---
 name: change-intake
-description: 把模糊请求登记为可追踪的生命周期任务并完成初步分类。
+description: 把模糊请求登记为可追踪的生命周期任务并完成初步分类。触发：改一下、优化、修复需求、登记任务、这个需求归谁做。
 metadata:
   short-description: 把模糊请求登记为可追踪的生命周期任务并完成初步分类。
 ---
@@ -12,8 +12,6 @@ metadata:
 发现失败、阻塞或用户纠正时，在下一安全节点按 `../../shared/problem-recording.md` 记录；根因未明不丢事实。恢复/交付前核对未决项，沿用已有详情与唯一索引。此规则优先于旧的仅收尾埋点/不确定不记表述，不增加轻量任务的正式建档要求。
 
 ## Purpose
-Use the common Gate contract: PASS requires no unresolved P0/P1; residual P0 is BLOCKED; residual P1 may only be an authorized CONDITIONAL with exceptionId, owner, dueAt, remediation, allowDownstream, and approvalRef. There is no force-pass rule.
-
 把用户请求从自然语言转成有范围、有成功标准、有证据边界的任务入口。它不替用户批准产品或架构决策，只负责让后续决策可以被正确承接。
 
 ## Trigger
@@ -35,7 +33,7 @@ Use the common Gate contract: PASS requires no unresolved P0/P1; residual P0 is 
 - 原始请求登记；
 - 识别 `CREATE/CHANGE/DEFECT/REFACTOR/INCIDENT/OPTIMIZE`；
 - 记录范围、非目标、成功标准、风险和下一步；
-- 判断是否需要 Project Onboarding、Impact Analysis 或 Defect Triage。
+- 判断是否需要 `project-onboarding`、`impact-analysis` 或 `defect-triage`。
 
 ## Non-goals
 - 不分析完整技术方案；

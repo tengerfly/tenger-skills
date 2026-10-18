@@ -1,6 +1,6 @@
 ---
 name: application-blueprint
-description: 将产品定位与候选能力映射为用户旅程、业务对象、权限、状态和异常规则；不重复竞品研究、不决定 MVP 或写 PRD。
+description: 将产品定位与候选能力映射为用户旅程、业务对象、权限、状态和异常规则；不重复竞品研究、不决定 MVP 或写 PRD。触发：业务蓝图、用户旅程、业务对象、权限状态、业务流程设计。
 metadata:
   short-description: 将已确认的产品定义展开为用户旅程、业务流程、能力地图、状态和异常闭环。
 ---
@@ -17,10 +17,10 @@ metadata:
 把产品定义变成可讨论的应用蓝图，覆盖主流程、分支、权限、空状态、失败、恢复和对象生命周期。
 
 ## Trigger
-Product Definition 已批准，或 CHANGE 影响核心旅程、规则、权限、状态机或模块边界时触发。
+`product-definition` 已批准，或 CHANGE 影响核心旅程、规则、权限、状态机或模块边界时触发。
 
 ## Inputs
-- 已批准 Product Definition；
+- 已批准 `product-definition`；
 - research 中的功能全景/候选 ID 或现有批准基线；候选不等于本次范围已批准；
 - 角色、业务对象、外部依赖和约束。
 
@@ -47,7 +47,7 @@ Product Definition 已批准，或 CHANGE 影响核心旅程、规则、权限�
 3. 定义状态机、合法迁移、终态和失败出口。
 4. 推演资源不存在、权限不足、空数据、依赖失败、重复、超时、恢复和回滚。
 5. 输出蓝图、状态机、异常矩阵和能力地图。
-6. 由产品责任人确认规则，未决项路由 Feature Decision 或阻塞。
+6. 由产品责任人确认规则，未决项路由 `feature-decision` 或阻塞。
 
 ## Outputs
 - `application-blueprint` artifact；
@@ -57,7 +57,7 @@ Product Definition 已批准，或 CHANGE 影响核心旅程、规则、权限�
 每次执行都必须记录 `executionId`、`skill`、`lifecycle`、`project`、`status`、`gate`、`evidenceRefs`、`artifactRefs`、`decisionRefs` 和 `nextAction`。
 
 ## Evidence
-Product Definition、用户旅程、批准规则、运行数据和依赖约束。每个状态/迁移有来源或标为候选。
+`product-definition`、用户旅程、批准规则、运行数据和依赖约束。每个状态/迁移有来源或标为候选。
 
 ## Gate
 PASS：主流程、异常、状态、权限和恢复闭环；CONDITIONAL：非主链缺口有登记且不影响下游；BLOCKED：主流程断头、状态无终态、规则冲突或未确认。
@@ -70,7 +70,7 @@ PASS：主流程、异常、状态、权限和恢复闭环；CONDITIONAL：非�
 评审或澄清最多 3 轮；仍未收敛时保留问题并请求人工裁决，不无限生成。
 
 ## Downstream Contract
-Feature Decision 消费旅程、能力、状态和异常边界；Prototype 消费批准的流程和信息架构。
+`feature-decision` 消费旅程、能力、状态和异常边界；`prototype-design` 消费批准的流程和信息架构。
 
 下游必须消费 artifact 和 decisionRefs，不得从聊天上下文补齐未确认结论。
 

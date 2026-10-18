@@ -1,6 +1,6 @@
 ---
 name: feature-decision
-description: 向用户解释功能全景并逐模块确认 MVP/Later/Reject/Defer、依赖和范围边界；不做竞品研究、不设计业务状态或编写 PRD。
+description: 向用户解释功能全景并逐模块确认 MVP/Later/Reject/Defer、依赖和范围边界；不做竞品研究、不设计业务状态或编写 PRD。触发：功能取舍、MVP 范围、优先级、做什么不做什么、版本范围确认。
 metadata:
   short-description: 基于产品蓝图对候选功能做价值、成本、风险和依赖取舍，冻结 MVP 与行为边界。
 ---
@@ -14,14 +14,14 @@ metadata:
 发现失败、阻塞或用户纠正时，在下一安全节点按 `../../shared/problem-recording.md` 记录；根因未明不丢事实。恢复/交付前核对未决项，沿用已有详情与唯一索引。此规则优先于旧的仅收尾埋点/不确定不记表述，不增加轻量任务的正式建档要求。
 
 ## Purpose
-把候选能力转成可追踪的 Adopt/Adapt/Reject/Defer 与 Must/Should/Could/Won’t 决策，明确 MVP、后续范围、不可变行为和验收边界。
+把候选能力转成可追踪的 MVP/Later/Reject/Defer 决策，明确 MVP、后续范围、不可变行为和验收边界。若用 Adopt/Adapt 或 MoSCoW 讨论，落入决策表前统一映射为 MVP/Later/Reject/Defer（Adopt→MVP、Adapt→MVP/Later、Defer→Defer、Reject→Reject；Must→MVP、Should→MVP/Later、Could→Later、Won’t→Reject）。
 
 ## Trigger
-Application Blueprint 已准备，或 CHANGE/OPTIMIZE 调整功能范围、MVP、优先级、依赖或保护指标时触发。
+`application-blueprint` 已准备，或 CHANGE/OPTIMIZE 调整功能范围、MVP、优先级、依赖或保护指标时触发。
 
 ## Inputs
-- Application Blueprint；
-- Product Definition 和研究证据；
+- `application-blueprint`；
+- `product-definition` 和研究证据；
 - 候选功能、价值、成本、风险、依赖估计；
 - 预算、时间、合规和发布约束。
 
@@ -34,7 +34,7 @@ Application Blueprint 已准备，或 CHANGE/OPTIMIZE 调整功能范围、MVP�
 ## Responsibilities
 - 建立功能卡和评价维度；
 - 比较价值、频率、成本、风险、依赖、可逆性和验证成本；
-- 产出 MVP/Later/Reject/Defer 与 Must/Should/Could/Won’t；
+- 产出 MVP/Later/Reject/Defer（Adopt/Adapt、MoSCoW 等框架结论先按 Purpose 的映射表归一到该枚举）；
 - 引用蓝图中的规则，确认选入范围的不可变行为、验收边界、保护指标和不做项；
 - 生成用户确认的 Feature Decision Record。
 
@@ -50,7 +50,7 @@ Application Blueprint 已准备，或 CHANGE/OPTIMIZE 调整功能范围、MVP�
 4. 每轮聚焦少量有关联的决策，按用户理解程度深入；用户不知道时给案例、差异和可选方案。用户可一次确认一组明确列出的功能及版本，不必逐条点头。
 5. 引用蓝图的规则，只确认本次纳入哪些行为/权限/异常边界；发现规则不清回 application-blueprint，不在这里重复设计状态机。检查选入功能的依赖与主链，删减导致断链则提出选择，不能自动扩大范围。
 6. 展示最终 MVP/Later/Reject/Defer 表、未决项、范围外内容及验收边界，请用户或授权负责人明确确认版本；沉默、“继续研究”或同意竞品名单不等于范围批准。
-7. 只有已批准范围可交 PRD-Design。尚未决定的模块继续探索或由用户明确延期；缺关键确认即停，不用评审轮次上限强行定稿。
+7. 只有已批准范围可交 `prd-design`。尚未决定的模块继续探索或由用户明确延期；缺关键确认即停，不用评审轮次上限强行定稿。
 
 ## Outputs
 - `feature-decision` artifact；
@@ -73,7 +73,7 @@ PASS：MVP、范围、关键行为和不做项已确认；CONDITIONAL：低风�
 同一阻塞点反复 3 轮未收敛则请求裁决；新场景、新证据和不同问题可继续探索，不把三轮理解为整个 PRD 的访谈上限。不得为结束对话把 OPEN 改为已确认。
 
 ## Downstream Contract
-PRD-Design 只能写 APPROVED 的范围、行为、验收边界和不做项；Prototype 不能超出批准范围。
+`prd-design` 只能写 APPROVED 的范围、行为、验收边界和不做项；`prototype-design` 不能超出批准范围。
 
 下游必须消费 artifact 和 decisionRefs，不得从聊天上下文补齐未确认结论。
 

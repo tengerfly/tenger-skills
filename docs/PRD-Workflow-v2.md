@@ -33,17 +33,15 @@ Idea-Intake
 
 ## 产物和追踪
 
-新阶段产物使用 `.spec/manifest.yaml` 登记，新增类型包括：
+新阶段产物使用 `.spec/manifest.yaml` 登记，字段名与必填项以 `shared/artifact-contract.md` §2 与 `governance/schemas/artifact-manifest.schema.yaml` 为准（即 `type`/`path`/`owner`/`producedBy`/`producedAt` 等，不使用 `kind`）。产品域常用类型：
 
-- `discovery-brief`
-- `product-definition`
-- `application-blueprint`
+- `intake` / `discovery-brief` / `research`
+- `product-definition` / `application-blueprint`
 - `journey-map`
-- `feature-decision`
-- `scope-decision`
-- `prototype-review`
+- `feature-decision` / `scope-decision`
+- `prd` / `prototype` / `prototype-review`
 
-每个阶段必须登记 `sourceRefs`、`evidenceRefs`、`decisionRefs` 和 `openItems`。只有 `APPROVED` artifact 才能驱动下游；OPEN 和 ASSUMPTION 不得伪装成需求事实。
+完整枚举与逐型 required 以 `governance/artifact-registry.yaml` 为唯一源。每个阶段必须登记 `sourceRefs`、`evidenceRefs`、`decisionRefs`；`gate`/`allowDownstream` 记在 `.spec/workflow.yaml` 与 `.spec/gates/`，不写进 manifest。只有 `APPROVED` artifact 才能驱动下游；OPEN 和 ASSUMPTION 不得伪装成需求事实。
 
 ## 研究逻辑保留
 

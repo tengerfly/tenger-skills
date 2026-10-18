@@ -1,6 +1,6 @@
 # 苏格拉底拷问协议（grill-me 式单步拷问）
 
-> 执行范围：PRD-Design 澄清环节（S2 澄清① / S5 澄清② / V2 差异澄清）。吸收 grill-me、grill-with-docs 的决策树 + 单步提问法，内嵌执行，不依赖外部 skill。
+> 执行范围：`prd-design` 澄清环节（S2 澄清① / S5 澄清② / V2 差异澄清）。吸收 grill-me、grill-with-docs 的决策树 + 单步提问法，内嵌执行，不依赖外部 skill。
 > ⛔ BLOCKING：收敛点未过「收敛证明」前，禁止画图、成文或进入下一环节。
 
 ## 一、心智模型：决策树

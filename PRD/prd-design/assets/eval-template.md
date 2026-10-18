@@ -46,5 +46,4 @@ P0 一票否决：B4/B5/B6/B7/B8/B10、禁词、模糊、编造。P1：假设漏
 | 01_A | 成文后 | 通过 | 0 | ✅ |
 
 ## 6. Pass Gate 裁决
-Use the common Gate contract: PASS requires no unresolved P0/P1; residual P0 is BLOCKED; residual P1 may only be an authorized CONDITIONAL with exceptionId, owner, dueAt, remediation, allowDownstream, and approvalRef. There is no force-pass rule.
-Use the common Gate contract: PASS requires no unresolved P0/P1; residual P0 is BLOCKED; residual P1 may only be an authorized CONDITIONAL with exceptionId, owner, dueAt, remediation, allowDownstream, and approvalRef. There is no force-pass rule.
+Gate 口径见 ../../../shared/gate-policy.md：仅 PASS/CONDITIONAL/BLOCKED；残留 P0⇒BLOCKED；残留 P1 不得 PASS，仅完整授权 CONDITIONAL（exceptionId/risk/owner/dueAt/remediation/allowDownstream/approvalRef）；无 force-pass。

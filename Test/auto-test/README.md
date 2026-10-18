@@ -4,7 +4,7 @@
 
 | 项 | 说明 |
 |---|---|
-| 主链位置 | Workflow ⑭ 测试节点（接替 Testing；Testing 保留为链外备用，源码不动） |
+| 主链位置 | Workflow ⑭ 测试节点（接替 Testing——Testing 已于 2026-09-22 归档，旧请求重定向 auto-test，不设第二套备用流程） |
 | 输入 | 可运行代码 + PRD（AC/状态机）+ 设计稿（视觉基准，缺失回退原型明示降级）+ 接口契约 |
 | 产物 | `.spec/auto-test/`：用例库 / 分层报告 / 修复任务卡 / evidence（截图·console·network） |
 | 双模式 | 引擎模式（auto-test CLI / MCP 可用时委托）与会话模式（agent 亲自执行）产物格式一致 |

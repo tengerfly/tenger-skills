@@ -15,6 +15,6 @@
 
 ## 三、使用原则
 
-1. **量化阈值优先**：像素容忍度分级 + diff 阈值 + attempts 见 `decision-rules.md`，评审时对照执行，不靠观感。
+1. **量化阈值优先**：像素容忍度分级 + diff 阈值 + attempts 见 `../decision-rules.md`，评审时对照执行，不靠观感。
 2. **token 绑定是治本**：像素对比治标，绑定 design token 从源头消魔法值。
 3. **借鉴不照搬**：同行范本的 gate/is-should/评分只作参考，本 Skill 基准通道（A 优先）+ 截图存证优先。

@@ -4,7 +4,7 @@ UI/UX 设计域。承接 PRD 域已批准的产品结构和原型，产出可交
 
 ## 主流程
 
-`Prototype-Design` → `UI-UX-Design` → `UI-UX-Review`；实现完成后可独立调用 `Fidelity-Review` 做页面还原度验收。
+`Prototype-Design`（兼容入口，由 `prd-workflow` 调度）→ `Prototype-Review`（兼容入口，同上）→ `UI-UX-Design` → `UI-UX-Review`；实现完成后可独立调用 `Fidelity-Review` 做页面还原度验收。
 
 ## 边界
 

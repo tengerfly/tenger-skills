@@ -27,5 +27,5 @@
 ## 与现有 skill 的关系
 
 - 链外独立 skill，不占主链 14 节点（同 Fidelity-Review / Bug-Fix / OSS-Radar / Source-Reading）
-- 承重断言被证伪后的替代方案重写 → Backend/Frontend-Tech-Design；已写代码的验收 → Testing / auto-test
+- 承重断言被证伪后的替代方案重写 → Backend/Frontend-Tech-Design；已写代码的验收 → auto-test
 - 收尾的 AI 错误模式沉淀与 Bug-Fix 同池（`../../bug-patterns/`）

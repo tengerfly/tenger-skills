@@ -1,6 +1,6 @@
 # 完成声明的证据门禁（跨 skill 公共约定）
 
-> 适用：所有会做出「完成 / 通过 / 修好 / 没问题 / 已验证」声明的 skill——Code-Review、auto-test / Testing、Backend-Dev、Frontend-Dev、Bug-Fix、Fidelity-Review、Workflow 门禁判定。
+> 适用：所有会做出「完成 / 通过 / 修好 / 没问题 / 已验证」声明的 skill——Code-Review、auto-test、Backend-Dev、Frontend-Dev、Bug-Fix、Fidelity-Review、Workflow 门禁判定（Testing 已归档，旧请求重定向 auto-test）。
 > 来源：superpowers/verification-before-completion（MIT），2026-09-10 吸收。
 
 ## 铁律

@@ -1,4 +1,4 @@
 interface:
   display_name: refactor-planning
   short_description: 在默认外部行为不变的前提下规划可验证、可回退的应用重构和工程治理。
-  default_prompt: 按 SKILL.md 执行，先标记事实与未知项，再产出可验证交付物。
+  default_prompt: 按 SKILL.md 执行；先标记事实与未知项，再产出带证据的可验证结果，不越权执行生产动作。

@@ -16,7 +16,6 @@
 |---|---|
 | 输入 | 前后端代码 + libs/shared + PRD/原型/TDD/FTDD |
 | 输出 | 后端评审 + 前端评审 + 汇总报告 + 任务清单（`.spec/代码评审/`） |
-Use the common Gate contract: PASS requires no unresolved P0/P1; residual P0 is BLOCKED; residual P1 may only be an authorized CONDITIONAL with exceptionId, owner, dueAt, remediation, allowDownstream, and approvalRef. There is no force-pass rule.
 | 头号目标 | 接口对不上：入参个数、字段名/类型/大小写/术语、路径/方法、枚举/分页、共享类型被绕过 |
 
 ## 三、流程
@@ -26,7 +25,6 @@ Use the common Gate contract: PASS requires no unresolved P0/P1; residual P0 is 
 → 删除候选与清理计划 → 契约专项三方比对 → 本批次角色文档 → 汇总 → 任务清单 + 用户确认 → 闭环复核 + 双向沉淀判定 → 归档
 ```
 
-Use the common Gate contract: PASS requires no unresolved P0/P1; residual P0 is BLOCKED; residual P1 may only be an authorized CONDITIONAL with exceptionId, owner, dueAt, remediation, allowDownstream, and approvalRef. There is no force-pass rule.
 
 ## 四、目录
 

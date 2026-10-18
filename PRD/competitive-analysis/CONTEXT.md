@@ -1,3 +1,5 @@
+> LEGACY COMPATIBILITY NOTICE: This file preserves historical material. The active Skill, Gate, state, artifact, and evidence rules are defined by `shared/skill-contract.md`, `shared/gate-policy.md`, `shared/anti-deadloop.md`, `shared/artifact-contract.md`, `governance/`, and `.spec/workflow.yaml`. 现行规则见 [SKILL.md](SKILL.md)。
+
 # CONTEXT.md —— Competitive-Analysis 术语与决策记录
 
 > Competitive-Analysis 术语对齐源 + 决策日志。
@@ -13,7 +15,7 @@
 | 术语 | 定义 |
 |---|---|
 | 五层框架 | 分析视角（市场/竞品/痛点/商业/技术） |
-| Pass Gate | 输出前自检：PASS=P0=0 且 P1(Open)=0；CONDITIONAL=P0=0 但 P1(Open)≥1（就地补齐再验）；FAIL=命中 P0 |
+| Pass Gate | 输出前自检，只有 PASS / CONDITIONAL / BLOCKED 三值：PASS=P0=0 且 P1(Open)=0；CONDITIONAL=P0=0 但 P1(Open)≥1（就地补齐再验）；BLOCKED=命中 P0 或关键证据缺失（阻断输出并回炉） |
 | 三段式评估 | 结果是什么/缺什么/优化什么 |
 | 数据红线 | 8 条最高优先级，违反即 P0 |
 | 赛道自适应 | 按赛道自动调整侧重 |
@@ -30,6 +32,7 @@
 | D-03 | 09-08 | 新增 decision-rules（证据标准/反模式/监控节奏/加权评分）+ case-library（扩展框架/数据源/同行样本） | 用户提供竞品分析案例库资源清单，要求系统增强 | ✅ |
 | D-04 | 09-09 | 体检修复 4 项：Pass Gate 补 P1(Open)≥1 CONDITIONAL 分支（SKILL/README/CONTEXT/eval 四处）；门禁 11 项标注节选 7 项；README 补状态行；CONTEXT 表格列数修正 | 全仓冗余专项体检（用户裁决全量修复 + R9 评审模板参数化） | ✅ |
 | D-05 | 09-15 | 全仓一致性纠偏：门禁措辞「FAIL 阻断重构」半截话改「FAIL → 阻断输出并回炉重构」，与 README/eval-template 口径统一 | 四代理并行七维体检 | ✅ |
+| D-06 | 2026-10-18 | Gate 术语订正：术语表 FAIL → BLOCKED（阻断输出并回炉），文件头补 LEGACY COMPATIBILITY NOTICE；README 交付/数据红线口径与 active SKILL 对齐并去重重复 Gate 段 | 审计 A-05、A-06、A-22（Gate 只有三值，见 shared/gate-policy.md §5） | ✅ 已修 |
 
 ## 四、待决问题
 

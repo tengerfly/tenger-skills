@@ -4,6 +4,8 @@ description: 生成工业级 PRD（需求总纲 + 模块规格 + 速查表）。
 compatibility: Claude Code / Agent SDK / OpenCode
 ---
 
+> LEGACY COMPATIBILITY NOTICE: This file preserves historical material. The active Skill, Gate, state, artifact, and evidence rules are defined by `shared/skill-contract.md`, `shared/gate-policy.md`, `shared/anti-deadloop.md`, `shared/artifact-contract.md`, `governance/`, and `.spec/workflow.yaml`. 现行规则见 [SKILL.md](../SKILL.md)。
+
 # 产品需求文档（PRD）编写 Skill
 
 > IRON LAW：**未想清不落笔**——收敛点未过「收敛证明」前，禁止画图、成文、进入下一步。术语与决策以 `CONTEXT.md` 为准。
@@ -105,7 +107,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 **S6 全局 Pass Gate**：按 §4.4 执行，并做一致性专项——引用 / 命名对照术语表；速查表锚点可达；索引数 = 源文档实测数。放行条件：P0=0 且 P1(Open)=0。
 
-**S7 ◉ 终审与归档**：用户确认后归档 `.spec/PRD/VN/`（overview + 速查表 + NN_xxx + 验收结果详细说明），并回填任务清单——`已确认` 改 `已修复` + 写明改动位置，未处理条目保留原状态并说明原因；**回填后须触发 `PRD-Review` 复核，不得自判通过**（闭环与上限规则见 `../../../shared/anti-deadloop.md` §一/§二）。
+**S7 ◉ 终审与归档**：用户确认后归档 `.spec/PRD/VN/`（overview + 速查表 + NN_xxx + 验收结果详细说明），并回填任务清单——`已确认` 改 `已修复` + 写明改动位置，未处理条目保留原状态并说明原因；**回填后须触发 `PRD-Review` 复核，不得自判通过**（闭环与上限规则见 `../../../shared/anti-deadloop.md` §2/§3）。
 
 **回炉**：模块划分错误（多切 / 漏切 / 错切）→ 冻结已展开的模块文档（暂停新增内容），只修订总纲与关联图 → 重过 S4 确认后再展开。
 

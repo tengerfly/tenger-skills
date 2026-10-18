@@ -24,7 +24,7 @@
 ```
 解析（读文档/判端/确认目录+git/浏览器预检）→ 技术栈锁定（读 FTDD；缺失补选型；端不符阻塞）
 → 工程初始化 → 还原基线+token → ◉ Scope Gate → 功能点计划（todo + PROJECT.md）
-→ 逐功能点测试先行实现 + 提交 → 组件抽离检查 → 契约对齐 → 全局一致性 → 交付
+→ 逐功能点测试先行实现（组件抽离在编码当下判定）+ 提交 → 契约对齐 → 全局一致性 → 交付
 ```
 
 ## 三、目录
@@ -51,4 +51,4 @@
 ## 五、上下游
 
 Frontend-Tech-Design（施工图）、Backend-Tech-Design（接口契约源）、prototype-design 与 ui-ux-design（还原基准）、Backend-Dev（同域另一端）。
-下游：Code-Review（评审回退修改方，承接 `.spec/代码评审/任务清单.md`）、Testing（验收；UI 还原检查内嵌 Fidelity-Review）。
+下游：Code-Review（评审回退修改方，承接 `.spec/代码评审/任务清单.md`）、auto-test（验收；L2 内嵌 Fidelity-Review）。

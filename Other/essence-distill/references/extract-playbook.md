@@ -17,13 +17,14 @@
 - **TXT/Markdown**：直接读；超长先按章节切 B 块。
 - **EPUB**：本质是 zip——解包取 `*.xhtml/*.html` 逐章转文本（`unzip book.epub -d book_src/`，或 python `ebooklib`）；目录即章节结构。
 - **PDF（文本型）**：优先 `pdftotext -layout book.pdf book.txt`（poppler）或 python `pypdf` 抽取；抽取后检查页标是否保留（页码是锚点，丢了就按章重定锚）。
+- **工具缺失**：抽取工具/库不可用时不硬转、不自造文本，先声明缺失并请用户提供可读文本；仍不可得则按铁律停在第⓪步，写明文本可得性结论。
 - **PDF（扫描型）**：无文本层 → **停下来**向用户要文本版或确认走 OCR（本机无 OCR 能力时明说，绝不瞎编）。文本可得性结论写「扫描版，未取得文本，流程中止于①」。
 - **多文档/分卷**：每卷独立 B 块索引，锚点带卷号（`卷2·B17`）。
 
 ## 2. GitHub 仓库
 
 1. 元信息：`api.github.com/repos/<owner>/<repo>`（免认证）拿默认分支/主语言/规模。
-2. 浅克隆到**工作区外临时目录**（绝不克隆进在研项目）：`git clone --depth 1`；大仓 `--depth 1 --filter=blob:none` + sparse-checkout 排除 tests/fixtures——**详细参数直接复用 `../../source-reading/references/clone-playbook.md`**（含网络故障重试序列），此处不重复。
+2. 浅克隆到**工作区外临时目录**（绝不克隆进在研项目）：`git clone --depth 1`；大仓 `--depth 1 --filter=blob:none` + sparse-checkout 排除 tests/fixtures——**详细参数直接复用 `source-reading/references/clone-playbook.md`（逻辑引用）**（含网络故障重试序列），此处不重复。
 3. 摸底顺序：README → docs/ → 核心目录文件树 → 关键入口文件。本 skill 的精读重心是**文档、注释、设计讨论（ADR/README）、关键实现的思想**，不是逐行走读（那是 Source-Reading）。
 
 ## 3. 单篇资料（文章/讲义/网页）

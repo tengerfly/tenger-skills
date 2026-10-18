@@ -1,6 +1,6 @@
 ---
 name: product-analytics
-description: 用产品目标、用户旅程和行为数据判断功能效果、异常和证据不足。
+description: 用产品目标、用户旅程和行为数据判断功能效果、异常和证据不足。触发：数据分析、功能效果、转化流失、看指标、判断证据够不够。
 metadata:
   short-description: 用产品目标、用户旅程和行为数据判断功能效果、异常和证据不足。
 ---
@@ -46,7 +46,7 @@ metadata:
 PASS：口径和结论可复核；CONDITIONAL：数据缺口已声明且不影响有限结论；BLOCKED：指标口径不一致、样本不可信或无授权。
 
 ## Failure Route
-埋点/关联缺失转 Observability-Design；行为偏差转 defect-triage；策略改变转 change-intake；数据风险转 incident-response。
+埋点/关联缺失转 signal-collection 补采并登记 OBSERVABILITY_GAP；行为偏差转 defect-triage；策略改变转 change-intake；数据风险转 incident-response。
 
 ## Downstream Contract
 下游收到指标基线、假设、保护指标、样本限制和验证计划，不得把建议当批准需求。

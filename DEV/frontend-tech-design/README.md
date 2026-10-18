@@ -1,7 +1,7 @@
 # Frontend-Tech-Design —— 前端技术方案文档编写 Skill
 
 > 状态：✅ 定稿
-> 定位：依据 PRD + UI 设计稿（缺省回退低保真原型）+ 后端 TDD，产出可落地、可评审、可 TDD 开发的前端技术方案包。FTDD = Frontend Technical Design Document。
+> 定位：依据 PRD + UI 设计稿（缺失须凭已登记 EXC 才可回退低保真原型）+ 后端 TDD，产出可落地、可评审、可 TDD 开发的前端技术方案包。FTDD = Frontend Technical Design Document。
 
 ## 一、默认基线与必问项
 

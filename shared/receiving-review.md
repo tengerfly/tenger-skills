@@ -64,4 +64,4 @@
 ## 与门禁闭环的衔接
 
 - 回填 `已修复` 前必须逐项自测通过（见仓库根 `shared/evidence-before-claims.md`）；
-- 改完触发复核，不自判通过（见仓库根 `shared/anti-deadloop.md` §一）。
+- 改完触发复核，不自判通过（见仓库根 `shared/anti-deadloop.md` §2 评审轮次协议与 §3 上限/残留处置）。

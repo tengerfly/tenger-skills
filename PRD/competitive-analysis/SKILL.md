@@ -1,6 +1,6 @@
 ---
 name: competitive-analysis
-description: 研究竞品并产出带来源的模块能力全景与功能对比清单。用于寻找同类产品、对标应用、市场或竞品功能调研；不做本产品定位、功能取舍或 PRD 编写。
+description: 研究竞品并产出带来源的模块能力全景与功能对比清单。用于寻找同类产品、对标应用、市场或竞品功能调研；不做本产品定位、功能取舍或 PRD 编写。触发：找竞品、对标应用、市场调研、竞品功能调研、看看别人怎么做的。
 metadata:
   legacy-alias: Competitive-Analysis
   migration-target: competitive-analysis
@@ -24,7 +24,7 @@ metadata:
 原始想法/对标产品、intake/discovery 研究问题、目标场景、研究边界和已有来源；正式交接同时读取 manifest 与 Gate。
 
 ## Preconditions
-明确研究对象和本轮边界。对标名称有歧义时先澄清具体产品形态，或分别列候选及差异，不能默选其一。用户不知道完整功能不是阻塞研究的理由。
+明确研究对象和本轮边界；研究裁剪依据必须能指向一条用户确认（需求方向、指定竞品、限定形态或明示授权），否则不得自行划定研究范围并投入资源（`../../shared/product-workflow-contract.md` §2.2 第 3 条硬门禁）。对标名称有歧义时先澄清具体产品形态，或分别列候选及差异，不能默选其一。用户不知道完整功能不是阻塞研究的理由。
 
 ## Responsibilities
 - 搜索并选择相关竞品，说明入选理由、直接/间接替代关系和研究覆盖范围。
@@ -44,16 +44,16 @@ metadata:
 6. 输出 research 和功能清单作为同一研究产物的正文/附件。交 product-definition 定位，交 application-blueprint 梳理业务，最终由 feature-decision 组织范围选择。
 
 ## Outputs
-research artifact：研究范围、竞品选择、带来源的功能全景/对比矩阵、限制和未知项。保留功能 ID 供后续追踪，不新建第二需求源。正式执行输出 executionId、status、gate、artifactRefs、evidenceRefs、decisionRefs、nextAction。
+research artifact：研究范围、竞品选择、带来源的功能全景/对比矩阵、限制和未知项，以及 `scopeBasis`（研究裁剪依据 + 用户确认引用）。保留功能 ID 供后续追踪，不新建第二需求源。正式执行输出 executionId、status、gate、artifactRefs、evidenceRefs、decisionRefs、nextAction。
 
 ## Evidence
-在线研究必须实际查阅来源，保存 URL、标题、访问日期及相关原文位置；不能只凭模型记忆或搜索摘要。无联网/授权/页面访问能力时交付明确标注的未验证草案，说明补证路径，不能捏造竞品现状或宣称研究完成。
+在线研究必须实际查阅来源，保存 URL、标题、访问日期及相关原文位置；不能只凭模型记忆或搜索摘要。无联网/授权/页面访问能力时交付明确标注的未验证草案，说明补证路径，不能捏造竞品现状或宣称研究完成。数据红线 8 条（禁编造、可溯源、预测必标、多口径并列、商业假设隔离、简洁、具体优先、Gate 前置；违反即 P0）见 `references/legacy-skill.md`「数据红线」节。
 
 ## Gate
 PASS：约定研究范围有可追踪的模块/功能清单、来源与缺口声明；不表示产品范围已批准。CONDITIONAL 按共享 Gate 契约记录例外与下游限制。BLOCKED：关键对标不明或功能清单/关键来源缺失；不得据此冻结范围或写正式 PRD。
 
 ## Failure Route
-来源缺失在本节点补证；用户问题证据交 product-discovery；定位交 product-definition；业务规则交 application-blueprint；取舍交 feature-decision；实现路线交 DEV/oss-radar。旧 references/legacy-skill.md 只作研究方法参考，冲突规则以本入口为准。
+来源缺失在本节点补证；用户问题证据交 product-discovery；定位交 product-definition；业务规则交 application-blueprint；取舍交 feature-decision；实现路线交 DEV/oss-radar。旧 `references/legacy-skill.md` 只作研究方法参考（含数据红线 8 条与 11 模块历史模板），Gate/流程等冲突规则以本入口为准。
 
 ## Downstream Contract
 下游以 research artifact 和功能 ID 消费证据；不得把竞品支持或研究推荐转成 APPROVED 需求。未经用户确认的能力不能直接进入 PRD。

@@ -41,7 +41,7 @@ Bug、报错、线上告警、测试失败、用户反馈、巡检发现行为�
 - 不把猜测根因、一次成功复现或测试失败直接当永久结论。
 
 ## Procedure
-1. 为信号生成 `DEF-*`，脱敏并关联版本/commit/trace/request/session；按 `../../shared/problem-recording.md` 在下一安全节点将已知事实写入 `.spec/defects/<id>.md` 并更新项目 `.spec/问题日志.md`。根因未知仍记录，重复信号沿用原 ID。
+1. 为信号生成 `DEF-*`，脱敏并关联版本/commit/trace/request/session；按 `../../shared/problem-recording.md` 在下一安全节点将已知事实写入 `.spec/defects/<id>.md` 并更新项目 `.spec/问题日志.md`。根因未知仍记录，重复信号沿用原 ID。分诊记录按 `../../shared/templates/defect-triage.md` 落盘，ID 前缀统一 `DEF-`。
 2. 去重相关日志、告警、用户报告和测试失败，建立时间线。
 3. 按批准基线对比当前行为；缺基线则标 `OPEN`。
 4. 尝试最小复现，记录命令、输入、结果和环境差异。
@@ -50,7 +50,7 @@ Bug、报错、线上告警、测试失败、用户反馈、巡检发现行为�
 7. 关闭前必须有修复证据、回归证据和发布后观察计划；同步问题索引。转 Incident/Change 保留原 ID 与目标引用，分诊完成不等于缺陷修复闭环。
 
 ## Outputs
-- `.spec/defects/<id>.md`；
+- `.spec/defects/<id>.md`（按 `../../shared/templates/defect-triage.md`，Triage ID 统一 `DEF-*`）；
 - 时间线、复现记录、证据索引和分级；
 - 根因候选与修复任务委托；
 - 回归/发布/后观测要求；

@@ -2,9 +2,9 @@
   "schema": "tenger.eval-baseline/v1",
   "eval": "evals/fidelity-review/eval.yaml",
   "skill": "fidelity-review",
-  "savedAt": "2026-10-18T23:32:44+08:00",
+  "savedAt": "2026-10-19T00:48:42+08:00",
   "anchors": {
-    "skillRevision": "sha256:72f60d13e886e52c2ee958b25fd2632de745ff74495253fad3c8fbfbd0e1bcd4",
+    "skillRevision": "sha256:d705cf3dad80220d6637ea998f02d3bb7b588fb92cc21ef724e225de7f8a82be",
     "casesVersion": "sha256:184e9a9334f2e7abd281d0ea098c8e268474f988b996ea92c7fa680d1f3b1372",
     "engine": "codex",
     "model": "engine-default",

@@ -4,6 +4,8 @@ description: 竞品分析。用户给出产品想法或明确目标（如「做 
 compatibility: Claude Code / Agent SDK / OpenCode
 ---
 
+> LEGACY COMPATIBILITY NOTICE: This file preserves historical material. The active Skill, Gate, state, artifact, and evidence rules are defined by `shared/skill-contract.md`, `shared/gate-policy.md`, `shared/anti-deadloop.md`, `shared/artifact-contract.md`, `governance/`, and `.spec/workflow.yaml`. 现行规则见 [SKILL.md](../SKILL.md)。
+
 # 竞品分析（Competitive Analysis）
 
 ## 交付物

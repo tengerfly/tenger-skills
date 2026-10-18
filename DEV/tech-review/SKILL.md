@@ -59,7 +59,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 ```
 输入 → 1 输入解析 → 2 浏览器检测 → 3 批次视角评审 → 4 关联专项（⑩-前 收口）
-→ 5 角色文档 → 6 汇总 → 7 任务清单 + 确认 → 8 闭环复核与沉淀判定 → 归档
+→ 5 角色文档 → 6 汇总 → 7 任务清单 + P0 确认（P1/P2 按 shared/ruling-policy.md 裁决） → 8 闭环复核与沉淀判定 → 归档
 ```
 
 1. **输入解析**：优先读 `.spec/`——PRD（先读速查表）、原型、设计稿（有则）、`.spec/TDD/VN/`、`.spec/FTDD/VN/`；按批次裁剪输入；缺失回退用户路径 / 粘贴。**〔REQUIRED · 开工前闸门核对〕**逐条读 `.spec/manifest.yaml` 中本批所依据上游（PRD／原型／设计稿／对面方案）的 `status`、`version`、`gate`、`allowDownstream`：任一 `SUPERSEDED`／非 `PASS`／`false` ⇒ **不在作废基线上出结论**，本批只能 `BLOCKED`（命名缺失输入 + owner + 清除条件）；「判据全闭」只作事实记录不作放行结论，限定条件只能落字段、不得写注释或正文（`../../shared/gate-policy.md` §6）；汇总报告须含公共基线 §0 的「上游闸门核对」表与「时序核查」。
@@ -71,7 +71,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 7. **任务清单 + 分级裁决**：按 `assets/issue-list-template.md` 生成任务清单（状态 `待确认`）；每条附**修复判据**；**P0 阻断且须用户确认**，P1/P2 由执行方按 `../../shared/ruling-policy.md` 裁决（修 → `已确认`；延/弃 → `已忽略` + 理由 + 回退方式，记 `.spec/rulings.md`），不逐条等用户；裁决后交 Backend/Frontend-Tech-Design 修改并回填。
 8. **闭环复核 + 双向沉淀判定**：修改方回填 `已修复` 后只验本轮 `已确认` 项；新发现降 P2；同批满 3 轮不收敛：P0 残留保持 BLOCKED；P1 残留不得 PASS，只能经授权并登记例外后 CONDITIONAL；不自动开启第 4 轮
 
-> 门禁闭环、防评审死循环三招（含轮次上限 3：满 3 轮未收敛：P0 残留 BLOCKED；P1 残留只能经授权 CONDITIONAL，不得 PASS；不自动放行
+> 门禁闭环、防评审死循环三招（含轮次上限 3：满 3 轮未收敛：P0 残留 BLOCKED；P1 残留只能经授权 CONDITIONAL，不得 PASS；不自动放行）——三招与门禁闭环放行判据见仓库根 `../../shared/anti-deadloop.md` §2/§3。
 
 ## 四、评审规范
 
@@ -94,7 +94,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 | 页面—原型 | FTDD 页面清单 ↔ 原型页面（⑩-前，**结构**） | 原型有方案没写；方案写了原型没有 |
 | 页面—设计稿 | FTDD 页面清单 ↔ 设计稿页面（⑩-前，**视觉**，有设计稿时） | 设计稿有页面方案没列；方案页面对不上设计稿稿源；§8.6 未登记 token 来源与条数 |
 
-**4.3 严重度分级（只标注，不设门禁）**——P0/P1/P2 定义与处理口径见 `../../shared/anti-deadloop.md` §三，下表为本域典型示例：
+**4.3 严重度分级（只标注，不设门禁）**——P0/P1/P2 定义见 `../../shared/gate-policy.md` §1、残留处理口径见 `../../shared/anti-deadloop.md` §3，下表为本域典型示例：
 
 | 级别 | 含义 | 典型 |
 |---|---|---|

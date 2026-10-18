@@ -1,6 +1,6 @@
 ---
 name: product-definition
-description: 依据发现与研究证据确认目标用户、价值、定位、目标和非目标；不做功能级取舍、业务状态设计或 PRD 编写。
+description: 依据发现与研究证据确认目标用户、价值、定位、目标和非目标；不做功能级取舍、业务状态设计或 PRD 编写。触发：产品定位、目标用户、定义产品、非目标、产品价值主张。
 metadata:
   short-description: 把发现证据转成待用户确认的产品问题、定位、价值、非目标和成功指标。
 ---
@@ -21,7 +21,7 @@ Discovery Brief 和竞争研究可用，或 CHANGE/OPTIMIZE 影响目标用户�
 
 ## Inputs
 - Discovery Brief；
-- Competitive-Analysis research artifact；
+- `competitive-analysis` research artifact；
 - 现有基线、运行数据、约束和技术可行性提示。
 
 ## Preconditions
@@ -69,7 +69,7 @@ PASS：关键定义已确认；CONDITIONAL：仅非关键项开放并有期限�
 评审或澄清最多 3 轮；仍未收敛时保留问题并请求人工裁决，不无限生成。
 
 ## Downstream Contract
-Application Blueprint 只消费已确认的用户、问题、价值、非目标和约束，不得假设未确认功能或技术方案。
+`application-blueprint` 只消费已确认的用户、问题、价值、非目标和约束，不得假设未确认功能或技术方案。
 
 下游必须消费 artifact 和 decisionRefs，不得从聊天上下文补齐未确认结论。
 

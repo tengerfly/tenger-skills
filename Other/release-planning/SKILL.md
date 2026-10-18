@@ -45,10 +45,10 @@ metadata:
 2. 检查迁移是否前后兼容、配置是否可回退、依赖是否可复现。
 3. 写出预发布、灰度、全量、观察和回滚步骤及负责人。
 4. 为每个保护指标定义基线、阈值、来源和观察时间。
-5. 生成 release plan，等待明确授权后交给 deployment-execution。
+5. 生成 release plan（`releaseId` 统一 `REL-*`，字段按 `../../shared/templates/release-plan.yaml`），等待明确授权后交给 deployment-execution。
 
 ## Outputs
-- `.spec/release/<release-id>/release-plan.md`；
+- `.spec/release/<release-id>/release-plan.md`（`releaseId` 统一 `REL-*`，元数据按 `../../shared/templates/release-plan.yaml`）；
 - 版本/commit/配置/迁移清单；
 - 灰度、观察、回滚和审批记录；
 - manifest、decision、traceability 更新。

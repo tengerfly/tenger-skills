@@ -1,6 +1,6 @@
 # 取源 Playbook（步骤① 取源时加载）
 
-目标：用最小代价把「走读所需」的源码拿到本地。铁律：克隆到工作区**外**的临时目录（如 `<工作区>/.spec/源码学习/_clones/<owner>__<repo>` 或系统临时目录），绝不混入在研项目。
+目标：用最小代价把「走读所需」的源码拿到本地。铁律：克隆到**在研项目工作区之外**的临时目录（本 skill 自身工作区可用 `<工作区>/.spec/源码学习/_clones/<owner>__<repo>`，或系统临时目录），绝不混入在研项目。
 
 ## 1. 摸底（先 API 后克隆）
 
@@ -45,7 +45,7 @@ git clone --depth 1 --branch <tag_or_branch> <url>
 
 ## 3. 瘦身（走读不需要的目录，sparse-checkout 时不 add 它们）
 
-默认排除：`tests/ test/ __tests__/ e2e/ cypress/ docs/ examples/ examples/ benchmarks/ fixtures/ .github/`
+默认排除：`tests/ test/ __tests__/ e2e/ cypress/ docs/ examples/ benchmarks/ fixtures/ .github/`
 
 判断某目录要不要：看根 README 与构建配置的入口字段；测试目录**不排除命名规则**——实现文件常以 `.test.ts` 同级存放（vue/react 模式），此时保留、只走读非测试文件。
 

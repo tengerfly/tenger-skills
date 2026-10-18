@@ -1,6 +1,6 @@
 # 像素级对比方法学（Pixel Methods）
 
-> 用途：视觉还原走查时的量化方法参考。阈值见 `decision-rules.md`。
+> 用途：视觉还原走查时的量化方法参考。阈值见 `../decision-rules.md`。
 
 ---
 
@@ -16,7 +16,7 @@
 3. **snapshot**：截设计稿 + 实现图，统一 2x 分辨率。
 4. **compare**：pixelmatch 逐像素比对，输出 diff 图 + 偏差百分比（Web 0.5% / PDF 1.0%）。
 5. **fix**：按 diff 改 CSS，最多 5 次 attempts，超次报告未达标区域并暂停。
-- 目录约定：`.claude/visual/` 下放 `design/`、`render/`、`diff/`、`report.md`。
+- 目录约定（外部工具习惯，非本仓路径）：`.claude/visual/` 下放 `design/`、`render/`、`diff/`、`report.md`。
 
 ## 三、设计 token 绑定（治本）
 

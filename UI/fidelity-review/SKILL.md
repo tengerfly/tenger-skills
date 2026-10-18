@@ -16,7 +16,7 @@ metadata:
 发现失败、阻塞或用户纠正时，在下一安全节点按 `../../shared/problem-recording.md` 记录；根因未明不丢事实。恢复/交付前核对未决项，沿用已有详情与唯一索引。此规则优先于旧的仅收尾埋点/不确定不记表述，不增加轻量任务的正式建档要求。
 
 **闭环回流（L2）**：P0/P1 条目要标「已沉淀」前，必须先回流 1 条评测用例，并在该用例声明里用 `issueRef` 指回本条问题（值＝本条问题的仓库相对路径，形如 issue/<skill>/<日期>/<NN>-<标题>.md）；没有这条用例就按「未验证」处理，优化状态停在待处理/处理中，不得写「已沉淀」。
-判据与字段口径的单一来源是仓库根 `governance/eval-spec.yaml`（`caseTiers.L2` + `issueRef` 节），机械核对由 `scripts/eval/relay.py` 执行；本节只承接义务，不复述其条文。
+判据与字段口径的单一来源是仓库根 `governance/eval-spec.yaml`（`caseTiers.L2` + `issueRef` 节），机械核对由 `scripts/eval/relay.py` 执行；本节只承接义务，不复述其条文（仓库级工具：宿主副本若不含 `governance/` 与 `scripts/`，改人工核对并在报告注明降级）。
 
 ## 一、定位与铁律
 
@@ -55,9 +55,9 @@ metadata:
 |---|---|---|
 | A（优先，**视觉唯一应然**） | `.spec/设计稿/` | 设计稿 HTML + `design-system.md`，可直接渲染并机械比对 token |
 | B（缺失） | 用户指定外部稿 | Figma 导出 / PNG / README / 静态导出；无 token 只能目测 + 刻度换算 |
-| C（无设计稿兜底，**降级**） | `.spec/原型/` | 仅无设计稿时回退；低保真原型只有中性色 + 单一主色 + 基础字号，**视觉质量口径降级**，报告须显式标注「基准 = 低保真原型，视觉质量降级」 |
+| C（无设计稿兜底，**降级**） | `.spec/原型/` | **须先有已登记的用户批准视觉基线例外 EXC**（规则见 `../../shared/product-workflow-contract.md` §5.1），无 EXC 不得启用本通道（报缺失并停下，Gate ⇒ `BLOCKED`）。启用后低保真原型只有中性色 + 单一主色 + 基础字号，**视觉质量口径降级**，报告须显式标注「基准 = 低保真原型（降级，EXC 出处：<id>）」 |
 
-通道 B 报告须标注「基准=外部设计稿，按像素目测比对」。存在 A 用 A；A 缺失或用户明确给外部稿用 B 并确认；A/B 均无才用 C 并明示降级。
+通道 B 报告须标注「基准=外部设计稿，按像素目测比对」。存在 A 用 A；A 缺失或用户明确给外部稿用 B 并确认；A/B 均无且已有已登记 EXC 才用 C 并明示降级；无 EXC ⇒ 报缺失并停下（Gate ⇒ `BLOCKED`），不静默降级。
 
 **输入**：设计稿基准；前端实现页（本地工程 + 启动命令 + URL，或部署 URL）；可选 PRD / 布局清单辅助判断交互该不该有（读速查表建索引后按锚点回原文）。
 
@@ -72,17 +72,17 @@ metadata:
 1. **输入解析与预检**：读 `.spec/设计稿/` 或向用户要外部稿并记录通道（无设计稿时，须先确认存在用户批准的视觉基线例外 EXC（规则见 `../../shared/product-workflow-contract.md` §5.1）才可落通道 C 原型并标注降级；无 EXC 则报缺失并停下，不静默降级）；确认实现页目录 / 启动命令 / 逐页 URL（未提供必问，不猜测）；按铁律 5 预检浏览器工具；**确认运行模式**（独立 / auto-test / 代码评审并行）。
 2. **页面清单 × 基准对齐**：按 `references/design-source-guide.md` 建逐页映射 `实现页 URL ↔ 设计稿页面`，记录响应式断点；通道 A 摘 token 速查，通道 B 记录目测基准，通道 C 标注「视觉基准=低保真原型（降级）」；生成比对范围清单交用户确认后再继续。
 3. **双开截图 + 点击验证**：**基准侧截图 = 设计稿**（有设计稿时；原型只作结构对照，不与实现页做视觉并排结论），相同视口并排截图；逐元素点击记录有反应 / 无反应 / 反应对不对。**独立走查纪律**：只认渲染产物与基准，不参考实现者说明或自查结论；任务重可开独立会话 / 换模型交叉复查。
-4. **视觉 + 交互 + 逐区块断言走查**：视觉按 `references/visual-checklist.md`（含设计稿有而实现没有、实现多出的**双向比对**）；交互按 `references/interaction-checklist.md`（可点性 / 反馈 / 方式一致 / 跳转链路 / 动效还原 / 界面质量可见项）；逐区块断言见 §4.2；另对照 `references/known-issue-patterns.md`（评审方案例库）过一遍，命中即入问题清单。
+4. **视觉 + 交互 + 逐区块断言走查**：视觉按 `references/visual-checklist.md`（含设计稿有而实现没有、实现多出的**双向比对**）；交互按 `references/interaction-checklist.md`（可点性 / 反馈 / 方式一致 / 跳转链路 / 动效还原 / 界面质量可见项）；逐区块断言见 §4.2；另对照 `references/known-issue-patterns.md`（评审方案例库）过一遍，命中即入问题清单；定级阈值与量化方法按 `references/decision-rules.md`（像素容忍度 / diff 阈值 / attempts），像素方法学按需读 `references/case-library/`。
 5. **超长文案专项**：按 `references/overflow-guide.md`，识别动态文本位，用真实业务文案 + 更极端长文案替换后截图判定；给出 min-width / ellipsis / flex 收缩等修改方向。
 6. **分级输出报告**：按 `assets/review-report-template.md` 生成报告；每条含编号 / 页面 / 基准出处 / 现象+截图 / 期望 vs 实际 / 成因 / 严重度 / 建议 / 修改方；分组统计 P0/P1/P2。
 7. **三模式收尾**：
-   - **独立模式**：按 `assets/issue-list-template.md` 生成任务清单（自足可读 + 修复判据 + 修改方 + **P0 阻断且须用户确认**；P1/P2 由执行方按 `../../shared/ruling-policy.md` 裁决，修 → `已确认`，延/弃 → `已忽略` + 理由 + 回退，记 `.spec/rulings.md`；复核只验本轮清单）；放行后按 `../../shared/anti-deadloop.md` §五 判定（P0 双向必沉）——**A 防复发**：还原类问题改 `Frontend-Dev`、设计稿缺陷改 `UI-UX-Design`（记其 CONTEXT D-xx）；**B 检出力**：本 skill `references/known-issue-patterns.md` 按模板加一条（含「检出方法」）。
+   - **独立模式**：按 `assets/issue-list-template.md` 生成任务清单（自足可读 + 修复判据 + 修改方 + **P0 阻断且须用户确认**；P1/P2 由执行方按 `../../shared/ruling-policy.md` 裁决，修 → `已确认`，延/弃 → `已忽略` + 理由 + 回退，记 `.spec/rulings.md`；复核只验本轮清单）；放行后按 `../../shared/anti-deadloop.md` §4 双向沉淀判定（P0 双向必沉）——**A 防复发**：还原类问题改 `Frontend-Dev`、设计稿缺陷改 `UI-UX-Design`（记其 CONTEXT D-xx）；**B 检出力**：本 skill `references/known-issue-patterns.md` 按模板加一条（含「检出方法」）。
    - **auto-test 场景**：按 `assets/mini-issue-template.md` 就地出轻量清单，不生成任务清单。
    - **代码评审场景**：报告落 `.spec/代码评审/前端页面还原度评审.md`，问题清单交 Code-Review 合并（标来源）；不单独确认、不单独计轮次；**双向沉淀判定交 Code-Review 统一执行**（含本 skill 的 `known-issue-patterns.md`）。
 
 ## 四、评审规范
 
-**4.1 严重度分级（只标注，不设门禁）**——P0/P1/P2 定义与处理口径见 `../../shared/anti-deadloop.md` §三，下表为本域典型示例：
+**4.1 严重度分级（只标注，不设门禁）**——P0/P1/P2 定义与处理口径见 `../../shared/gate-policy.md` §1，下表为本域典型示例：
 
 | 级别 | 定义 | 处理 | 典型 |
 |---|---|---|---|
@@ -94,7 +94,7 @@ metadata:
 **4.2.1 token 搬运对账断言（通道 A 必做，视觉漂移高发口）**：设计稿是 HTML + Tailwind 类、实现是 CSS 变量，载体不同——必须逐条核对实现侧 `styles/variables` 与 `design-system.md` §7 Token 汇总的**条数 / 值 / 命名**；实现页 computed style 取值与 token 必须相符（spacing 是否落在 4px 网格、typography 是否落在定义阶梯）。**缺项、手抄错值、间距网格走样**均按视觉偏差计 P0/P1；本条是「视觉整体差一截」最常见的漏网点，**未做对账不得判通道 A 视觉达标**。
 **4.2.2 布局高危模式断言（组件壳/通配选择器/弹框形态，2026-09-17 走查沉淀）**：逐条对照 `references/known-issue-patterns.md` #3~#8——①语义元素被「父级>标签」通配规则盖样式（logo/图标颜色字号不符）；②稿面 `@media` 断点未搬（宽屏内容列偏窄，双视口 1280/1920 比对）；③组件库派生视觉值（Avatar 字号等）未压回稿面；④弹框内负 margin 通栏条（遮挡标题/限高后被裁字）；⑤多面板弹框高度随 tab 跳变；⑥滚动挂在 body 整页滚（顶栏不常驻）。命中按表列严重度计。
 
-Use the common Gate contract: PASS requires no unresolved P0/P1; residual P0 is BLOCKED; residual P1 may only be an authorized CONDITIONAL with exceptionId, owner, dueAt, remediation, allowDownstream, and approvalRef. There is no force-pass rule.
+Gate 口径见 ../../shared/gate-policy.md：仅 PASS/CONDITIONAL/BLOCKED；残留 P0⇒BLOCKED；残留 P1 不得 PASS，仅完整授权 CONDITIONAL（exceptionId/risk/owner/dueAt/remediation/allowDownstream/approvalRef）；无 force-pass。
 
 ## 五、常见错误对照表
 

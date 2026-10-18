@@ -19,7 +19,7 @@
 - 优化八维：问题修复/触发/体积/指令/稳定/简洁/术语/心法。
 - 提炼落点逐层升级：错误表加行 → references 防复发清单 → Gate 预检项；评审侧落 `references/known-issue-patterns.md` 案例库（含检出方法）。
 - 自我指涉：先优化自己（先修标准），再优化其他。
-- 沉淀约定：粒度=一类问题；**双向**=A 产出方 skill 防复发 + B 评审方案例库（P0 双向必沉）；落点=先源仓库再同步 CodeBuddy 副本（双池在源仓库根，副本只含 skill 文件）。
+- 沉淀约定：粒度=一类问题；**双向**=A 产出方 skill 防复发 + B 评审方案例库（P0 双向必沉）；落点=源仓库 → `python scripts/install-skills.py --target <宿主 skills 根>` → `--check` 全绿（双池在源仓库根，安装副本只含 skill 文件；旧 `sync-skills.sh` 仅 Git Bash 遗留场景）。
 
 ## 三、目录
 

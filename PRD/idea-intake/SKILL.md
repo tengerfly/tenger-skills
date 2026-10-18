@@ -1,6 +1,6 @@
 ---
 name: idea-intake
-description: 登记原始产品想法、约束、歧义与研究问题，形成 intake；只做入口澄清，不研究竞品、不完成范围确认或编写 PRD。
+description: 登记原始产品想法、约束、歧义与研究问题，形成 intake；只做入口澄清，不研究竞品、不完成范围确认或编写 PRD。触发：新想法、需求入口、想法登记、我要做某个功能、把想法说清楚。
 metadata:
   short-description: 把模糊产品想法登记为带证据边界、未知项和确认问题的产品入口。
 ---
@@ -54,7 +54,7 @@ metadata:
 ## Outputs
 - `intake` artifact；
 - 证据索引、确认清单和 execution record；
-- 供 Product Discovery 消费的未知项与研究问题。
+- 供 `product-discovery` 消费的未知项与研究问题。
 
 每次执行都必须记录 `executionId`、`skill`、`lifecycle`、`project`、`status`、`gate`、`evidenceRefs`、`artifactRefs`、`decisionRefs` 和 `nextAction`。
 
@@ -67,12 +67,12 @@ PASS：原始意图、生命周期、边界和研究问题清晰；CONDITIONAL�
 `CONDITIONAL` 必须记录例外、风险、责任人、截止时间、补证动作和 `allowDownstream`。AI 只能提出 Gate，不能替用户批准关键产品决策。
 
 ## Failure Route
-语义冲突回用户确认；上下文缺失回 project-onboarding；变化交 ../change-intake/impact-analysis；故障交 defect-triage。
+语义冲突回用户确认；上下文缺失回 project-onboarding；变化交 change-intake 登记、再由 impact-analysis 评估影响；故障交 defect-triage。
 
 同一阻塞问题最多重复澄清 3 轮，仍未收敛则保留缺口并请求裁决；不限制后续节点对新主题继续探索。入口完成不等于需求已明确。
 
 ## Downstream Contract
-Product Discovery 可消费原始意图、候选问题、场景、约束和未知项，不得假设定位、功能范围或 MVP 已批准。
+`product-discovery` 可消费原始意图、候选问题、场景、约束和未知项，不得假设定位、功能范围或 MVP 已批准。
 
 下游必须消费 artifact 和 decisionRefs，不得从聊天上下文补齐未确认结论。
 

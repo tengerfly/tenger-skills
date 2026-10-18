@@ -48,5 +48,5 @@
 | A · 防复发 | {{产出方 skill}} | 错误表加行 / references 清单 / Gate 预检项 | 待处理 / 已沉淀 / 入池 |
 | B · 检出力 | {{发现问题的那一个评审 skill}} | `references/known-issue-patterns.md` 加模式（含检出方法） | 待处理 / 已沉淀 / 入池 |
 
-- **P0 双向必沉**；P1/P2 由模型判是否属「会再犯的一类问题」（规则见 `shared/anti-deadloop.md` §五）；
+- **P0 双向必沉**；P1/P2 由模型判是否属「会再犯的一类问题」（规则见 `shared/anti-deadloop.md` §4 Bidirectional learning）；
 - 当场改不了的 → 落 `issue/<目标 skill>/<日期>/`（来源=评审闭环，写明双向落点）。

@@ -5,7 +5,7 @@
 - **日常怎么用**：[工程体系使用手册](docs/工程体系使用手册.md)——入口、环境准备、常用场景、暂停恢复、Gate、产物与命令。
 - **体系是什么、有没有偏离目标**：[当前项目介绍与目标对齐说明书](docs/当前项目介绍与目标对齐说明书.md)——目标复述、整体流程、45 个本地 Skill、模块边界、已实现/待验证能力及待确认取舍。
 
-> 2026-09-22 核对：本地全量校验通过（60 项测试：59 通过、1 因符号链接权限不足跳过；外部知识库未配置，属降级），不等于体系已验收。当前自举 Gate 仍为 `BLOCKED`，真实项目试跑与独立验收待完成。日常无需逐一阅读所有 Skill，先按手册给出项目、目标、范围和终点。
+> 2026-10-18 核对：本地全量校验 exit 0（547 项测试通过、2 项因环境权限跳过；外部知识库未配置，属降级）；同日完成全体系评审（P0/P1 修复中，报告见 `.spec/体系评审/2026-10-18/`）。这仍不等于体系已验收：自举 Gate 为 `BLOCKED`，真实项目试跑与独立验收待完成。日常无需逐一阅读所有 Skill，先按手册给出项目、目标、范围和终点。
 
 A modular Skill repository for product discovery, PRD, UI, development, testing, release, operations, and Skill optimization.
 
@@ -41,18 +41,21 @@ python scripts/install-skills.py --list                          # 看仓内 ski
 python scripts/install-skills.py --target ~/.dsh/skills          # 安装/更新（可重复 --target）
 python scripts/install-skills.py --check --target ~/.dsh/skills  # 只读核对副本是否等于源仓（漂移 exit 1）
 python scripts/install-skills.py --export /tmp/tenger-skills-pack  # 导出 self-contained 包（pack/skills + pack/shared + MANIFEST.json）
+python scripts/install-skills.py --link --target ~/.claude/skills  # 软链接引用（junction/symlink，零拷贝、改源仓即时生效）
+python scripts/install-skills.py --link --check --target ~/.claude/skills  # 核对链接指向正确（缺失/错指/真实目录均 drift）
+python scripts/install-skills.py --unlink --target ~/.claude/skills # 只删指向源仓的链接，真实目录一律保留
 ```
 
 安装器按 `shared/skill-contract.md` §1.4 把 `shared/` 分发到三个落点（`<target>/shared`、`<target>/<skill>/shared`、`<parent(target)>/shared`），保留目标侧外来 skill、不做镜像删除；检测到符号链接/junction 时跳过、绝不对链接做删除。换机器流程 = clone → 安装到目标宿主 → `--check` 全绿，不需要手工拷 shared；导出包自检用 `--check --target <导出目录>/skills`。
 
-Windows 本机开发期仍可用 junction 免同步（改完即生效）：`bash scripts/link-skills.sh`；发布快照/换机迁移以 `install-skills.py` 为准。旧 `scripts/sync-skills.sh` 仅保留 Git Bash 场景。
+两种接入方式：**整包拷贝（默认）**=自包含、可离线、可移交，换机器最稳；**软链接引用（`--link`）**=零拷贝、源仓改动即时生效，适合本机开发宿主，但链接记录源仓绝对路径（仓库移动/换机器即断、无 commit 隔离），分发/移交请用 copy 或 `--export`。Windows 本机开发期也可用 `bash scripts/link-skills.sh`（等价旧做法）；旧 `scripts/sync-skills.sh` 仅保留 Git Bash 场景。
 
 受支持宿主与各宿主 `--check` 结论以实际运行输出为准，不手写状态；2026-10-18 本机核对：`.dsh/skills`、`.zcode/skills`、`.qoder-cn/skills`（junction）与停用的 `.codebuddy/skills` 均 drift=0。后续变更以 `--check` 输出为准。
 
 ## Repository layout
 
 ```text
-PRD/       product discovery, decisions, PRD, and prototype workflow
+PRD/       product discovery, decisions, and PRD workflow (prototype Skills live in UI/)
 UI/        prototype, UI/UX, and fidelity work
 DEV/       technical design, implementation, and code review
 Test/      auto-test skill; Testing archive and auto-test project research (project/) are read-only
@@ -82,7 +85,7 @@ Idea Intake
  -> Prototype Review
 ```
 
-`change-intake` and `impact-analysis` are cross-domain Workflow entry points. `prd-workflow` owns only the product-domain sequence. `WorkFlow/` routes work, records state, enforces Gates, and manages handoffs; domain Skills produce the domain artifacts.
+`change-intake` and `impact-analysis` are cross-domain Workflow entry points. `prd-workflow` owns only the product-domain sequence. `workflow/` routes work, records state, enforces Gates, and manages handoffs; domain Skills produce the domain artifacts.
 
 ## Common contracts
 
@@ -127,7 +130,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\run-tests.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\validate.ps1 -ProjectRoot (Get-Location).Path
 ```
 
-The validators check frontmatter, required Skill sections, registry paths, workflow transitions, artifact manifests, and traceability fixtures. The regression suite also runs the cross-platform installer's 18 unit tests (`scripts/tests/test_install_skills.py`, real temp-dir install/export/drift checks, ~3–4 min).
+The validators check frontmatter, required Skill sections, registry paths, workflow transitions, artifact manifests, and traceability fixtures. The regression suite also runs the cross-platform installer's 23 unit tests (`scripts/tests/test_install_skills.py`: real temp-dir copy/export/link/unlink/drift checks, ~70–90s).
 
 ## Execution status
 

@@ -14,7 +14,7 @@
 
 ## 二、与仓库体系的关系
 
-- 主链定位：Workflow ⑭ 测试节点（接替 Testing；Testing 源码保留为链外人工走查备用）。
+- 主链定位：Workflow ⑭ 测试节点（接替 Testing——Testing 已于 2026-09-22 归档，旧请求重定向 auto-test；源码仅作只读历史）。
 - 产物：`.spec/auto-test/`（用例库 / 报告 / 任务卡 / evidence）。
 - 兄弟 skill：Fidelity-Review（L2 内嵌还原检查）、Bug-Fix（可运行性问题转诊断修复闭环）、Code-Review（静态评审互补）。
 - 项目资料：`project/` 为企业级 AI 自动化测试平台 v0.1（待评审）的项目计划 / 竞品分析 / 旧问题日志，只作研究参考，不参与执行；执行入口仍是本目录 `SKILL.md`。
@@ -23,8 +23,8 @@
 
 | # | 日期 | 决策 | 理由 | 状态 |
 |---|---|---|---|---|
-| D-01 | 2026-09-19 | 从 auto-test 项目仓（生效副本 `C:\Users\15136\.zcode\skills\auto-test`）复制入本仓，成为源仓库管理副本；入仓适配三处：L2 增「有设计稿时内嵌 Fidelity-Review 还原检查（视觉以设计稿为唯一应然）」、资源清单补仓库根 shared 四约定与兄弟 skill、新增 §九 运行问题埋点（对齐本仓统一口径）；version 0.1.0→0.1.1 | 用户要求：auto-test 加入当前仓库并在流程中替换 Testing（Testing 源码不动）；Fidelity 内嵌保持原 ⑭ 还原闭环不断链 | ✅ 已确认 |
-| D-02 | 2026-10-18 | 旧独立项目 `D:\project\agent-project\auto-test`（2026-09-18）的项目计划 / 竞品研究 / 问题日志迁入 `Test/auto-test/project/`（文件名统一、正文旧 `.spec/` 路径改同目录可达写法）；删除 `docs/auto-test-legacy/` 整套归档（含已被取代的旧 skill 骨架）；修掉 `SKILL.md` 中 legacy-alias 渲染出的 `null` 占位（改为 auto-test；frontmatter 的 `legacy-alias: null` 是契约允许的 YAML null，保留不动） | 用户 2026-10-18 反馈：auto-test 被改成 auto-test-legacy 不可接受，要求体系可直接在其他地方使用；旧项目资料有独立价值但不该标 legacy 埋进 docs；`null` 是自动包装模板占位缺陷，不是能力名 | ✅ 已确认 |
+| D-01 | 2026-09-19 | 从 auto-test 项目仓（当时本机生效副本）复制入本仓，成为源仓库管理副本；入仓适配三处：L2 增「有设计稿时内嵌 Fidelity-Review 还原检查（视觉以设计稿为唯一应然）」、资源清单补仓库根 shared 四约定与兄弟 skill、新增 §九 运行问题埋点（对齐本仓统一口径）；version 0.1.0→0.1.1 | 用户要求：auto-test 加入当前仓库并在流程中替换 Testing（Testing 源码不动；Testing 已于 2026-09-22 归档，旧请求重定向 auto-test）；Fidelity 内嵌保持原 ⑭ 还原闭环不断链 | ✅ 已确认 |
+| D-02 | 2026-10-18 | 旧独立项目（原仓库远端 https://github.com/tengerfly/auto-test，2026-09-18）的项目计划 / 竞品研究 / 问题日志迁入 `Test/auto-test/project/`（文件名统一、正文旧 `.spec/` 路径改同目录可达写法）；删除 `docs/auto-test-legacy/` 整套归档（含已被取代的旧 skill 骨架）；修掉 `SKILL.md` 中 legacy-alias 渲染出的 `null` 占位（改为 auto-test；frontmatter 的 `legacy-alias: null` 是契约允许的 YAML null，保留不动（已被 D-03 修订为 "Testing"）） | 用户 2026-10-18 反馈：auto-test 被改成 auto-test-legacy 不可接受，要求体系可直接在其他地方使用；旧项目资料有独立价值但不该标 legacy 埋进 docs；`null` 是自动包装模板占位缺陷，不是能力名 | ✅ 已确认 || D-03 | 2026-10-18 | 按评审 D-13：frontmatter `legacy-alias` 由 null 改为 "Testing"（与 registry legacyAliases 对齐；D-02「保留不动」的结论据此修订） | 宿主展示不再出现 null 占位，历史名可检索 | ✅ 已确认 |
 
 ## 四、待决问题
 

@@ -122,7 +122,7 @@
 | 通用 hooks | `src/hooks/useFetch/useDebounce/useAuth` | 供各模块 hooks 复用 |
 | 错误兜底 | `src/App.tsx` 挂 ErrorBoundary | 渲染异常兜底 |
 | 环境变量 | `.env.development` / `.env.production` | `VITE_API_BASE_URL` 等 |
-| 测试环境 | `vitest.config.ts` + `src/Test/setup.ts` | jsdom + jest-dom + cleanup |
+| 测试环境 | `vitest.config.ts` + `src/test/setup.ts` | jsdom + jest-dom + cleanup |
 | 模块目录 | `src/features/<模块>/{components,hooks}` 空壳 | 逐模块填内容 |
 
 ---

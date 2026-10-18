@@ -15,21 +15,21 @@ metadata:
 发现失败、阻塞或用户纠正时，在下一安全节点按 `../../shared/problem-recording.md` 记录；根因未明不丢事实。恢复/交付前核对未决项，沿用已有详情与唯一索引。此规则优先于旧的仅收尾埋点/不确定不记表述，不增加轻量任务的正式建档要求。
 
 **闭环回流（L2）**：P0/P1 条目要标「已沉淀」前，必须先回流 1 条评测用例，并在该用例声明里用 `issueRef` 指回本条问题（值＝本条问题的仓库相对路径，形如 issue/<skill>/<日期>/<NN>-<标题>.md）；没有这条用例就按「未验证」处理，优化状态停在待处理/处理中，不得写「已沉淀」。
-判据与字段口径的单一来源是仓库根 `governance/eval-spec.yaml`（`caseTiers.L2` + `issueRef` 节），机械核对由 `scripts/eval/relay.py` 执行；本节只承接义务，不复述其条文。
+判据与字段口径的单一来源是仓库根 `governance/eval-spec.yaml`（`caseTiers.L2` + `issueRef` 节），机械核对由 `scripts/eval/relay.py` 执行；本节只承接义务，不复述其条文（仓库级工具：宿主副本若不含 `governance/` 与 `scripts/`，改人工核对并在报告注明降级）。
 
 ## 入口分流（先执行，避免混用规则）
 
 - 用户明确指定 AI 自写 → 直接读取 `references/self-write-sop.md`，不探测或调用 Superdesign。
 - 未指定时仍按下方步骤 1 探测 A 的环境/额度；满足则沿用原 A 流程，任一不满足则进入 B SOP。不在同一任务中混合云端和本地稿源。
-- **B 路径转入后在其 SOP 内完成输入、规范、生成、检查和归档，不继续执行下方 A 的步骤 2–9、铁律、直编契约、审美禁令或模板门禁。** B 的前置与优先级见 SOP，检查只用 `references/self-write-review-gate.md`。
+- **B 路径转入后在其 SOP 内完成输入、规范、生成、检查和归档，不继续执行下方 A 的步骤 2–9、A 专属铁律、直编契约、审美禁令或模板门禁（铁律 4 的 ①②③ 文案分类与结构冻结义务在 B SOP 中重述并适用）。** B 的前置与优先级见 SOP，检查只用 `references/self-write-review-gate.md`。
 - 以下保留 A 主流程与兼容说明，A 的额度/确认/导入/回传/评审不变。B 不因任务轻量降低安全、业务保真或证据诚实，也不以此改变 A 的行为。
 
-> 〔A 路径〕IRON LAW：**布局零改动 + 规范先行 + 第一版不算数**——布局清单与低保真原型是结构真相源；设计规范未确认前禁止任何生成调用；A 路径生成的第一版都是草稿，必须过自检环 + pre-flight 才算数。
+> 〔A 路径专属 Iron Law〕**布局零改动 + 规范先行 + 第一版不算数**——布局清单与低保真原型是结构真相源；设计规范未确认前禁止任何生成调用；A 路径生成的第一版都是草稿，必须过自检环 + pre-flight 才算数。
 > 本 skill 是设计总监 + 编排器：管标准、决策、门禁、归档。生成本体双路径：**A = Superdesign CLI 云端出稿**（`references/superdesign-sop.md`）；**B = 会话模型 AI 自写**（`references/self-write-sop.md`，无额度时的默认）。
 
 ## 一、定位与铁律
 
-**四条铁律**：
+**四条通用铁律**（路径专属 Iron Law 另见 §三 步骤 1 与 B SOP）：
 
 1. **布局零改动**：载体、区块、元素、跳转逐项与布局清单 + 低保真原型一致；只改好不好看，**不碰有什么 / 在哪 / 怎么跳**。布局有问题 → 停下回 Prototype-Design。
 2. **规范先行**：任何生成前设计规范必须已确认；每次生成必带规范 + 保真约束语。`design-system.md` 是下游 FTDD 与 Frontend-Dev 的视觉规范依据，随 `.spec/设计稿/` 交付。
@@ -87,7 +87,7 @@ metadata:
 
 **8. ◉ 质量门禁（A 路径，全绿才放行）**：按 `references/design-review-gate.md` 六查——① 布局零改动（多删改返工）② 规范一致性（规范外视觉值返工）③ 反 AI 味 12 条（§4.3 + 扩充机械项）④ 文案保真（① 类与 PRD / 布局清单逐字一致、无杜撰；**② 类原型说明层在可见层命中数必须为 0，③ 类须有重写记录**——见铁律 4）⑤ 布局基线与全站组件不变量（**含跨页导航外壳宽度实测三值一致**，见 `assets/design-system-template.md` §5.11 角色分流）⑥ 稿源同步核验（〔A〕云端稿 import 回传核验；〔B〕本地渲染核验）。
 
-**9. 落盘归档（A 路径；B 按独立 SOP §七）**：〔A〕`get-design --draft-id --output .spec/设计稿/<页面>.html`；〔B〕本地文件即交付物（核对路径与命名，无导出步骤）。按 `assets/archive-readme-template.md` 写 README（页面 / 〔A〕projectId + draftId 或〔B〕稿源=AI 自写 + git 版本 / 规范出处 / 端类型 / **§7 token 条数对账基线** / **上游基线指纹**）；**〔REQUIRED · 上游基线指纹〕**README 必须登记本批所依据的上游 artifact：`artifactId` + `version` + 该文件 mtime，并按 `../../shared/artifact-contract.md` §2 写入其 `sourceRefs`——只写「PRD v0.2 APPROVED」这类无 id、无 mtime 的松散说法不算登记。上游被覆盖式修订或转 `SUPERSEDED` 时，本批即基准失效，须重判而非沿用（口径 `../../shared/gate-policy.md` §6）；返工交付同理声明**返工当时**的上游版本与 mtime。**〔REQUIRED · 回填边界〕**回填评审任务清单**只允许动状态列与修复说明并标回填方**（`已确认` → `已修复` + 修改说明）；**Gate 结论、放行状态、轮次判定属评审方单一事实源，编写方一律不得自写**；**回填后须触发 `UI-UX-Review` 复核，不得自判通过**（闭环与上限规则见 `../../shared/anti-deadloop.md` §一/§二）；埋点收尾。
+**9. 落盘归档（A 路径；B 按独立 SOP §七）**：〔A〕`get-design --draft-id --output .spec/设计稿/<页面>.html`；〔B〕本地文件即交付物（核对路径与命名，无导出步骤）。按 `assets/archive-readme-template.md` 写 README（页面 / 〔A〕projectId + draftId 或〔B〕稿源=AI 自写 + git 版本 / 规范出处 / 端类型 / **§7 token 条数对账基线** / **上游基线指纹**）；**〔REQUIRED · 上游基线指纹〕**README 必须登记本批所依据的上游 artifact：`artifactId` + `version` + 该文件 mtime，并按 `../../shared/artifact-contract.md` §2 写入其 `sourceRefs`——只写「PRD v0.2 APPROVED」这类无 id、无 mtime 的松散说法不算登记。上游被覆盖式修订或转 `SUPERSEDED` 时，本批即基准失效，须重判而非沿用（口径 `../../shared/gate-policy.md` §6）；返工交付同理声明**返工当时**的上游版本与 mtime。**〔REQUIRED · 回填边界〕**回填评审任务清单**只允许动状态列与修复说明并标回填方**（`已确认` → `已修复` + 修改说明）；**Gate 结论、放行状态、轮次判定属评审方单一事实源，编写方一律不得自写**；**回填后须触发 `UI-UX-Review` 复核，不得自判通过**（闭环与上限规则见 `../../shared/anti-deadloop.md` §2/§3）；埋点收尾。
 
 > **下游交接口径**：`design-system.md` §7「CSS 变量 Token 汇总」是下游 Frontend-Tech-Design（§8.6 登记条数）与 Frontend-Dev（`styles/variables` 逐条对账）的**视觉唯一来源**；低保真原型不承载视觉基准（见 `../../shared/baseline-terms.md`）。
 
@@ -190,7 +190,7 @@ superdesign upload-asset <file> --project-id <id> --purpose brand|content|refere
 | 穿衣静态化：把原型可跳转/可展开结构降级为纯样式 hover（死按钮、无锚点行） | 交互结构随布局零改动一并冻结：原型中真实 <a>/按钮在设计稿用 <a href="#锚点"> 或等价触发保留 |
 | Tailwind 默认尺度直用（rounded-sm/shadow-md/0.5 步长间距/中间字重），未映射设计 token | 生成提示词与自检都按 token 对照表逐值映射；门禁 ② 用「规范外值全文扫描」兜底 |
 | 风格提案的动效档带入已收敛的归档规范（提案最低限编排 ≠ 规范无编排） | 步骤 5 规范落定后，生成约束语只引规范 §动效，不再引提案 |
-| 〔B〕第一版直接当定稿交付 | Iron Law：成稿必过渲染截图自检 + pre-flight（self-write-sop §一/§七） |
+| 〔B〕第一版直接当定稿交付 | 〔B〕Iron Law：成稿必过渲染截图自检 + pre-flight（self-write-sop §一/§七） |
 | 〔B〕无截图自查，或打磨超「1 全量 + 1 确认」上限 | 有界验证封顶；浏览器不可用 → 源码机械检查 + 用户确认并在 README 注明 |
 | 〔B〕凭记忆编风格不查情报源 | 先查 case-library + 外部风格源；0 结果显式标 fallback，禁编造 |
 | 〔B〕em-dash / 装饰 eyebrow / div 假截图 / 同页同意图多 CTA 标签 | 机械检查零容忍（design-review-gate §三扩充项） |
@@ -290,4 +290,4 @@ Downstream Skills may consume only manifest entries whose status and Gate allow 
 
 ## State Changes
 
-Record the old state, new state, actor, timestamp, reason, evidence references, Gate, and next action in `.spec/workflow.yaml`. The exact state names come from `governance/state-registry.yaml`.
+Record the old state, new state, actor, timestamp, reason, evidence references, Gate, and next action in `.spec/workflow.yaml`. The exact state names come from `governance/state-registry.yaml` in the source repository; an installed copy without that repository must use the state names already present in the project `.spec/workflow.yaml` and must not invent new states.

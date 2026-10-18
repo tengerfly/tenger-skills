@@ -1,4 +1,4 @@
-﻿# Inspection Report Template
+# Inspection Report Template
 
 # 项目质量巡检报告
 
@@ -8,7 +8,7 @@
 - 环境：
 - 范围：
 - 上次巡检：
-- Gate：INSPECTION_PASS | INSPECTION_CONDITIONAL | INSPECTION_BLOCKED
+- Gate：PASS | CONDITIONAL | BLOCKED（分别对应状态 INSPECTION_PASS / INSPECTION_CONDITIONAL / INSPECTION_BLOCKED）
 
 ## 1. 门禁结果
 

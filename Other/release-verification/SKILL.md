@@ -46,7 +46,7 @@ metadata:
 PASS：保护指标和主链通过，遥测可用；CONDITIONAL：低风险缺口已限制并登记；BLOCKED：主链失败、保护指标越阈值、版本无法关联或无法回滚。
 
 ## Failure Route
-信号异常转 ../signal-triage/incident-response；测试回归转 defect-triage；计划执行差异转 release-planning。
+信号异常转 `signal-triage` / `incident-response`；测试回归转 defect-triage；计划执行差异转 release-planning。
 
 ## Downstream Contract
 operations 收到版本、commit、观察窗口、信号和已知缺口；不得把验证报告当作永久健康保证。

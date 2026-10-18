@@ -92,13 +92,13 @@ reason: <一句话>
    - 需修复项标注 `已确认`；无需修改或后续迭代项标注 `已忽略` 并注明理由；
 2. 用户确认后，任务清单交回对应 Skill（`UI-UX-Design` 改设计稿 / `Prototype-Design` 改布局清单 / `PRD-Design` 改 PRD）执行定向修复；
 3. 修改方修复完毕回填任务清单为 `已修复` 并写明修改说明，触发复核；
-4. Use the common Gate contract: PASS requires no unresolved P0/P1; residual P0 is BLOCKED; residual P1 may only be an authorized CONDITIONAL with exceptionId, owner, dueAt, remediation, allowDownstream, and approvalRef. There is no force-pass rule.
+4. Gate 口径见 ../../../shared/gate-policy.md：仅 PASS/CONDITIONAL/BLOCKED；残留 P0⇒BLOCKED；残留 P1 不得 PASS，仅完整授权 CONDITIONAL（exceptionId/risk/owner/dueAt/remediation/allowDownstream/approvalRef）；无 force-pass。
 
 ## 五、沉淀判定（双向，放行后回填）
 
 | 方向 | 目标 skill | 落点 | 状态 |
 |---|---|---|---|
 | A · 防复发 | {{UI-UX-Design / Prototype-Design / PRD-Design}} | 错误表加行 / references 清单 / Gate 预检项 | 待处理 / 已沉淀 / 入池 |
-| B · 检出力 | `UI-UX-Review` | `references/known-issue-patterns.md` 加模式（含检出方法） | 待处理 / 已沉淀 / 入池 |
+| B · 检出力 | `UI-UX-Review` | `../references/known-issue-patterns.md` 加模式（含检出方法） | 待处理 / 已沉淀 / 入池 |
 
-> P0 双向必沉；当场改则记目标 skill `CONTEXT.md` D-xx，改不了落 `../../../issue/<目标 skill>/<日期>/`（来源=评审闭环）。
+> P0 双向必沉；当场改则记目标 skill `../CONTEXT.md` D-xx，改不了落 `../../../issue/<目标 skill>/<日期>/`（来源=评审闭环）。

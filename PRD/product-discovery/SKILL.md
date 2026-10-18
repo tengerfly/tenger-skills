@@ -1,6 +1,6 @@
 ---
 name: product-discovery
-description: 调查用户任务、痛点、当前做法与证据，形成 discovery-brief；不盘点竞品功能、不冻结产品定位或 MVP。
+description: 调查用户任务、痛点、当前做法与证据，形成 discovery-brief；不盘点竞品功能、不冻结产品定位或 MVP。触发：调研用户、需求发现、用户痛点、该做什么、验证需求是否成立。
 metadata:
   short-description: 验证目标用户、问题场景、替代方案和证据强度，形成产品发现简报。
 ---
@@ -35,7 +35,7 @@ Intake 已准备，产品方向不清，或 CHANGE/OPTIMIZE 需要重新验证�
 - 组织证据并记录强度、样本和偏差；
 - 识别冲突说法；
 - 生成待验证假设和成功信号；
-- 将外部竞争研究路由到 Competitive-Analysis。
+- 将外部竞争研究路由到 `competitive-analysis`。
 
 ## Non-goals
 - 不冻结定位、商业模式、MVP 或最终功能；
@@ -66,12 +66,12 @@ PASS：核心问题和人群有足够直接证据；CONDITIONAL：假设有责�
 `CONDITIONAL` 必须记录例外、风险、责任人、截止时间、补证动作和 `allowDownstream`。AI 只能提出 Gate，不能替用户批准关键产品决策。
 
 ## Failure Route
-证据缺失回补研究；外部问题交 Competitive-Analysis；运行信号不明交 signal-triage 或 product-analytics。
+证据缺失回补研究；外部问题交 `competitive-analysis`；运行信号不明交 signal-triage 或 product-analytics。
 
 同一阻塞点反复 3 轮未收敛则请求裁决；新场景、新证据和不同问题可继续探索，不把三轮理解为整个 PRD 的访谈上限。不得为结束对话把 OPEN 改为已确认。
 
 ## Downstream Contract
-Product Definition 可消费问题、用户、场景、替代方案、证据和假设，不得将假设当事实。
+`product-definition` 可消费问题、用户、场景、替代方案、证据和假设，不得将假设当事实。
 
 下游必须消费 artifact 和 decisionRefs，不得从聊天上下文补齐未确认结论。
 

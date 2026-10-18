@@ -1,4 +1,6 @@
-# PRD-Review —— PRD 检测 / 评审 Skill
+> LEGACY COMPATIBILITY NOTICE: This file preserves historical material. The active Skill, Gate, state, artifact, and evidence rules are defined by `shared/skill-contract.md`, `shared/gate-policy.md`, `shared/anti-deadloop.md`, `shared/artifact-contract.md`, `governance/`, and `.spec/workflow.yaml`. 现行流程与边界见 [SKILL.md](SKILL.md)；旧流程全文见 references/legacy-skill.md。
+
+# PRD-Review —— PRD 检测 / 评审 Skill（历史名称；canonical id：`prd-review`）
 
 > 状态：✅ 定稿
 > 定位：只做评审，不改稿；问题定位原文，逐条列出并给修改方向，结论可追溯。
@@ -21,11 +23,11 @@
 解析 PRD → 三角色独立上下文并行评审 → 三份角色文档 → 产品专家总审（核心 6 维 + 扩展兜底档 + 调度三角色问题）→ 汇总去重 → 任务清单+用户确认 → 双向沉淀判定（P0 必沉）→ 归档
 ```
 
-P0/P1 阻断、P2 可留；问题逐条直接列出，每条附出处/成因/**修改方向**与修复判据；复核只验本轮，轮次上限 3。清单交 PRD-Design 修复回填。
+P0/P1 阻断、P2 可留；问题逐条直接列出，每条附出处/成因/**修改方向**与修复判据；复核只验本轮，轮次上限 3（超限后残留 P0⇒BLOCKED、残留 P1 只能经完整授权 CONDITIONAL；无自动第 4 轮、无 force-pass，见 `../../shared/anti-deadloop.md` §3）。清单交 `prd-design` 修复回填。
 
 ## 三、严重度
 
-> 定义与处理口径见仓库根 `../../shared/anti-deadloop.md` §三；下为本域典型表述。
+> 严重度定义见仓库根 `../../shared/gate-policy.md` §1；轮次与残留处理见 `../../shared/anti-deadloop.md` §2/§3。下为本域典型表述。
 
 - P0：断头/无头/流程走不通/需求自相矛盾/缺失到无法开工。
 - P1：模糊歧义/状态边界异常未定义/数据口径不一致/验收不可测/术语同名不同义致规则冲突。
@@ -34,7 +36,7 @@ P0/P1 阻断、P2 可留；问题逐条直接列出，每条附出处/成因/**�
 ## 四、目录与产出
 
 ```
-../prd-review/
+prd-review/
 ├── SKILL.md / README.md / CONTEXT.md
 ├── references/（frontend / backend / test / product-checklist + known-issue-patterns 案例库）
 ├── assets/（role-review / summary / issue-list 模板）

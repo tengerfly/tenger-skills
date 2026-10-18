@@ -34,7 +34,7 @@ metadata:
 4. fetch 与后端 TDD 接口清单一一对应，不自造契约；**双向一致 ≠ 完备**——模块 §5 必出页面字段清单作完备性锚点（见 S5）。
 5. 先写测试用例，后写实现方案。
 6. **无障碍与性能是设计输入，不是事后优化**。
-7. 浏览器工具**硬依赖**：全无则报错停，不降级静态对照。
+7. 浏览器工具**硬依赖**：全无则报错停，不降级静态对照。**显式豁免（2026-10-18 增补，与 Frontend-Dev 同款）**：用户/Lead 以 DEC 明确批准「无浏览器环境只做静态交付」时，可按轻量口径继续交付已实现代码，但必须三件齐：① 记录 DEC 编号与授权人（`.spec/decisions/`）；② L2 视觉/还原度验收一律标 `BLOCKED`（不得以静态对照冒充视觉通过）；③ 交付说明写明未验证面。豁免只降低验收面，不降低实现质量。
 8. 只写本 skill 该写的——不代写 PRD / 原型 / 后端方案。
 
 **适用范围**：适用「已有 PRD（±设计稿/原型 + TDD）写前端技术方案/设计/架构/FTDD」；不适用写评审需求、原型、后端方案、纯运维部署。产物落 `.spec/FTDD/VN/`。
@@ -67,7 +67,7 @@ metadata:
 
 **S1 解析输入 + 浏览器检测**：读上表输入；抽取页面清单、组件线索、接口清单（来自 TDD）、AC；**读同域开源调研报告（`.spec/开源情报/`，有则 REQUIRED）**——同域项目的前端架构/状态方案/测试基建做法反哺 S2 选型候选与 S5 组件拆分（报告三元组中「建议落点=本方案」的条目逐条纳入并留出处；无报告先建议跑 OSS-Radar，快速档经用户确认跳过并留痕）。
 
-**S1.5 资产检索与选择（AI 知识库门禁）**：检索外部 AI 知识库 `$env:SKILLS_KNOWLEDGE_ROOT/asset-library/`（使用入口与同步协议见仓库根 `../../skill-knowledge/README.md`；**未配置 `$env:SKILLS_KNOWLEDGE_ROOT` 时按 `../../skill-knowledge/README.md` 的降级规则跳过检索并登记，不伪造命中**）——先判项目类型命中 `blueprints/`（可叠加取严）收敛范围，再按 capabilities → patterns/composites → adapters 检索；**命中 → 命中资产直接进方案**（组件清单/选型总览标注资产来源与版本），记录 selected/rejected/unresolved 并锁版本；**命中但不完全适用 → 方案层即做兼容性适配**（扩参数 / 加 adapter / 版本演进既有资产），禁并列冗余资产（防冗余硬条件）；无法适配 → 记缺口并说明与既有资产的差异，交 Dev 走封装七步法（造前 asset-gap）。产物落 `.spec/<feature>/` 的 `asset-needs.yaml`、`asset-selection.yaml`、`composition.yaml`（模板在组件库 `templates/project-side/`）。
+**S1.5 资产检索与选择（AI 知识库门禁）**：检索外部 AI 知识库（环境变量 `SKILLS_KNOWLEDGE_ROOT` 指向的目录）的 `asset-library/`（使用入口与同步协议见仓库根 `../../skill-knowledge/README.md`；**未配置 `SKILLS_KNOWLEDGE_ROOT` 时跳过检索，并在 PROJECT.md 或本次执行摘要登记「外部知识库未配置、检索跳过」，不伪造命中**）——先判项目类型命中 `blueprints/`（可叠加取严）收敛范围，再按 capabilities → patterns/composites → adapters 检索；**命中 → 命中资产直接进方案**（组件清单/选型总览标注资产来源与版本），记录 selected/rejected/unresolved 并锁版本；**命中但不完全适用 → 方案层即做兼容性适配**（扩参数 / 加 adapter / 版本演进既有资产），禁并列冗余资产（防冗余硬条件）；无法适配 → 记缺口并说明与既有资产的差异，交 Dev 走封装七步法（造前 asset-gap）。产物落 `.spec/<feature>/` 的 `asset-needs.yaml`、`asset-selection.yaml`、`composition.yaml`（模板在组件库 `templates/project-side/`）。
 
 **S2 选型澄清（一次定全）**：⛔ 每个决策点过「收敛证明」——结论落到具体页面 / 组件 / 状态归属 + 失败 / 涨 10 倍 / 漏项已拷问 + 用户对定稿复述点头；一两句回答不算定稿（协议见 `references/socratic-grilling.md`，通用核心 `../../shared/socratic-grilling-core.md`）。
 
@@ -100,7 +100,7 @@ metadata:
 
 **S6 全局一致性**：命名统一、hooks/状态一致、接口一一对应、依赖与总文档一致、测试编号连续且可追溯 AC。
 
-**S7 归档 + 回填**：落盘 `.spec/FTDD/VN/`；处理过的评审任务改 `已修复` 并说明。回填后须触发 `Tech-Review` 复核，不得自判通过（闭环与上限规则见仓库根 `../../shared/anti-deadloop.md` §一/§二）。
+**S7 归档 + 回填**：落盘 `.spec/FTDD/VN/`；处理过的评审任务改 `已修复` 并说明。回填后须触发 `Tech-Review` 复核，不得自判通过（闭环与上限规则见仓库根 `../../shared/anti-deadloop.md` §2/§3）。
 
 ## 四、关键设计规范
 
@@ -239,4 +239,4 @@ Downstream Skills may consume only manifest entries whose status and Gate allow 
 
 ## State Changes
 
-Record the old state, new state, actor, timestamp, reason, evidence references, Gate, and next action in `.spec/workflow.yaml`. The exact state names come from `governance/state-registry.yaml`.
+Record the old state, new state, actor, timestamp, reason, evidence references, Gate, and next action in `.spec/workflow.yaml`. The exact state names come from `governance/state-registry.yaml` in the source repository; an installed copy without that repository must use the state names already present in the project `.spec/workflow.yaml` and must not invent new states.

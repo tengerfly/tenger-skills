@@ -14,7 +14,7 @@
 
 ## 2. Pass Gate 裁决
 结论：PASS / CONDITIONAL / BLOCKED。
-Use the common Gate contract: PASS requires no unresolved P0/P1; residual P0 is BLOCKED; residual P1 may only be an authorized CONDITIONAL with exceptionId, owner, dueAt, remediation, allowDownstream, and approvalRef. There is no force-pass rule.
+Gate 口径见 ../../../shared/gate-policy.md：仅 PASS/CONDITIONAL/BLOCKED；残留 P0⇒BLOCKED；残留 P1 不得 PASS，仅完整授权 CONDITIONAL（exceptionId/risk/owner/dueAt/remediation/allowDownstream/approvalRef）；无 force-pass。
 红线自检：无编造 / 假设隔离 / 独立优缺点表 / 口径并列。
 
 ## 3. 三段式详情

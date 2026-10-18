@@ -478,3 +478,48 @@ artifacts:
   - REVIEW
   - APPROVED
   - SUPERSEDED
+- type: defect
+  required:
+  - artifactId
+  - type
+  - path
+  - lifecycle
+  - owner
+  - status
+  - producedBy
+  - producedAt
+  statuses:
+  - DRAFT
+  - REVIEW
+  - APPROVED
+  - SUPERSEDED
+- type: optimization
+  required:
+  - artifactId
+  - type
+  - path
+  - lifecycle
+  - owner
+  - status
+  - producedBy
+  - producedAt
+  statuses:
+  - DRAFT
+  - REVIEW
+  - APPROVED
+  - SUPERSEDED
+- type: refactor
+  required:
+  - artifactId
+  - type
+  - path
+  - lifecycle
+  - owner
+  - status
+  - producedBy
+  - producedAt
+  statuses:
+  - DRAFT
+  - REVIEW
+  - APPROVED
+  - SUPERSEDED

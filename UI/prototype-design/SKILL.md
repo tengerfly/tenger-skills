@@ -1,6 +1,6 @@
 ---
 name: prototype-design
-description: 根据已批准 PRD、蓝图和功能决策构建可走查结构原型的兼容入口。
+description: 低保真可交互原型生成（Prototype-Design 兼容入口）。依据已批准 PRD、蓝图和功能决策构建可走查的低保真原型（结构基线）：先经用户确认《布局清单》再生成可点击 HTML，并做逻辑闭环检测。触发：生成原型、画原型、低保真原型、交互原型、页面原型、可点击原型、把 PRD 变成原型。
 metadata:
   legacy-alias: Prototype-Design
   migration-target: prd-workflow
@@ -25,7 +25,7 @@ metadata:
 用户明确要求执行本领域动作，或 `prd-workflow` 在对应阶段调度时触发。请求属于上游研究、定位、蓝图或范围决策时先路由上游。
 
 ## Inputs
-- 上游 artifact、manifest、决策记录和 traceability；
+- 上游 artifact、manifest、决策记录和 traceability（含已批准 PRD、蓝图与功能决策）；
 - 用户确认、研究证据、PRD/原型原文；
 - 本目录 legacy-skill、references、assets 和既有脚本。
 
@@ -73,4 +73,4 @@ PASS：输入、产物、证据和关键确认齐全；CONDITIONAL：风险、�
 下游只能消费 manifest 中状态明确的 artifact，必须读取 sourceRefs、evidenceRefs、decisionRefs 和 openItems，不得从聊天上下文补齐未确认结论。
 
 ## State Changes
-`WORKFLOW_BLOCKED → INTAKE_REQUESTED → DISCOVERY_IN_PROGRESS → INTAKE_READY`。
+`PROTOTYPE_IN_PROGRESS → PROTOTYPE_REVIEW_IN_PROGRESS`；放行由 `prototype-review` 的 Gate 与编排器按注册合法边推进，编写方不得自行设置 `PROTOTYPE_APPROVED`。

@@ -102,7 +102,7 @@ metadata:
 
 ### 6. 建立 API 与数据清单
 
-盘点对外接口、事件、数据库/文件/缓存、迁移、外部依赖和兼容性约束。记录“当前观察到的行为”与“应该如此的产品规则”两列；两者不一致时转交 `Impact-Analysis`、`Defect-Triage` 或用户确认，不能由本 Skill 决定。
+盘点对外接口、事件、数据库/文件/缓存、迁移、外部依赖和兼容性约束。记录“当前观察到的行为”与“应该如此的产品规则”两列；两者不一致时转交 `impact-analysis`、`defect-triage` 或用户确认，不能由本 Skill 决定。
 
 ### 7. 建立测试基线
 
@@ -120,13 +120,13 @@ metadata:
 
 把问题分成：产品语义不明、工程事实缺失、质量风险、运行风险、权限/合规风险。输出下一步推荐：
 
-- 新项目 → `PRD-Workflow`；
+- 新项目 → `prd-workflow`；
 - 旧流程接入 → 先交阶段缺口矩阵与补齐计划，经确认后仅补缺失/失效阶段；
-- 功能/规则变化 → `CHANGE` → `Impact-Analysis`；
-- 行为偏离已批准基线 → `DEFECT` → `Defect-Triage`；
-- 内部治理且默认不改外部行为 → `REFACTOR` → `Refactor-Planning`；
-- 生产高影响问题 → `INCIDENT` → `Incident-Response`；
-- 指标/成本/行为驱动的改进 → `OPTIMIZE` → `Product-Analytics` / `Optimization-Planning`。
+- 功能/规则变化 → `CHANGE` → `impact-analysis`；
+- 行为偏离已批准基线 → `DEFECT` → `defect-triage`；
+- 内部治理且默认不改外部行为 → `REFACTOR` → `refactor-planning`；
+- 生产高影响问题 → `INCIDENT` → `incident-response`；
+- 指标/成本/行为驱动的改进 → `OPTIMIZE` → `product-analytics` / `optimization-planning`。
 
 ## Outputs
 
@@ -167,7 +167,7 @@ metadata:
 
 ## Gate
 
-只有同时满足以下条件才能通过 `ONBOARDING_BASELINE_READY`：
+以下条件全部满足才能给 `PASS`（并进入状态 `ONBOARDING_BASELINE_READY`）：
 
 1. 项目模式、范围、分支和快照明确；
 2. 八份基线文件齐全，或每个缺失项都有原因、风险和后续责任；
@@ -177,30 +177,30 @@ metadata:
 6. 下游模式和第一步行动明确；
 7. 未改动代码、未执行未授权外部操作。
 
-否则输出 `BASELINE_INCOMPLETE`，停在当前 Skill；不要用下游开发掩盖上游未知。
+否则 Gate 为 `BLOCKED`（状态 `BASELINE_INCOMPLETE`），停在当前 Skill；不要用下游开发掩盖上游未知。
 
 ## Failure Route
 
 - 工作区有未提交变更：保留现场，生成快照，暂停任何写操作。
-- 无法安全运行项目：记录阻塞命令和原因，转 `Technical-Discovery`，不编造结果。
-- 需求与现状冲突：转 `Impact-Analysis` / `Defect-Triage`，等待产品裁决。
-- 生产风险或数据安全风险：停止盘点之外的操作，转 `Incident-Response` 或人工确认。
+- 无法安全运行项目：记录阻塞命令和原因，按 `../../shared/problem-recording.md` 留事实并转 `workflow` 重新路由，不编造结果。
+- 需求与现状冲突：转 `impact-analysis` / `defect-triage`，等待产品裁决。
+- 生产风险或数据安全风险：停止盘点之外的操作，转 `incident-response` 或人工确认。
 - 证据不足：标记 `OPEN` 并列出最小补证动作，不得升级为确定结论。
 
 ## Downstream Contract
 
 下游只能消费本 Skill 已登记的基线和证据：
 
-- `PRD-Workflow` 消费产品目标与未知项，不把技术猜测写成需求；
-- `DEV-Workflow` 消费架构、依赖、运行和约束事实；
+- `prd-workflow` 消费产品目标与未知项，不把技术猜测写成需求；
+- `dev-workflow` 消费架构、依赖、运行和约束事实；
 - `auto-test` 消费行为、测试缺口和回归风险；
-- `Release-Workflow` 消费发布、回滚和观察基线；
-- `Operations-Workflow` 消费可观测性、版本关联和运行风险；
-- `Refactor-Planning` 消费内部质量目标，但必须保留行为基线。
+- `release-workflow` 消费发布、回滚和观察基线；
+- `operations-workflow` 消费可观测性、版本关联和运行风险；
+- `refactor-planning` 消费内部质量目标，但必须保留行为基线。
 
 ## State Changes
 
-建议状态：
+状态流转（已注册状态，正式执行写入 `.spec/workflow.yaml`）：
 
 ```text
 ONBOARDING_REQUESTED

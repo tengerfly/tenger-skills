@@ -1,7 +1,7 @@
 # 微交互与动效案例库（Interactions & Motion）
 
 > 定位：案例库·交互类。微交互按「触发方式 × 反馈类型」矩阵组织；动效实现资源单独一节。
-> 约束：设计稿动效遵守 design-system §6/§7（强度档 / 时长档 / 曲线 token，判据见本 skill `references/motion-design-guide.md`；只动进出场 / 反馈，不做装饰性动画）；复杂动效仅限营销站场景。
+> 约束：设计稿动效遵守 design-system §6/§7（强度档 / 时长档 / 曲线 token，判据见本 skill `../motion-design-guide.md`；只动进出场 / 反馈，不做装饰性动画）；复杂动效仅限营销站场景。
 
 ---
 

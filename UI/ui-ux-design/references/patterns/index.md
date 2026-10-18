@@ -7,21 +7,21 @@
 
 ### 顶栏三段式（Web PC · product 语境）
 - **适用**：内容型/工具型 Web 应用。
-- **要点**：brand（icon+slogan）贴左 `mr-auto` → 导航组与头像靠右 → 头像最右；顶栏内容列与限宽页内容主列**同一容器**（响应式 `width:100%;max-width:N;margin:auto`，大屏断点放大，禁 `max-w` 死锁）；导航项宽度按内容自适应（`min-w` + nowrap）。
+- **要点**：brand（icon+slogan）贴左 `mr-auto` → 导航组与头像靠右 → 头像最右；顶栏内容列与限宽页内容主列**同一容器**（仅**页内标题栏**场景；承载跨页入口的**全局导航外壳**跨页恒定、不得随内容档位缩窄——角色分流见 `../../assets/design-system-template.md` §5.11）（响应式 `width:100%;max-width:N;margin:auto`，大屏断点放大，禁 `max-w` 死锁）；导航项宽度按内容自适应（`min-w` + nowrap）。
 - **常见错误**：全宽/限宽两版反复改（先拍板写入 design-system）；改内容区连带改顶栏（全局组件跨页不变量）；下拉菜单与触发器 hover 通路断裂（gap 断链）。
 - **出处**：`../style-case-library.md` 学径案例（2026-09-05）。
 
 ## 二、表单模式
 
-<!-- 待提炼：标签位置/必填标记/校验反馈时机/分组。出处案例沉淀后回填。 -->
+> 暂无已提炼模式；出处案例沉淀后回填（可先检索 `case-library/components.md` 表单相关条目）。
 
 ## 三、反馈模式
 
-<!-- 待提炼：Toast vs Banner vs 行内反馈的选择矩阵；成功/警告/错误的文案语气。 -->
+> 暂无已提炼模式；出处案例沉淀后回填（可先检索 `case-library/interactions.md` 反馈类条目）。
 
 ## 四、空态模式
 
-<!-- 待提炼：插画风格选择、文案语气、CTA 位置（关联 design-system §5.10 状态规范）；检索 case-library/flows.md 空态子类后提炼。 -->
+> 暂无已提炼模式；出处案例沉淀后回填（关联 design-system 模板 §5.10 状态规范，检索 `case-library/flows.md` 空态子类）。
 
 ---
 

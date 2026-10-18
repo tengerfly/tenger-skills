@@ -30,14 +30,14 @@ signal-triage、告警、运行手册、发布/回滚计划、权限、影响范
 不在事故中做无关重构；不隐藏影响；不以恢复服务等同于根因修复。
 
 ## Procedure
-1. 建立 incident ID、严重级别、影响范围和负责人。
+1. 建立 incident ID（`INC-*`）、严重级别、影响范围和负责人。
 2. 记录每个假设、命令、结果和时间，不把猜测写成根因。
 3. 执行批准的降级/回滚/隔离措施。
 4. 通过主链、错误率、延迟、数据一致性和告警验证恢复。
 5. 关闭临时措施，委托 defect/change/refactor 和 post-release-review。
 
 ## Outputs
-`.spec/incidents/<id>/timeline.md`、影响/恢复报告、临时措施、根因候选和后续任务。
+`.spec/incidents/<id>/timeline.md`、影响/恢复报告（按 `../../shared/templates/incident-report.yaml`，`incidentId` 统一 `INC-*`）、临时措施、根因候选和后续任务。
 
 ## Evidence
 时间线、部署/回滚记录、健康检查、指标、日志引用、授权和恢复确认。

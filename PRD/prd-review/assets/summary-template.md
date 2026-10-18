@@ -33,7 +33,7 @@ P0/P1/P2 数量及阻塞说明。本 skill 不裁决，供用户决策。
 
 | 方向 | 目标 skill | 落点 | 状态 |
 |---|---|---|---|
-| A · 防复发 | `PRD-Design` | 错误表加行 / references 清单 / Gate 预检项 | 待处理 / 已沉淀 / 入池 |
-| B · 检出力 | `PRD-Review` | `references/known-issue-patterns.md` 加模式（含检出方法） | 待处理 / 已沉淀 / 入池 |
+| A · 防复发 | `prd-design` | 错误表加行 / references 清单 / Gate 预检项 | 待处理 / 已沉淀 / 入池 |
+| B · 检出力 | `prd-review` | `references/known-issue-patterns.md` 加模式（含检出方法） | 待处理 / 已沉淀 / 入池 |
 
-> P0 双向必沉；当场改则记目标 skill `CONTEXT.md` D-xx，改不了落 `../../../issue/PRD-Design/<日期>/`（来源=评审闭环）。
+> P0 双向必沉；当场改则记目标 skill `CONTEXT.md` D-xx，改不了落 `../../../issue/PRD-Design/<日期>/`（来源=评审闭环；问题池沿用既有叶目录名 PRD-Design，skill id 用 prd-design）。

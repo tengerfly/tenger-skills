@@ -17,7 +17,7 @@ metadata:
 
 发现失败、阻塞或用户纠正时，在下一安全节点按 `../../shared/problem-recording.md` 记录；根因未明不丢事实。恢复/交付前核对未决项，沿用已有详情与唯一索引。此规则优先于旧的仅收尾埋点/不确定不记表述，不增加轻量任务的正式建档要求。
 
-## 一、模型：双泳道 × 双模式 × 五步
+## 一、模型：双泳道 × 双模式 × 六步
 
 **双泳道**（watchlist 里每条采集目标归属其一）：
 
@@ -28,7 +28,7 @@ metadata:
 
 **双模式**：交互模式（用户在场，反哺清单确认后可继续推进）与无人值守模式（定时巡逻，行为差异见 §四）。
 
-**五步**：⓪ 装载 watchlist → ① 发现 → ② 采集 → ③ 提炼 → ④ 反哺产出 → ⑤ 台账回写。
+**六步**：⓪ 装载 watchlist → ① 发现 → ② 采集 → ③ 提炼 → ④ 反哺产出 → ⑤ 台账回写。
 
 ## 二、数据目录与 watchlist
 
@@ -133,7 +133,7 @@ Preserve the mature capability of `OSS-Radar` while exposing it through the v2 S
 
 ## Trigger
 
-Run when the user explicitly requests this capability or when `WorkFlow/` routes a compatible stage to this wrapper.
+Run when the user explicitly requests this capability or when the `workflow` orchestrator routes a compatible stage to this wrapper.
 
 ## Inputs
 
@@ -196,4 +196,4 @@ Downstream Skills may consume only manifest entries whose status and Gate allow 
 
 ## State Changes
 
-Record the old state, new state, actor, timestamp, reason, evidence references, Gate, and next action in `.spec/workflow.yaml`. The exact state names come from `governance/state-registry.yaml`.
+Record the old state, new state, actor, timestamp, reason, evidence references, Gate, and next action in `.spec/workflow.yaml`. The exact state names come from `governance/state-registry.yaml` in the source repository; an installed copy without that repository must use the state names already present in the project `.spec/workflow.yaml` and must not invent new states.

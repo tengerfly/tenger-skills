@@ -3,8 +3,8 @@ name: auto-test
 description: "AI 代码全景验收测试编排与修复闭环（分层 L0-L4）。AI 编码完成后的自动化验收：确定性门禁（install/typecheck/lint/单测/build）→ API 契约与 live 主链 → AI 视觉 E2E（状态注入 + mock 数据全流程覆盖）→ 探索性测试 → 专项压测（负载/压力/稳定）、安全扫描、兼容/无障碍（按需求信号触发）；产出带证据的测试报告、覆盖率门禁与修复任务卡，驱动「发现问题→AI 修复→fresh-agent 回归」正向循环。触发：测试 AI 写的代码、验收、跑全流程、回归、找 bug、E2E、修复后复测、覆盖率检查、压测、负载测试、性能测试、安全扫描。"
 metadata:
   contract-level: legacy-wrapper
-  legacy-alias: null
-  compatibility: "ZCode / Claude Code 等 coding agent。需要 Bash；L2 需浏览器工具（Playwright/Midscene 任一）；auto-test 引擎 CLI 或 MCP 可用时自动切换引擎模式。"
+  legacy-alias: "Testing"
+  compatibility: "ZCode / Claude Code 等 coding agent。需要 shell（Bash/PowerShell 任一）；L2 需浏览器工具（Playwright/Midscene 任一）；auto-test 引擎 CLI 或 MCP 可用时自动切换引擎模式。"
 ---
 
 > **独立调用**：先按 `../../shared/execution-profiles.md` 判强度，按 `../../shared/requirements-context.md` 取相关需求。低风险局部任务不要求完整上游文档/Envelope，只执行本领域相关动作并记录真实证据；下文正式建档用于标准/完整。专业检查的必需工具、只审不改边界、相关阻塞和安全授权不降级，不把局部验证冒充全量或正式 Gate。
@@ -41,6 +41,8 @@ metadata:
 
 **基准来源**：对错基准 = PRD 验收标准（AC）/ 需求文档；视觉基准 = 设计稿（缺失回退原型并**明示降级**）；接口基准 = 接口文档 / OpenAPI 契约。**零臆断**：预期必须有来源，拿不准标 `【设计假设】` 并登记风险。
 
+**project/ 目录**：同目录 `project/` 是旧独立项目的只读研究资料（项目计划 / 竞品分析 / 旧问题日志），不参与测试执行；执行入口仅本 `SKILL.md`，详见 [project/README.md](project/README.md)。
+
 ## 二、模式探测（每次开工第一步）
 
 1. **引擎模式**：`auto-test` CLI 在 PATH 或 MCP 工具（如 `auto-test run / get_report`）可用 → 全部执行委托引擎，本 skill 只负责：解释报告、生成/消化修复任务卡、把握回归轮次纪律。
@@ -48,7 +50,7 @@ metadata:
 
 判定方法：`command -v auto-test`；或检查 MCP 工具列表。两种模式都走同一套铁律与产物规范。
 
-## 三、主流程（7 步）
+## 三、主流程（8 步）
 
 > 先计划后执行，禁边测边想。◉ = 强制暂停等用户确认。
 
@@ -163,7 +165,7 @@ Preserve the mature capability of auto-test while exposing it through the v2 Ski
 
 ## Trigger
 
-Run when the user explicitly requests this capability or when `WorkFlow/` routes a compatible stage to this wrapper.
+Run when the user explicitly requests this capability or when the `workflow` orchestrator routes a compatible stage to this wrapper.
 
 ## Inputs
 
@@ -226,4 +228,4 @@ Downstream Skills may consume only manifest entries whose status and Gate allow 
 
 ## State Changes
 
-Record the old state, new state, actor, timestamp, reason, evidence references, Gate, and next action in `.spec/workflow.yaml`. The exact state names come from `governance/state-registry.yaml`.
+Record the old state, new state, actor, timestamp, reason, evidence references, Gate, and next action in `.spec/workflow.yaml`. The exact state names come from `governance/state-registry.yaml` in the source repository; an installed copy without that repository must use the state names already present in the project `.spec/workflow.yaml` and must not invent new states.

@@ -8,7 +8,7 @@
 1. **定位目标 skill（三方式）**：显式路径（用户给出目录）/ 当前目录上下文（用户已在某 skill 目录内）/ 名称匹配（按用户称呼在工作区搜索同名 skill 目录）；三者都不明确时按上下文推断并**向用户确认**；
 2. 读全目标 skill 文件：SKILL.md / README.md / CONTEXT.md / assets/* / references/*；
 3. 记录 **SKILL.md 行数**（关键指标）；
-4. 交叉引用范围：根 README.md、../../WorkFlow/（若被链引用）、其他 skill 对该 skill 的引用、../../../issue/ 池、../../chats/（若提及）。
+4. 交叉引用范围：根 README.md、仓根 `workflow/`（若被链引用）、其他 skill 对该 skill 的引用、../../../issue/ 池、../../chats/（若提及）。
 
 ## 七维核验（逐维走完，每项有结论）
 

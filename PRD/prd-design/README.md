@@ -1,7 +1,9 @@
-# PRD-Design —— 工业级 PRD 生成 Skill
+> LEGACY COMPATIBILITY NOTICE: This file preserves historical material. The active Skill, Gate, state, artifact, and evidence rules are defined by `shared/skill-contract.md`, `shared/gate-policy.md`, `shared/anti-deadloop.md`, `shared/artifact-contract.md`, `governance/`, and `.spec/workflow.yaml`. 现行流程与边界见 [SKILL.md](SKILL.md)；旧流程全文见 references/legacy-skill.md。
+
+# PRD-Design —— 工业级 PRD 生成 Skill（历史名称；canonical id：`prd-design`）
 
 > 状态：✅ 定稿
-> 术语与决策基准：[CONTEXT.md](CONTEXT.md)（术语表 + D-01~D-30）
+> 术语与决策基准：[CONTEXT.md](CONTEXT.md)（术语表 + D-01~D-34）
 
 ## 一、定位与第一原则
 
@@ -30,7 +32,7 @@ Staff 级产品经理人设，把想法变成边界清晰、模块合理、流�
 ## 四、目录
 
 ```
-../prd-design/
+prd-design/
 ├── SKILL.md
 ├── README.md
 ├── CONTEXT.md

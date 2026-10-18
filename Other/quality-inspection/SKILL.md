@@ -123,6 +123,8 @@ metadata:
 └── evidence-index.md
 ```
 
+其中 `inspection-report.md` 为正式报告；`gate-results.yaml` / `findings.md` / `trend.md` / `evidence-index.md` 为报告派生件，分别取模板 §1 门禁结果 / §3 发现项 / §2 趋势摘要 / 证据列汇总。
+
 报告必须写明：范围、commit、命令、结果、证据位置、未检查项、发现分类、路由、下一次巡检日期和是否建议人工确认。
 
 模板见 `assets/inspection-report-template.md`，检查项见 `references/inspection-checklist.md`。
@@ -133,16 +135,16 @@ metadata:
 
 ## Gate
 
-- `INSPECTION_PASS`：确定性检查结果可复核，关键范围已覆盖，发现项有证据和路由，无未说明的阻塞；
-- `INSPECTION_CONDITIONAL`：存在已登记的缺口、例外或未配置检查，但影响和后续动作明确；
-- `INSPECTION_BLOCKED`：无法确定检查范围/版本，或安全、权限、生产风险阻止继续。
+- `PASS`：确定性检查结果可复核，关键范围已覆盖，发现项有证据和路由，无未说明的阻塞（对应状态 `INSPECTION_PASS`）；
+- `CONDITIONAL`：存在已登记的缺口、例外或未配置检查，但影响和后续动作明确（对应状态 `INSPECTION_CONDITIONAL`；例外必须完整记录 exceptionId、risk、owner、dueAt、remediation、allowDownstream、approvalRef 七字段，缺项即按 BLOCKED 处理）；
+- `BLOCKED`：无法确定检查范围/版本，或安全、权限、生产风险阻止继续（对应状态 `INSPECTION_BLOCKED`）。
 
 通过巡检不等于代码没有问题，而是代表问题已被发现、分类、排序并进入可追踪闭环。巡检本身不授权改码或上线。
 
 ## Failure Route
 
 - 检查命令会改变环境：停止并改为静态检查或请求授权；
-- 运行数据缺失：标 `OBSERVABILITY_GAP`，转 `Observability-Design`，不宣称运行健康；
+- 运行数据缺失：标 `OBSERVABILITY_GAP`，转 `signal-collection` 补采集/补埋点，不宣称运行健康；
 - 发现疑似安全事件：停止扩展读取范围，转 `Incident-Response`；
 - 发现功能偏差：转 `Defect-Triage`，不要直接按“质量问题”重构；
 - 基线过旧或不存在：转 `Project-Onboarding`，先补基线。

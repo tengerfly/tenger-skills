@@ -31,7 +31,7 @@
 DSH 桌面版：先按仓库根 shared/browser-policy.md §五 接入并验证 MCP 浏览器工具或 Playwright，再重跑。
 ```
 
-> 注：midscenejs 仅为 auto-test / Testing 样式视觉断言的可选增强（需装依赖 + 模型配置），不属于检测链；不可用时降级并在 Scope Gate 说明。
+> 注：midscenejs 仅为 auto-test 样式视觉断言的可选增强（需装依赖 + 模型配置），不属于检测链；不可用时降级并在 Scope Gate 说明。Testing 已归档，不再作为该能力的入口。
 
 ## 五、DSH 环境：如何获得浏览器工具
 
@@ -113,6 +113,7 @@ Get-CimInstance Win32_Process -Filter "Name='node.exe'" |
 - **位置**：npx 缓存里的 `playwright`——Windows 默认 `%LOCALAPPDATA%\npm-cache\_npx\<hash>\node_modules\playwright`，macOS / Linux 在 `$(npm config get cache)/_npx/<hash>/node_modules/playwright`（本机 2026-10-18 实测 1.63.0 且 chromium 已安装；换机按实际安装版本与浏览器状态复验）。定位：把 §5.1「路径发现」的 `-Filter chrome-devtools-mcp.js` 换成 `-Filter playwright`。
 - **用法**：`run_code` 的 `process.env` 初始为空，启动前先补 `TEMP`/`TMP`（视需要再补 `USERPROFILE`/`HOME`/`PATH`，参照 5.1 的 env 段）再 `chromium.launch()`；不要指望继承 shell 环境。
 - **适用**：需要与 MCP 浏览器并存、要脚本化多视口截图或批量比对时；常规单页走查仍首选 MCP（少一层启动与环境成本）。
+- **非 DSH 宿主**：Claude Code / Codex / Agent SDK / OpenCode 等按宿主自身能力安装浏览器 MCP 或 Playwright（检测顺序同 §一）；§五 的 DSH 配置只适用于 DSH 桌面版，不是所有宿主的获取步骤。
 
 ### 5.5 卸载 / 回滚
 

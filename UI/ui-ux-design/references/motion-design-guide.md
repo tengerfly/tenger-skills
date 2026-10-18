@@ -1,7 +1,7 @@
 # 动效设计决策指南（Motion Design）
 
 > 用途：UI-UX-Design 步骤 5 设计规范「§6 动效原则」的判据来源；步骤 8 质量门禁动效检项依据。
-> 分工：本文件管**设计侧决策**（动不动 / 目的 / 缓动 / 时长 / 强度档）；实现侧技法（组件手感 / 性能 / reduced-motion 落地）见 Frontend-Dev `references/motion-guide.md`。
+> 分工：本文件管**设计侧决策**（动不动 / 目的 / 缓动 / 时长 / 强度档）；实现侧技法（组件手感 / 性能 / reduced-motion 落地）见 `frontend-dev/references/motion-guide.md`。
 > 口径：动效值随 §6 定档、§7 落 token，是下游实现与评审的唯一来源。
 
 ## 目录

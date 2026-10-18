@@ -21,6 +21,9 @@ metadata:
 
 发现失败、阻塞或用户纠正时，在下一安全节点按 `../../shared/problem-recording.md` 记录；根因未明不丢事实。恢复/交付前核对未决项，沿用已有详情与唯一索引。此规则优先于旧的仅收尾埋点/不确定不记表述，不增加轻量任务的正式建档要求。
 
+**闭环回流（L2）**：P0/P1 条目要标「已沉淀」前，必须先回流 1 条评测用例，并在该用例声明里用 `issueRef` 指回本条问题（值＝本条问题的仓库相对路径，形如 issue/<skill>/<日期>/<NN>-<标题>.md）；没有这条用例就按「未验证」处理，优化状态停在待处理/处理中，不得写「已沉淀」。
+判据与字段口径的单一来源是仓库根 `governance/eval-spec.yaml`（`caseTiers.L2` + `issueRef` 节），机械核对由 `scripts/eval/relay.py` 执行；本节只承接义务，不复述其条文。
+
 ## 一、定位与铁律
 
 **角色**：代码评审专家（立场隔离的双视角 + 契约专项）。**不做**业务逻辑正确性评审（是否算对、边界是否判对，归测试流程）；测试闭环只查「可运行 + 先行 + 标 AC」，不评业务覆盖是否充分。**不做**（交并行方）：页面视觉/交互还原 → `Fidelity-Review`（⑬-前 并行），本 skill 不重复评审、不代出还原度结论。
@@ -47,7 +50,7 @@ metadata:
 |---|---|---|
 | PRD（AC） | 需求基线 | 判断代码漏做 / 凭空 |
 | 原型 HTML | 结构基线 | 前端**结构**还原（结构基线 = 低保真原型，见 `../../shared/baseline-terms.md`）；**不作视觉基准** |
-| 设计稿 | **视觉主基准** | 有则以 `.spec/设计稿/` + `design-system.md` 为视觉唯一应然（含 token 对账）；无则视觉值从原型收敛并明示降级。⑬-前 并行还原度审查的基准 |
+| 设计稿 | **视觉主基准** | 有则以 `.spec/设计稿/` + `design-system.md` 为视觉唯一应然（含 token 对账）；无设计稿须先取得用户批准的 EXC（写入 `.spec/decisions/` 与 manifest 引用）方可从原型收敛并明示降级，无 EXC 即停下报 BLOCKED（口径见 `../../shared/product-workflow-contract.md` §5.1）。⑬-前 并行还原度审查的基准 |
 | TDD / FTDD | 设计基线 | 后端表结构·接口·模块边界 / 前端页面·组件·fetch + 契约源 |
 | 后端代码 + 前端代码 + `libs/shared` | 被审对象 | 实际落地工程 |
 
@@ -70,12 +73,12 @@ metadata:
 
 ```
 输入 → 解析 → 静态验证 → 视角评审（⑬-前 与 Fidelity-Review 并行）→ 删除候选与清理计划 → 契约专项
-→ 角色文档 → 汇总 → 任务清单 + 用户确认 → 闭环复核 + 双向沉淀 → 归档
+→ 角色文档 → 汇总 → 任务清单 + P0 用户确认（P1/P2 按 shared/ruling-policy.md 裁决） → 闭环复核 + 双向沉淀 → 归档
 ```
 
 1. **输入解析**：定位本批次代码与 `libs/shared`、四类文档；抽取 AC 清单、TDD 接口清单、FTDD fetch 表、原型布局清单；代码量大按「大批量分批」先汇总范围。**〔REQUIRED · 开工前闸门核对〕**逐条读 `.spec/manifest.yaml` 中本批所依据上游（PRD／原型／TDD／FTDD）的 `status`、`version`、`gate`、`allowDownstream`：任一 `SUPERSEDED`／非 `PASS`／`false` ⇒ **不在作废基线上继续评审**，把关闸事实写入汇总 §0「上游闸门核对」表并交回 Workflow 判停（本 skill 不设门禁，见铁律 5，故只报事实、不自判放行）；限定条件只能落字段、不得写注释或正文（`../../shared/gate-policy.md` §6）。
 2. **静态验证（取证）**：本批次代码 `pnpm install → tsc --noEmit（或 build）→ test → lint`；跑不了 → 降级静态读码并在报告标「未取证（原因）」。只证伪可编译 / 可测试 / 可 lint，不做端到端冒烟（规程见 §4.4）。
-3. **视角评审**：后端批次按 `references/backend-checklist.md`、前端批次按 `references/frontend-checklist.md`（A~N 组）逐条执行；独立产出断点清单，独立上下文（subagent / 新会话）互不可见，不参考代码生成过程；条件允许可用不同模型交叉审查。另对照 `references/known-issue-patterns.md`（评审方案例库）逐条过一遍，命中即入本批次清单。
+3. **视角评审**：后端批次按 `references/backend-checklist.md`、前端批次按 `references/frontend-checklist.md`（后端 A~M 组 / 前端 A~N 组）逐条执行；独立产出断点清单，独立上下文（subagent / 新会话）互不可见，不参考代码生成过程；条件允许可用不同模型交叉审查。另对照 `references/known-issue-patterns.md`（评审方案例库）逐条过一遍，命中即入本批次清单。
    **⑬-前 并行还原度**：同时启用 `Fidelity-Review`（代码评审场景模式）做页面还原度审查，两侧并行、互不可见；Fidelity-Review 按自身清单出问题（含截图），**问题合并进本批次清单**（标「来源=Fidelity-Review」）。
 4. **删除候选与清理计划**：按两清单 M 组扫描死代码 / 未用依赖 / 重复实现 / 调试残留，按 `references/removal-plan-template.md` 分列「现在可安全删」与「需延后（前置条件 / 迁移 / 验证 / 回滚）」，落 `.spec/代码评审/删除候选与清理计划.md`；**只给计划不代删**。
 5. **契约专项**：按 `references/contract-checklist.md` 做前端 fetch ↔ 后端实现 ↔ 共享类型三方比对，逐接口核对；命中项按 §二 归因。
@@ -90,7 +93,7 @@ metadata:
 
 > 正文只留判据；细则按需加载对应 references。
 
-**4.1.0 资产与契约检查（外部 AI 知识库，后端/前端通用）**：① 组合契约——组合图（composition.yaml）的 requires/provides/ordering 与实现一致，无绕过统一契约的写法；② Pattern 不变量——命中资产的 Invariants/禁止事项逐条成立；③ 零复制分叉——无 `xxx-full-copy` 式整体复制；④ 零静默发明——未命中资产的关键规则不得擅自发明（须走封装七步法或标注待确认）；⑤ 使用与版本——asset-usage 记录的实际版本与 asset-selection 锁定一致；⑥ **零冗余并列**——未检索 / 未适配即新建与库内既有资产并列重复的组件（防冗余硬性条件：近似资产应兼容适配或走「更新既有」出口，新建须 asset-gap 差异说明）。违反任一记 P1；绕过统一契约、复制分叉、冗余并列记 P0。组件库位置：`$env:SKILLS_KNOWLEDGE_ROOT/asset-library/`（调度侧引用层与映射表：仓库根 `../../skill-knowledge/`；**未配置 `$env:SKILLS_KNOWLEDGE_ROOT` 时按 `../../skill-knowledge/README.md` 的降级规则跳过检索并登记，不伪造命中**）。
+**4.1.0 资产与契约检查（外部 AI 知识库，后端/前端通用）**：① 组合契约——组合图（composition.yaml）的 requires/provides/ordering 与实现一致，无绕过统一契约的写法；② Pattern 不变量——命中资产的 Invariants/禁止事项逐条成立；③ 零复制分叉——无 `xxx-full-copy` 式整体复制；④ 零静默发明——未命中资产的关键规则不得擅自发明（须走封装七步法或标注待确认）；⑤ 使用与版本——asset-usage 记录的实际版本与 asset-selection 锁定一致；⑥ **零冗余并列**——未检索 / 未适配即新建与库内既有资产并列重复的组件（防冗余硬性条件：近似资产应兼容适配或走「更新既有」出口，新建须 asset-gap 差异说明）。违反任一记 P1；绕过统一契约、复制分叉、冗余并列记 P0。组件库位置：外部 AI 知识库（环境变量 `SKILLS_KNOWLEDGE_ROOT` 指向的目录）的 `asset-library/`（调度侧引用层与映射表：仓库根 `../../skill-knowledge/`；**未配置 `SKILLS_KNOWLEDGE_ROOT` 时跳过检索，并在 PROJECT.md 或本次执行摘要登记「外部知识库未配置、检索跳过」，不伪造命中**）。
 
 **4.1 六大闭环（代码层）**：
 
@@ -112,7 +115,7 @@ metadata:
 5. **安全与数据**：入参校验、鉴权、注入 / XSS / SSRF / 越权、金额整数分、事务 / 幂等 / 并发竞态。
 6. **可维护性（删除候选）**：死代码 / 未用依赖 / 重复实现 / 调试残留 → 区分「现在可安全删」与「需延后（出计划）」。
 
-**4.3 严重度分级（只标注，不设门禁）**——P0/P1/P2 定义与处理口径见仓库根 `../../shared/anti-deadloop.md` §三，下表为本域典型示例：
+**4.3 严重度分级（只标注，不设门禁）**——P0/P1/P2 定义见仓库根 `../../shared/gate-policy.md` §1、残留处理口径见 `../../shared/anti-deadloop.md` §3，下表为本域典型示例：
 
 | 级别 | 含义 | 典型 |
 |---|---|---|
@@ -144,7 +147,7 @@ metadata:
 
 ## 六、资源清单
 
-- `references/backend-checklist.md` / `frontend-checklist.md`：双视角清单（A~N 组，每组附提问式引导）
+- `references/backend-checklist.md` / `frontend-checklist.md`：双视角清单（后端 A~M 组 / 前端 A~N 组，每组附提问式引导）
 - `references/contract-checklist.md`：契约一致性清单（核心）
 - `references/static-verification-guide.md`：静态验证规程
 - `references/removal-plan-template.md`：删除候选与清理计划模板（安全删 vs 延后删）
@@ -237,4 +240,4 @@ Downstream Skills may consume only manifest entries whose status and Gate allow 
 
 ## State Changes
 
-Record the old state, new state, actor, timestamp, reason, evidence references, Gate, and next action in `.spec/workflow.yaml`. The exact state names come from `governance/state-registry.yaml`.
+Record the old state, new state, actor, timestamp, reason, evidence references, Gate, and next action in `.spec/workflow.yaml`. The exact state names come from `governance/state-registry.yaml` in the source repository; an installed copy without that repository must use the state names already present in the project `.spec/workflow.yaml` and must not invent new states.

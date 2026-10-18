@@ -1,6 +1,6 @@
 ---
 name: prd-review
-description: 只读评审指定版本 PRD 的完整性、一致性、范围追踪和可测试性，输出分级问题与 Gate 建议；不改 PRD、不做研究或重新决定功能范围。
+description: 只读评审指定版本 PRD 的完整性、一致性、范围追踪和可测试性，输出分级问题与 Gate 建议；不改 PRD、不做研究或重新决定功能范围。触发：评审 PRD、需求评审、查 PRD 问题、PRD 走查、需求文档检测。
 metadata:
   legacy-alias: PRD-Review
   migration-target: prd-review

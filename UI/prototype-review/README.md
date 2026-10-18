@@ -15,7 +15,7 @@
 | 文案与字段一致性 | copywriting-consistency-checklist | 标题/CTA/提示/列名逐字比对 + 多余文案排查 |
 | 交互与流程闭环 | interaction-closure-checklist | 无死胡同；弹框三态；正逆向分支；空载错满状态 |
 | 原型实现质量 | prototype-quality-checklist | console 无错、无遮挡、可交互；不查视觉精修 |
-| 浏览器工具 | browser-inspection-guide | Playwright → browser-use → 其他；全无报错停 |
+| 浏览器工具 | browser-inspection-guide | 硬依赖（检测顺序 / 两级行为 / 报错文案见 `../../shared/browser-policy.md`）；全无报错停 |
 
 ## 三、流程与闭环
 
@@ -35,5 +35,5 @@ P0 阻断且须用户确认；P1/P2 由执行方按 `../../shared/ruling-policy.
 ├── CONTEXT.md
 ├── references/   # 四份清单 + browser-inspection-guide + known-issue-patterns（案例库）
 ├── assets/       # dimension-review / summary / issue-list 模板
-└── .spec/原型评审/ # 四维报告 + 汇总 + 任务清单 + screenshots
+└── .spec/原型评审/ # 四维报告 + 汇总 + 任务清单 + screenshots（落被评审项目根，非本 skill 目录）
 ```

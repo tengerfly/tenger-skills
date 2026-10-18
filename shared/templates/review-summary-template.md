@@ -21,7 +21,7 @@ blockedBy: []                        # 关闸时必填：owner / requiredInput /
 reason: <一句话>
 ```
 
-「判据全闭」是事实记录，不是放行结论；**不得**用注释或正文写「本 `PASS` 仅对旧基线成立」变相放行——下游只读 `gate` / `allowDownstream` 字段，读不到限定语。缺本节 ⇒ 本轮 Gate 只能记「未验证」。
+「判据全闭」是事实记录，不是放行结论；**不得**用注释或正文写「本 `PASS` 仅对旧基线成立」变相放行——下游只读 `gate` / `allowDownstream` 字段，读不到限定语。缺本节 ⇒ Gate 不得写 `PASS`/`CONDITIONAL`：按风险记 `BLOCKED`，并写明缺的是哪一项闸门核对；`gate` 字段只允许 `PASS | CONDITIONAL | BLOCKED` 三值，「未验证」不是合法 Gate 值。
 
 ## 1. 元数据
 
@@ -62,5 +62,5 @@ P0/P1/P2 数量及阻塞说明；本 skill 不裁决，供用户决策；任务�
 | A · 防复发 | {{产出方 skill}} | 错误表加行 / references 清单 / Gate 预检项 | 待处理 / 已沉淀 / 入池 |
 | B · 检出力 | {{发现问题的那一个评审 skill}} | `references/known-issue-patterns.md` 加模式（含检出方法） | 待处理 / 已沉淀 / 入池 |
 
-- **P0 双向必沉**；P1/P2 由模型判是否属「会再犯的一类问题」（规则见 `shared/anti-deadloop.md` §五）；
+- **P0 双向必沉**；P1/P2 由模型判是否属「会再犯的一类问题」（规则见 `shared/anti-deadloop.md` §4 Bidirectional learning）；
 - 当场改不了的 → 落 `issue/<目标 skill>/<日期>/`（来源=评审闭环，写明双向落点）。

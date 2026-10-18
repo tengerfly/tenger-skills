@@ -1,10 +1,10 @@
 # 浏览器工具预检与双开截图
 
 ## 一、预检
-Playwright 可用 → 首选；异常 → browser-use/其他工具（含 MCP 浏览器工具 `mcp__browser__*`）；全无 → 先按仓库根 `../../../shared/browser-policy.md` §五 获取，仍全无 → 报错停止，不产出。
+按 `../../../shared/browser-policy.md` §一/§二/§五 预检（本 skill = 硬依赖）：任一可用即开工（含 MCP 浏览器工具 `mcp__browser__*`）；全无 → 先按 §五 获取，仍全无 → 报错停止，不产出。
 
 ## 二、Playwright 双开
-- 装 `pnpm add -D playwright && pnpm exec playwright install chromium`。
+- 优先复用环境已装 Playwright（见 `../../../shared/browser-policy.md` §5.4）；确需在项目内安装时，须先经用户确认并记录依赖变更。
 - 同视口（如 1440×900）分别截设计稿与实现页并排比对；关键差异用元素级截图。
 - 交互/长文案：点击验证按钮、hover 截图、`page.evaluate` 替换 DOM 文本后截图。
 

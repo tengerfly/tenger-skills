@@ -3,7 +3,7 @@
 > 结构基线：仓库根 `../../../shared/templates/review-dimension-template.md`（闭环要素[成因/修复判据/状态机]与字段口径以公共版为准；章节组织为本 skill 领域实例）。
 
 > 评审日期：{{YYYY-MM-DD}}
-> 评审基准：通道 {{A：.spec/设计稿/ / B：外部设计稿{{来源}} / C：低保真原型（无设计稿，视觉质量降级）}}（通道 B 标注「按像素目测比对」；通道 C 标注降级）
+> 评审基准：通道 {{A：.spec/设计稿/ / B：外部设计稿{{来源}} / C：低保真原型（无设计稿且已登记 EXC {{EXC-id}}，视觉质量降级；无 EXC 不得选 C）}}（通道 B 标注「按像素目测比对」；通道 C 标注降级）
 > 实现页：{{项目目录 / URL 清单}}
 > 定位：只审不改；一切样式/视觉/溢出问题配截图；每条含现象/期望 vs 实际/成因/修改建议。
 
@@ -13,7 +13,7 @@
 |----|------|
 | 实现页来源 | {{本地目录+启动命令 / 部署 URL}} |
 | 视口 | {{1440×900 + 375×812 …}} |
-| **视觉基准（应然）** | {{通道 A：.spec/设计稿/ 页面清单 + design-system 版本 / 通道 B：外部稿来源 / 通道 C：低保真原型【降级】}} |
+| **视觉基准（应然）** | {{通道 A：.spec/设计稿/ 页面清单 + design-system 版本 / 通道 B：外部稿来源 / 通道 C：低保真原型【降级，须登记 EXC 出处】}} |
 | 结构/存在性辅助 | {{原型布局清单 / PRD（判「该不该有」，不作视觉基准）}} |
 | token 对账 | {{通道 A：design-system §7 共 N 条 ↔ 实现 variables N 条，差异 0 项 / 通道 B/C：不适用}} |
 | 评审面 | 视觉还原 · 交互还原 · 超长文案专项 |
@@ -62,4 +62,4 @@
 
 - 本报告只审不改，未对实现页代码与设计稿做任何改动；
 - 截图目录：`screenshots/`（命名 `<页面>_<问题简述>_<序号>.png`）；
-- Use the common Gate contract: PASS requires no unresolved P0/P1; residual P0 is BLOCKED; residual P1 may only be an authorized CONDITIONAL with exceptionId, owner, dueAt, remediation, allowDownstream, and approvalRef. There is no force-pass rule.
+- Gate 口径见 ../../../shared/gate-policy.md：仅 PASS/CONDITIONAL/BLOCKED；残留 P0⇒BLOCKED；残留 P1 不得 PASS，仅完整授权 CONDITIONAL（exceptionId/risk/owner/dueAt/remediation/allowDownstream/approvalRef）；无 force-pass。

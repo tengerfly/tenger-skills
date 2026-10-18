@@ -39,7 +39,7 @@ metadata:
 3. 模块内聚：业务代码按 `features/<模块>/`，跨模块复用进 `src/components/`，**禁复制**。
 4. 测试先行，编号 `TC-Mxx-nnn ↔ AC-Mxx-nnn`。
 5. 共享类型单一来源：前后端同仓时接口 / 枚举 / DTO 放共享包，前端只 `import type`，禁重定义。
-6. **浏览器工具硬依赖**：全无 → 报错停，禁跳过、禁降级静态对照；每完成一个页面必须**双开截图比对还原度**（见 §4.7）——有设计稿时设计稿是视觉主基准，必须并排比对，**只对原型比对不算还原完成**。**显式豁免（2026-10-18 增补）**：用户/Lead 以 DEC 明确批准「无浏览器环境只做静态交付」时，可按第 23 行继续交付已实现代码，但必须三件齐：① 记录 DEC 编号与授权人；② L2 视觉/还原度验收一律标 `BLOCKED`（不得以 RTL/构建冒充视觉通过）；③ 交付说明写明未验证面。豁免只降低验收面，不降低实现质量。
+6. **浏览器工具硬依赖**：全无 → 报错停，禁跳过、禁降级静态对照；每完成一个页面必须**双开截图比对还原度**（见 §4.7）——有设计稿时设计稿是视觉主基准，必须并排比对，**只对原型比对不算还原完成**。**显式豁免（2026-10-18 增补）**：用户/Lead 以 DEC 明确批准「无浏览器环境只做静态交付」时，可按上文「轻量任务」口径（见「先判任务强度」段）继续交付已实现代码，但必须三件齐：① 记录 DEC 编号与授权人；② L2 视觉/还原度验收一律标 `BLOCKED`（不得以 RTL/构建冒充视觉通过）；③ 交付说明写明未验证面。豁免只降低验收面，不降低实现质量。
 7. 提交前 eslint + stylelint + commitlint 全过，**禁 `--no-verify`**。
 8. 不确定即问，给选项；**禁 TODO 静默跳过**。
 
@@ -51,8 +51,8 @@ metadata:
 
 | 输入 | 作用 | 缺失处理 |
 |---|---|---|
-| `.spec/FTDD/VN/` | **施工图** | ⛔ 阻塞（缺失则补选型，见 S2） |
-| `.spec/设计稿/`（**视觉主基准**，含 `design-system.md` token 源）、`.spec/原型/`（**结构基线**） | 还原比对的两级基准：结构对原型、视觉对设计稿 | 无设计稿则视觉基准回退原型并**明示降级**（经用户确认） |
+| `.spec/FTDD/VN/` | **施工图** | ⛔ 阻塞标准/完整流程；缺失则按 S2 补选型并留痕 |
+| `.spec/设计稿/`（**视觉主基准**，含 `design-system.md` token 源）、`.spec/原型/`（**结构基线**） | 还原比对的两级基准：结构对原型、视觉对设计稿 | 无设计稿须先取得用户批准的 EXC（写入 `.spec/decisions/` 与 manifest 引用）方可回退原型并**明示降级**；无 EXC 即停下报 BLOCKED（口径见 `../../shared/product-workflow-contract.md` §5.1） |
 | `.spec/TDD/VN/`、`.spec/PRD/VN/`（先读速查表） | 接口契约 + 需求 | 缺则按已有文档推进并标注 |
 | **产出位置（必问）** | 目标目录（用给定/自定义名，不套约定）+ git 地址（已有 clone/切分支；空仓 init + remote） | 缺一暂停 |
 | `PROJECT.md` | 续做定位与项目规则 | 无则视为新项目；有代码无文档 → 先按 `../../shared/dev-common.md` §一沉淀现状基线 |
@@ -64,17 +64,17 @@ metadata:
 
 > 每步做完再进下一步；◉ = 强制暂停等用户确认。
 
-**S1 输入解析与预检**：确认产出位置（目标目录 + git 地址，缺一暂停；**无远端仓库的本地个人项目例外**：目标目录已定即可开工，在该目录 `git init` 并提交基线（不 push），不因缺 git 地址停；功能点提交纪律照旧）；判 monorepo（看 pnpm-workspace / turbo / nx / apps+packages；同仓时确认前端子包、共享类型包、根配置可否动，不确定就问）；读 PROJECT.md 与 `.spec/` 各文档；**输入瘦身（续做页 REQUIRED）**：逐页开发只读本页设计稿 + FTDD 模块 §3~§5 + 本页 shared 契约段，design-system/全局组件/惯例不重读（工程已对账进 variables 与口径表，见 `case-library/static-page-trial-playbook.md` §1）；口径冲突**先查 PROJECT 口径表**（§4.9），表内直接套；纳入评审任务清单；**批判性审视** FTDD 与计划（有疑虑先提，不闷头执行）；判目标端（web / app / 小程序，多套原型按端排期并确认分端或多端一套）；**业务组件检索**：涉业务组件/通用 hooks/基建，按 S2 **组件决策链**检索外部 AI 知识库，命中即复用或适配复用，禁重复手写同类业务组件；**浏览器工具预检**（任一可用记作还原校验工具）。
+**S1 输入解析与预检**：确认产出位置（目标目录 + git 地址，缺一暂停；**无远端仓库的本地个人项目例外**：目标目录已定即可开工，在该目录 `git init` 并提交基线（不 push），不因缺 git 地址停；功能点提交纪律照旧）；判 monorepo（看 pnpm-workspace / turbo / nx / apps+packages；同仓时确认前端子包、共享类型包、根配置可否动，不确定就问）；读 PROJECT.md 与 `.spec/` 各文档；**输入瘦身（续做页 REQUIRED）**：逐页开发只读本页设计稿 + FTDD 模块 §3~§5 + §9 适用状态 + §10 测试用例 + 本页 shared 契约段，design-system/全局组件/惯例不重读（工程已对账进 variables 与口径表，见 `case-library/static-page-trial-playbook.md` §1）；口径冲突**先查 PROJECT 口径表**（§4.9），表内直接套；纳入评审任务清单；**批判性审视** FTDD 与计划（有疑虑先提，不闷头执行）；判目标端（web / app / 小程序，多套原型按端排期并确认分端或多端一套）；**业务组件检索**：涉业务组件/通用 hooks/基建，按 S2 **组件决策链**检索外部 AI 知识库，命中即复用或适配复用，禁重复手写同类业务组件；**浏览器工具预检**（任一可用记作还原校验工具）。
 
 **S2 技术栈锁定**：FTDD 存在 → 读 overview 选型**不重选**；缺失 → 补选型（档位必问 + 组件库必问 + 端相关必问，一次性确认后定稿入 PROJECT.md）；`覆盖端 ≠ 目标端` → **⛔ 阻塞**，先让 Frontend-Tech-Design 补对应端方案；**施工框架与 FTDD 选型不一致 → 阻塞对齐**，禁自主切回 React 基线（非 React 框架按 `references/framework-equivalence-guide.md` 等价映射执行）。
 
-> **组件决策链（调度 AI 知识库，涉新组件/通用 hooks/基建 REQUIRED）**：① 盘点本仓已有基建（已有必须用）→ ② 检索外部 AI 知识库 `$env:SKILLS_KNOWLEDGE_ROOT/asset-library/`（blueprints 判型收敛 → capabilities → patterns/composites → adapters；使用入口与同步协议见仓库根 `../../skill-knowledge/README.md`；**未配置 `$env:SKILLS_KNOWLEDGE_ROOT` 时按 `../../skill-knowledge/README.md` 的降级规则跳过检索并登记，不伪造命中**）→ ③ **命中 → 直接复用并锁版本；命中但不完全适用 → 兼容性适配优先**（扩参数 / 加 adapter / 版本演进既有资产），**禁新建并列冗余组件（硬性条件）**；确实无法适配 → 记 asset-gap 说明与既有资产的差异、经用户确认才新建，或采用其他方案留在项目内不进库 → ④ 交付时做沉淀判断（四出口：Case / Candidate / 更新既有 / 反模式；**沉淀前必查重**，见 S10）；使用记录随 asset-usage / evidence 回写外部库，映射表按双仓同步协议更新。
+> **组件决策链（调度 AI 知识库，涉新组件/通用 hooks/基建 REQUIRED）**：① 盘点本仓已有基建（已有必须用）→ ② 检索外部 AI 知识库（环境变量 `SKILLS_KNOWLEDGE_ROOT` 指向的目录）的 `asset-library/`（blueprints 判型收敛 → capabilities → patterns/composites → adapters；使用入口与同步协议见仓库根 `../../skill-knowledge/README.md`；**未配置 `SKILLS_KNOWLEDGE_ROOT` 时跳过检索，并在 PROJECT.md 或本次执行摘要登记「外部知识库未配置、检索跳过」，不伪造命中**）→ ③ **命中 → 直接复用并锁版本；命中但不完全适用 → 兼容性适配优先**（扩参数 / 加 adapter / 版本演进既有资产），**禁新建并列冗余组件（硬性条件）**；确实无法适配 → 记 asset-gap 说明与既有资产的差异、经用户确认才新建，或采用其他方案留在项目内不进库 → ④ 交付时做沉淀判断（四出口：Case / Candidate / 更新既有 / 反模式；**沉淀前必查重**，见 S10）；使用记录随 asset-usage / evidence 回写外部库，映射表按双仓同步协议更新。
 
 **S3 工程初始化**：既有工程沿用现状，只补缺失基础设施（根配置改动先问）；全新工程——**web 端 SPA 直接复制可运行模板**（React / Vue3 功能点一一对应）：React → `assets/frontend-template-react/`（Vite + React 18 + AntD 5），Vue3 → `assets/frontend-template-vue3/`（Vite + Vue 3.5 + Element Plus + Pinia）；两版同款底座：TS strict 起手 + 请求层统一解包 / SSE 封装 / 路由守卫 / 错误边界 / 懒加载 + vendor 分包 / 设计 token / ui 组件库隔离出口 / 覆盖率门禁 / CI·Docker 全内置，lint·test·coverage·build 全绿基线，照模板 README「5 分钟改造清单」改品牌 / 主题色 / 代理端口等槽位；组件库或框架与 FTDD 选型不符时按模板 README「换组件库操作指南」在 `components/ui` 出口改造；**非 React/Vue / 非 web 端**仍按 `references/tech-stack-guide.md` + `assets/project-structure-template.md` 起手。monorepo 约定见 §4.2。
 
 **S4 还原基线与 token**：逐页产**还原基线清单**——**结构行对照低保真原型**（区块 / 布局 / 交互 / 流转），**视觉行对照设计稿**（色值 / 字号字重 / 间距 / 圆角阴影 / 图标 / 状态视觉，落 `design-system.md` §7 token）；三态与 FTDD §9 适用状态一并纳入。全部收敛为 `src/styles/variables.{scss|less}`（扩展名随 FTDD 选型）的 CSS 变量，**禁写死**。
 - **token 搬运对账（⚠️ REQUIRED，有设计稿时）**：设计稿是 HTML + Tailwind 类、实现是 CSS 变量，**载体不同必须逐条对账**——把 `design-system.md` §7 Token 汇总的 color / typography / spacing / radius / shadow 逐条与实现侧 `variables` 比对**条数 / 值 / 命名**，缺项或值不符即修；对账记录（条数 N↔N + 差异处置）写进 PROJECT.md。**跳过此步 = 允许视觉基线静默降级**。
-- 无设计稿时才从原型基础值收敛，并在 PROJECT.md 与还原基线中**明示「视觉基准回退低保真原型」**。
+- 无设计稿时，须先有用户批准的 EXC（写入 `.spec/decisions/` 与 manifest 引用）才从原型基础值收敛，并在 PROJECT.md 与还原基线中**明示「视觉基准回退低保真原型」**；无 EXC 即 BLOCKED（口径见 `../../shared/product-workflow-contract.md` §5.1）。
 - 静态资源（图标 / 图片）**从设计稿取同套同尺寸资源**（设计稿缺失才用原型），路径复制登记。
 
 **S5 ◉ Scope Gate（强制暂停）**：呈现目标端 + 页面/模块清单 + 技术栈落地方式 + 还原基线摘要（**标明视觉基准 = 设计稿 / 或已降级回退原型**）+ token 对账结果；确认后放行；只做部分以用户指定范围为准。
@@ -96,7 +96,7 @@ metadata:
 - **界面质量与动效验收**：按 `references/web-interface-quality-guide.md`「反模式速查」逐条扫描（表单可访问性 / 图片尺寸 / 焦点与语义 / i18n 格式 / 水合安全）；动效按 `references/motion-guide.md` 自查表核对（transition 属性明确、只动 transform/opacity、reduced-motion 与 hover 门控）。
 - 三项结果写进 PROJECT.md 留痕（取证口径见 `../../shared/evidence-before-claims.md`）。
 
-**S10 交付 + 回填**：更新 PROJECT.md 进度 + 收尾提交 + README 运行说明；**业务组件沉淀判定（⚠️ REQUIRED）**：本项目开发的业务组件——项目内已按铁律抽离且跨项目有复用潜力（可剥离项目特有依赖参数化）→ 按「职责边界 / 窄接口 / 最小示例 / 自测证据」四件套沉淀到外部 AI 知识库 `$env:SKILLS_KNOWLEDGE_ROOT/`（asset-library 沉淀闭环：evidence 回写 → 四出口判断，规格见其使用手册）；**沉淀前必查重（硬性条件）**：库内已有近似组件 → 一律走「更新既有 / 兼容适配」出口，禁新建并列冗余组件；确需新建须记 asset-gap 差异说明并经用户确认；判定结果留痕 PROJECT.md；强绑定本项目领域 / 数据结构的项目特有组件**不沉**（防为沉而沉）；回填 `.spec/代码评审/任务清单.md` 归本 skill 的 `已确认` 任务为 `已修复` + 修改说明；回填后须触发 `Code-Review` 复核（含 `Fidelity-Review` 还原度项），不得自判通过（闭环与上限规则见 `../../shared/anti-deadloop.md` §一/§二）；是否 push 由用户决定。
+**S10 交付 + 回填**：更新 PROJECT.md 进度 + 收尾提交 + README 运行说明；**业务组件沉淀判定（⚠️ REQUIRED）**：本项目开发的业务组件——项目内已按铁律抽离且跨项目有复用潜力（可剥离项目特有依赖参数化）→ 按「职责边界 / 窄接口 / 最小示例 / 自测证据」四件套沉淀到外部 AI 知识库（环境变量 `SKILLS_KNOWLEDGE_ROOT` 指向的目录）（asset-library 沉淀闭环：evidence 回写 → 四出口判断，规格见其使用手册）；**沉淀前必查重（硬性条件）**：库内已有近似组件 → 一律走「更新既有 / 兼容适配」出口，禁新建并列冗余组件；确需新建须记 asset-gap 差异说明并经用户确认；判定结果留痕 PROJECT.md；强绑定本项目领域 / 数据结构的项目特有组件**不沉**（防为沉而沉）；回填 `.spec/代码评审/任务清单.md` 归本 skill 的 `已确认` 任务为 `已修复` + 修改说明；回填后须触发 `Code-Review` 复核（含 `Fidelity-Review` 还原度项），不得自判通过（闭环与上限规则见 `../../shared/anti-deadloop.md` §2/§3）；是否 push 由用户决定。
 
 ## 四、关键规范
 
@@ -120,7 +120,7 @@ metadata:
 
 **4.4 代码规范**：组件/函数短小；命名业务化——组件 PascalCase、class kebab-case、方法 camelCase，禁 `a`/`b`/`data`/`temp`；TS 严格（禁 `any`、禁 `@ts-ignore`）；魔法值抽常量/枚举；注释一句话讲 why、一行内完成、复杂规则拆多条、删废注释；**传参必注**（JSDoc `@param` 逐参写作用/边界/默认，返回非显然用 `@returns`，props 逐字段注释）；共享类型只 import 引用；样式只引 CSS 变量。
 
-**4.5 接口实现**：统一原生 fetch（`src/api/request.ts`：baseURL / 超时 / ApiError / token / 取消），**禁 axios**；按域拆 api 文件；组件经 hooks 调 api，**业务组件不直接 import 业务 api**。
+**4.5 接口实现**：统一原生 fetch（`src/api/request.ts`：baseURL / 超时 / ApiError / token / 取消）；仅当 FTDD 明确选择 axios 的 React Native 项目，经统一契约层接入（`references/tech-stack-guide.md` §三），其余端**禁 axios**；按域拆 api 文件；组件经 hooks 调 api，**业务组件不直接 import 业务 api**。
 
 **4.6 测试**：测试先行——先落 FTDD §10 用例再实现（§10 = TDD 测试用例；§9 = 异常与边界/适用状态）；编号沿用 `TC-Mxx-nnn ↔ AC-Mxx-nnn`；覆盖渲染 / 交互 / 数据流 / 边界 / 异常；hooks 用 renderHook + mock api；`pnpm test` 可一键跑通。
 
@@ -142,6 +142,11 @@ metadata:
 5. **多面板弹框固定高度**：面板内容高矮不一会让弹框随 tab 切换跳变——Modal content 定高 + header/body flex 分配 + 面板内部滚动（`.ant-modal-body` flex:1 min-height:0 overflow:hidden，Tabs content-holder overflow-y:auto）。
 6. **滚动 containment**：应用外壳 `height:100%` flex-col + `main` flex-1 min-height:0 overflow-y:auto——滚动只发生在内容区、顶栏常驻（用户拍板体验口径）；固定工作台页（三栏/画布）在 main 内 `flex:1; min-height:0` 自管滚动，**禁 `calc(100vh - header)` 硬算**（外壳一改全崩）。
 
+**4.11 案例升格与验收（源仓维护约定）**：
+- **三道强制位**：同型场景（按 FTDD 逐页落地、工程已有 token 与口径对账产物）进编码前先过——① 逐页输入瘦身（S1，含 §9 适用状态与 §10 用例）；② 视图模型先行（`XxxExt` 扩展 + 留痕，S7）；③ 项目已有验收脚本则 REQUIRED 先跑脚本取全部产物（§4.7）。任一未过不得进下一页／下个功能点。
+- **沉淀落点**：本轮试做验证过的多步流程（下一轮会被默认复用的）不得只落 `references/case-library/`——必须升格为本文正文的强制位（S 步／`§x.y` REQUIRED 行／错误对照表行，三选一），案例库只留细则与背景，索引行写明「必按此执行」。
+- **升格验收**：正文 `grep` 到具体行号（S 步号／§ 号／错误表行）＋ 安装副本回读同一行；副本核对用源仓 `scripts/install-skills.py --check --target <宿主 skills 根>`（仅源仓维护可用；安装副本内不适用）。只有案例库索引命中 = 未落位，不得写「已沉淀」。（出处：issue/Frontend-Dev/2026-09-16/02；2026-10-18 评审 C-24 从 Procedure 移入本节）
+
 ## 五、常见错误对照表
 
 > 公共错误行（现状基线 / 零选型 / 拍板 / 传参注释 / 提交粒度 / 门禁 / 进度更新）见仓库根 `../../shared/dev-common.md` §三；下表为本 skill 端专属与领域行。
@@ -161,7 +166,7 @@ metadata:
 | 业务组件 import api | 经 hooks → props |
 | 组件堆逻辑 | 下沉 hooks |
 | 写死色值 | 引用 variables |
-| 用 axios | 统一 fetch |
+| 用 axios | 统一 fetch（仅 RN 且 FTDD 明确选型时经统一契约层接入） |
 | 后补测试无编号 | 测试先行标 TC/AC |
 | 契约不一致 | 双向核对 |
 | 浏览器不可用硬跑 | 报错等安装；有 DEC 显式豁免时按铁律 6 三件齐交付（L2 BLOCKED） |
@@ -206,7 +211,7 @@ metadata:
 - `assets/frontend-template-react/`：**React SPA web 端可运行模板**（S3 全新工程起手复制；改造清单 / 换库指南 / 部署配置见其 README）
 - `assets/frontend-template-vue3/`：**Vue3 SPA web 端可运行模板**（与 React 版功能点一一对应，新增 Pinia 状态层；S3 起手复制，用法同上）
 - `assets/project-structure-template.md`、`module-code-template.md`、`project-status-template.md`
-- 仓库根 `../../skill-knowledge/`：**AI 知识库引用层**——外部库 `$env:SKILLS_KNOWLEDGE_ROOT/` 的使用入口 / 映射表 / 防冗余硬规则 / 双仓同步协议（见其 README；S1 检索 / S10 沉淀经此对接）
+- 仓库根 `../../skill-knowledge/`：**AI 知识库引用层**——外部库（环境变量 `SKILLS_KNOWLEDGE_ROOT`）的使用入口 / 映射表 / 防冗余硬规则 / 双仓同步协议（见其 README；S1 检索 / S10 沉淀经此对接）
 - `../../shared/baseline-terms.md`、`../../shared/browser-policy.md`、`../../shared/dev-common.md`、`../../shared/receiving-review.md`、`../../shared/evidence-before-claims.md`、`../../shared/anti-deadloop.md`（仓库根）：公共约定
 - 产出位置：S1 用户给定目录 + git 地址
 
@@ -263,13 +268,10 @@ Run when the user explicitly requests this capability or when `WorkFlow/` routes
 1. Read the request, current state, manifest, and upstream handoff.
 2. Load only the retained legacy resources needed for this execution.
 3. Execute the domain action and keep assumptions separate from evidence.
-4. 同型场景（按 FTDD 逐页落地、工程已有 token 与口径对账产物）进编码前先过三道强制位：① 逐页输入瘦身——只读本页设计稿 + FTDD §3~§5 + 本页契约段，全局 `design-system` 与组件惯例不重读，口径冲突先查 PROJECT 口径表（§4.9）表内直接套；② 视图模型先行——契约缺口一律 `XxxExt` 扩展 + 留痕注释，禁静默造字段，登记 PROJECT.md 并在联调前清零；③ 项目已有验收脚本则 REQUIRED 先跑脚本取全部产物（多档宽双开截图 + 逐像素断言），人工只补验脚本未覆盖的状态。任一未过不得进下一页／下个功能点。（出处：issue/Frontend-Dev/2026-09-16/02-案例升级为主流程标准SOP.md）
-5. 沉淀落点：本轮试做验证过的多步流程（下一轮会被默认复用的）不得只落 `references/case-library/`——必须升格为本文正文的强制位（S 步／`§x.y` REQUIRED 行／错误对照表行，三选一），案例库只留细则与背景，索引行写明「必按此执行」。（出处同上）
-6. 升格验收（不通过不算沉淀完成）：正文 `grep` 到具体行号（S 步号／§ 号／错误表行）＋ 回读安装副本同一行（副本同步用仓库根 `scripts/sync-skills.sh --target <宿主 skills 根>`）；只有案例库索引命中 = 未落位，不得写「已沉淀」。（出处同上）
-7. Validate the output against its repair or acceptance criteria.
-8. Register artifacts, evidence, decisions, and open items.
-9. Write the execution record and `.spec/workflow.yaml`.
-10. Emit exactly one Gate and one explicit next action.
+4. Validate the output against its repair or acceptance criteria.
+5. Register artifacts, evidence, decisions, and open items.
+6. Write the execution record and `.spec/workflow.yaml`.
+7. Emit exactly one Gate and one explicit next action.
 
 ## Outputs
 
@@ -295,4 +297,4 @@ Downstream Skills may consume only manifest entries whose status and Gate allow 
 
 ## State Changes
 
-Record the old state, new state, actor, timestamp, reason, evidence references, Gate, and next action in `.spec/workflow.yaml`. The exact state names come from `governance/state-registry.yaml`.
+Record the old state, new state, actor, timestamp, reason, evidence references, Gate, and next action in `.spec/workflow.yaml`. The exact state names come from `governance/state-registry.yaml` in the source repository; an installed copy without that repository must use the state names already present in the project `.spec/workflow.yaml` and must not invent new states.

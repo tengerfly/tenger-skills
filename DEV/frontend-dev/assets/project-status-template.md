@@ -80,7 +80,7 @@
 | 09-02 | UserSelect 提升到 src/components | 用户/订单两模块共用 | 共享组件 |
 | 09-02 | 错误态文案用组件库标准 | 设计稿无错误态状态稿，已在还原基线注明（design-system §5.10 无此项） | 全局三态 |
 | 09-02 | variables token 对账完成 | design-system §7 共 {{N}} 条 ↔ 实现 variables {{N}} 条，值一致 | 全局样式 |
-| 09-05 | {{组件名}} 沉淀 skill-knowledge（S10 沉淀判定） | 跨项目可复用，已剥离本项目 api 依赖 | ../../skill-knowledge/业务组件/frontend/ |
+| 09-05 | {{组件名}} 沉淀外部 AI 知识库（S10 沉淀判定） | 跨项目可复用，已剥离本项目 api 依赖 | 外部 AI 知识库 asset-library（环境变量 `SKILLS_KNOWLEDGE_ROOT` 指向的目录） |
 ```
 
 ## 五、还原核对记录（页面 × 设计稿 + 原型）

@@ -46,7 +46,7 @@ metadata:
 PASS：分级和路由有证据；CONDITIONAL：关联或采样有明确限制；BLOCKED：无法判断影响或关键生产信号不可信。
 
 ## Failure Route
-P0/P1 转 incident-response；行为偏差转 defect-triage；指标机会转 product-analytics 或 optimization-planning；关联缺失转 Observability-Design。
+P0/P1 转 incident-response；行为偏差转 defect-triage；指标机会转 product-analytics 或 optimization-planning；关联缺失转 `signal-collection` 补采集并登记 `OBSERVABILITY_GAP`。
 
 ## Downstream Contract
 下游收到信号、影响、优先级、路由、不可作出的结论和验证条件。

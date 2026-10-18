@@ -13,6 +13,9 @@ metadata:
 
 发现失败、阻塞或用户纠正时，在下一安全节点按 `../../shared/problem-recording.md` 记录；根因未明不丢事实。恢复/交付前核对未决项，沿用已有详情与唯一索引。此规则优先于旧的仅收尾埋点/不确定不记表述，不增加轻量任务的正式建档要求。
 
+**闭环回流（L2）**：P0/P1 条目要标「已沉淀」前，必须先回流 1 条评测用例，并在该用例声明里用 `issueRef` 指回本条问题（值＝本条问题的仓库相对路径，形如 issue/<skill>/<日期>/<NN>-<标题>.md）；没有这条用例就按「未验证」处理，优化状态停在待处理/处理中，不得写「已沉淀」。
+判据与字段口径的单一来源是仓库根 `governance/eval-spec.yaml`（`caseTiers.L2` + `issueRef` 节），机械核对由 `scripts/eval/relay.py` 执行；本节只承接义务，不复述其条文。
+
 ## 先判任务强度
 
 先按 `../../shared/execution-profiles.md` 选择强度，按 `../../shared/requirements-context.md` 读取本次需求原文与依赖。低风险独立任务直接走“确认验收点 → 相关代码/接口盘点 → 局部实现 → 针对性验证 → 结果”；缺少完整 TDD/FTDD、PROJECT/PLAN 不单独阻塞，可用同一任务摘要中的局部计划替代。复用现有栈与组件，不强制新模板、外部资产沉淀、完整 Scope Gate 或自动提交；关键业务/接口未知仍须澄清，风险变化则升级。
@@ -50,7 +53,7 @@ metadata:
 
 | 输入 | 作用 | 缺失处理 |
 |---|---|---|
-| `.spec/TDD/VN/` | **施工图**：选型 / 表结构 / 接口 / 边界 / 测试 | ⛔ 阻塞（无 TDD 走「现状基线」或「开工前一次敲定」两路） |
+| `.spec/TDD/VN/` | **施工图**：选型 / 表结构 / 接口 / 边界 / 测试 | ⛔ 阻塞标准/完整流程；无 TDD 时走「现状基线」或「开工前一次敲定」两路并留痕（见 S1） |
 | `.spec/PRD/VN/`（先读 `PRD速查表.md`）、`.spec/原型/`、`.spec/FTDD/VN/` | 需求与接口验收线（fetch 清单） | 缺则按已有文档推进并标注 |
 | `.spec/代码评审/任务清单.md` | 归本 skill 的 `已确认` 任务逐条纳入 PLAN | 无则跳过 |
 | `PROJECT.md` + `PLAN.md`（项目目录） | 续做定位（⏳ 待做 / 🚧 进行中 / ✅ 完成） | 无则新建；有代码无则先盘点现状基线 |
@@ -64,10 +67,10 @@ metadata:
 - **三路判定**：续做（有 PROJECT.md + PLAN.md → 读后从进行中/待做续）；既有项目盘点（有代码无两文档 → 按仓库根 `../../shared/dev-common.md` §一沉淀「项目现状基线」，严格按现状落地，不套默认模板）；全新开发 → 完整流程建两文档。
 - **仓库前置（REQUIRED）**：确认项目有 git 仓库；无则在允许修改范围内 `git init` + 提交基线（不 push、不改远端），否则铁律 6「一功能点一提交」、回滚基线与评审按提交定位都无法执行——无 git 不是跳过提交纪律的理由。
 - **契约开工清单（REQUIRED，标准/完整）**：开工前按本次模块一次性列全「所需错误码 / 枚举值 / 共享字段 / 跨模块接口」，报授权方批量补齐；实现期不硬编码新错误码，也不每个模块各停一次等裁决（knowledge-bases 第 41 轮实测：缺 SET_NAME_CONFLICT/SET_NOT_FOUND/EvalSetOrigin 造成多次 round-trip）。
-- **续做输入瘦身（REQUIRED）**：续做/多模块并行时，只读「本次要改模块」的 TDD 分篇 §4~§6 + 契约分册相关节 + 该模块现有代码与测试；跨模块依赖按 S2 关联图定点读，不按目录顺序通读全部 TDD/PRD/FTDD。判据：读入量以「能开工当前功能点」为限；读完一个模块的施工图就落一个模块，不为「先看全貌」把六七个模块的文档串行读完再动手（knowledge-bases 第 41 轮实测：全量通读使首个模块落地延迟 15+ 分钟，而分模块推进的参考实现同时间已交付 2 个模块）。
+- **续做输入瘦身（REQUIRED）**：续做/多模块并行时，只读「本次要改模块」的 TDD 分篇 §4~§6 + §9 测试用例 + 总文档「契约回指表」相关节 + 该模块现有代码与测试；跨模块依赖按 S2 关联图定点读，不按目录顺序通读全部 TDD/PRD/FTDD。判据：读入量以「能开工当前功能点」为限；读完一个模块的施工图就落一个模块，不为「先看全貌」把六七个模块的文档串行读完再动手（knowledge-bases 第 41 轮实测：全量通读使首个模块落地延迟 15+ 分钟，而分模块推进的参考实现同时间已交付 2 个模块）。
 - 读 `.spec/`：TDD（选型/表结构/接口/边界/测试）、FTDD（fetch 清单）、PRD（先读速查表）、原型；检查评审任务清单并纳入 PLAN。
 - **技术栈锁定**：有 TDD → 逐项采用 TDD「技术选型总览」，不重选不追问；无 TDD + 既有代码 → 盘点现状为基线；无 TDD + 全新 → 开工前一次敲定（默认 TypeScript + NestJS / `@nestjs/microservices` / Prisma（备选 TypeORM）/ pnpm workspace / Jest+Supertest / `@nestjs/config`），记入 PROJECT.md 关键决策。
-- **组件决策链（调度 AI 知识库，涉业务能力模块/新组件/基建/通用能力 REQUIRED；命中即复用或适配复用，禁重复手写同类业务模块）**：① 盘点本仓已有基建（AGENTS.md / 依赖清单，已有必须用）→ ② 检索外部 AI 知识库 `$env:SKILLS_KNOWLEDGE_ROOT/asset-library/`（blueprints 判型收敛 → capabilities → patterns/composites → adapters；使用入口与同步协议见仓库根 `../../skill-knowledge/README.md`；**未配置 `$env:SKILLS_KNOWLEDGE_ROOT` 时按 `../../skill-knowledge/README.md` 的降级规则跳过检索并登记，不伪造命中**）→ ③ **命中 → 锁版本（pattern@x + adapter@x）直接复用并记录 selected / rejected / unresolved；命中但不完全适用 → 兼容性适配优先**（扩参数 / 加 adapter / 版本演进既有资产），**禁新建并列冗余组件（硬性条件）**；确实无法适配 → 记 asset-gap 说明与既有资产的差异、经用户确认才新建，或采用其他方案留在项目内不进库；未命中 → 走封装七步法（`asset-library/shared/component-authoring.md`，造前写 asset-gap；新组件七步全走，小改动轻量通道①+⑥）→ ④ 交付时做沉淀判断（四出口：Case / Candidate / 更新既有 / 反模式；**沉淀前必查重**，见 S10），并回写 asset-usage（实际使用版本，偏差记 deviation）与 evidence（命令/结果/局限，无证据视为未完成）。五门禁（检索/选择/实现/验证/沉淀）由 Workflow 据 `pipeline-state.yaml` 拦截。全程受目标项目 AGENTS.md 映射表 + lint/CI 机器兜底约束。
+- **组件决策链（调度 AI 知识库，涉业务能力模块/新组件/基建/通用能力 REQUIRED；命中即复用或适配复用，禁重复手写同类业务模块）**：① 盘点本仓已有基建（AGENTS.md / 依赖清单，已有必须用）→ ② 检索外部 AI 知识库（环境变量 `SKILLS_KNOWLEDGE_ROOT` 指向的目录）的 `asset-library/`（blueprints 判型收敛 → capabilities → patterns/composites → adapters；使用入口与同步协议见仓库根 `../../skill-knowledge/README.md`；**未配置 `SKILLS_KNOWLEDGE_ROOT` 时跳过检索，并在 PROJECT.md 或本次执行摘要登记「外部知识库未配置、检索跳过」，不伪造命中**）→ ③ **命中 → 锁版本（pattern@x + adapter@x）直接复用并记录 selected / rejected / unresolved；命中但不完全适用 → 兼容性适配优先**（扩参数 / 加 adapter / 版本演进既有资产），**禁新建并列冗余组件（硬性条件）**；确实无法适配 → 记 asset-gap 说明与既有资产的差异、经用户确认才新建，或采用其他方案留在项目内不进库；未命中 → 走封装七步法（`asset-library/shared/component-authoring.md`，造前写 asset-gap；新组件七步全走，小改动轻量通道①+⑥）→ ④ 交付时做沉淀判断（四出口：Case / Candidate / 更新既有 / 反模式；**沉淀前必查重**，见 S10），并回写 asset-usage（实际使用版本，偏差记 deviation）与 evidence（命令/结果/局限，无证据视为未完成）。五门禁（检索/选择/实现/验证/沉淀）由 Workflow 按 `.spec/manifest.yaml` / `.spec/gates/` 与五门禁判据拦截。全程受目标项目 AGENTS.md 映射表 + lint/CI 机器兜底约束。
 - **批判性审视**：对 TDD 或计划本身有疑虑先向用户提出，不闷头执行。
 
 **S2 服务拆分**：TDD 模块清单 = 服务边界候选；是否合并按耦合度定，不确定用选项让用户选。既有项目新功能落既有服务，不擅自分服务。依赖与 TDD 关联图一致并标通信方式。
@@ -90,7 +93,7 @@ metadata:
 
 **S9 全局一致性 + 生产就绪**：一致性（可编译可运行、分层无越界、服务边界无侵入、命名统一、注释完整、测试可跑且覆盖五类、覆盖率企业级 ≥80%）；生产就绪按 **§4.9 清单**逐项打勾，缺项不算完成；性能按 **§4.9** 口径核对。
 
-**S10 归档 + 回填**：README 运行说明；**业务组件沉淀判定（⚠️ REQUIRED）**：本项目开发的业务能力模块——项目内真实使用且跨项目有复用潜力（可剥离项目特有依赖参数化）→ 按「职责边界 / 窄接口 / 最小示例 / 自测证据」四件套沉淀到外部 AI 知识库 `$env:SKILLS_KNOWLEDGE_ROOT/`（asset-library 沉淀闭环：evidence 回写 → 四出口判断，规格见其使用手册）；**沉淀前必查重（硬性条件）**：库内已有近似组件 → 一律走「更新既有 / 兼容适配」出口，禁新建并列冗余组件；确需新建须记 asset-gap 差异说明并经用户确认；判定结果留痕 PROJECT.md；强绑定本项目领域模型 / 数据结构的项目特有组件**不沉**（防为沉而沉）；更新 PROJECT.md / PLAN.md；回填评审任务清单（`已修复` + 修改说明）。回填后须触发 `Code-Review` 复核，不得自判通过（闭环与上限规则见仓库根 `../../shared/anti-deadloop.md` §一/§二）。
+**S10 归档 + 回填**：README 运行说明；**业务组件沉淀判定（⚠️ REQUIRED）**：本项目开发的业务能力模块——项目内真实使用且跨项目有复用潜力（可剥离项目特有依赖参数化）→ 按「职责边界 / 窄接口 / 最小示例 / 自测证据」四件套沉淀到外部 AI 知识库（环境变量 `SKILLS_KNOWLEDGE_ROOT` 指向的目录）（asset-library 沉淀闭环：evidence 回写 → 四出口判断，规格见其使用手册）；**沉淀前必查重（硬性条件）**：库内已有近似组件 → 一律走「更新既有 / 兼容适配」出口，禁新建并列冗余组件；确需新建须记 asset-gap 差异说明并经用户确认；判定结果留痕 PROJECT.md；强绑定本项目领域模型 / 数据结构的项目特有组件**不沉**（防为沉而沉）；更新 PROJECT.md / PLAN.md；回填评审任务清单（`已修复` + 修改说明）。回填后须触发 `Code-Review` 复核，不得自判通过（闭环与上限规则见仓库根 `../../shared/anti-deadloop.md` §2/§3）。
 
 ## 四、关键规范
 
@@ -164,7 +167,7 @@ metadata:
 - `references/architecture-guide.md`、`code-style-guide.md`、`test-guide.md`、`tech-stack-guide.md`、`decision-rules.md`
 - `references/case-library/`：语言规范 + API/安全 + 质量工程化 + 同行样本（按需加载）
 - `assets/project-structure-template.md`、`module-code-template.md`、`project-status-template.md`、`plan-template.md`
-- 仓库根 `../../skill-knowledge/`：**AI 知识库引用层**——外部库 `$env:SKILLS_KNOWLEDGE_ROOT/` 的使用入口 / 映射表 / 防冗余硬规则 / 双仓同步协议（见其 README；S1 检索 / S10 沉淀经此对接）
+- 仓库根 `../../skill-knowledge/`：**AI 知识库引用层**——外部库（环境变量 `SKILLS_KNOWLEDGE_ROOT`）的使用入口 / 映射表 / 防冗余硬规则 / 双仓同步协议（见其 README；S1 检索 / S10 沉淀经此对接）
 - `../../shared/dev-common.md`、`../../shared/receiving-review.md`、`../../shared/evidence-before-claims.md`、`../../shared/anti-deadloop.md`（仓库根）：公共约定
 - 项目目录：代码 + `PROJECT.md` + `PLAN.md` + `README`
 
@@ -250,4 +253,4 @@ Downstream Skills may consume only manifest entries whose status and Gate allow 
 
 ## State Changes
 
-Record the old state, new state, actor, timestamp, reason, evidence references, Gate, and next action in `.spec/workflow.yaml`. The exact state names come from `governance/state-registry.yaml`.
+Record the old state, new state, actor, timestamp, reason, evidence references, Gate, and next action in `.spec/workflow.yaml`. The exact state names come from `governance/state-registry.yaml` in the source repository; an installed copy without that repository must use the state names already present in the project `.spec/workflow.yaml` and must not invent new states.
