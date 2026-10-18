@@ -1,6 +1,6 @@
 # 项目计划：企业级 AI 自动化测试系统（Auto-Test）
 
-> 版本：v0.1（基于 2026-09-18 竞品调研，详见 `.spec/AI自动化测试竞品分析/AI自动化测试竞品分析报告.md`）
+> 版本：v0.1（基于 2026-09-18 竞品调研，详见 `./竞品分析报告.md`）
 > 状态：待评审 → 评审通过后进入正式需求（PRD）与技术方案阶段
 
 ---
@@ -274,4 +274,4 @@ coverage: [order.paid, order.paid→reminded]             # 回填状态机覆�
 - GitHub API 快照（2026-09-18）：browser-use 115,077★ / playwright-mcp 37,235★ / stagehand 24,330★ / skyvern 23,024★ / midscene 14,939★ / E2B 13,868★ / shortest 5,677★ / qawolf-cli 3,447★ / web-eval-agent 1,238★（已归档）/ webqa-agent 233★ / autonomous-qa-loop 64★
 - CodeRabbit 2025-12：AI PR 平均 10.83 问题 vs 人工 6.45（1.7×）
 - Stack Overflow 2025：AI 准确性信任 33%（↓10pp）；66% 不满「几乎对但不完全对」
-- 完整来源清单见 `.spec/AI自动化测试竞品分析/AI自动化测试竞品分析报告.md` 第 11 节
+- 完整来源清单见 `./竞品分析报告.md` 第 11 节

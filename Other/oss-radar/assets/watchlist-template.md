@@ -8,7 +8,7 @@
 - topics: claude-skills, agent-skills, claude-code, mcp
 - 指定 repo:
   - <!-- 例：anthropics/skills — 官方 skill 库，结构与触发描述参考 -->
-- 反哺对象路径: D:\project\agent-project\tenger-skills（源仓库；skill 类反哺经 Skill-Optimizer 模式③执行）
+- 反哺对象路径: skill 源仓库根（tenger-skills 仓——`bug-patterns/`、`issue/`、`evolution/` 同一根目录；skill 类反哺经 Skill-Optimizer 模式③执行。安装副本 / 其它机器运行时填该仓的实际本地路径或用户指定维护目录，不写死个人绝对路径）
 
 ### B · 项目泳道（反哺在研项目）
 - 技术栈关键词: <!-- 按当前在研项目填，例：nestjs, vue3, monorepo, ai-agent -->

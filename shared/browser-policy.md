@@ -35,13 +35,23 @@ DSH 桌面版：先按仓库根 shared/browser-policy.md §五 接入并验证 M
 
 ## 五、DSH 环境：如何获得浏览器工具
 
-> 本节只回答「当前会话检测不到浏览器工具时怎么办」，检测顺序与两级行为不变（见 §一/§二）。下列路径为 2026-10-18 本机实测（R42，DSH 桌面版 0.2.1-rc.2）；换机、升级后按同一套步骤复验，路径以实际安装为准。
+> 本节只回答「当前会话检测不到浏览器工具时怎么办」，检测顺序与两级行为不变（见 §一/§二）。下列步骤为 2026-10-18 本机实测（R42，DSH 桌面版 0.2.1-rc.2）；换机、升级后按同一套步骤复验，**路径以实际安装为准**。示例中的 `<...>` 是占位符，须替换为本机实际值——不保留任何个人用户名 / npx hash / 固定安装位置。
 
 ### 5.1 首选：Chrome DevTools MCP 插件（已接入）
 
 - **机制**：DSH 桌面版的 profile patch 追加一个 `@deepseek-ai/dsh-mcp-client` 插件条目，stdio 拉起本机 npx 缓存的 `chrome-devtools-mcp`（1.0.1），模型侧获得 `mcp__browser__*` 工具（29 个：`navigate_page` / `take_screenshot` / `take_snapshot` / `click` / `fill` / `fill_form` / `evaluate_script` / `list_console_messages` / `list_network_requests` / `lighthouse_audit` 等）。
-- **配置文件**：`C:\Users\15136\.dsh\profiles\desktop\cordis.patch.yml`（用户级配置，不在本仓，不要提交）。已有 `id: mcp-browser` 条目时不要重复插入。
-- **最小可用配置**（追加为顶层数组的一个 `- insert:` 条目；本机实际字节见该文件 2026-10-18 的 browser plugin 注释段）：
+- **配置文件**：用户级 `$env:USERPROFILE\.dsh\profiles\desktop\cordis.patch.yml`（macOS / Linux：`~/.dsh/profiles/desktop/cordis.patch.yml`；不在本仓，不要提交）。已有 `id: mcp-browser` 条目时不要重复插入。
+- **路径发现（换机先跑，结果填入下方占位符）**：
+
+```powershell
+# node.exe 绝对路径
+(Get-Command node).Source
+# chrome-devtools-mcp 入口绝对路径（macOS/Linux 用 $(npm config get cache)/_npx 代替 $env:LOCALAPPDATA\npm-cache\_npx）
+Get-ChildItem -Path (Join-Path $env:LOCALAPPDATA 'npm-cache\_npx') -Recurse -Filter chrome-devtools-mcp.js -ErrorAction SilentlyContinue |
+  Select-Object -First 1 -ExpandProperty FullName
+```
+
+- **最小可用配置**（追加为顶层数组的一个 `- insert:` 条目；占位符按上一步结果与 `$env:USERPROFILE` 实际值替换；实际字节以该 profile patch 当前内容为准）：
 
 ```yaml
 - insert:
@@ -50,24 +60,24 @@ DSH 桌面版：先按仓库根 shared/browser-policy.md §五 接入并验证 M
       config:
         serverName: browser
         transport: stdio
-        command: 'C:\Program Files\nodejs\node.exe'
+        command: '<node.exe 绝对路径，取「路径发现」第一条>'
         args:
-          - 'C:\Users\15136\AppData\Local\npm-cache\_npx\15c61037b1978c83\node_modules\chrome-devtools-mcp\build\src\bin\chrome-devtools-mcp.js'
+          - '<chrome-devtools-mcp.js 绝对路径，取「路径发现」第二条>'
           - '--headless'
           - '--isolated'
           - '--no-usage-statistics'
           - '--no-performance-crux'
         env:
-          SystemRoot: 'C:\Windows'
-          PROGRAMFILES: 'C:\Program Files'
-          PROGRAMFILES_X86: 'C:\Program Files (x86)'
-          LOCALAPPDATA: 'C:\Users\15136\AppData\Local'
-          APPDATA: 'C:\Users\15136\AppData\Roaming'
-          TEMP: 'C:\Users\15136\AppData\Local\Temp'
-          TMP: 'C:\Users\15136\AppData\Local\Temp'
-          USERPROFILE: 'C:\Users\15136'
-          HOME: 'C:\Users\15136'
-          PATH: 'C:\Program Files\nodejs;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem'
+          SystemRoot: '<Windows 系统目录>'
+          PROGRAMFILES: '<Program Files 路径>'
+          PROGRAMFILES_X86: '<Program Files (x86) 路径>'
+          LOCALAPPDATA: '<你的用户目录>\AppData\Local'
+          APPDATA: '<你的用户目录>\AppData\Roaming'
+          TEMP: '<你的用户目录>\AppData\Local\Temp'
+          TMP: '<你的用户目录>\AppData\Local\Temp'
+          USERPROFILE: '<你的用户目录>'
+          HOME: '<你的用户目录>'
+          PATH: '<node 所在目录>;<系统目录>;<Windows 子目录>'
           CHROME_DEVTOOLS_MCP_NO_USAGE_STATISTICS: '1'
           CHROME_DEVTOOLS_MCP_NO_UPDATE_CHECKS: '1'
         toolCallTimeoutMs: 180000
@@ -75,7 +85,7 @@ DSH 桌面版：先按仓库根 shared/browser-policy.md §五 接入并验证 M
 ```
 
 - **生效方式**：保存后 DSH 对 profile patch 做 HMR 热加载（本机实测无需重启）；未生效时重启 DSH 桌面版再验。
-- **先决条件**：系统 `node.exe` 可用、本机已装 Chrome；`chrome-devtools-mcp` 需已在 npx 缓存（其它 coding agent 的 MCP 配置拉起过一次即会缓存），缓存路径以实际 `_npx\<hash>\node_modules\chrome-devtools-mcp` 为准。
+- **先决条件**：系统 `node.exe` 可用、本机已装 Chrome；`chrome-devtools-mcp` 需已在 npx 缓存（其它 coding agent 的 MCP 配置拉起过一次即会缓存），缓存路径以 `_npx\<hash>\node_modules\chrome-devtools-mcp` 实际位置为准（npx 缓存根 = `npm config get cache` 下的 `_npx`，见「路径发现」）。
 
 ### 5.2 验证（三步都过才算可用）
 
@@ -100,7 +110,7 @@ Get-CimInstance Win32_Process -Filter "Name='node.exe'" |
 
 ### 5.4 备选：本机 Playwright（已装，独立实例）
 
-- **位置**：`C:\Users\15136\AppData\Local\npm-cache\_npx\e41f203b7505f1fb\node_modules\playwright`（1.63.0，chromium 已安装）。
+- **位置**：npx 缓存里的 `playwright`——Windows 默认 `%LOCALAPPDATA%\npm-cache\_npx\<hash>\node_modules\playwright`，macOS / Linux 在 `$(npm config get cache)/_npx/<hash>/node_modules/playwright`（本机 2026-10-18 实测 1.63.0 且 chromium 已安装；换机按实际安装版本与浏览器状态复验）。定位：把 §5.1「路径发现」的 `-Filter chrome-devtools-mcp.js` 换成 `-Filter playwright`。
 - **用法**：`run_code` 的 `process.env` 初始为空，启动前先补 `TEMP`/`TMP`（视需要再补 `USERPROFILE`/`HOME`/`PATH`，参照 5.1 的 env 段）再 `chromium.launch()`；不要指望继承 shell 环境。
 - **适用**：需要与 MCP 浏览器并存、要脚本化多视口截图或批量比对时；常规单页走查仍首选 MCP（少一层启动与环境成本）。
 

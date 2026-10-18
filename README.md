@@ -32,13 +32,30 @@ A modular Skill repository for product discovery, PRD, UI, development, testing,
 
 [Skill/README.md](Skill/README.md)：把 `Skill/` 整个目录发给别人，或只复制完整的 `Skill/skill-lifecycle/`。接收方可从创建 Skill 开始，记录实际问题、确认个人偏好、小步迭代与验证；无需本工程的共享规则、注册表或问题池。运行数据独立保存，不随工具包分享。原体系内部维护仍用 Skill-Optimizer / Skill-Evolver，独立包不自动接管原流程。
 
+## 在其他地方直接使用（跨平台安装）
+
+本仓是源仓，不要求把整仓塞进宿主目录。任何机器 `git clone` 后，用标准库安装器把 skills + `shared/` 装进目标宿主的 skills 根目录即可直接使用（Windows/macOS/Linux 通用，Python 3.10+，无第三方依赖）：
+
+```bash
+python scripts/install-skills.py --list                          # 看仓内 skill + 已检测到的宿主目录
+python scripts/install-skills.py --target ~/.dsh/skills          # 安装/更新（可重复 --target）
+python scripts/install-skills.py --check --target ~/.dsh/skills  # 只读核对副本是否等于源仓（漂移 exit 1）
+python scripts/install-skills.py --export /tmp/tenger-skills-pack  # 导出 self-contained 包（pack/skills + pack/shared + MANIFEST.json）
+```
+
+安装器按 `shared/skill-contract.md` §1.4 把 `shared/` 分发到三个落点（`<target>/shared`、`<target>/<skill>/shared`、`<parent(target)>/shared`），保留目标侧外来 skill、不做镜像删除；检测到符号链接/junction 时跳过、绝不对链接做删除。换机器流程 = clone → 安装到目标宿主 → `--check` 全绿，不需要手工拷 shared；导出包自检用 `--check --target <导出目录>/skills`。
+
+Windows 本机开发期仍可用 junction 免同步（改完即生效）：`bash scripts/link-skills.sh`；发布快照/换机迁移以 `install-skills.py` 为准。旧 `scripts/sync-skills.sh` 仅保留 Git Bash 场景。
+
+受支持宿主与各宿主 `--check` 结论以实际运行输出为准，不手写状态；2026-10-18 本机核对：`.dsh/skills`、`.zcode/skills`、`.qoder-cn/skills`（junction）与停用的 `.codebuddy/skills` 均 drift=0。后续变更以 `--check` 输出为准。
+
 ## Repository layout
 
 ```text
 PRD/       product discovery, decisions, PRD, and prototype workflow
 UI/        prototype, UI/UX, and fidelity work
 DEV/       technical design, implementation, and code review
-Test/      auto-test only; retired Testing resources are read-only
+Test/      auto-test skill; Testing archive and auto-test project research (project/) are read-only
 Other/     defects, OSS research, release/operations, and Skill meta-work
 Skill/     portable skill-lifecycle package; copy independently
 workflow/  root-level orchestration only
@@ -110,7 +127,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\run-tests.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\validate.ps1 -ProjectRoot (Get-Location).Path
 ```
 
-The validators check frontmatter, required Skill sections, registry paths, workflow transitions, artifact manifests, and traceability fixtures.
+The validators check frontmatter, required Skill sections, registry paths, workflow transitions, artifact manifests, and traceability fixtures. The regression suite also runs the cross-platform installer's 18 unit tests (`scripts/tests/test_install_skills.py`, real temp-dir install/export/drift checks, ~3–4 min).
 
 ## Execution status
 

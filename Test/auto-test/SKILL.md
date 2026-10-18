@@ -159,7 +159,7 @@ Use the common Gate contract: PASS requires no unresolved P0/P1; residual P0 is 
 
 ## Purpose
 
-Preserve the mature capability of `null` while exposing it through the v2 Skill contract.
+Preserve the mature capability of auto-test while exposing it through the v2 Skill contract.
 
 ## Trigger
 

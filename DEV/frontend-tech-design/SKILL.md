@@ -67,7 +67,7 @@ metadata:
 
 **S1 解析输入 + 浏览器检测**：读上表输入；抽取页面清单、组件线索、接口清单（来自 TDD）、AC；**读同域开源调研报告（`.spec/开源情报/`，有则 REQUIRED）**——同域项目的前端架构/状态方案/测试基建做法反哺 S2 选型候选与 S5 组件拆分（报告三元组中「建议落点=本方案」的条目逐条纳入并留出处；无报告先建议跑 OSS-Radar，快速档经用户确认跳过并留痕）。
 
-**S1.5 资产检索与选择（AI 知识库门禁）**：检索外部 AI 知识库 `D:\project\agent-project\skills-knowledge\asset-library\`（使用入口与同步协议见仓库根 `../../skill-knowledge/README.md`）——先判项目类型命中 `blueprints/`（可叠加取严）收敛范围，再按 capabilities → patterns/composites → adapters 检索；**命中 → 命中资产直接进方案**（组件清单/选型总览标注资产来源与版本），记录 selected/rejected/unresolved 并锁版本；**命中但不完全适用 → 方案层即做兼容性适配**（扩参数 / 加 adapter / 版本演进既有资产），禁并列冗余资产（防冗余硬条件）；无法适配 → 记缺口并说明与既有资产的差异，交 Dev 走封装七步法（造前 asset-gap）。产物落 `.spec/<feature>/` 的 `asset-needs.yaml`、`asset-selection.yaml`、`composition.yaml`（模板在组件库 `templates/project-side/`）。
+**S1.5 资产检索与选择（AI 知识库门禁）**：检索外部 AI 知识库 `$env:SKILLS_KNOWLEDGE_ROOT/asset-library/`（使用入口与同步协议见仓库根 `../../skill-knowledge/README.md`；**未配置 `$env:SKILLS_KNOWLEDGE_ROOT` 时按 `../../skill-knowledge/README.md` 的降级规则跳过检索并登记，不伪造命中**）——先判项目类型命中 `blueprints/`（可叠加取严）收敛范围，再按 capabilities → patterns/composites → adapters 检索；**命中 → 命中资产直接进方案**（组件清单/选型总览标注资产来源与版本），记录 selected/rejected/unresolved 并锁版本；**命中但不完全适用 → 方案层即做兼容性适配**（扩参数 / 加 adapter / 版本演进既有资产），禁并列冗余资产（防冗余硬条件）；无法适配 → 记缺口并说明与既有资产的差异，交 Dev 走封装七步法（造前 asset-gap）。产物落 `.spec/<feature>/` 的 `asset-needs.yaml`、`asset-selection.yaml`、`composition.yaml`（模板在组件库 `templates/project-side/`）。
 
 **S2 选型澄清（一次定全）**：⛔ 每个决策点过「收敛证明」——结论落到具体页面 / 组件 / 状态归属 + 失败 / 涨 10 倍 / 漏项已拷问 + 用户对定稿复述点头；一两句回答不算定稿（协议见 `references/socratic-grilling.md`，通用核心 `../../shared/socratic-grilling-core.md`）。
 

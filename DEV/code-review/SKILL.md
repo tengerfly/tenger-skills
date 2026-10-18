@@ -90,7 +90,7 @@ metadata:
 
 > 正文只留判据；细则按需加载对应 references。
 
-**4.1.0 资产与契约检查（外部 AI 知识库，后端/前端通用）**：① 组合契约——组合图（composition.yaml）的 requires/provides/ordering 与实现一致，无绕过统一契约的写法；② Pattern 不变量——命中资产的 Invariants/禁止事项逐条成立；③ 零复制分叉——无 `xxx-full-copy` 式整体复制；④ 零静默发明——未命中资产的关键规则不得擅自发明（须走封装七步法或标注待确认）；⑤ 使用与版本——asset-usage 记录的实际版本与 asset-selection 锁定一致；⑥ **零冗余并列**——未检索 / 未适配即新建与库内既有资产并列重复的组件（防冗余硬性条件：近似资产应兼容适配或走「更新既有」出口，新建须 asset-gap 差异说明）。违反任一记 P1；绕过统一契约、复制分叉、冗余并列记 P0。组件库位置：`D:\project\agent-project\skills-knowledge\asset-library\`（调度侧引用层与映射表：仓库根 `../../skill-knowledge/`）。
+**4.1.0 资产与契约检查（外部 AI 知识库，后端/前端通用）**：① 组合契约——组合图（composition.yaml）的 requires/provides/ordering 与实现一致，无绕过统一契约的写法；② Pattern 不变量——命中资产的 Invariants/禁止事项逐条成立；③ 零复制分叉——无 `xxx-full-copy` 式整体复制；④ 零静默发明——未命中资产的关键规则不得擅自发明（须走封装七步法或标注待确认）；⑤ 使用与版本——asset-usage 记录的实际版本与 asset-selection 锁定一致；⑥ **零冗余并列**——未检索 / 未适配即新建与库内既有资产并列重复的组件（防冗余硬性条件：近似资产应兼容适配或走「更新既有」出口，新建须 asset-gap 差异说明）。违反任一记 P1；绕过统一契约、复制分叉、冗余并列记 P0。组件库位置：`$env:SKILLS_KNOWLEDGE_ROOT/asset-library/`（调度侧引用层与映射表：仓库根 `../../skill-knowledge/`；**未配置 `$env:SKILLS_KNOWLEDGE_ROOT` 时按 `../../skill-knowledge/README.md` 的降级规则跳过检索并登记，不伪造命中**）。
 
 **4.1 六大闭环（代码层）**：
 

@@ -54,7 +54,7 @@ metadata:
 
 **S1 解析输入**：读上表输入，抽取模块清单、PRD AC、业务约束；**读同域开源调研报告（`.spec/开源情报/`，有则 REQUIRED）**——同域项目的架构/选型/测试基建做法反哺 S3 选型候选与 S6 模块设计（报告三元组中「建议落点=本方案」的条目逐条纳入并留出处；无报告先建议跑 OSS-Radar，快速档经用户确认跳过并留痕）。
 
-**S1.5 资产检索与选择（AI 知识库门禁）**：检索外部 AI 知识库 `D:\project\agent-project\skills-knowledge\asset-library\`（使用入口与同步协议见仓库根 `../../skill-knowledge/README.md`）——先判项目类型命中 `blueprints/`（可叠加取严）收敛范围，再按 capabilities → patterns/composites → adapters 检索；**命中 → 命中资产直接进方案**（技术选型总览与模块设计标注资产来源与版本），记录 selected/rejected/unresolved 并锁版本（pattern@x + adapter@x）；**命中但不完全适用 → 方案层即做兼容性适配**（扩参数 / 加 adapter / 版本演进既有资产），禁并列冗余资产（防冗余硬条件）；无法适配 → 记缺口并说明与既有资产的差异，交 Dev 走封装七步法（造前 asset-gap）。产物落 `.spec/<feature>/` 的 `asset-needs.yaml`、`asset-selection.yaml`、`composition.yaml`（模板在组件库 `templates/project-side/`）；组合图须满足「下游 requires ⊆ 前置 provides」，Tech-Review 据此检查组合契约。
+**S1.5 资产检索与选择（AI 知识库门禁）**：检索外部 AI 知识库 `$env:SKILLS_KNOWLEDGE_ROOT/asset-library/`（使用入口与同步协议见仓库根 `../../skill-knowledge/README.md`；**未配置 `$env:SKILLS_KNOWLEDGE_ROOT` 时按 `../../skill-knowledge/README.md` 的降级规则跳过检索并登记，不伪造命中**）——先判项目类型命中 `blueprints/`（可叠加取严）收敛范围，再按 capabilities → patterns/composites → adapters 检索；**命中 → 命中资产直接进方案**（技术选型总览与模块设计标注资产来源与版本），记录 selected/rejected/unresolved 并锁版本（pattern@x + adapter@x）；**命中但不完全适用 → 方案层即做兼容性适配**（扩参数 / 加 adapter / 版本演进既有资产），禁并列冗余资产（防冗余硬条件）；无法适配 → 记缺口并说明与既有资产的差异，交 Dev 走封装七步法（造前 asset-gap）。产物落 `.spec/<feature>/` 的 `asset-needs.yaml`、`asset-selection.yaml`、`composition.yaml`（模板在组件库 `templates/project-side/`）；组合图须满足「下游 requires ⊆ 前置 provides」，Tech-Review 据此检查组合契约。
 
 **S2 非功能需求（设计输入，先于选型）**：问清并写进元数据——① 规模预期（数据量/并发/QPS）② 延迟要求（p95）③ 一致性需求（强一致 vs 最终一致）④ 安全与合规约束 ⑤ 可用性/容灾要求。**每个关键选型都要能回答「它满足哪条非功能需求」。**
 

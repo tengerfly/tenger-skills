@@ -9,5 +9,6 @@
 | 产物 | `.spec/auto-test/`：用例库 / 分层报告 / 修复任务卡 / evidence（截图·console·network） |
 | 双模式 | 引擎模式（auto-test CLI / MCP 可用时委托）与会话模式（agent 亲自执行）产物格式一致 |
 | 上下游 | 承接 ⑬ 代码评审放行后的代码；可运行性问题转 Bug-Fix；缺陷修复回开发 skill |
+| 项目资料 | `project/`：企业级 AI 自动化测试平台 v0.1（待评审）的项目计划 / 竞品研究 / 旧问题日志；只作研究参考，不参与执行，执行入口仍是本目录 [SKILL.md](SKILL.md) |
 
-细则见 [SKILL.md](SKILL.md)；术语与决策记录见 [CONTEXT.md](CONTEXT.md)。
+细则见 [SKILL.md](SKILL.md)；项目研究与历史资料见 [project/README.md](project/README.md)；术语与决策记录见 [CONTEXT.md](CONTEXT.md)。
