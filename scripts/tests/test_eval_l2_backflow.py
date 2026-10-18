@@ -312,23 +312,26 @@ class WholeRepoEvalHealthTests(unittest.TestCase):
         self.assertGreaterEqual(total, 47, "用例总数应随本轮回流补线增加")
         # 2026-10-17 行为层真跑轮补了 5 条禁止式行为用例（EV-TDD-103／EV-PRD-102／EV-PRD-103／
         # EV-FE-103／EV-SOPT-101），未授权时它们与既有 14 条一起记 blocked，不许借"没跑"白送通过。
-        self.assertEqual(blocked, 19, "待引擎只允许等于行为层用例数（2 条既有 + 12 条 10-16 新增 + 5 条 10-17 新增）")
+        self.assertGreaterEqual(blocked, 19, "待引擎只允许等于行为层用例数（本条只做下界，精确相等由下一行判）")
         self.assertEqual(blocked, sum(1 for case in all_cases().values()
                                       if case["layer"] == "behaviour"),
                          "blocked 必须恰好等于行为层用例数——结构层用例被记成待引擎就是判据漂了")
 
-    def test_relay_backflow_gap_shrank_and_still_reports_red(self):
+    def test_relay_backflow_state_is_reported_honestly(self):
         from eval import relay
         result = relay.audit(ROOT)
         covered = {entry["id"] for entry in result["covered"]}
-        # 本轮机械化的一条（评审分级冻结）与例外登记的一条必须留在覆盖里
+        # 机械化的一条（评审分级冻结）与例外登记的一条必须留在覆盖里
         self.assertIn("issue/Skill-Optimizer/2026-09-04/02-评审死循环不收敛.md", covered)
         self.assertIn("issue/WorkFlow/2026-09-23/04-主链缺UI设计稿节点导致后端越界定版式.md", covered)
         self.assertEqual(result["dangling"], [])
         self.assertLess(len(result["missing"]), 24, "缺回流必须真的下降，不是把判据改松")
-        # 剩下的是如实报数：既不硬凑用例，也不许把缺口读成闭合
-        self.assertTrue(result["missing"])
+        # 缺口允许为 0（2026-10-18 最后一条以 EV-FE-104 接上）；清零不靠改判据——
+        # 负向对照在夹具层（假 issue 必须报缺、行为层用例必须单列「待授权」），不拿本仓现值当承诺。
         self.assertEqual(len(result["closedP0P1"]), len(result["covered"]) + len(result["missing"]))
+        self.assertFalse(relay.blocking(result), "缺口清零且无悬空/未分诊时 relay 必须判绿")
+        self.assertEqual(relay.blocking(result), bool(result["missing"] or result["dangling"]
+                                                      or result["loadErrors"]))
 
 
 if __name__ == "__main__":

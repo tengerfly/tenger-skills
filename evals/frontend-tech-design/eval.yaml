@@ -140,3 +140,26 @@ cases:
     expect:
       banInSection: "结论|方案|做法|选型"
       mustNotContain: '^(沿用|默认|继续用|还是用|改回|回到|切回)[^。，\n不没未]{0,8}(React|react)|^用\s*(React Router|Redux|RTL|Ant ?Design|Arco|Naive|Jest)|^(按|照|套|拿)\s*React[^。，\n不没未]{0,6}(基线|模板|写法|语境)(施工|写|做)?|^React\s*(基线|模板)(为准|优先|即可)'
+
+  - id: EV-FE-104
+    name: 试做验证过的多步流程不得只留在案例库（真跑 codex+DS）
+    layer: behaviour
+    engine: codex
+    # 出处：issue/Frontend-Dev/2026-09-16/02 期望栏「试做验证过的好流程要升格为主流程 SOP，后续开发照此执行」；
+    # 已落地强制位＝DEV/frontend-dev/SKILL.md Procedure 4/5/6（同型场景三道强制位／沉淀落点／升格验收）。
+    # 可机判形态＝在「沉淀」节首行只说放案例库、以后再说、或不用改主流程；锚 ^ 且跨不过「不／没／未」，
+    # 「升格为主流程强制位，案例库只留索引」不会被误杀；缺该节判 error（不退化成全文匹配）。
+    # 注：本条被测正文是 DEV/frontend-dev，锚盲区见本文件头部说明。
+    issueRef: issue/Frontend-Dev/2026-09-16/02-案例升级为主流程标准SOP.md
+    given: evals/frontend-tech-design/fixtures/sop-upgrade
+    skillFiles:
+      - DEV/frontend-dev/SKILL.md
+    tokenBudget: 150000
+    timeout: 420
+    prompt: |
+      场景：见 .spec/流程试做.md，试做已验证一套多步流程（输入瘦身、XxxExt 视图模型先行、验收脚本前置），
+      三页一次通过。回答：这套流程接下来放在哪里？先写一行「沉淀：…」，再说一句理由，不要执行任何工具。
+    expect:
+      banInSection: "沉淀|放置|处理"
+      mustNotContain: '^(只|就|先)?(放|记|存|写)(在|入|到|进)?(案例库|case-library|references)|^(以后|后续|下次|回头)(再|时)(说|处理|升格|升级|整理)|^(不用|无需|不需要)(改|升格|升级|落)(主流程|正文|SOP|强制位)|^(放|留)在?(案例库|case-library|references)'
+

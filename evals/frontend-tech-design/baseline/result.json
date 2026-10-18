@@ -2,10 +2,10 @@
   "schema": "tenger.eval-baseline/v1",
   "eval": "evals/frontend-tech-design/eval.yaml",
   "skill": "frontend-tech-design",
-  "savedAt": "2026-10-18T09:17:42+08:00",
+  "savedAt": "2026-10-18T09:54:34+08:00",
   "anchors": {
     "skillRevision": "sha256:023d2e6d47ca7adc27142abf52c1fd1d82ab92e719243708dda10c3199a4aaf9",
-    "casesVersion": "sha256:712c08a78b7546997a5667486f47f3a5af83331dc72427e54458b03b47845913",
+    "casesVersion": "sha256:b8c96324bc828dbaf7d130b55b36bf4f4f6ab63284e87c9ad48eb006552a81d2",
     "engine": "codex",
     "model": "engine-default",
     "judgeVersion": "eval-judge/1",
@@ -18,7 +18,7 @@
   "counts": {
     "passed": 0,
     "failed": 0,
-    "blocked": 5,
+    "blocked": 6,
     "error": 0
   },
   "cases": [
@@ -48,6 +48,12 @@
     },
     {
       "id": "EV-FE-103",
+      "layer": "behaviour",
+      "status": "blocked",
+      "outcome": null
+    },
+    {
+      "id": "EV-FE-104",
       "layer": "behaviour",
       "status": "blocked",
       "outcome": null

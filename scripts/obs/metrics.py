@@ -5,7 +5,7 @@ Anything the run log cannot know is reported as N/A with the reason rather than 
 estimated — an unlabelled estimate would be indistinguishable from a measurement later.
 """
 from __future__ import annotations
-import fnmatch
+import fnmatch, json
 from pathlib import Path
 
 REGISTRY = Path(__file__).resolve().parents[2] / "governance/obs-registry.yaml"
@@ -40,6 +40,26 @@ def load_objective_policy() -> dict:
         raise ValueError(f"objectiveData.opsNodes 点名了未注册的节点 {unknown_ops} ⇒ "
                          f"拼错的排除名单会把元工作轨读成业务数据，拒绝据此判「满足」")
     return section
+
+
+def objective_events(root, policy) -> list:
+    """①的语料：本仓轨 ＋ 注册表声明的兄弟项目轨（`objectiveData.externalSources`）。
+
+    同一条判据有两个读的人——`tsr report` 的看板与 `validate_core goalplan` 的 machineProof；
+    两处必须取同一份语料，否则会给出相反结论。2026-10-18 实测：knowledge-bases 的 tech-review
+    完整收口后，goalplan 判「满足」而看板仍写「没有任何业务节点完整收口」——读数的人只能猜。
+    """
+    from obs import schema
+    root = Path(root).resolve()
+    events = list(schema.read_events(root))
+    own = (root / ".spec/obs/run.jsonl").resolve()
+    for slug in policy.get("externalSources") or []:
+        # 兄弟项目约定：<root 的父目录>/<slug>/.spec/obs/run.jsonl。注册表只写 slug，不写 ../ 路径。
+        extra = (root.parent / str(slug) / ".spec/obs/run.jsonl").resolve()
+        if extra.is_file() and extra != own:
+            events.extend(json.loads(line) for line in
+                          extra.read_text(encoding="utf-8").splitlines() if line.strip())
+    return events
 
 
 def load_registry() -> dict:

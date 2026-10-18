@@ -306,7 +306,10 @@ class BoundaryTests(RepoMixin):
 
 
 class RealRepoTests(unittest.TestCase):
-    """真数据：拿本仓现有检测面跑出一份非空候选，数量与检出面自证一致。"""
+    """真数据：本仓候选卡数量必须与检出面实算一致（允许为 0，2026-10-18 后缺口已清零）。
+
+    负向对照在夹具层：造一条缺回流的假 issue 必须出卡；本仓现值不是承诺，缺 0 张时不伪造。
+    """
 
     @classmethod
     def setUpClass(cls):
@@ -315,10 +318,10 @@ class RealRepoTests(unittest.TestCase):
     def test_real_repo_produces_non_empty_candidates_matching_detector_counts(self):
         from eval import relay
         expected = len(relay.audit(ROOT)["missing"])
-        self.assertGreaterEqual(expected, 1, "本仓 L2 缺口应如实存在，别当它没了")
         cards = card_of(self.result, KINDS["missingBackflow"])
-        self.assertEqual(len(cards), expected)
-        self.assertTrue(len(self.result["cards"]) > 0)
+        self.assertEqual(len(cards), expected, "候选卡数必须等于检出面实算的缺口数（多一张少一张都是漂）")
+        if expected:
+            self.assertTrue(len(self.result["cards"]) > 0, "有缺口却没有候选卡 ⇒ 检出面断线")
         for card in self.result["cards"]:
             self.assertIn(card["kind"], set(KINDS.values()), "不得发明 kind")
             self.assertTrue(card["judges"], "每张卡必须抄到判据文本原文")

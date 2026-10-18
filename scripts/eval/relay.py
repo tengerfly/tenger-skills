@@ -290,6 +290,13 @@ def render(result: dict) -> str:
     return "\n".join(lines)
 
 
+def blocking(result: dict) -> bool:
+    """relay 判红的口径：缺回流／悬空引用／评测集读不动／未分诊／分诊尺子读不动。"""
+    triage = result.get("triage") or {}
+    return bool(result["missing"] or result["dangling"] or result["loadErrors"]
+                or triage.get("undeclared") or triage.get("error"))
+
+
 def main(argv=None) -> int:
     if hasattr(sys.stdout, "reconfigure"):
         # Windows 控制台默认 GBK：中文与 ⛔ 打出去要么炸要么成乱码，读的人只能猜
@@ -307,10 +314,9 @@ def main(argv=None) -> int:
                          ensure_ascii=False, indent=2))
     else:
         print(render(result))
-    blocking = bool(result["missing"] or result["dangling"] or result["loadErrors"]
-                    or (result.get("triage") or {}).get("undeclared") or (result.get("triage") or {}).get("error"))
-    print(f"\n结论：{'缺回流、悬空引用或缺口未分诊，红' if blocking else '闭环 issue 全部有回流用例且逐条分诊'}")
-    return 1 if blocking else 0
+    red = blocking(result)
+    print(f"\n结论：{'缺回流、悬空引用或缺口未分诊，红' if red else '闭环 issue 全部有回流用例且逐条分诊'}")
+    return 1 if red else 0
 
 
 if __name__ == "__main__":

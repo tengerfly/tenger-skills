@@ -11,7 +11,7 @@
 ④ 看板要真的把 sha 印出来（判据点名要的东西不能只在台账里存在、不在读数里出现）。
 """
 from __future__ import annotations
-import copy, shutil, sys, tempfile, unittest
+import copy, json, shutil, sys, tempfile, unittest
 from pathlib import Path
 
 import yaml
@@ -165,6 +165,51 @@ class BoardTests(unittest.TestCase):
         text = metrics.render(metrics.summarize(BIZ), [], [])
         self.assertIn("耗时(秒)", text)
         self.assertNotIn("①客观数据判据", text)
+
+
+class ExternalSourceAggregationTests(unittest.TestCase):
+    """①的语料必须把兄弟项目轨算进来，且看板与 goalplan 共用同一个装载函数。
+
+    2026-10-18 实测：knowledge-bases 的 `tech-review` 完整收口后，goalplan 判「满足」而看板
+    仍写「没有任何业务节点完整收口」——同一条判据两个结论，读数的人只能猜。本组钉住：
+    ① 兄弟轨里的业务节点能计入；② 兄弟文件不存在只跳过、不报错；③ 同一份轨不会被装两次。
+    """
+
+    def build(self, own_events, sibling_events=None):
+        tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(lambda: shutil.rmtree(tmp, ignore_errors=True))
+        root = tmp / "repo"
+        (root / ".spec/obs").mkdir(parents=True)
+        (root / ".spec/obs/run.jsonl").write_text(
+            "\n".join(json.dumps(item, ensure_ascii=False) for item in own_events) + "\n", encoding="utf-8")
+        if sibling_events is not None:
+            extra = tmp / "kb" / ".spec/obs"
+            extra.mkdir(parents=True)
+            (extra / "run.jsonl").write_text(
+                "\n".join(json.dumps(item, ensure_ascii=False) for item in sibling_events) + "\n",
+                encoding="utf-8")
+        return root
+
+    def policy(self, external):
+        return {**POLICY, "externalSources": list(external)}
+
+    def test_sibling_business_node_counts(self):
+        root = self.build(OPS, BIZ)
+        events = metrics.objective_events(root, self.policy(["kb"]))
+        self.assertTrue(metrics.objective_status(events, POLICY)["satisfied"])
+        # 反向对照：不聚合兄弟轨时同一份数据必须判未满足——挡下来的是配置，不是代码写死
+        own_only = metrics.objective_events(root, self.policy([]))
+        self.assertFalse(metrics.objective_status(own_only, POLICY)["satisfied"])
+
+    def test_missing_sibling_file_is_skipped_not_error(self):
+        root = self.build(OPS)
+        events = metrics.objective_events(root, self.policy(["kb"]))
+        self.assertEqual(len(events), len(OPS))
+
+    def test_own_track_is_not_loaded_twice(self):
+        root = self.build(OPS, BIZ)
+        events = metrics.objective_events(root, self.policy(["repo"]))
+        self.assertEqual(len(events), len(OPS), "externalSources 指向自己时不得把同一份轨装两次")
 
 
 class RealRepoTests(unittest.TestCase):
