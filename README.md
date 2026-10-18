@@ -93,6 +93,10 @@ Read the contracts before changing a Skill:
 - `shared/lifecycle-contract.md`
 - `shared/product-workflow-contract.md`
 
+## Browser tool policy
+
+Browser tooling follows the two-level policy in `shared/browser-policy.md`: detection order (§一), hard/soft behavior (§二), and how to obtain tooling in DSH environments (§五: Chrome DevTools MCP plugin, Playwright fallback). Skill bodies only declare their own level and action; they do not restate the detection order or the acquisition steps.
+
 ## Compatibility policy
 
 Old Skills, references, assets, aliases, and the numbered pipeline are retained as compatibility material. They are not deleted, but they cannot override the current shared contracts. Historical files are marked with a legacy notice where their old wording could be misleading.

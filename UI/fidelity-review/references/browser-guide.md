@@ -1,7 +1,7 @@
 # 浏览器工具预检与双开截图
 
 ## 一、预检
-Playwright 可用 → 首选；异常 → browser-use/其他工具；全无 → 报错停止，不产出。
+Playwright 可用 → 首选；异常 → browser-use/其他工具（含 MCP 浏览器工具 `mcp__browser__*`）；全无 → 先按仓库根 `../../../shared/browser-policy.md` §五 获取，仍全无 → 报错停止，不产出。
 
 ## 二、Playwright 双开
 - 装 `pnpm add -D playwright && pnpm exec playwright install chromium`。

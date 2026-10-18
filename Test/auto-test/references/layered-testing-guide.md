@@ -45,7 +45,7 @@
 1. Playwright + **Midscene**（`aiAct/aiAssert/aiQuery`，视觉定位免 selector）——首选；
 2. Playwright 原生（选择器 + `toHaveScreenshot`）——Midscene 不可用时降级，报告**明示降级**；
 3. Playwright 协议 actionability 超时（点击/填充反复超时但元素存在）→ 页面脚本兜底（`evaluate` 内 `el.click()` / React 原生 setter+input 事件），**同时登记一条缺陷**（控件对自动化协议不可操作，人工正常）；
-4. 全无浏览器工具 → **报错停止，不产出**（禁硬跑、禁凭想象写结果）。
+4. 全无浏览器工具 → 先按仓库根 `../../../shared/browser-policy.md` §五 获取（DSH 环境：MCP 插件 / Playwright 备选）；仍不可用 → **报错停止，不产出**（禁硬跑、禁凭想象写结果）。
 
 ### 执行规范
 
