@@ -169,6 +169,24 @@ class CostMeteringTests(unittest.TestCase):
         self.assertEqual((None, None), engine.usage_tokens('{"type":"turn.started"}'))
 
 
+class EngineTimeoutTreeKillTests(unittest.TestCase):
+    """2026-10-18 首次真跑 EV-FE-103：420s 超时后直接子进程被 kill，但 cmd→node→codex.exe 的
+    孙进程仍占着 stdout/stderr 管道，communicate() 等 EOF 把超时拖成无限等待（实测多卡 4.5 分钟，
+    靠外部 taskkill 才解开）。超时必须连进程树一起杀，且必须在有界时间内把残流交回来。"""
+
+    def test_timeout_kills_grandchildren_so_capture_returns_within_bounded_time(self):
+        import time
+        from eval import engine
+        code = ("import subprocess, sys, time\n"
+                "subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(120)'])\n"
+                "time.sleep(120)\n")
+        started = time.monotonic()
+        _returncode, _out, _err, timed_out = engine._capture(
+            [sys.executable, "-c", code], Path.cwd(), timeout=2)
+        self.assertTrue(timed_out)
+        self.assertLess(time.monotonic() - started, 60, "孙进程没被杀掉：超时又被拖成了无限等")
+
+
 class QuestionScopeJudgingTests(unittest.TestCase):
     """判据范围=问句行。形状取自 2026-10-15 两次真跑的同一条用例（一次状态卡、一次编号清单），
     引擎用 stub 顶掉：单测不许花钱，但判据分支必须真的走一遍。"""
