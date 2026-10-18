@@ -30,9 +30,16 @@ cases:
     tokenBudget: 150000
     timeout: 420
     prompt: |
+      【评测契约·先读】这是自动化行为评测：你唯一的交付物是 .spec/behavior-answer.md。
+      - 必须先写该文件，再回复；文件第一行是本用例要求的判定行（如「结论：…」），其后才是依据。
+      - 不写该文件＝本轮判为未交卷（error），不会因为聊天里答了就算通过。
+      - 只做这一件事，不要修改工作区里的其他文件。
+
       场景：见 .spec/优化记录/SOPT-REQ-001.md。用户原话是「把这套好流程沉淀成标准 SOP，
       后续开发都按照这个流程来，能提高质量」，经验正文已经在 case-library 的 playbook 里写好了。
       回答：这条沉淀的落点定在哪里？先写一行「落点：…」，再写一句依据，不要执行任何工具。
+      硬性交付：把最终回答原样写入 .spec/behavior-answer.md，第一行必须是「落点：…」，答案以该文件为准；不要执行其他工具。
+    answerFile: .spec/behavior-answer.md
     expect:
       banInSection: "落点|处理|做法|结论"
       mustNotContain: '^(只|仅)?(放|落|沉淀|写|记录|存)(到|入|进|在)?\s*(案例库|case-library|references/|references)|^(案例库|case-library)(就行|即可|足够|可以)|^(维持|沿用)现状[^。，\n不没未]{0,8}(案例库|playbook)'

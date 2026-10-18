@@ -247,8 +247,19 @@ class BehaviourJudgeControls(unittest.TestCase):
         from eval import engine
         case = copy.deepcopy(all_cases()[case_id])
         ran = {"ok": True, "exit": 0, "tokens": 1000, "output": output, "transcript": output}
+
+        def fake_run(engine_name, workspace, prompt, timeout=240):
+            # 2026-10-18 起行为层用例要求把答案写进 answerFile：stub 引擎也得照契约交货，
+            # 否则测出来的是「没交卷」而不是判据本身。
+            answer_file = case.get("answerFile")
+            if answer_file:
+                target = Path(workspace) / str(answer_file).replace("\\", "/")
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text(output, encoding="utf-8")
+            return ran
+
         with patch.object(engine, "available", return_value=["codex"]), \
-                patch.object(engine, "run", return_value=ran):
+                patch.object(engine, "run", side_effect=fake_run):
             return evaluator.run_behaviour(case, {})
 
     def test_violating_answer_reports_failed(self):

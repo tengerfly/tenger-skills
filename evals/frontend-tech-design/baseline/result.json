@@ -2,17 +2,17 @@
   "schema": "tenger.eval-baseline/v1",
   "eval": "evals/frontend-tech-design/eval.yaml",
   "skill": "frontend-tech-design",
-  "savedAt": "2026-10-18T09:54:34+08:00",
+  "savedAt": "2026-10-18T12:33:59+08:00",
   "anchors": {
     "skillRevision": "sha256:023d2e6d47ca7adc27142abf52c1fd1d82ab92e719243708dda10c3199a4aaf9",
-    "casesVersion": "sha256:b8c96324bc828dbaf7d130b55b36bf4f4f6ab63284e87c9ad48eb006552a81d2",
+    "casesVersion": "sha256:6069d1b6bd10dcd31bf3b30df6b56076fde07c6b39004facd199925769b8b809",
     "engine": "codex",
     "model": "engine-default",
-    "judgeVersion": "eval-judge/1",
+    "judgeVersion": "eval-judge/2",
     "scoringVersion": "1"
   },
   "provenance": {
-    "runner": "sha256:820a8624025cd59b5061051aa96fd7a03d44c3c0be5b89a7ac2252d47c3405e5",
+    "runner": "sha256:faa42050051d4443f9338aff868e2623b30ff43e487c1254e0756578d484e445",
     "python": "3.11.15"
   },
   "counts": {

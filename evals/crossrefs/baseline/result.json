@@ -2,17 +2,17 @@
   "schema": "tenger.eval-baseline/v1",
   "eval": "evals/crossrefs/eval.yaml",
   "skill": "skill-optimizer",
-  "savedAt": "2026-10-18T09:17:37+08:00",
+  "savedAt": "2026-10-18T12:33:54+08:00",
   "anchors": {
     "skillRevision": "sha256:59a01b1d18db6ac9c6364d73068ccbfc67d6815b9db4d1c80cedb4c054a8ab6a",
     "casesVersion": "sha256:6717d09ce800a282e62114c89254149891e1387f5074b1a06f6a6797bbb8b144",
     "engine": "structure-only",
     "model": "engine-default",
-    "judgeVersion": "eval-judge/1",
+    "judgeVersion": "eval-judge/2",
     "scoringVersion": "1"
   },
   "provenance": {
-    "runner": "sha256:820a8624025cd59b5061051aa96fd7a03d44c3c0be5b89a7ac2252d47c3405e5",
+    "runner": "sha256:faa42050051d4443f9338aff868e2623b30ff43e487c1254e0756578d484e445",
     "python": "3.11.15"
   },
   "counts": {

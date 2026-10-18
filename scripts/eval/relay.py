@@ -37,10 +37,13 @@ L2_GRADES = ("P0", "P1")
 CLOSED = "已沉淀"
 IGNORED = "已忽略"
 OPEN_STATES = ("待处理", "处理中")
-# 注册表没声明时的兜底文案：只有行为层用例指回时，必须标「待授权」而不是并进「能拦住」。
+# 注册表没声明时的兜底文案：只有行为层用例指回时必须单列并指向行为层台账，而不是并进「能拦住」。
+# 2026-10-18 起行为层已真跑过（20 条：9 过／1 败／10 量具读不到），「未授权未跑」不再是事实，
+# 所以横幅必须改成「跑没跑、结论如何见台账」，既不许拿它冒充拦截力，也不许把已跑过的说成没跑。
 BEHAVIOUR_ONLY_TEXT = (
-    "这些条目的 issueRef 用例全是 behaviour 层，未授权时一律 blocked ⇒ 只证明「用例已登记」，"
-    "不证明「规则现在能拦住」；标「待授权」，不得并进「已拦住」的读数")
+    "这些条目的 issueRef 用例全是 behaviour 层：缺省零成本回归里一律 blocked ⇒ 只证明「用例已登记」，"
+    "不证明「规则现在能拦住」；真跑结论（passed/failed/error/blocked）见 .spec/obs/behaviour-runs.jsonl，"
+    "不得并进「已拦住」的读数")
 
 # 表行（模板口径）与行内/front-matter（池内老口径）两种写法都要认；键名按出现的实名列，
 # 长名在前，避免「优化状态」被「状态」抢先匹配。
@@ -235,8 +238,8 @@ def render(result: dict) -> str:
         lines.append("")
     behaviour_only = result.get("coveredBehaviourOnly") or []
     if behaviour_only:
-        lines.append(f"## ⚠ 仅行为层回流（{len(behaviour_only)} 条）——用例已登记，但未授权未跑，"
-                     f"不得读成「现在能拦住」")
+        lines.append(f"## ⚠ 仅行为层回流（{len(behaviour_only)} 条）——用例已登记；缺省零成本回归里"
+                     f"一律 blocked，真跑结论见行为层台账，不得读成「现在能拦住」")
         lines.append("- " + (((result.get("triage") or {}).get("texts") or {}).get("behaviourOnly")
                              or BEHAVIOUR_ONLY_TEXT))
         for entry in behaviour_only:
@@ -276,7 +279,7 @@ def render(result: dict) -> str:
         lines.append(f"## 已接线（{len(result['covered'])} 条）")
         behaviour_ids = {entry["id"] for entry in behaviour_only}
         lines += [f"- `{entry['id']}`（{entry['grade']}）"
-                  + ("｜仅行为层（待授权）" if entry["id"] in behaviour_ids else "")
+                  + ("｜仅行为层（结论见行为层台账）" if entry["id"] in behaviour_ids else "")
                   for entry in result["covered"]]
         lines.append("")
     noise = result["unknownState"] + result["missingStateField"]

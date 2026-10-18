@@ -59,16 +59,17 @@ l2Triage:
   # 反过来，名单里已经不再缺的条目要报「名单过期」——但那是好消息，不因此判红（惩罚进展就是把判据调反）。
   rule: "audit().missing 的每一条 issue 必须在本节 declared 里出现（verdict 三值之一）；不在 ⇒ 未分诊、判红。"
   coverageRule: >-
-    已回流必须分「结构层可判」与「仅行为层」两列报。只有行为层用例指回时标「待授权（未跑）」，
-    不得并进「已拦住」的读数——行为层在夜间一律 blocked 是常态，混着报就是新的假绿面。
+    已回流必须分「结构层可判」与「仅行为层」两列报。只有行为层用例指回时单列，跑没跑见行为层台账，
+    不得并进「已拦住」的读数——行为层在缺省零成本回归里一律 blocked 是常态；真跑结论（passed/failed/
+    error/blocked）看 .spec/obs/behaviour-runs.jsonl，混着报就是新的假绿面。
   declared:
     # 2026-10-17 并发会话把 5 条接成行为层用例（EV-FE-103／EV-PRD-102／EV-PRD-103／EV-SOPT-101／EV-TDD-103），
     # 缺口消失、名单过期（relay 只报数不判红）；本轮据「名单过期」清单逐条摘除，只留仍缺回流的这一条。
     - issue: issue/Frontend-Dev/2026-09-16/02-案例升级为主流程标准SOP.md
-      verdict: 已回流（EV-FE-104，行为层待授权未跑）
+      verdict: 已回流（EV-FE-104，行为层；2026-10-18 真跑 passed）
       reason: >-
         2026-10-18 用行为层用例接上：判据＝试做验证过的多步流程不得只放案例库／以后再说／不用改主流程
-        （`mustNotContain` 锚定，待授权未跑 ⇒ 只算「已登记」，不构成现时拦截力）。
+        （`mustNotContain` 锚定；2026-10-18 首次真跑结果 passed，证据见 .spec/obs/behaviour/ 与台账）。
         本条仍留在 declared，只因空名单会被 triage_policy 判「未声明」（量具取不到不许默认通过）；
         relay 会把它报成「名单过期 1 条」，不判红。
   texts:
@@ -80,8 +81,9 @@ l2Triage:
       本轮只如实报数不判红——惩罚进展会把判据调反
     clean: "分诊核对：缺回流逐条都有分诊结论，未分诊 0 条"
     behaviourOnly: >-
-      仅行为层回流：这些条目的 issueRef 用例全是 behaviour 层，未授权时一律 blocked ⇒
-      只证明「用例已登记」，不证明「规则现在能拦住」；标「待授权」，不得并进「已拦住」的读数
+      仅行为层回流：这些条目的 issueRef 用例全是 behaviour 层，缺省零成本回归里一律 blocked ⇒
+      只证明「用例已登记」，不证明「规则现在能拦住」；真跑结论（含 passed/failed/error/blocked）
+      见 .spec/obs/behaviour-runs.jsonl，不得并进「已拦住」的读数
     missingPolicy: >-
       分诊核对读不动：governance/eval-spec.yaml 未声明 l2Triage 或 declared 为空 ⇒
       「清单外默认通过」正是量具腐烂的方式，本轮按红处理而不是跳过

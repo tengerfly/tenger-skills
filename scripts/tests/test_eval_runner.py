@@ -106,6 +106,13 @@ class SectionScopeTests(unittest.TestCase):
     def test_real_violation_still_matches(self):
         self.assertRegex(evaluator._section_body(self.VIOLATION, "待你决定"), "数据库")
 
+    def test_numbered_list_label_line_is_still_found(self):
+        # 2026-10-18 真跑回收：模型常把判定行写成编号列表首项（「1. 结论：…」），
+        # 行首锚点不该把这种版式读成「分节不存在」。
+        body = evaluator._section_body("1. 结论：现在不能定稿。\n2. 依据：7 个收敛点一个都没锁。", "结论|回答|能否")
+        self.assertIsNotNone(body)
+        self.assertIn("不能定稿", body)
+
     def test_missing_section_returns_none_so_the_case_cannot_silently_pass(self):
         self.assertIsNone(evaluator._section_body(self.COMPLIANT, "根本不存在的节"))
 
@@ -185,6 +192,64 @@ class EngineTimeoutTreeKillTests(unittest.TestCase):
             [sys.executable, "-c", code], Path.cwd(), timeout=2)
         self.assertTrue(timed_out)
         self.assertLess(time.monotonic() - started, 60, "孙进程没被杀掉：超时又被拖成了无限等")
+
+
+class AnswerFileJudgingTests(unittest.TestCase):
+    """答卷文件（answerFile）：判据锚在模型写下的答案文件里，不再依赖聊天排版。
+
+    2026-10-18 首次真跑 20 条行为层用例：10 条 error 全是「找不到分节」——prompt 要求
+    「先写一行结论：…」，模型却按小节/表格作答（或干脆只做任务不回答），聊天层的锚点读不到。
+    修法不是把判据放成全文匹配（会退化成误判），而是让用例把答案落成文件、判据读文件；
+    「没交答卷」记 error（判据无法成立），既不记通过也不记违规。"""
+
+    BASE = {"id": "EV-ANSWER", "layer": "behaviour", "engine": "codex",
+            "given": "evals/gate/fixtures/ledger-clean", "skillFiles": [],
+            "prompt": "p", "tokenBudget": 999999,
+            "answerFile": ".spec/behavior-answer.md",
+            "expect": {"banInSection": "结论",
+                       "mustNotContain": "^(可以|能)(开始|写|着手)?[^。\\n不没未]{0,6}(写|落|出|定稿)"}}
+
+    def _judge(self, answer_text, output="我直接开工了，先搭工程。"):
+        from unittest.mock import patch
+        from eval import engine
+        ran = {"ok": True, "exit": 0, "tokens": 1000, "output": output, "transcript": output}
+
+        def fake_run(engine_name, workspace, prompt, timeout=240):
+            if answer_text is not None:
+                target = Path(workspace) / ".spec/behavior-answer.md"
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text(answer_text, encoding="utf-8")
+            return ran
+
+        with patch.object(engine, "available", return_value=["codex"]), \
+                patch.object(engine, "run", side_effect=fake_run):
+            return evaluator.run_behaviour(copy.deepcopy(self.BASE), {})
+
+    def test_answer_in_file_is_judged_even_when_the_chat_reply_has_no_section(self):
+        result = self._judge("结论：现在不能定稿，7 个收敛点一个都没锁。")
+        self.assertEqual("passed", result["status"], result["reason"])
+        self.assertIn("「结论", result["reason"])
+
+    def test_violation_written_into_the_answer_file_fails(self):
+        result = self._judge("结论：可以开始写 PRD 了。")
+        self.assertEqual("failed", result["status"], result["reason"])
+
+    def test_missing_answer_file_is_error_not_a_free_pass_and_not_a_violation(self):
+        result = self._judge(None)
+        self.assertEqual("error", result["status"], result["reason"])
+        self.assertIn("答案文件未产出", result["reason"])
+
+    def test_load_eval_refuses_an_answer_file_that_escapes_the_project(self):
+        import tempfile
+        bad = ("schema: tenger.eval/v1\nskill: probe\ncases:\n  - id: EV-BAD\n"
+               "    layer: behaviour\n    engine: codex\n    prompt: p\n"
+               "    tokenBudget: 1000\n    answerFile: ../../escape.md\n"
+               "    expect:\n      mustNotContain: 'x'\n")
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "eval.yaml"
+            path.write_text(bad, encoding="utf-8")
+            with self.assertRaises(ValueError):
+                evaluator.load_eval(path)
 
 
 class QuestionScopeJudgingTests(unittest.TestCase):

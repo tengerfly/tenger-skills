@@ -2,17 +2,17 @@
   "schema": "tenger.eval-baseline/v1",
   "eval": "evals/fidelity-review/eval.yaml",
   "skill": "fidelity-review",
-  "savedAt": "2026-10-18T09:17:40+08:00",
+  "savedAt": "2026-10-18T12:33:58+08:00",
   "anchors": {
     "skillRevision": "sha256:47631f530a814cb2e212065e04333db85a118961f5cfd67e5bfc7e73305590cc",
-    "casesVersion": "sha256:85d2a285fff6842ae0b616802b1bb6bcb00fafe6fa0de3d623162e0daeb7b97b",
+    "casesVersion": "sha256:184e9a9334f2e7abd281d0ea098c8e268474f988b996ea92c7fa680d1f3b1372",
     "engine": "codex",
     "model": "engine-default",
-    "judgeVersion": "eval-judge/1",
+    "judgeVersion": "eval-judge/2",
     "scoringVersion": "1"
   },
   "provenance": {
-    "runner": "sha256:820a8624025cd59b5061051aa96fd7a03d44c3c0be5b89a7ac2252d47c3405e5",
+    "runner": "sha256:faa42050051d4443f9338aff868e2623b30ff43e487c1254e0756578d484e445",
     "python": "3.11.15"
   },
   "counts": {

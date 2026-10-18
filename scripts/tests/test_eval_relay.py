@@ -211,7 +211,7 @@ cases:
 
     ISSUE = "issue/Probe/2026-01-01/01-x.md"
 
-    def test_behaviour_only_backflow_is_split_out_and_marked_pending_authorization(self):
+    def test_behaviour_only_backflow_is_split_out_and_points_at_the_behaviour_ledger(self):
         root = self.build({self.ISSUE: TABLE.format(grade="P0", state="已沉淀")}, self.BEHAVIOUR_REF)
         result = relay.audit(root)
         self.assertEqual([entry["id"] for entry in result["covered"]], [self.ISSUE])
@@ -220,7 +220,7 @@ cases:
         self.assertEqual(result["coveredCases"][self.ISSUE], ["EV-P-101"])
         text = relay.render(result)
         self.assertIn("仅行为层回流", text)
-        self.assertIn("待授权", text)
+        self.assertIn("行为层台账", text, "横幅必须把读的人引到真跑台账，不许拿「待授权」冒充没跑")
         self.assertIn("EV-P-101", text, "只报条数看不出是哪条用例在顶")
 
     def test_structure_backflow_counts_as_blocking_coverage(self):
@@ -228,7 +228,7 @@ cases:
         result = relay.audit(root)
         self.assertEqual([entry["id"] for entry in result["coveredStructure"]], [self.ISSUE])
         self.assertEqual(result["coveredBehaviourOnly"], [])
-        self.assertNotIn("仅行为层回流", relay.render(result), "结构层能当场判，就不该挂待授权横幅")
+        self.assertNotIn("仅行为层回流", relay.render(result), "结构层能当场判，就不该挂仅行为层横幅")
 
     def test_mixed_layers_count_as_structure_and_list_every_case(self):
         root = self.build({self.ISSUE: TABLE.format(grade="P0", state="已沉淀")}, self.MIXED_REF)

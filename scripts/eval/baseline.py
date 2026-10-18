@@ -40,11 +40,11 @@ import validate_core as core
 
 ROOT = Path(__file__).resolve().parents[2]
 SCHEMA = "tenger.eval-baseline/v1"
-JUDGE_VERSION = "eval-judge/1"
+JUDGE_VERSION = "eval-judge/2"
 ANCHOR_NAMES = ("skillRevision", "casesVersion", "engine", "model", "judgeVersion", "scoringVersion")
 # 参与锚定的字段：判据、输入、预算、引用全算；只有 name 不算（改标题不等于换尺子）
 CASE_FIELDS = ("id", "layer", "given", "tamper", "expect", "engine", "model",
-               "tokenBudget", "timeout", "prompt", "skillFiles", "issueRef")
+               "tokenBudget", "timeout", "prompt", "skillFiles", "issueRef", "answerFile")
 STATUS_RANK = {"passed": 0, "blocked": 0, "failed": 1, "error": 2}
 DERIVED = ROOT / ".spec/obs/eval-baseline-diff.json"
 OK, REGRESSED, REFUSED = 0, 1, 2

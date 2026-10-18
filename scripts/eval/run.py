@@ -71,6 +71,11 @@ def load_eval(path: Path) -> dict:
                 raise ValueError(f"{path}/{case.get('id')}: behaviour 用例必须声明 tokenBudget（跑一次要知道代价）")
             if not (case.get("expect") or {}).get("mustNotContain") and not (case.get("expect") or {}).get("produces"):
                 raise ValueError(f"{path}/{case.get('id')}: behaviour 用例要有可判据（produces 或 mustNotContain），否则只是跑了个寂寞")
+            answer_file = str(case.get("answerFile") or "").replace("\\", "/")
+            if answer_file:
+                # 答卷必须落在工作区内：越界路径会让「读答案」变成读宿主任意文件
+                if Path(answer_file).is_absolute() or ".." in Path(answer_file).parts:
+                    raise ValueError(f"{path}/{case.get('id')}: answerFile 必须是项目内相对路径: {answer_file}")
     return spec
 
 
@@ -100,7 +105,7 @@ def _section_body(text: str, pattern: str):
     or a blank line — never at the end of the document, so a ban stays scoped to one section.
     """
     lines = text.splitlines()
-    label = re.compile(rf"^\s*(?:[-*]\s*)?\*{{0,2}}\s*({pattern})\s*\*{{0,2}}\s*[:：]\s*(.*)$", re.I)
+    label = re.compile(rf"^\s*(?:[-*]\s*)?(?:\d+[.、)]\s*)?\*{{0,2}}\s*({pattern})\s*\*{{0,2}}\s*[:：]\s*(.*)$", re.I)
     heading = re.compile(rf"^\s*#{{1,4}}\s*.*{pattern}", re.I)
     boundary = re.compile(r"^\s*(?:#{1,4}\s*|(?:[-*]\s*)?\*{0,2}\s*[^\s:：*|]{1,24}\s*\*{0,2}\s*[:：])", re.I)
     for index, line in enumerate(lines):
@@ -230,15 +235,28 @@ def run_behaviour(case: dict, spec: dict) -> dict:
             return {"id": case["id"], "status": "failed", "tokens": tokens,
                     "cachedTokens": ran.get("cachedTokens"), "evidence": evidence,
                     "reason": f"超预算：{tokens} > {budget}（行为层必须带预算闸，否则跑一次不知道烧了多少）"}
+        # 答卷文件（answerFile）：判据只吃模型自己写下的答案，但「没交卷」不是违规也不是通过。
+        # 2026-10-18 真跑实测：要求「首行结论」的回答有 10/20 条根本没这个首行（模型改成小节/表格作答），
+        # 判据只能记 error；让用例把答案落成文件后，判据锚在小节名上就不再依赖模型的聊天排版。
+        answer_file = case.get("answerFile")
+        answer_text = ""
+        if answer_file:
+            target = (project / str(answer_file).replace("\\", "/")).resolve()
+            if not target.is_relative_to(project.resolve()) or not target.is_file():
+                return {"id": case["id"], "status": "error", "tokens": tokens,
+                        "cachedTokens": ran.get("cachedTokens"), "evidence": evidence,
+                        "reason": f"答案文件未产出：{answer_file}（判据无法成立；不记通过，也不把「没交答卷」算成违规）"}
+            answer_text = target.read_text(encoding="utf-8", errors="replace")
         for pattern in case.get("expect", {}).get("produces") or []:
             if not list(project.glob(pattern)):
                 return {"id": case["id"], "status": "failed", "tokens": tokens,
                         "cachedTokens": ran.get("cachedTokens"), "evidence": evidence,
                         "reason": f"未产出约定文件: {pattern}"}
-        judged = ran["output"] + "\n" + "\n".join(
+        produced_text = "\n".join(
             path.read_text(encoding="utf-8", errors="replace")
             for pattern in case.get("expect", {}).get("produces") or []
             for path in project.glob(pattern))
+        judged = "\n".join(part for part in (answer_text, ran["output"], produced_text) if part)
         banned = case.get("expect", {}).get("mustNotContain")
         cached = ran.get("cachedTokens")
         if banned:
@@ -362,7 +380,7 @@ def _print_relay_status() -> None:
     triage = result.get("triage") or {}
     print(f"L2 回流执法：P0/P1 已闭环 {len(result['closedP0P1'])} 条 ｜ 已回流 {len(result['covered'])} 条"
           f"（结构层 {len(result.get('coveredStructure') or [])}｜仅行为层 "
-          f"{len(result.get('coveredBehaviourOnly') or [])}，后者待授权未跑）"
+          f"{len(result.get('coveredBehaviourOnly') or [])}，结论见行为层台账）"
           f" ｜ 缺回流 {len(result['missing'])} 条 ｜ 悬空引用 {len(result['dangling'])} 条 ｜ 判不了 {undecidable} 条"
           f"（详单 `python scripts/eval/relay.py`；缺回流即红，不影响上面的用例计数）")
     if triage.get("error"):

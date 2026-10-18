@@ -2,17 +2,17 @@
   "schema": "tenger.eval-baseline/v1",
   "eval": "evals/workflow-graph/eval.yaml",
   "skill": "workflow",
-  "savedAt": "2026-10-18T09:17:57+08:00",
+  "savedAt": "2026-10-18T12:34:10+08:00",
   "anchors": {
     "skillRevision": "sha256:6d3b68b99ac2fa562aa5655a75c35eeb0996d43b7ea205452dcad518493aee97",
     "casesVersion": "sha256:8bfc98d2345eb7add64116ab02bd69042b0817919d84c1219e8eaac8326f6d22",
     "engine": "structure-only",
     "model": "engine-default",
-    "judgeVersion": "eval-judge/1",
+    "judgeVersion": "eval-judge/2",
     "scoringVersion": "1"
   },
   "provenance": {
-    "runner": "sha256:820a8624025cd59b5061051aa96fd7a03d44c3c0be5b89a7ac2252d47c3405e5",
+    "runner": "sha256:faa42050051d4443f9338aff868e2623b30ff43e487c1254e0756578d484e445",
     "python": "3.11.15"
   },
   "counts": {
