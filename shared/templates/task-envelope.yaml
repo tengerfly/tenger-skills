@@ -1,4 +1,4 @@
-﻿version: 1
+version: 1
 task:
   taskId: TASK-YYYYMMDD-001
   projectId: replace-with-project-id
@@ -13,6 +13,13 @@ task:
     summary: short-scope
     allowedPaths: []
     forbiddenPaths: []
+  # 执行单元自追加写入的进度落点（中断后先读它，不靠流式残句推断）。新派发单元 REQUIRED。
+  progressArtifact: .spec/evidence/<executionId>-progress.md
+  # 预算纪律（新派发单元 REQUIRED；口径见 workflow/SKILL.md §3.1）。
+  budgetDiscipline:
+    saveAsYouGo: 每完成一个验收点立即追加落盘，禁止攒到最后一次写
+    budgetExhausted: 预算将尽时停止扩大范围，如实写「已验／未验」清单
+    integrityFirst: 「落盘完整」优先于「覆盖全部」
   inputRefs: []
   artifactRefs: []
   evidenceRefs: []

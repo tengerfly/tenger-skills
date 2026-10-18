@@ -109,6 +109,10 @@ CREATE 行的 `UI Design -> UI Review` 是**必经节点**（`ui-ux-design` → 
 
 **等待态收窄（REQUIRED）**：除 `../shared/ruling-policy.md` 五类硬停外，不得以「等用户确认」「等你想清楚」「等你回来再定」为由停住——按裁决记录继续推进，收敛后一次汇报。停等本身是成本，且由用户买单。
 
+**派发拆单（REQUIRED）**：一个执行单元含 ≥2 个互不依赖的子项时，默认先拆单。判据两条：① 子项是否共享同一个被写文件（共享即不适合并行，但仍应串行拆单、逐项落盘）；② 子项是否各自需要独立的浏览器/工具取证（各自取证即可拆）。拆单后每个子单元必须带 `budgetDiscipline` 与 `progressArtifact`（字段定义见 `../shared/templates/task-envelope.yaml`）：每完成一个验收点立即追加落盘；预算将尽时停止扩大范围，如实写「已验／未验」清单；**「落盘完整」优先于「覆盖全部」**。
+
+**`failed` 单元终态不采信自述（REQUIRED）**：后台单元返回 `failed`／`max turns` 时，不得直接按「未完成」重跑，也不得按「已完成」放行；先做三项复算——① 残留标记 grep（「待…」「TODO」「现在开始」等未完成口吻）；② 被改文件字节重算并与自述值比对；③ 结构等式核对（页面数／清单行数／引用闭合）。复算结论写进 `workflow.gates`，再决定补做范围（出处 `issue/WorkFlow/2026-10-13/01`：四单撞满 150 轮上限返回 `failed`，但产物其实全部落盘，判定只能靠事后复算）。
+
 ### 4. 守门与交接
 
 正式交接的每个 Skill 必须输出 `PASS`、`CONDITIONAL` 或 `BLOCKED`，并声明 `allowDownstream`。**〔REQUIRED · 交接留轨〕**标准/完整流程每个节点开工前跑 `python scripts/tsr.py --project-root <项目> --execution-id <E> --node <节点> --skill <skill> --role <produce|fix|review|recheck> [--round n --batch n] node-start`，交接时同参数跑 `node-end --gate … --allow-downstream … --artifact <产物路径> [--upstream <id>:<gate>]`；时钟、序号、产物摘要由脚本生成，不得手写（口径 `../shared/gate-policy.md` §6 第 7 条，`verify` 复算不过即视同交接未完成）。轻量任务不要求正式 Envelope，但同样不因此获得下游执行权限。轻量仅报告完成内容、真实验证和剩余限制，不输出正式 Gate/状态，也不授予下游自动执行权限。只允许 `PASS` 或显式允许下游的 `CONDITIONAL` 交接；任何 P0/P1 未处理、证据缺失、未授权或产物不完整均停止推进。

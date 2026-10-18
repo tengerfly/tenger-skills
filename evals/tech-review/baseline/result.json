@@ -2,9 +2,9 @@
   "schema": "tenger.eval-baseline/v1",
   "eval": "evals/tech-review/eval.yaml",
   "skill": "tech-review",
-  "savedAt": "2026-10-18T01:07:41+08:00",
+  "savedAt": "2026-10-18T09:17:55+08:00",
   "anchors": {
-    "skillRevision": "sha256:b785af18ea6df1520fda46a613c2028063cb2873f3c4d455be05f6c6b48c6e46",
+    "skillRevision": "sha256:2ceff5037e22a088e5f3bb74f00358fc2e38a19e2afc05c419f9bc44c370fa2b",
     "casesVersion": "sha256:aa55c5ed6cd5c73ad740566368f139e6b9d0e05c627f578abe8f580d3567fa74",
     "engine": "codex",
     "model": "engine-default",
@@ -12,7 +12,7 @@
     "scoringVersion": "1"
   },
   "provenance": {
-    "runner": "sha256:d7ee5770d35bb1abaf551f8147bb2ded45353f6cd565d62073933d124c6768d1",
+    "runner": "sha256:820a8624025cd59b5061051aa96fd7a03d44c3c0be5b89a7ac2252d47c3405e5",
     "python": "3.11.15"
   },
   "counts": {

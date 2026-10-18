@@ -8,7 +8,7 @@
 |---|---|
 | 等级 | P2 |
 | 标签 | `流程缺陷` / `边界不清` |
-| 优化状态 | 待处理（用户 2026-10-13 指示：只记录问题，skill 正文改动等其统一优化时处理） |
+| 优化状态 | 已沉淀（2026-10-18 规则层：WorkFlow §3.1 拆单／failed 复算 REQUIRED＋Envelope `budgetDiscipline`／`progressArtifact`；真实派发复跑未验证） |
 
 > 定级理由：本次未造成产物损坏（四项改动与证据件均已落盘），但机制有洞——**执行单元在「还剩多少预算」不可知的情况下工作，且没有把「分批落盘」写成硬约束**。若中断点落在写文件中途，交付面会留下半改的 HTML/CSS，而返回状态只有一句 `failed`，编排方无从判断哪些是成品。
 
@@ -50,3 +50,12 @@ result:  "Now G4. Editing -B3b.md first:"      ← 最后一句流式输出停�
 - `.spec/workflow.yaml` `gates` 2026-10-13「批次 3 收尾微单元 G1–G4 ＋编排方独立复测」条（含撞上限实况与独立验证两条数据）
 - `.spec/manifest.yaml` `EVID-20261013-UIX-B3-FIX2` 条 note（登记「子会话撞 150 轮上限被切断，但改动与证据均已落盘，判定以复算为准」）
 - `.spec/evidence/EVID-20261013-UIX-B3-FIX2.md` §〇／§四／§五／§八
+
+## 沉淀记录（2026-10-18）
+
+| 字段 | 值 |
+|---|---|
+| 沉淀目标 | 派发前拆单＋预算纪律；`failed` 单元终态以复算为准，不采信自述 |
+| 沉淀位置 | `workflow/SKILL.md` §3.1 两条 REQUIRED（派发拆单／`failed` 复算）＋`shared/templates/task-envelope.yaml` 新增 `progressArtifact`／`budgetDiscipline`；决策 `workflow/CONTEXT.md` D-26。注：原修复方向写的文件名是 `task-envelope-template.yaml`，实际文件为 `task-envelope.yaml` |
+| 未收口 | 真实派发复跑（≥2 子项拆单、中断后按 `progressArtifact` 恢复）未执行；schema 未把 `budgetDiscipline` 列为必填（避免打断存量 Envelope），由 skill 正文 REQUIRED 兜 |
+| 验证状态 | 未验证：无 before／after 可核数；`tsr feedback` 不把它计为反哺记录（不造数） |
