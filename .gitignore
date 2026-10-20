@@ -1,34 +1,24 @@
-# IDE 项目数据（工作记忆、团队、自动化配置等，不纳入版本控制）
+# 宿主 / IDE 本地配置（不入库）
 .claude/
 .codebuddy/
 .superdesign
 
-# 学习资料（本地参考，不提交远程）
-vibe Coding 高效能秘籍/
-
-# 源码导读克隆仓（只读参考，不纳入版本控制）
-.spec/源码学习/_clones/
-
-# Local validation environment
+# 本地工具环境
 .venv/
 __pycache__/
 *.py[cod]
 
-# 派生观测产物：tsr/selfcheck 随时可重算，不入库
-# 注意 .spec/obs/run.jsonl 是自记轨真相源，必须入库，不在忽略之列
-# 同理 evals/<set>/baseline/result.json 是入库真相（可比性的锚），不在忽略之列
-.spec/obs/eval-report.json
-.spec/obs/eval-baseline-diff.json
-.spec/obs/detection.json
-.spec/obs/behaviour/
-# 行为层追加台账 .spec/obs/behaviour-runs.jsonl 与 run.jsonl 同理，是真相源，必须入库，不在忽略之列：
-# eval-report.json 是每次评测整份覆写的派生物（派生物可重算故可忽略），而台账按判定逐条追加、
-# 永不覆写——2026-10-15 三次真跑的真实成本（tokens 32357/58691/70554）连同 pass/fail 就是被
-# 一次未授权跑覆写 eval-report 抹掉过一次的实测教训。历史实跑结果无法从任何派生物重算出来，
-# 覆写即永久失明（D5 已因此 N/A），所以它是不可再生的真相，不是派生物。
-!/.spec/obs/behaviour-runs.jsonl
-# 候选问题卡（tsr candidates 派生区）：四个检出面随时可重算，未确认前不入库；
-# 正式卡仍走 .spec/issues/（tsr audit 建档），issue/ 是历史证据只读，两者都不忽略
-.spec/obs/candidates/
-.tmp-eval/
-.spec/观测/
+# 临时协作目录（不入库）
+.tmp-v4/
+tmp/
+
+# 归档区：学习资料、旧派生观测产物（本地保留，不入库）
+archive/learning/
+archive/system-v3/tmp-eval/
+archive/system-v3/self-boot-spec/obs/eval-report.json
+archive/system-v3/self-boot-spec/obs/eval-baseline-diff.json
+archive/system-v3/self-boot-spec/obs/detection.json
+archive/system-v3/self-boot-spec/obs/behaviour/
+archive/system-v3/self-boot-spec/obs/candidates/
+archive/system-v3/self-boot-spec/观测/
+archive/system-v3/self-boot-spec/源码学习/_clones/
