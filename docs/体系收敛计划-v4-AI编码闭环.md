@@ -75,6 +75,15 @@ tenger-skills/
 其余全部（产品研究/竞品/蓝图/原型评审/UI 评审/旧技术评审/信号采集/分诊/运行/发布旧版/质量巡检/optimizer/evolver/lifecycle/source-reading/essence-distill/competitive-analysis/product-analytics/post-release-review 等）。
 处理：移入 `archive/frozen-skills/`，**不删除**、不再维护、不参与安装与校验。
 
+### 3.4 历史资产去向（只读，不迁移、不清理）
+
+| 旧资产 | 去向 |
+|---|---|
+| 旧 65 条 issue（P0 21 / P1 29） | `archive/issue-v3/`，只读；新问题池从 0 开始，不背历史噪音 |
+| `docs/` 旧计划/研究/说明书 | `archive/docs-v3/`，只留 README/WORKFLOW/本计划 |
+| `governance/`、`evals/`、自举 `.spec/`、551 测试、四宿主漂移核对 | `archive/system-v3/`，需要时手动跑 |
+| 45 个旧 Skill 全文 | `archive/frozen-skills/` + 原分支 `refactor/skill-system-v3` 与 tag `pre-converge-20261020` |
+
 ## 4. 问题记录与反哺环（本计划的核心）
 
 ### 4.1 记录（30 秒一张卡）
