@@ -1,6 +1,6 @@
 # 体系收敛计划 v4：AI Coding + 评审验收环（核心是评审）
 
-> 状态：**计划稿 v2（已吸收「体系核心是评审体系」这一判断）** ｜ 日期：2026-10-20 ｜ 分支：`converge/ai-coding-loop` ｜ 回滚快照：tag `pre-converge-20261020`
+> 状态：**计划稿 v2（已吸收「体系核心是评审体系」这一判断）· P1 已完成（2026-10-20）** ｜ 日期：2026-10-20 ｜ 分支：`converge/ai-coding-loop` ｜ 回滚快照：tag `pre-converge-20261020`
 > 一句话：**执行层变薄，评审验收层变厚，问题记录反哺闭环**——教模型的钱少花，判断模型做没做对的钱多花。
 
 ## 0. 一页结论
@@ -151,7 +151,7 @@ LLM 能力越强，产出越像样，「教怎么写」的边际价值越低；�
 | 阶段 | 时间 | 任务 | 产出 | 验收标准 |
 |---|---|---|---|---|
 | **P0 准备** | D0（今天）✅ | 提交当前分支、tag、切分支、计划入库 | 分支 + tag + 计划 | 已完成 |
-| **P1 冻结瘦身 + 评审底座** | D1–D3（10-21～23） | ① archive 迁移；② **先写厚收三件套**：`shared/review-contract.md`、`shared/acceptance-contract.md`、`shared/issue-loop.md`（判据/证据/独立评审/结论三值）；③ 写核心 10（先写 auto-test/review/acceptance，再写薄教 4 个）；④ README + WORKFLOW；⑤ `validate_lite.py` + installer core profile | 可安装的 v4 骨架 | 根目录≤10 项；install 只装 10+4；validate_lite≤5 秒；评审/验收模板可用 |
+| **P1 冻结瘦身 + 评审底座** | D1–D3（10-21～23）✅ 2026-10-20 提前完成 | ① archive 迁移；② 厚收三件套（评审/验收/问题反哺契约）；③ 核心 10（厚收 3 + 薄教 4 + 入口 2 + bug-fix）；④ README + WORKFLOW；⑤ `validate_lite.py` + installer core profile；⑥ issue 模板 + loop-log（原 P2 项提前） | 可安装的 v4 骨架（根 10 项、10 Skill + 4 shared、installer core、validate_lite、issue/loop-log） | 已达成：根目录 10 项；install=10 Skill+4 shared；validate_lite 52 项 PASS / 0.80s（≤5 秒）；评审/验收模板可用；copy 安装后 `--check` drift=0 |
 | **P2 闭环跑通** | D4–D5（10-24～25） | ① issue 模板 + loop-log；② 反哺规则接入 workflow/review；③ 用 1 个历史小任务回放：评审→验收→问题卡→修 Skill→复验 | 闭环样本 | 任务走完；2–5 张问题卡；至少 1 条 fixed→verified；一次验收通过率有数（0 或 1） |
 | **P3 真实试点** | W1–W2（10-27～11-06） | 用核心 10 做 2 个你指定的真实小任务；记录 loop-log；执行 1 次批改窗口 | 2 份任务记录 | 交付成功；3 个指标：时长/返工/介入；验收指标有数 |
 | **P4 对比决策** | W3–W4（11-09～11-20） | 与旧体系同题对比；决定按需能力装回/继续冻结/回滚 | 一页决策记录 | 决策明确 |
@@ -189,4 +189,29 @@ LLM 能力越强，产出越像样，「教怎么写」的边际价值越低；�
 | 5 | 首批 2 个真实试点任务 | 由你指定 |
 | 6 | 历史资产处理 | archive 只读保留（可回滚），不删除 |
 
-确认方式：回复「按默认执行」即从 P1 开始；或指出要改的条目。
+确认方式：2026-10-20 用户在新会话确认「按默认执行、开工」，6 项均按默认值执行；P1 已于同日完成。
+
+## 11. 执行记录
+
+| 日期 | 阶段 | 动作 | 提交 / 证据 |
+|---|---|---|---|
+| 2026-10-20 | P0 | 分支、tag、计划入库 | `4b0e04c` / tag `pre-converge-20261020` / `0f6c3cf`、`051dbc3` |
+| 2026-10-20 | P1-① | 旧体系整体冻结进 `archive/`（只读）：45 个旧 Skill、65 张旧问题卡、旧治理/评测/自举/脚本/共享契约、学习资料；新增 `archive/README.md`（映射 + 回滚方式） | `ed165c0` |
+| 2026-10-20 | P1-②③ | 厚收三件套 + 核心 10 Skill：`shared/` 4 份 521 行；`skills/` 10 份 595 行（42–87 行/份） | `e4a8756` |
+| 2026-10-20 | P1-④⑤⑥ | README（80 行）+ WORKFLOW（56 行）、`validate_lite.py`、installer core profile、CI、issue 模板 + loop-log（11 列） | `e4a8756`、`d483be0` |
+
+### P1 验收对照
+
+| P1 验收标准 | 结果 | 证据 |
+|---|---|---|
+| 根目录 ≤10 项 | ✅ 恰好 10 项 | README.md / WORKFLOW.md / PLAN.md / loop-log.md + skills/ shared/ issue/ bug-patterns/ scripts/ archive/ |
+| install 只装 10+4 | ✅ | `python scripts/install-skills.py --list --profile core` → 10 个 skill + 4 份 shared；copy 安装到仓外临时目录后 `--check` drift=0 |
+| validate_lite ≤5 秒 | ✅ 0.80s（含解释器启动实测约 2–4s） | `python scripts/validate_lite.py` → 52/52 PASS，exit 0 |
+| 评审/验收模板可用 | ✅ | `skills/review/templates/review-report.md`（6 节 + 三值）；`skills/acceptance/templates/acceptance-report.md`（5 节 + sha256 + 签收） |
+
+### 未做（按计划留到后续）
+
+- 按需 6（ui-design / release / incident / refactor / oss-radar / fact-check）未实现，installer 暂只提供 `--profile core|all`；等 P2/P3 有真实任务再按需写，不预先造。
+- P2 闭环回放（历史小任务走评审→验收→问题卡→改 Skill→复验）、P3 两个真实试点任务、P4 对比决策均未开始。
+- 旧宿主安装副本保持不动；`archive/` 与 tag 可整体回滚（见 §8、§3.4）。
+
