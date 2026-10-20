@@ -170,7 +170,7 @@ LLM 能力越强，产出越像样，「教怎么写」的边际价值越低；�
 | 模型变强后教学 Skill 过时 | 每半年审计删除；执行类≤100 行 |
 | 核心 10 能力不足（UI/发布/事故） | 按需 6 随时装回，不重建治理层 |
 | 精简改坏可用性 | 原分支 + tag 原样保留；archive 只读，随时回滚 |
-| 旧宿主安装副本 | 新分支只写独立目标，旧副本不动 |
+| 旧宿主安装副本 | 默认不动；CodeBuddy 已按用户指令切到 v4 core（旧 v3 安装先备份、后删除，见 §11）。其他宿主（.dsh / .qoder-cn / .zcode 等）仍保留 v3 安装，后续按需逐个切换 |
 
 ## 9. 交付物与 Done 定义
 
@@ -199,6 +199,7 @@ LLM 能力越强，产出越像样，「教怎么写」的边际价值越低；�
 | 2026-10-20 | P1-① | 旧体系整体冻结进 `archive/`（只读）：45 个旧 Skill、65 张旧问题卡、旧治理/评测/自举/脚本/共享契约、学习资料；新增 `archive/README.md`（映射 + 回滚方式） | `ed165c0` |
 | 2026-10-20 | P1-②③ | 厚收三件套 + 核心 10 Skill：`shared/` 4 份 521 行；`skills/` 10 份 595 行（42–87 行/份） | `e4a8756` |
 | 2026-10-20 | P1-④⑤⑥ | README（80 行）+ WORKFLOW（56 行）、`validate_lite.py`、installer core profile、CI、issue 模板 + loop-log（11 列） | `e4a8756`、`d483be0` |
+| 2026-10-20 | 宿主切换 | CodeBuddy 切到 v4 core：旧 45 Skill + 42 份旧 shared 先备份（2445 + 42 文件）再删除；`--profile core` 安装 10 Skill + 4 shared，`--check` drift=0（62 文件） | 宿主 `~/.codebuddy/skills`；备份 `D:\project\agent-project\.backups\codebuddy-v3-20261020`（仓外）；源修订 `92d737e` |
 
 ### P1 验收对照
 
