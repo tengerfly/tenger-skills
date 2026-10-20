@@ -29,6 +29,7 @@
 | 轮次上限 3 | 同一问题批最多 3 轮「修复→复核」；超限后残留 P0 ⇒ BLOCKED，残留 P1 不得 PASS、只能经完整授权 CONDITIONAL；无自动第 4 轮，无 force-pass（shared/anti-deadloop.md §3） |
 | 成因必写 | 推不出标成因未明，禁臆造 |
 | 共性问题 | 多角色命中 = 系统性缺陷，标命中角色 |
+| 隔离评审 | 评审判断只在未参与产出 / 修订 / 自检的隔离上下文作出（fresh 子代理首选、新会话次选），评审者只拿评审包；不是同一会话换角色、自查或「条件允许时」可选；缺 §0.5 隔离证据的 Gate 只能 `BLOCKED`（`../../shared/review-context-isolation.md`） |
 
 ## 三、决策日志
 
@@ -47,6 +48,7 @@
 | D-11 | 09-15 | 全仓一致性纠偏：CONTEXT 术语表轮次口径改「满 3 轮强制清 P0 后放行」；summary-template 补 §6 沉淀判定节（SKILL 承诺未落地）；README 流程补双向沉淀判定；严重度引用 §二→§三（README + product-checklist）；「模板参数卡」→assets/issue-list-template.md；双清单红线 4→3（已撤销：按 shared/anti-deadloop.md §3，残留 P0⇒BLOCKED、P1⇒仅授权 CONDITIONAL） | 四代理并行七维体检；与 ../../shared/anti-deadloop.md 对齐 | ✅ |
 | D-12 | 2026-10-10 | Procedure 步骤 1 加〔REQUIRED · 开工前闸门核对〕：逐条读上游条目（功能范围确认／蓝图／产品定义）的 `status`、`version`、`gate`、`allowDownstream`，任一 `SUPERSEDED`／非 `PASS`／`false` ⇒ 本批只能 `BLOCKED`；判据全闭只作事实、限定条件只能落 `gate`/`allowDownstream`/`blockedBy` 字段；并明确 **`APPROVED_SUPERSEDED` 这类枚举外状态词不得当批准依据**（`../../shared/artifact-contract.md` §2 状态词收编）；`assets/summary-template.md` 结构基线行加公共 §0 硬性小节指针。口径统一指 `../../shared/gate-policy.md` §6 | `issue/WorkFlow/2026-10-10/01`＋`issue/WorkFlow/2026-10-10/02`（业务项目实测出现 `status: APPROVED_SUPERSEDED` 枚举外值）＋ 对称补齐；用户裁决「先要解决这些问题」 | ✅ 规则已改｜◐ 未经真实场景 fresh 复跑验证 |
 | D-13 | 2026-10-18 | 审计修复：README/CONTEXT 旧流程加 LEGACY COMPATIBILITY NOTICE 并指向 SKILL.md；轮次上限口径改 v2（残留 P0⇒BLOCKED、残留 P1 仅授权 CONDITIONAL、无自动第 4 轮），D-09/D-11 旧 force-pass 行标已撤销；anti-deadloop 节号订正（§三→gate-policy §1 严重度、§五→§4 双向沉淀）；summary/issue-list 模板与 README 的 PRD-Design/PRD-Review 改 canonical kebab；description 补触发词 | 审计 A-10、A-13、A-24 + anti-deadloop 节号/force-pass 历史注记 | ✅ 已修 |
+| D-14 | 2026-10-19 | **评审上下文隔离硬性化（用户要求）**：新增「评审上下文隔离（执行必需）」节（A 编排形态 / B fresh 子代理评审形态 / C 产品专家总审汇总形态；默认 1 个评审子代理覆盖四份 checklist，按角色拆分则前端 / 后端 / 测试各 1 + 总审 1；无子代理写包 + dispatch-prompt 交新会话，仍无 ⇒ `BLOCKED`）；Procedure 加〔REQUIRED · 隔离核对〕、步骤 5 Gate 加隔离证据判据（缺 §0.5 / isolationMode / reviewerRef / packageDigest / producedByContextInvolved=false 任一 ⇒ `BLOCKED`）；summary 模板加 §0.5、role 模板元数据加「评审上下文 / 评审包摘要」；README 补现行规则 | 用户 2026-10-19 要求评审类 Skill 不得在产出同一上下文评审（`issue/Skill-Optimizer/2026-10-19/01`）；依据 review 独立性（`docs/vibe-coding-学习笔记.md` 心法 4）、公共契约 `../../shared/review-context-isolation.md` | ✅ 规则已改｜◐ 待 fresh-agent 行为验证 |
 
 ## 四、待决问题
 

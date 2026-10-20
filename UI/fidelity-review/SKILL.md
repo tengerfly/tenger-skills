@@ -1,6 +1,6 @@
 ---
 name: fidelity-review
-description: 页面还原度评审（视觉 + 交互还原）。依据 UI 设计稿（优先 `.spec/设计稿/`，缺失可用外部设计稿）对前端实现页逐页比对：视觉不一致、交互不对、超长文案健壮性问题。只审不改：截图存证，输出分级问题清单（现象/出处/成因/截图/建议），三模式交付——独立调用落盘 `.spec/页面还原评审/`（报告+任务清单+截图）；被 auto-test（⑭ 测试节点）调用时就地出轻量清单；被 Code-Review 调用时（⑬-前 并行）问题交 Code-Review 合并进 `.spec/代码评审/任务清单.md`（标来源=Fidelity-Review）。浏览器工具硬性前置，全无则报错停用。防死循环：判据 + P0/P1 冻结 + 复核只验本轮 + 轮次上限 3（超限后 P0 残留 BLOCKED；P1 残留只能经授权 CONDITIONAL，不得 PASS。触发：页面还原度评审、UI 还原检查、视觉走查、对照设计稿查前端页面。
+description: 页面还原度评审（视觉 + 交互还原）。依据 UI 设计稿（优先 `.spec/设计稿/`，缺失可用外部设计稿）对前端实现页逐页比对：视觉不一致、交互不对、超长文案健壮性问题。只审不改：截图存证，输出分级问题清单（现象/出处/成因/截图/建议），三模式交付——独立调用落盘 `.spec/页面还原评审/`（报告+任务清单+截图）；被 auto-test（⑭ 测试节点）调用时就地出轻量清单；被 Code-Review 调用时（⑬-前 由 Code-Review 派发的独立评审子代理与 Code-Review 批次评审者并行）问题交 Code-Review 合并进 `.spec/代码评审/任务清单.md`（标来源=Fidelity-Review）；评审判断一律在隔离上下文执行（无隔离能力 ⇒ BLOCKED，规则见 `../../shared/review-context-isolation.md`）。浏览器工具硬性前置，全无则报错停用。防死循环：判据 + P0/P1 冻结 + 复核只验本轮 + 轮次上限 3（超限后 P0 残留 BLOCKED；P1 残留只能经授权 CONDITIONAL，不得 PASS。触发：页面还原度评审、UI 还原检查、视觉走查、对照设计稿查前端页面。
 metadata:
   compatibility: Claude Code / Agent SDK / OpenCode
 ---
@@ -9,7 +9,7 @@ metadata:
 
 > IRON LAW：**截图必证**——一切样式 / 视觉 / 溢出问题必须配浏览器截图，无截图的样式问题不算记录。
 > IRON LAW：**设计稿是视觉唯一应然**——有设计稿时，视觉维度的对错只以 `.spec/设计稿/`（+ `design-system.md` token）判定；低保真原型只作**结构 / 存在性**对照，**不得**用原型充当视觉基准，也不得因「与原型一致」判为还原达标（双基准定义见 `../../shared/baseline-terms.md`）。
-> 三模式：独立 / auto-test 场景 / 代码评审场景（⑬-前 与 Code-Review 并行）。
+> 三模式：独立 / auto-test 场景 / 代码评审场景（⑬-前 由 Code-Review 派发的独立评审子代理与 Code-Review 批次评审者并行）。
 
 ## 问题记录与恢复（执行必需）
 
@@ -17,6 +17,16 @@ metadata:
 
 **闭环回流（L2）**：P0/P1 条目要标「已沉淀」前，必须先回流 1 条评测用例，并在该用例声明里用 `issueRef` 指回本条问题（值＝本条问题的仓库相对路径，形如 issue/<skill>/<日期>/<NN>-<标题>.md）；没有这条用例就按「未验证」处理，优化状态停在待处理/处理中，不得写「已沉淀」。
 判据与字段口径的单一来源是仓库根 `governance/eval-spec.yaml`（`caseTiers.L2` + `issueRef` 节），机械核对由 `scripts/eval/relay.py` 执行；本节只承接义务，不复述其条文（仓库级工具：宿主副本若不含 `governance/` 与 `scripts/`，改人工核对并在报告注明降级）。
+
+## 评审上下文隔离（执行必需）
+
+> 口径：仓库根 `../../shared/review-context-isolation.md`。本 skill 只有 1 个评审单元（还原度评审者），但评审判断必须发生在隔离上下文；产出/修订/自检上下文不得自审。
+
+- **独立调用**：由新会话或独立评审子代理按评审包执行（评审包由当前隔离上下文按 `../../shared/templates/review-package.md` 落盘，摘要记入报告 §0.5）；当前上下文参与过实现页开发、修复或自检 ⇒ **必须派发**，不得自审。
+- **被 `Code-Review` / `auto-test` 调用**：由调用方派发为**独立评审子代理**并传入评审包（`../../shared/templates/review-package.md`）；本 skill 只按包内单元指令出报告，不继承产出会话历史，不读实现者说明 / 自检结论。
+- **评审包只含**：被审对象精确版本（实现页 URL / 目录 + 设计稿版本）+ 判据集（设计稿 / design-system / PRD 辅助）+ 清单与模板 + 边界（页面 / 评审面 / 轮次）+ F1 已确认项 + 输出契约 + 隔离声明；禁止放入产出过程、草稿、自检结论或「已知问题」提示。
+- **报告须含 §0.5 隔离记录**（`isolationMode` / `reviewerRef` / `packageDigest` / `parentExecution` / `producedByContextInvolved: false` / `verifiedArtifacts`）；缺记录或 `producedByContextInvolved` 非 false ⇒ 不得出放行结论，Gate 记 `BLOCKED`（缺评审隔离证据）。
+- **无隔离能力** ⇒ `BLOCKED`（缺隔离执行能力）；不得以「自查」「换评审者角色」冒充独立评审。
 
 ## 一、定位与铁律
 
@@ -35,8 +45,8 @@ metadata:
 | `UI-UX-Design` | 通道 A 基准生产方；设计稿缺陷回改 |
 | `Frontend-Dev` | 被审对象 + 主要修改方（其 `fidelity-guide` 是开发自查，本 skill 是第三方还原验收） |
 | `UI-UX-Review` | 评「设计稿 vs PRD/布局清单」，本 skill 评「实现页 vs 设计稿」，不重叠 |
-| `Code-Review` | 评代码层契约 / 架构；⑬-前 与本 skill **并行**审前端，本 skill 只出还原度问题并交其合并 |
-| `auto-test` | ⑭ 测试节点：L2 视觉 E2E 内嵌调用本 skill 做 UI 还原检查（由 auto-test 统一编排） |
+| `Code-Review` | 评代码层契约 / 架构；⑬-前 由 Code-Review 派发本 skill 为独立评审子代理，与 Code-Review 批次评审者**并行**审前端；本 skill 只出还原度问题并交其合并 |
+| `auto-test` | ⑭ 测试节点：L2 视觉 E2E 内嵌调用本 skill 做 UI 还原检查（由 auto-test 统一编排；派发为独立评审子代理，报告含隔离记录） |
 
 **铁律**：
 
@@ -65,13 +75,13 @@ metadata:
 
 - **模式一 · 独立调用** → `.spec/页面还原评审/`：`页面还原度评审报告.md`（视觉 + 交互 + 长文案分组，每条含截图引用与修改建议）、`任务清单.md`、`screenshots/`；**问题日志**：归档同时在项目 `.spec/问题日志.md` 台账追加一行索引（日期｜来源｜问题产物｜轮次｜状态｜反哺出口；格式见 skill 源仓库 `../../shared/templates/problem-log-template.md`；并行模式由 Code-Review 统一记，不重复记；主方中断时按共享记录规则保留已观察证据和待合并引用，恢复后合并并保留 ID 映射）。
 - **模式二 · auto-test 场景**：不另建任务清单，按 `assets/mini-issue-template.md` 就地出轻量清单交 auto-test 汇总进其 L2 报告。
-- **模式三 · 代码评审场景（⑬-前 与 Code-Review 并行）**：报告落 `.spec/代码评审/前端页面还原度评审.md`，问题交 Code-Review **合并进** `.spec/代码评审/任务清单.md`（每条标「来源=Fidelity-Review」）；**不另建清单**，轮次与放行由 Code-Review 闭环统一管理，回退方 = `Frontend-Dev`。
+- **模式三 · 代码评审场景（⑬-前 由 Code-Review 派发的独立评审子代理与 Code-Review 批次评审者并行）**：由 Code-Review 按评审包派发；报告落 `.spec/代码评审/前端页面还原度评审.md`，问题交 Code-Review **合并进** `.spec/代码评审/任务清单.md`（每条标「来源=Fidelity-Review」）；**不另建清单**，轮次与放行由 Code-Review 闭环统一管理，回退方 = `Frontend-Dev`。
 
 ## 三、主流程（7 步）
 
-1. **输入解析与预检**：读 `.spec/设计稿/` 或向用户要外部稿并记录通道（无设计稿时，须先确认存在用户批准的视觉基线例外 EXC（规则见 `../../shared/product-workflow-contract.md` §5.1）才可落通道 C 原型并标注降级；无 EXC 则报缺失并停下，不静默降级）；确认实现页目录 / 启动命令 / 逐页 URL（未提供必问，不猜测）；按铁律 5 预检浏览器工具；**确认运行模式**（独立 / auto-test / 代码评审并行）。
+1. **〔REQUIRED · 隔离核对〕输入解析与预检**：读 `.spec/设计稿/` 或向用户要外部稿并记录通道（无设计稿时，须先确认存在用户批准的视觉基线例外 EXC（规则见 `../../shared/product-workflow-contract.md` §5.1）才可落通道 C 原型并标注降级；无 EXC 则报缺失并停下，不静默降级）；确认实现页目录 / 启动命令 / 逐页 URL（未提供必问，不猜测）；按铁律 5 预检浏览器工具；**确认运行模式**（独立 / auto-test / 代码评审并行）与**隔离形态**（独立调用须由未参与实现页产出/修订/自检的评审者或新会话执行；auto-test / 代码评审场景由调用方派发独立评审子代理；当前上下文参与过实现页开发/修复/自检 ⇒ 必须派发、不得自审；无隔离能力 ⇒ `BLOCKED`，见「评审上下文隔离」节）。
 2. **页面清单 × 基准对齐**：按 `references/design-source-guide.md` 建逐页映射 `实现页 URL ↔ 设计稿页面`，记录响应式断点；通道 A 摘 token 速查，通道 B 记录目测基准，通道 C 标注「视觉基准=低保真原型（降级）」；生成比对范围清单交用户确认后再继续。
-3. **双开截图 + 点击验证**：**基准侧截图 = 设计稿**（有设计稿时；原型只作结构对照，不与实现页做视觉并排结论），相同视口并排截图；逐元素点击记录有反应 / 无反应 / 反应对不对。**独立走查纪律**：只认渲染产物与基准，不参考实现者说明或自查结论；任务重可开独立会话 / 换模型交叉复查。
+3. **双开截图 + 点击验证**：**基准侧截图 = 设计稿**（有设计稿时；原型只作结构对照，不与实现页做视觉并排结论），相同视口并排截图；逐元素点击记录有反应 / 无反应 / 反应对不对。**独立走查纪律**：只认渲染产物与基准，不参考实现者说明或自查结论；评审必须隔离执行，无隔离能力按 `../../shared/review-context-isolation.md` 处理（写包交新会话，仍无 ⇒ `BLOCKED`），不得自审。
 4. **视觉 + 交互 + 逐区块断言走查**：视觉按 `references/visual-checklist.md`（含设计稿有而实现没有、实现多出的**双向比对**）；交互按 `references/interaction-checklist.md`（可点性 / 反馈 / 方式一致 / 跳转链路 / 动效还原 / 界面质量可见项）；逐区块断言见 §4.2；另对照 `references/known-issue-patterns.md`（评审方案例库）过一遍，命中即入问题清单；定级阈值与量化方法按 `references/decision-rules.md`（像素容忍度 / diff 阈值 / attempts），像素方法学按需读 `references/case-library/`。
 5. **超长文案专项**：按 `references/overflow-guide.md`，识别动态文本位，用真实业务文案 + 更极端长文案替换后截图判定；给出 min-width / ellipsis / flex 收缩等修改方向。
 6. **分级输出报告**：按 `assets/review-report-template.md` 生成报告；每条含编号 / 页面 / 基准出处 / 现象+截图 / 期望 vs 实际 / 成因 / 严重度 / 建议 / 修改方；分组统计 P0/P1/P2。
@@ -105,6 +115,7 @@ Gate 口径见 ../../shared/gate-policy.md：仅 PASS/CONDITIONAL/BLOCKED；残�
 | **有设计稿却只与原型比对** | 截图必开「设计稿 ↔ 实现页」；原型比对不作视觉结论 |
 | 把业务逻辑当还原度问题 | 归 auto-test |
 | 与 UI-UX-Review / Code-Review 边界混跑 | 按 §一 边界；⑬-前 并行但各管各域 |
+| 当前上下文参与过实现页开发/修复/自检仍直接评审 | 按 `../../shared/review-context-isolation.md` 派发独立评审子代理（只给评审包）；无隔离能力 ⇒ `BLOCKED`（见「评审上下文隔离」节） |
 | ⑬-前 另建任务清单 | 交 Code-Review 合并，标来源 |
 | 页面起不来仍评审 | 步骤 1 阻塞并提示 |
 | 通道 B 声称 token 一致 | 只能目测，报告标注基准 |
@@ -120,6 +131,7 @@ Gate 口径见 ../../shared/gate-policy.md：仅 PASS/CONDITIONAL/BLOCKED；残�
 - `references/known-issue-patterns.md`：评审方案例库（闭环沉淀的已知问题模式 + 检出方法）
 - `references/case-library/`：像素方法学 + 同行样本（按需加载）
 - `assets/review-report-template.md`、`issue-list-template.md`、`mini-issue-template.md`
+- `../../shared/review-context-isolation.md`、`../../shared/templates/review-package.md`：评审上下文隔离契约与评审包模板（单单元隔离 / 被调用时由调用方派发）
 - `../../shared/anti-deadloop.md`、`../../shared/baseline-terms.md`、`../../shared/browser-policy.md`（仓库根）：公共约定
 - `.spec/页面还原评审/`：独立模式归档目录；`.spec/代码评审/`：并行模式报告落点；`CONTEXT.md`：术语 + 决策日志
 

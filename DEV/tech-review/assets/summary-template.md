@@ -1,8 +1,25 @@
 # 技术方案评审汇总报告 — {{需求名称}}
 
-> 结构基线：仓库根 `../../../shared/templates/review-summary-template.md`（闭环要素[成因/修复判据/状态机]与字段口径以公共版为准；章节组织为本 skill 领域实例）。**公共 §0「上游闸门核对与本轮 Gate」为本报告硬性小节**（四字段判据口径同 `../../../shared/gate-policy.md` §6，不得改口径）：缺该节则本轮 Gate 只能记「未验证」，不得 `PASS`。
+> 结构基线：仓库根 `../../../shared/templates/review-summary-template.md`（闭环要素[成因/修复判据/状态机]与字段口径以公共版为准；章节组织为本 skill 领域实例）。**公共 §0「上游闸门核对与本轮 Gate」为本报告硬性小节**（四字段判据口径同 `../../../shared/gate-policy.md` §6，不得改口径）：缺该节则本轮 Gate 只能记 `BLOCKED`（缺上游闸门核对证据），不得 `PASS` / `CONDITIONAL`。**公共 §0.5「评审上下文隔离记录」同为硬性小节**：缺该节或隔离证据不符 ⇒ Gate 只能 `BLOCKED`。
 
 > 本报告汇总后端 / 前端两个视角的评审结果，去重合并所有问题，重点标出「前后端关联错误」这类跨方案共性问题。
+
+---
+
+## 0.5 评审上下文隔离记录（硬性 · 缺本节 Gate 只能 BLOCKED）
+
+> 口径：`../../../shared/review-context-isolation.md` §6。评审判断必须由隔离评审者作出；产出/修订被审方案的上下文（含编排会话）不得自审。
+
+| 字段 | 值 |
+|---|---|
+| isolationMode | subagent / new-session |
+| reviewerRef | {{单批：批次评审子代理 id；双批：两个批次评审子代理 id + 汇总子代理 id}} |
+| packageDigest | sha256:{{各单元评审包摘要（多个以逗号分隔）}} |
+| parentExecution | {{主 executionId；有 run-log 时必填}} |
+| producedByContextInvolved | false（必须为 false；true ⇒ BLOCKED） |
+| verifiedArtifacts | {{角色文档 / 汇总报告 / 任务清单与证据路径}} |
+
+缺本节、`producedByContextInvolved: true`、或 `reviewerRef`/`packageDigest` 为空 ⇒ Gate 不得 `PASS`/`CONDITIONAL`，只能记 `BLOCKED`（缺评审隔离证据）。
 
 ---
 

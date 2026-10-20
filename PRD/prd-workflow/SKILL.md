@@ -51,8 +51,8 @@ CREATE、CHANGE、OPTIMIZE 进入产品域，或运行反馈被判断为产品�
 4. 执行 `product-definition`，等待目标用户、定位、非目标和成功指标确认。
 5. 执行 `application-blueprint`，冻结旅程、流程、异常、权限、状态和能力地图。
 6. 执行 `feature-decision`：先向用户展示完整模块图，再分模块解释候选及取舍，等待明确版本的 MVP、Later、Reject、Defer 和行为边界确认；用户不清楚时先给调研信息/示例，不要求其自己补全全体系功能。
-7. 将批准范围交 `prd-design`；`prd-review` 只审不改，问题回正确上游。
-8. PRD 通过后交 `prototype-design`（构建）与 `prototype-review`（评审）；原型不得改变产品范围。
+7. 将批准范围交 `prd-design`；`prd-review` 只审不改，问题回正确上游。**〔REQUIRED · 评审隔离〕** PRD 评审按 `../../shared/review-context-isolation.md` 派发 fresh 评审子代理执行；产出/修订 PRD 的上下文（含本编排会话）不得自审，编排方只做固定版本、建评审包、派发、收产物核验与 Gate 落账。
+8. PRD 通过后交 `prototype-design`（构建）与 `prototype-review`（评审）；原型不得改变产品范围。**〔REQUIRED · 评审隔离〕** 原型评审同样按隔离契约派发隔离子代理：四维各 1 个评审子代理 + 1 个独立汇总子代理；产出原型的上下文不得自审；汇总报告缺 §0.5 隔离记录或 `producedByContextInvolved` 非 false ⇒ Gate 只能 `BLOCKED`（缺评审隔离证据）。
 9. 输出 execution summary、manifest、decision、traceability 和下一 Workflow = `ui-workflow`（`PROTOTYPE_APPROVED → UI_IN_PROGRESS`）。
 
 ## Outputs

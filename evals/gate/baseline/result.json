@@ -2,9 +2,9 @@
   "schema": "tenger.eval-baseline/v1",
   "eval": "evals/gate/eval.yaml",
   "skill": "workflow",
-  "savedAt": "2026-10-19T00:48:48+08:00",
+  "savedAt": "2026-10-19T20:33:56+08:00",
   "anchors": {
-    "skillRevision": "sha256:cfdbe0a751e54f32232f5ac660dd5c64af82e18183a16ae2fd838c71a53ae377",
+    "skillRevision": "sha256:5879e299b156f6d7cb45bfa853f1f482e5f21499ed2b1571a979ec78a5624e80",
     "casesVersion": "sha256:ea8890c805c590b8395eca5b10773abb49610fc1703b1d48c8a1967475b60c59",
     "engine": "codex",
     "model": "engine-default",

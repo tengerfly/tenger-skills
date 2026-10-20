@@ -24,6 +24,8 @@
 → 本批次角色文档 → 汇总 → 任务清单+P0 确认（P1/P2 按 shared/ruling-policy.md 裁决） → 闭环复核与双向沉淀判定 → 归档
 ```
 
+> 评审上下文隔离：评审判断由 fresh 评审子代理执行——单批由该批次评审者直接出汇总；双批 2 个批次评审者互不可见 + 1 个独立汇总子代理；产出/修订方案的上下文只做建包、派发、收账与 Gate，不自审（`../../shared/review-context-isolation.md`）。
+
 浏览器软检测（全无跳过）。P0/P1 阻断，每条附修复判据，复核只验本轮，轮次上限 3（满 3 轮仍未收敛：P0 残留 BLOCKED；P1 残留仅可授权 CONDITIONAL）。清单交 Backend/Frontend-Tech-Design。
 
 ## 四、严重度

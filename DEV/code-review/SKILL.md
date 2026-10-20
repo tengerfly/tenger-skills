@@ -24,6 +24,33 @@ metadata:
 **闭环回流（L2）**：P0/P1 条目要标「已沉淀」前，必须先回流 1 条评测用例，并在该用例声明里用 `issueRef` 指回本条问题（值＝本条问题的仓库相对路径，形如 issue/<skill>/<日期>/<NN>-<标题>.md）；没有这条用例就按「未验证」处理，优化状态停在待处理/处理中，不得写「已沉淀」。
 判据与字段口径的单一来源是仓库根 `governance/eval-spec.yaml`（`caseTiers.L2` + `issueRef` 节），机械核对由 `scripts/eval/relay.py` 执行；本节只承接义务，不复述其条文。
 
+## 评审上下文隔离（执行必需）
+
+> 单一规则来源：`../../shared/review-context-isolation.md`。**评审判断只发生在隔离上下文**：产出/修复被审代码的上下文（`Backend-Dev` / `Frontend-Dev` / 同一会话 / 曾参与自检的上下文）只做编排，不得自审；评审者只拿评审包，不继承产出会话历史、草稿、自检结论。报告必须记录隔离证据（汇总记 §0.5；角色文档用等价隔离元数据「评审上下文 / 评审包摘要」）；缺记录或 `producedByContextInvolved ≠ false` ⇒ Gate 记 `BLOCKED`（缺评审隔离证据）。
+
+**评审单元与派发计划**：
+
+| 批次 | 评审单元（每个单元 1 个 fresh 子代理） | 汇总者 |
+|---|---|---|
+| ⑬-后 | 1 个批次评审子代理：后端视角 + 契约专项（后端侧） | 该批次评审者直接出汇总 + 任务清单 |
+| ⑬-前 | 1 个前端批次评审子代理 + 1 个 Fidelity-Review 评审子代理（由本编排方按 `fidelity-review` 的评审包规则派发） | 1 个独立汇总子代理合并两份报告出汇总 + 任务清单 |
+
+- **⑬-后**：派 1 个 fresh 批次评审子代理，只接收评审包；产出后端角色文档 + 汇总 + 任务清单。
+- **⑬-前**：前端批次评审者与 Fidelity-Review 评审者**互不可见**、各自只接收对应评审包；再由独立汇总子代理（只输入两份报告 + 汇总模板）合并出汇总 / 任务清单，Fidelity-Review 问题标「来源=Fidelity-Review」。
+- **禁止**同会话自审；**禁止**只开一个子代理混做两批 / 混做前端与还原度两个单元。
+
+**编排形态（本上下文只做编排，不做评审判断）**：产出/修复代码的上下文只做五件事——① 固定基线（步骤 1 上游闸门核对）；② 按 `../../shared/templates/review-package.md` 建评审包 + `dispatch-prompt.md`，落 `.spec/代码评审/评审包-<reviewId>.md`；③ 派发；④ 收产物并核验报告与证据（文件:行 / 命令退出码 / 截图 / 报告 §0.5）；⑤ 按 `../../shared/gate-policy.md` 与 `../../shared/anti-deadloop.md` 落 Gate。评审者不接收产出过程对话、草稿、自检结论或「已知问题」提示（F1 已确认项除外）。
+
+**隔离能力阶梯（口径见契约 §4）**：
+
+| 档 | 条件 | 做法 |
+|---|---|---|
+| L1 子代理（首选） | 宿主有 fresh 子代理能力 | 每个评审单元派 1 个 fresh 子代理，只给评审包 + 单元指令 |
+| L2 新会话 | 无子代理但能开新会话 | 写评审包 + `dispatch-prompt.md` 交新会话执行；主上下文停住，不自行评审 |
+| L3 均无 | 宿主无任何隔离执行能力 | `BLOCKED`：owner=宿主/用户，requiredInput=隔离执行能力，clearCondition=具备后重跑；**不得自己读一遍当评审** |
+
+**隔离记录**：报告 §0.5 填 `isolationMode`（subagent / new-session）、`reviewerRef`（子代理 / 新会话 id）、`packageDigest`（sha256）、`parentExecution`（有 run-log 时）、`producedByContextInvolved: false`、`verifiedArtifacts`（报告与证据路径）。有 run-log 时评审节点按仓库根 `scripts/tsr.py --role review --actor subagent --parent-execution <主 executionId>` 留痕。
+
 ## 一、定位与铁律
 
 **角色**：代码评审专家（立场隔离的双视角 + 契约专项）。**不做**业务逻辑正确性评审（是否算对、边界是否判对，归测试流程）；测试闭环只查「可运行 + 先行 + 标 AC」，不评业务覆盖是否充分。**不做**（交并行方）：页面视觉/交互还原 → `Fidelity-Review`（⑬-前 并行），本 skill 不重复评审、不代出还原度结论。
@@ -33,7 +60,7 @@ metadata:
 1. **只审不改**：不改源码；P0 补丁只进报告。改代码归 Backend-Dev / Frontend-Dev，经任务清单交接；删除候选只出计划不代删。
 2. **定位到代码**：每条标文件 / 行 / 接口 / 字段，引用关键片段。
 3. **零幻觉**：结论基于代码与四类文档；区分「缺失（该写没写）」与「越界（写了不该写的）」。
-4. **视角隔离 + 独立上下文**：各视角独立评审、独立上下文，互不可见，不参考生成过程；契约归因到责任方。
+4. **视角隔离 + 独立子代理上下文**：每个评审单元派 fresh 子代理（不是同一会话换角色），各子代理互不可见、只接收评审包、不参考代码生成过程；契约归因到责任方。
 5. **不设门禁**：只出问题清单，不判通过/不通过；放行由 Workflow 按 `../../shared/anti-deadloop.md` 判定。
 6. **不评业务逻辑**：业务正确性归测试流程；页面还原度归并行方 Fidelity-Review。
 7. **成因必写**：写清为何产生（如后端改字段未同步共享类型）；推不出标「成因未明」，禁臆造。
@@ -58,6 +85,7 @@ metadata:
 - 代码与文档不同仓时：以 TDD「接口清单」+ FTDD「fetch 对接表」为契约中介做三方比对。
 - **批次裁剪**：⑬-后 只收后端代码 + TDD + FTDD（fetch 清单）；⑬-前 只收前端代码 + FTDD + 设计稿/原型。
 - **大批量分批**：代码量过大（变更 >500 行或跨服务多模块）→ 先按模块 / 功能域汇总范围，再逐批评审、逐批出清单，禁一次性粗扫；混合关注点按功能分组，不按文件顺序切。
+- **评审包**：评审者只接收按 `../../shared/templates/review-package.md` 建的评审包；产出/修复本批代码的上下文只做编排，不做评审判断（见「评审上下文隔离（执行必需）」）。
 
 **视角分工（立场隔离）**：
 
@@ -69,23 +97,27 @@ metadata:
 
 契约命中项归因：前端调了后端没实现的接口 → 后端；后端字段前端没消费 → 前端；两端字段名不一致 → 双方。⑬-后 只跑「后端视角 + 契约专项（后端侧）」；⑬-前 跑「前端视角 + 契约专项（前端侧）」并在 ⑬-前 收口完整三方比对。
 
-## 三、主流程（9 步）
+## 三、主流程（0 + 9 步）
 
 ```
-输入 → 解析 → 静态验证 → 视角评审（⑬-前 与 Fidelity-Review 并行）→ 删除候选与清理计划 → 契约专项
-→ 角色文档 → 汇总 → 任务清单 + P0 用户确认（P1/P2 按 shared/ruling-policy.md 裁决） → 闭环复核 + 双向沉淀 → 归档
+0 隔离派发（REQUIRED：判角色 + 建评审包 + 派发 fresh 评审子代理）
+→ 输入 → 解析 → 静态验证 → 视角评审（批次评审子代理执行；⑬-前 前端批次评审者 ∥ Fidelity-Review 评审者，互不可见）
+→ 删除候选与清理计划 → 契约专项（批次评审者执行）→ 角色文档（对应评审者产出）
+→ 汇总（⑬-后 批次评审者直接出 / ⑬-前 独立汇总子代理合并）→ 任务清单 + P0 用户确认（P1/P2 按 shared/ruling-policy.md 裁决）
+→ 闭环复核（隔离评审者只验本轮） + 双向沉淀 → 归档
 ```
 
+0. **隔离派发（REQUIRED）**：开工前按 `../../shared/review-context-isolation.md` 判定本上下文的角色与宿主隔离能力：本上下文参与过本批代码的产出 / 修复 / 自检 ⇒ 只做编排、不做评审判断。在步骤 1 固定基线后按「评审上下文隔离（执行必需）」的派发计划建评审包 + `dispatch-prompt.md` 并派发——⑬-后 1 个批次评审子代理；⑬-前 1 个前端批次评审者 + 1 个 Fidelity-Review 评审者 + 1 个独立汇总子代理。无隔离能力 ⇒ `BLOCKED`（不得同会话自审）。
 1. **输入解析**：定位本批次代码与 `libs/shared`、四类文档；抽取 AC 清单、TDD 接口清单、FTDD fetch 表、原型布局清单；代码量大按「大批量分批」先汇总范围。**〔REQUIRED · 开工前闸门核对〕**逐条读 `.spec/manifest.yaml` 中本批所依据上游（PRD／原型／TDD／FTDD）的 `status`、`version`、`gate`、`allowDownstream`：任一 `SUPERSEDED`／非 `PASS`／`false` ⇒ **不在作废基线上继续评审**，把关闸事实写入汇总 §0「上游闸门核对」表并交回 Workflow 判停（本 skill 不设门禁，见铁律 5，故只报事实、不自判放行）；限定条件只能落字段、不得写注释或正文（`../../shared/gate-policy.md` §6）。
 2. **静态验证（取证）**：本批次代码 `pnpm install → tsc --noEmit（或 build）→ test → lint`；跑不了 → 降级静态读码并在报告标「未取证（原因）」。只证伪可编译 / 可测试 / 可 lint，不做端到端冒烟（规程见 §4.4）。
-3. **视角评审**：后端批次按 `references/backend-checklist.md`、前端批次按 `references/frontend-checklist.md`（后端 A~M 组 / 前端 A~N 组）逐条执行；独立产出断点清单，独立上下文（subagent / 新会话）互不可见，不参考代码生成过程；条件允许可用不同模型交叉审查。另对照 `references/known-issue-patterns.md`（评审方案例库）逐条过一遍，命中即入本批次清单。
-   **⑬-前 并行还原度**：同时启用 `Fidelity-Review`（代码评审场景模式）做页面还原度审查，两侧并行、互不可见；Fidelity-Review 按自身清单出问题（含截图），**问题合并进本批次清单**（标「来源=Fidelity-Review」）。
+3. **视角评审（由批次评审子代理执行）**：评审者只接收评审包；后端批次按 `references/backend-checklist.md`、前端批次按 `references/frontend-checklist.md`（后端 A~M 组 / 前端 A~N 组）逐条执行；独立产出断点清单，各评审子代理互不可见、不参考代码生成过程；可选增强：可用不同模型做交叉复核；但不同模型不得替代隔离评审与 §0.5 记录（隔离评审仍是硬性前置）。另对照 `references/known-issue-patterns.md`（评审方案例库）逐条过一遍，命中即入本批次清单。
+   **⑬-前 并行还原度**：由本编排方按 `fidelity-review` 的评审包规则另派 1 个 fresh Fidelity-Review 评审子代理（代码评审场景模式）做页面还原度审查，与前端批次评审者并行、互不可见；Fidelity-Review 按自身清单出问题（含截图），**问题由独立汇总子代理合并进本批次清单**（标「来源=Fidelity-Review」）。
 4. **删除候选与清理计划**：按两清单 M 组扫描死代码 / 未用依赖 / 重复实现 / 调试残留，按 `references/removal-plan-template.md` 分列「现在可安全删」与「需延后（前置条件 / 迁移 / 验证 / 回滚）」，落 `.spec/代码评审/删除候选与清理计划.md`；**只给计划不代删**。
-5. **契约专项**：按 `references/contract-checklist.md` 做前端 fetch ↔ 后端实现 ↔ 共享类型三方比对，逐接口核对；命中项按 §二 归因。
-6. **角色文档落盘**：按 `assets/role-review-template.md` 写本批次角色文档至 `.spec/代码评审/`；P0 按 `assets/patch-template.md` 附建议补丁（仅代码块，不落盘源码）。
-7. **汇总**：按 `../../shared/problem-recording.md` 将本批次清单及问题 ID/范围登记至项目 `.spec/问题日志.md`；Code-Review 负责合并 Fidelity-Review 结果后的唯一索引，复核同步状态，主方中断时保留待合并引用。按 `assets/summary-template.md` 合并去重（⑬-前 含 Fidelity-Review 并行结果），重点标「前后端契约错误」，按 P0/P1/P2 统计；**零问题也要写清覆盖边界**（见 §一）。
+5. **契约专项（由批次评审者执行）**：按 `references/contract-checklist.md` 做前端 fetch ↔ 后端实现 ↔ 共享类型三方比对，逐接口核对；命中项按 §二 归因。
+6. **角色文档落盘（由对应评审者产出）**：后端批次评审者产出后端角色文档、前端批次评审者产出前端角色文档（Fidelity-Review 报告由其评审者按 `fidelity-review` 规则产出并交汇总），按 `assets/role-review-template.md` 写至 `.spec/代码评审/`；P0 按 `assets/patch-template.md` 附建议补丁（仅代码块，不落盘源码）。编排方只收产物、核验 §0.5 与证据，不代写评审结论。
+7. **汇总（隔离汇总）**：⑬-后 由该批次评审者按 `assets/summary-template.md` 直接出汇总 + 任务清单；⑬-前 由独立汇总子代理只输入「前端批次报告 + Fidelity-Review 报告 + 汇总模板」合并去重出汇总 / 任务清单（Code-Review 不重复评审 Fidelity-Review 结果，Fidelity-Review 为其唯一索引的输入），重点标「前后端契约错误」，按 P0/P1/P2 统计；**零问题也要写清覆盖边界**（见 §一）。编排方按 `../../shared/problem-recording.md` 将清单及问题 ID/范围登记至项目 `.spec/问题日志.md`，复核同步状态，主方中断时保留待合并引用；汇总报告须含 §0.5 隔离记录。
 8. **任务清单 + 分级裁决**：按 `assets/issue-list-template.md` 生成任务清单，状态 `待确认`，按归因填修改方（Backend-Dev / Frontend-Dev / 双方）；每条附**修复判据**；**P0 阻断且须用户确认**，P1/P2 由执行方按 `../../shared/ruling-policy.md` 裁决（修 → `已确认`；延/弃 → `已忽略` + 理由 + 回退方式，记 `.spec/rulings.md`），不逐条请用户确认；裁决后交对应 Dev skill 修改并回填状态。
-9. **闭环复核 + 双向沉淀判定**：修改方回填 `已修复` 后只验本轮 `已确认` 项；新发现降 P2；同批满 3 轮不收敛：P0 残留保持 BLOCKED；P1 残留不得 PASS，只能经授权并登记例外后 CONDITIONAL；不自动开启第 4 轮
+9. **闭环复核 + 双向沉淀判定**：修改方回填 `已修复` 后，**仍由隔离评审者复核**（隔离上下文、只验本轮 `已确认` 项；不得由修复方自验，不得复用上一轮出问题的上下文）；新发现降 P2；同批满 3 轮不收敛：P0 残留保持 BLOCKED；P1 残留不得 PASS，只能经授权并登记例外后 CONDITIONAL；不自动开启第 4 轮
 
 > 防评审死循环三招、门禁闭环放行判据与任务清单状态机的定义见仓库根 `../../shared/anti-deadloop.md`，本 skill 只保留流程参数，不重复定义。
 
@@ -131,6 +163,7 @@ metadata:
 |---|---|
 | 评审时改源码 | 只记问题，补丁进报告 |
 | 两视角混写 | 分视角成文，汇总合并 |
+| 同会话自审 / 一个子代理混做两批 | 派发独立 fresh 子代理；无隔离能力 ⇒ BLOCKED（不得降级为自查） |
 | 单批漏出对应角色文档 | ⑬-后 出后端、⑬-前 出前端 |
 | ⑬-前 漏挂还原度审查 | 固定并行 Fidelity-Review，问题合并同一清单 |
 | 重复评还原度结论 | 视觉/交互还原归 Fidelity-Review |
@@ -154,6 +187,8 @@ metadata:
 - `references/known-issue-patterns.md`：评审方案例库（闭环沉淀的已知问题模式 + 检出方法）
 - `references/case-library/`：审查方法学（优先级 / 评论规范 / AI 边界）+ 同行样本（按需加载）
 - `assets/role-review-template.md` / `summary-template.md` / `patch-template.md` / `issue-list-template.md`
+- `../../shared/review-context-isolation.md`：评审上下文隔离契约（单一规则来源；派发计划 / 评审包 / §0.5 记录）
+- `../../shared/templates/review-package.md`：评审包模板
 - `../../shared/anti-deadloop.md`、`../../shared/evidence-before-claims.md`（仓库根）：公共约定
 - 并行方 `Fidelity-Review`（⑬-前 页面还原度审查）
 - `.spec/代码评审/`：归档目录
@@ -190,6 +225,8 @@ Run when the user explicitly requests this capability or when `WorkFlow/` routes
 - read `../../shared/skill-contract.md`, `../../shared/gate-policy.md`, and `../../shared/anti-deadloop.md`;
 - read `.spec/manifest.yaml` and `.spec/workflow.yaml` when a project is available;
 - verify scope, authorization, repository boundaries, and required upstream artifacts;
+- dispatch review judgments to isolated reviewers per `../../shared/review-context-isolation.md`: the context that produced or fixed the reviewed code (including this session) must not review it — write a review package (`../../shared/templates/review-package.md`) and use a fresh subagent or a new session, otherwise `BLOCKED`;
+- prepare the review package and the report §0.5 isolation record (`isolationMode`, `reviewerRef`, `packageDigest`, `parentExecution`, `producedByContextInvolved: false`, `verifiedArtifacts`) before any Gate;
 - do not overwrite unrelated or uncommitted files.
 
 ## Responsibilities
@@ -220,11 +257,15 @@ Run when the user explicitly requests this capability or when `WorkFlow/` routes
 
 - the domain artifact, report, code change, test evidence, or routed task defined by the retained capability;
 - `artifactRefs`, `evidenceRefs`, `decisionRefs`, `openItems`, `gate`, and `nextAction`;
+- the review package (`.spec/代码评审/评审包-<reviewId>.md`) and the dispatch record (reviewer subagent / new-session reference);
+- the report §0.5 isolation record and the reviewed artifacts/evidence paths in `verifiedArtifacts`;
 - a failure route when the wrapper cannot complete safely.
 
 ## Evidence
 
 Use direct source files, command output, test results, screenshots, dated external sources, or explicit user decisions. Label conclusions as `FACT`, `EVIDENCE`, `INFERENCE`, `ASSUMPTION`, `RECOMMENDATION`, `DECISION`, or `OPEN`. A recommendation is not approval.
+
+Reviewer isolation evidence: §0.5 of the report, the package digest, the reviewer subagent / new-session reference, and the verified report/evidence file paths. A reviewer's self-report is not evidence (`../../shared/evidence-before-claims.md`).
 
 ## Gate
 

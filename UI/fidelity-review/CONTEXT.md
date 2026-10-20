@@ -57,6 +57,7 @@
 | D-24 | 09-17 | 体检修复（本次吸收后自检，用户裁决全量修）3 项：①interaction-checklist §六 时长口径统一（常规 UI <300ms、弹层 / 抽屉类据档）；②SKILL 步骤 4 括注补「动效还原 / 界面质量可见项」新节引用点；③去重：interaction-checklist §七 删图片尺寸行（归 visual-checklist §五）、visual-checklist §一 遮挡表述收窄为「不遮挡内容」（焦点归 interaction §七） | Skill-Optimizer 模式④体检 | ✅ |
 
 | D-25 | 2026-09-19 | 调用方切换：三模式中「Testing 场景」→「auto-test 场景」（⑭ 测试节点已由 auto-test 接替，L2 视觉 E2E 内嵌本 skill；链外 Testing 备用时同理）；description/边界表/铁律/模式二/收尾/错误表同步措辞 | 用户拍板：auto-test 入仓替换 Testing（Testing 源码不动） | ✅ |
+| D-26 | 2026-10-19 | **评审上下文隔离硬性化（用户要求）**：①新增「评审上下文隔离（执行必需）」节——单评审单元也必须隔离执行；被 Code-Review / auto-test 调用时由调用方派发独立评审子代理并传评审包；当前上下文参与过实现页开发/修复/自检必须派发、不得自审；无隔离能力 ⇒ `BLOCKED`。②三模式同步：模式三改「由 Code-Review 派发的独立评审子代理与 Code-Review 批次评审者并行」（description 头部与边界表同步）；主流程步骤 1 增确认隔离形态、步骤 3 删「任务重可开独立会话」改「必须隔离；无隔离能力按契约处理」。③`assets/review-report-template.md` 头部/元数据加评审上下文 + 评审包摘要与 §0.5 表；④资源清单补 `shared/review-context-isolation.md` / `shared/templates/review-package.md`；README + 错误表同步 | `issue/Skill-Optimizer/2026-10-19/01`（评审类 skill 未强制隔离评审上下文）；规则 `../../shared/review-context-isolation.md` | ✅ 规则已改｜◐ 待真实项目 fresh 派发复跑验证 |
 ## 四、待决问题
 
 Q1 已解决：不设独立 Workflow 节点，auto-test 内嵌调用（Testing 已归档）；Q2 已解决：有设计稿时还原走查交本 skill，midscenejs 负责三态+基础视觉断言。

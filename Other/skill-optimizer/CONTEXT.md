@@ -77,3 +77,11 @@ Q1 已完成（埋点已落地全部 skill，2026-09-09 体检确认）；Q2 已
 - 不做：新增后台服务、默认跨仓写入、同步安装目录、解除正式 Gate、变更 Superdesign 设计流程。
 - 复核：静态接线测试见 `scripts/tests/test_problem_recording.py`；实际 Agent 行为与中断恢复仍按 `docs/task-scope-regression.md` 试跑，不能用静态通过代替。
 - 回退：只撤销本次记录入口段、共享记录规则及配套模板/消费者修订；保留问题事实及此前用户修改，不执行整文件 Git 回退。
+
+## 2026-10-19 评审上下文隔离（D-REVIEW-ISOLATION-20261019）
+
+- 依据：用户要求「审核类 skill 不得在产出同一上下文评审」；`issue/Skill-Optimizer/2026-10-19/01-评审类skill未强制隔离评审上下文致同会话自审.md`。
+- 决定：新增 `shared/review-context-isolation.md` + `shared/templates/review-package.md`；7 个评审/审计 Skill 加隔离节、派发计划、Procedure REQUIRED 与报告 §0.5；workflow / prd-workflow / auto-test 派发强制；`docs/对比-Superpowers与本体系统.md` §3/§5/§6.2 标注决策修订。
+- 不做：不把「subagent 唯一手段」扩到非评审机制；不改各评审 Skill 的检查维度/严重度/轮次规则；不改 legacy 文件正文。
+- 复核：结构层 `skill-contract` / `refs` 通过；行为层 fresh 派发场景待跑；安装副本同步后以 `install-skills.py --check` 为准。
+- 回退：撤销上述文件本轮改动，保留 issue 事实；规则回退步骤见 issue「回退方式」。

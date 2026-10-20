@@ -1,11 +1,26 @@
 # 原型评审维度报告 —— [维度名称]
 
-> 结构基线：仓库根 `../../../shared/templates/review-dimension-template.md`（闭环要素[成因/修复判据/状态机]与字段口径以公共版为准；章节组织为本 skill 领域实例）。
+> 结构基线：仓库根 `../../../shared/templates/review-dimension-template.md`（闭环要素[成因/修复判据/状态机]与字段口径以公共版为准；章节组织为本 skill 领域实例）。**隔离要求**：本报告只在隔离评审子代理中产出（四维互不可见）；`评审上下文` / `评审包摘要` 缺任一，或汇总 §0.5 的 `producedByContextInvolved` 非 false ⇒ 本报告不得用于 Gate（`../../../shared/review-context-isolation.md` §4/§6）。
 
 > 维度范围：[页面与载体完整性 / 文案与字段一致性 / 交互与流程闭环 / 原型自身实现质量]  
 > 评审基线：PRD（[PRD路径/版本]） vs 原型（[原型目录路径]）  
 > 评审时间：[YYYY-MM-DD]  
 > 浏览器截图验证：[已执行（Playwright / browser-use / agent-browser 等，开工硬性预检通过）]
+
+---
+
+## 零、元数据
+
+| 字段 | 值 |
+|---|---|
+| 任务 ID | REVIEW-{{维度}}-{{原型}}-{{序号}} |
+| 维度 | [页面与载体完整性 / 文案与字段一致性 / 交互与流程闭环 / 原型自身实现质量] |
+| 评审对象 | PRD（[PRD路径/版本]） vs 原型（[原型目录路径]） |
+| 日期 | [YYYY-MM-DD] |
+| 评审上下文 | [subagent id / new-session id]（必须隔离；产出上下文不得自审） |
+| 评审包摘要 | sha256:[...] |
+
+> 缺 `评审上下文` / `评审包摘要` 任一记录的维度报告不得进汇总，也不得用于 Gate（`../../../shared/review-context-isolation.md` §4/§6）。
 
 ---
 

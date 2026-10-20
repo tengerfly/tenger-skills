@@ -40,6 +40,7 @@
 | D-08 | 09-15 | 全仓一致性纠偏：summary-template 补沉淀判定节（SKILL 承诺未落地）、维度模板与汇总表补修复判据列；cases 步骤编号纠正（步骤 3~5/6 → 随步骤 4 同步、汇总步骤 5 前）；README 流程补双向沉淀判定；dimension/summary 编号对齐公共模板 SUM-xx；browser-inspection-guide 标题错别字「审批」→「走查」 | 四代理并行七维体检 | ✅ |
 
 | D-09 | 2026-10-10 | Preconditions 新增「上游输入的**批准状态现行有效**」一条：逐条读 `.spec/manifest.yaml` 上游条目的 `status`、`version`、`gate`、`allowDownstream`，任一 `SUPERSEDED`／非 `PASS`／`false` ⇒ 本轮只能 `BLOCKED`（判据全闭只作事实；限定条件只能落字段，`../../shared/gate-policy.md` §6），汇总报告须含公共 §0 核对表；`assets/summary-template.md` 结构基线行加该硬性小节指针 | `issue/WorkFlow/2026-10-10/01`＋`issue/UI-UX-Review/2026-10-10/01` 对称补齐（评审节点承接位落差）；用户裁决「先要解决这些问题」 | ✅ 规则已改｜◐ 未经真实场景 fresh 复跑验证 |
+| D-10 | 2026-10-19 | **评审上下文隔离硬性化（用户要求）**：新增「评审上下文隔离（执行必需）」节——四维各 1 个独立 fresh 评审子代理（互不可见）+ 1 个独立汇总子代理（只读四份维度报告 + 模板），编排形态只做基线核对 / 建包 / 派发 / 收产物 / 落 Gate；无子代理写包 + dispatch-prompt 交新会话，仍无 ⇒ `BLOCKED`；Procedure 加步骤 0「隔离派发（REQUIRED）」并标注步骤 4/5/6 形态；Preconditions / Outputs / Evidence 增补隔离前置、评审包与隔离记录；summary 模板加 §0.5、dimension 模板加元数据「评审上下文 / 评审包摘要」；README 补隔离规则（legacy 四维流程仅限隔离评审子代理执行） | 用户 2026-10-19 要求评审类 Skill 不得在产出同一上下文评审（`issue/Skill-Optimizer/2026-10-19/01`）；依据 review 独立性、公共契约 `../../shared/review-context-isolation.md` | ✅ 规则已改｜◐ 待 fresh-agent 行为验证 |
 
 ## 四、待决问题
 

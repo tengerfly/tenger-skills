@@ -1,8 +1,23 @@
 # PRD 评审汇总报告 — {{需求名称}}
 
-> 结构基线：仓库根 `../../../shared/templates/review-summary-template.md`（闭环要素[成因/修复判据/状态机]与字段口径以公共版为准；章节组织为本 skill 领域实例）。**公共 §0「上游闸门核对与本轮 Gate」为本报告硬性小节**（四字段判据口径同 `../../../shared/gate-policy.md` §6，不得改口径）：缺该节则本轮 Gate 只能记「未验证」，不得 `PASS`。
+> 结构基线：仓库根 `../../../shared/templates/review-summary-template.md`（闭环要素[成因/修复判据/状态机]与字段口径以公共版为准；章节组织为本 skill 领域实例）。**公共 §0「上游闸门核对与本轮 Gate」为本报告硬性小节**（四字段判据口径同 `../../../shared/gate-policy.md` §6，不得改口径）：缺该节则本轮 Gate 只能记 `BLOCKED`（缺上游闸门核对证据），不得 `PASS` / `CONDITIONAL`。**§0.5「评审上下文隔离记录」同为硬性小节**：缺本节，或 `reviewerRef` / `packageDigest` 缺失、`producedByContextInvolved` 非 false ⇒ 本轮 Gate 只能记 `BLOCKED`（缺评审隔离证据），不得 `PASS` / `CONDITIONAL`。
 
 > 汇总前端 / 后端 / 测试三角色 + 产品专家总审结果，去重合并并标共性问题；产品专家调度归并的已有问题标原编号 + 命中角色，不重复编号。
+
+## 0.5 评审上下文隔离记录（硬性 · 缺本节 Gate 只能 BLOCKED）
+
+> 口径：`../../../shared/review-context-isolation.md` §6 与公共基线 §0.5（`../../../shared/templates/review-summary-template.md`）。评审判断必须由隔离上下文作出；产出 / 修订 / 自检该 PRD 的上下文不得自审。开工前填派发信息（默认 1 个 fresh 评审子代理；按角色拆分时前端 / 后端 / 测试各 1 个子代理 + 产品专家总审子代理），出 Gate 时复核。
+
+| 字段 | 值 |
+|---|---|
+| isolationMode | subagent / new-session |
+| reviewerRef | {{各评审单元子代理 id / 新会话 id（角色拆分时：前端/后端/测试 + 产品总审，多单元逗号分隔）}} |
+| packageDigest | sha256:{{...}} |
+| parentExecution | {{主 executionId；有 run-log 时必填}} |
+| producedByContextInvolved | false（必须为 false；true ⇒ BLOCKED） |
+| verifiedArtifacts | {{报告与证据文件路径}} |
+
+缺本节、`producedByContextInvolved: true`、或 `reviewerRef` / `packageDigest` 为空 ⇒ Gate 不得 `PASS` / `CONDITIONAL`，只能记 `BLOCKED`（缺评审隔离证据）。
 
 ## 1. 元数据
 | 任务 ID | 需求名称 | 日期 | 角色文档 |

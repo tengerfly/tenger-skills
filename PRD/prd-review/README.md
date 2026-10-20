@@ -25,6 +25,8 @@
 
 P0/P1 阻断、P2 可留；问题逐条直接列出，每条附出处/成因/**修改方向**与修复判据；复核只验本轮，轮次上限 3（超限后残留 P0⇒BLOCKED、残留 P1 只能经完整授权 CONDITIONAL；无自动第 4 轮、无 force-pass，见 `../../shared/anti-deadloop.md` §3）。清单交 `prd-design` 修复回填。
 
+> **现行规则（2026-10-19 起，历史流程文字保留）**：评审判断按 `../../shared/review-context-isolation.md` 由隔离上下文执行（fresh 子代理首选，新会话次选；无隔离能力 ⇒ `BLOCKED`），产出 / 修订 PRD 的上下文不得自审；上文三角色拆分仅作**可选方案**（拆分时前端 / 后端 / 测试各 1 个独立子代理 + 产品专家总审 1 个）。
+
 ## 三、严重度
 
 > 严重度定义见仓库根 `../../shared/gate-policy.md` §1；轮次与残留处理见 `../../shared/anti-deadloop.md` §2/§3。下为本域典型表述。

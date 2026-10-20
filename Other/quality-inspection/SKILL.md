@@ -42,6 +42,15 @@ metadata:
 - 运行命令前先阅读脚本和配置，确认不会迁移数据、发布或清理目录。
 - 不复制 secrets、客户数据或原始敏感日志；报告引用脱敏后的证据定位。
 
+## 审计上下文隔离（执行必需）
+
+> 单一规则来源：`../../shared/review-context-isolation.md`。本 Skill 是**审计类**（产出巡检报告与 Gate 建议 = 评审判断）：巡检判断必须发生在隔离上下文，由 fresh 审计子代理或新会话执行。**若当前上下文参与过被巡检代码/模块的产出、修复、发布或自查，必须派发 fresh 审计子代理**——同一上下文换角色不算隔离。报告 §0.5 缺隔离记录 ⇒ Gate 只能 `BLOCKED`。
+
+- **评审单元**：1 个 fresh 审计子代理（单一审计单元；按检查面再拆时每个检查面各 1 个独立子代理，互不可见）。
+- **编排形态**：产出/修复/发布过被巡检对象的上下文只做——定范围与基线 → 按 `../../shared/templates/review-package.md` 建审计包 + `dispatch-prompt.md` → 派发 → 收报告与证据 → 按规则落 Gate；**不得做巡检判断**。审计者只拿审计包，不继承产出会话历史、草稿、自检结论。
+- **隔离阶梯**：L1 fresh 子代理（首选）⇒ L2 写包 + `dispatch-prompt.md` 交新会话（主上下文停住，不自行巡检）⇒ L3 均无 ⇒ `BLOCKED`（owner=宿主/用户，requiredInput=隔离执行能力，clearCondition=具备后重跑）；**不得以「范围小 / 轻量巡检」跳过隔离，也不得自己看一遍当巡检**。
+- **记录**：报告 §0.5 填 `isolationMode` / `reviewerRef` / `packageDigest` / `parentExecution` / `producedByContextInvolved: false` / `verifiedArtifacts`（口径见契约 §6）。
+
 ## Responsibilities
 
 - 运行确定性质量门禁并保存证据；
@@ -59,6 +68,14 @@ metadata:
 - 不在没有 Gate 和用户授权时直接修复、提交、部署或关闭告警。
 
 ## Procedure
+
+### 0. 隔离核对与派发（REQUIRED）
+
+开工前按 `../../shared/review-context-isolation.md` 核对：本上下文是否参与过被巡检代码 / 模块的产出、修复、发布或自查？
+
+- 是 ⇒ 本上下文只做编排（范围与基线 → 建包 → 派发 → 收产物核验 → 落 Gate），按「审计上下文隔离」派发 1 个 fresh 审计子代理执行本次巡检；
+- 否 ⇒ 同样按隔离契约建审计包并派发 fresh 审计子代理；无子代理能力 ⇒ L2 写包 + `dispatch-prompt.md` 交新会话；两者都无 ⇒ `BLOCKED`；
+- 派发后由审计子代理执行步骤 1~8；编排方收报告与证据后按 §Gate 落 Gate，不代做巡检判断。
 
 ### 1. 固定巡检范围与安全快照
 
@@ -127,17 +144,22 @@ metadata:
 
 报告必须写明：范围、commit、命令、结果、证据位置、未检查项、发现分类、路由、下一次巡检日期和是否建议人工确认。
 
+另存审计隔离证据：评审包 `评审包-<reviewId>.md`（按 `../../shared/templates/review-package.md`）与 `dispatch-prompt.md`；`inspection-report.md` §0.5 记录 `isolationMode` / `reviewerRef` / `packageDigest` / `parentExecution` / `producedByContextInvolved: false` / `verifiedArtifacts`，作为报告与 Gate 的必核项（口径 `../../shared/review-context-isolation.md` §6）。
+
 模板见 `assets/inspection-report-template.md`，检查项见 `references/inspection-checklist.md`。
 
 ## Evidence
 
 合格证据：命令输出、测试报告、构建产物摘要、代码定位、依赖锁文件差异、脱敏日志/指标、发布记录或已确认的基线。不得用“看起来不错”“模型判断质量高”“没有听说问题”替代证据。
 
+审计隔离证据：`inspection-report.md` §0.5 隔离记录、评审包摘要、审计子代理 / 新会话引用，以及被核验的报告与证据文件路径；不得凭审计者口头汇报判 Gate（`../../shared/evidence-before-claims.md`）。
+
 ## Gate
 
 - `PASS`：确定性检查结果可复核，关键范围已覆盖，发现项有证据和路由，无未说明的阻塞（对应状态 `INSPECTION_PASS`）；
 - `CONDITIONAL`：存在已登记的缺口、例外或未配置检查，但影响和后续动作明确（对应状态 `INSPECTION_CONDITIONAL`；例外必须完整记录 exceptionId、risk、owner、dueAt、remediation、allowDownstream、approvalRef 七字段，缺项即按 BLOCKED 处理）；
 - `BLOCKED`：无法确定检查范围/版本，或安全、权限、生产风险阻止继续（对应状态 `INSPECTION_BLOCKED`）。
+- **隔离证据硬性前置**：`inspection-report.md` 缺 §0.5 隔离记录（`reviewerRef` / `packageDigest` 为空，或 `producedByContextInvolved: true`）⇒ 不得 `PASS` / `CONDITIONAL`，只能 `BLOCKED`（缺审计隔离证据）。
 
 通过巡检不等于代码没有问题，而是代表问题已被发现、分类、排序并进入可追踪闭环。巡检本身不授权改码或上线。
 

@@ -2,9 +2,9 @@
   "schema": "tenger.eval-baseline/v1",
   "eval": "evals/prototype-review/eval.yaml",
   "skill": "prototype-review",
-  "savedAt": "2026-10-19T00:48:50+08:00",
+  "savedAt": "2026-10-19T20:33:57+08:00",
   "anchors": {
-    "skillRevision": "sha256:a673dfaae37da77d7d65c300f2417d938979fd48d8994b3201daa2c162fc514d",
+    "skillRevision": "sha256:676380327297722b831134da2fffb750c1292c94a005d74b9f5521c154378f1e",
     "casesVersion": "sha256:c98e1f4e04030cb9e06de868ebae4628164db4f033f292ac5664c529057e6f23",
     "engine": "codex",
     "model": "engine-default",

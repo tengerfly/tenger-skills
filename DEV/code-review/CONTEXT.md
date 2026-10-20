@@ -49,6 +49,7 @@
 | D-18 | 2026-10-18 | **§4.1.0 资产检查路径可移植化**：组件库位置由本机绝对路径改为 `$env:SKILLS_KNOWLEDGE_ROOT/asset-library/`，并补未配置时的降级口径（按 `../../skill-knowledge/README.md` 的降级规则跳过检索并登记，不伪造命中） | 用户 2026-10-18 要求可移植 / 换机可用 | ✅ 已确认 |
 
 | D-19 | 2026-10-18 | 评审修复（audit C 组）：C-05 设计稿缺失补 EXC 要求（无 EXC 即 BLOCKED）；C-06 anti-deadloop 节号校正（严重度定义改指 gate-policy §1）、known-issue-patterns §五→§4；C-09 外部知识库降级内联（跳过检索 + 登记落点）；C-12 README 两处误插英文契约段删除；C-13 撤销 D-09 ③「强制清 P0 后放行」旧口径（按 anti-deadloop §3：残留 P0⇒BLOCKED、P1⇒仅授权 CONDITIONAL）；C-15 A~N 枚举拆为后端 A~M / 前端 A~N 并在角色模板补 N 组；C-19 流程图改「任务清单 + P0 用户确认」；C-21 畸形路径改 canonical skill id；C-25 补闭环回流（L2）段。 | 来源 `.spec/体系评审/2026-10-18/C-dev.md`；用户要求体系可直接被他机/宿主使用 | ✅ 已确认 |
+| D-20 | 2026-10-19 | **评审上下文隔离硬性化**：新增「评审上下文隔离（执行必需）」节 + 主流程步骤 0；⑬-后 派 1 个 fresh 批次评审子代理（后端视角 + 契约专项后端侧，单批直接出汇总/任务清单）；⑬-前 派 1 个 fresh 前端批次评审者 + 1 个 fresh Fidelity-Review 评审者（互不可见）+ 1 个独立汇总子代理；铁律 4 改「视角隔离 + 独立子代理上下文」（不是同一会话换角色）；步骤 3/6/7/9 标注评审者归属与复核隔离；错误表 / 资源清单 / 汇总模板 §0.5 / role 模板元数据 / README 同步；Preconditions/Outputs/Evidence 补评审包与隔离记录 | 用户 2026-10-19 要求评审判断必须发生在隔离上下文，不得在产出/修订同一会话自审（`shared/review-context-isolation.md` + `issue/Skill-Optimizer/2026-10-19/01`） | ✅ 规则已改｜◐ 行为验证待跑 |
 
 ## 四、待决问题
 

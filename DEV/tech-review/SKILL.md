@@ -17,6 +17,22 @@ compatibility: Claude Code / Agent SDK / OpenCode
 **闭环回流（L2）**：P0/P1 条目要标「已沉淀」前，必须先回流 1 条评测用例，并在该用例声明里用 `issueRef` 指回本条问题（值＝本条问题的仓库相对路径，形如 issue/<skill>/<日期>/<NN>-<标题>.md）；没有这条用例就按「未验证」处理，优化状态停在待处理/处理中，不得写「已沉淀」。
 判据与字段口径的单一来源是仓库根 `governance/eval-spec.yaml`（`caseTiers.L2` + `issueRef` 节），机械核对由 `scripts/eval/relay.py` 执行；本节只承接义务，不复述其条文。
 
+## 评审上下文隔离（执行必需）
+
+> 单一规则来源：`../../shared/review-context-isolation.md`。**评审判断只发生在隔离上下文**：产出/修订被审 TDD/FTDD 的上下文（`Backend-Tech-Design` / `Frontend-Tech-Design` / 同一会话 / 曾参与自检的上下文）只做编排，不得自审；评审者只拿评审包，不继承产出会话历史、草稿、自检结论。报告必须记录隔离证据（汇总记 §0.5；角色文档用等价隔离元数据「评审上下文 / 评审包摘要」）；缺记录或 `producedByContextInvolved ≠ false` ⇒ Gate 记 `BLOCKED`（缺评审隔离证据）。
+
+**评审单元与派发计划**：
+
+| 运行形态 | 评审单元（每个批次 1 个 fresh 子代理） | 汇总者 |
+|---|---|---|
+| 单批（只跑 ⑩-后 或 ⑩-前） | 1 个批次评审子代理（只审本章节对应方案） | 该评审者直接出汇总 + 任务清单 |
+| 双批（⑩-后 与 ⑩-前 都跑） | 2 个批次评审子代理，互不可见 | 1 个独立汇总子代理合并两份报告出汇总 + 任务清单 |
+
+- 评审者只接收评审包；**禁止**同会话自审；**禁止**双批只开一个子代理混做两批。
+- **编排形态（本上下文只做编排，不做评审判断）**：产出/修订方案的上下文只做五件事——① 固定基线（步骤 1 上游闸门核对）；② 按 `../../shared/templates/review-package.md` 建评审包 + `dispatch-prompt.md`，落 `.spec/技术方案评审/评审包-<reviewId>.md`；③ 派发；④ 收产物并核验报告与证据（文件:章节 / 报告 §0.5）；⑤ 按 `../../shared/gate-policy.md` 与 `../../shared/anti-deadloop.md` 落 Gate。评审者不接收产出过程对话、草稿、自检结论或「已知问题」提示（F1 已确认项除外）。
+- **隔离能力阶梯（口径见契约 §4）**：L1 fresh 子代理（首选）⇒ L2 写评审包 + `dispatch-prompt.md` 交新会话执行（主上下文停住，不自行评审）⇒ L3 均无 ⇒ `BLOCKED`（owner=宿主/用户，requiredInput=隔离执行能力，clearCondition=具备后重跑）；**不得自己读一遍当评审**。
+- **产出与证据**：评审包（`.spec/技术方案评审/评审包-<reviewId>.md`）、角色文档（对应评审者产出）、汇总 + 任务清单（单批由该评审者 / 双批由独立汇总子代理产出）、报告 §0.5 隔离记录（`isolationMode` / `reviewerRef` / `packageDigest` / `parentExecution` / `producedByContextInvolved: false` / `verifiedArtifacts`）；编排方须核验报告与证据产物，不采信评审者口头汇报（`../../shared/evidence-before-claims.md`）。
+
 ## 一、定位与铁律
 
 **角色**：技术方案评审专家——**PRD 与原型是尺子，TDD/FTDD 是被量物**。找两类问题：**没闭环** 与 **关联关系错误**（定义见 §4.1、§4.2）。
@@ -26,7 +42,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 1. **只审不改**：不改 TDD/FTDD 原文。
 2. **定位到原文**：每条标文件 / 章节 / 接口 / 表，引用关键句。
 3. **零幻觉**：结论基于 TDD/FTDD/PRD/原型；区分「方案缺失（该写没写）」与「越界（不该写）」。
-4. **视角隔离 + 独立上下文**：各视角独立评审、互不可见、不参考生成过程；关联问题归因责任方。
+4. **视角隔离 + 独立子代理上下文**：每个批次派 fresh 评审子代理（不是同一会话换角色），各子代理互不可见、只接收评审包、不参考生成过程；关联问题归因责任方。
 5. **不设门禁**：只出问题清单，不判通过/不通过；放行由 Workflow 按 `../../shared/anti-deadloop.md` 判定。
 6. **成因必写**：写清为何没闭环 / 关联错（如方案未承接某状态、字段只定义单边）；推不出标「成因未明」，禁臆造。
 7. **沉淀只改方法论**：沉淀动作只加产出方 skill 的防复发规则，不改对方框架、不改被审方案。
@@ -55,21 +71,24 @@ compatibility: Claude Code / Agent SDK / OpenCode
 
 前后端关联问题由两视角各自从己方核查；命中谁归谁，双方命中则双方都记。**批次内裁剪**：⑩-后 无 FTDD 可对，接口一致性专项**不完整**（只验 TDD 接口自身定义完整）；⑩-前 才做「FTDD 页面字段清单 ⇄ fetch ↔ TDD 出参」三方对账并收口——**双向一致查不出两端同时缺失**，完备性以字段清单为锚。
 
-## 三、主流程（8 步）
+## 三、主流程（0 + 8 步）
 
 ```
-输入 → 1 输入解析 → 2 浏览器检测 → 3 批次视角评审 → 4 关联专项（⑩-前 收口）
-→ 5 角色文档 → 6 汇总 → 7 任务清单 + P0 确认（P1/P2 按 shared/ruling-policy.md 裁决） → 8 闭环复核与沉淀判定 → 归档
+0 隔离派发（REQUIRED：判角色 + 建评审包 + 派发 fresh 评审子代理）
+→ 输入 → 1 输入解析 → 2 浏览器检测 → 3 批次视角评审（批次评审子代理执行）→ 4 关联专项（⑩-前 收口，评审者执行）
+→ 5 角色文档（对应评审者产出）→ 6 汇总（单批 评审者 / 双批 独立汇总子代理）→ 7 任务清单 + P0 确认（P1/P2 按 shared/ruling-policy.md 裁决）
+→ 8 闭环复核（隔离评审者只验本轮）与沉淀判定 → 归档
 ```
 
+0. **隔离派发（REQUIRED）**：开工前按 `../../shared/review-context-isolation.md` 判定本上下文的角色与宿主隔离能力：本上下文参与过本批 TDD/FTDD 的产出 / 修订 / 自检 ⇒ 只做编排、不做评审判断。在步骤 1 固定基线后按「评审上下文隔离（执行必需）」的派发计划建评审包 + `dispatch-prompt.md` 并派发——单批 1 个批次评审子代理；双批 2 个批次评审子代理 + 1 个独立汇总子代理。无隔离能力 ⇒ `BLOCKED`（不得同会话自审）。
 1. **输入解析**：优先读 `.spec/`——PRD（先读速查表）、原型、设计稿（有则）、`.spec/TDD/VN/`、`.spec/FTDD/VN/`；按批次裁剪输入；缺失回退用户路径 / 粘贴。**〔REQUIRED · 开工前闸门核对〕**逐条读 `.spec/manifest.yaml` 中本批所依据上游（PRD／原型／设计稿／对面方案）的 `status`、`version`、`gate`、`allowDownstream`：任一 `SUPERSEDED`／非 `PASS`／`false` ⇒ **不在作废基线上出结论**，本批只能 `BLOCKED`（命名缺失输入 + owner + 清除条件）；「判据全闭」只作事实记录不作放行结论，限定条件只能落字段、不得写注释或正文（`../../shared/gate-policy.md` §6）；汇总报告须含公共基线 §0 的「上游闸门核对」表与「时序核查」。
 2. **浏览器工具检测**：软检测（见 §二）；任一可用则核验选型版本、弃用 API、官方最佳实践。
-3. **批次视角评审**：⑩-后 按 `references/backend-checklist.md`、⑩-前 按 `references/frontend-checklist.md` 逐条执行；独立上下文（subagent / 新会话）互不可见、不参考生成过程；条件允许可用不同模型交叉审查。另对照 `references/known-issue-patterns.md`（评审方案例库）过一遍，命中即入本批次清单。
-4. **关联专项**：按 `references/integration-checklist.md` 核查接口契约、数据模型、状态枚举、数据流、权限 / 错误处理；命中项归因后端 / 前端 / 双方。**⑩-后 只验后端侧自洽；⑩-前 做「FTDD 页面字段清单 ⇄ fetch ↔ TDD 出参」三方对账并收口**：「清单有、TDD 出参无」= 契约完备性缺口（两端文档一致地一起缺失，双向比对查不出），归因入任务清单；FTDD 模块 §5 无字段清单 = 方案缺失（该写没写）。
-5. **角色文档落盘**：按 `assets/role-review-template.md` 写本批次角色文档（⑩-后 → `后端技术方案评审.md`；⑩-前 → `前端技术方案评审.md`）至 `.spec/技术方案评审/`。
-6. **汇总**：按 `assets/summary-template.md` 合并去重，重点标前后端关联错误，按 P0/P1/P2 统计。
+3. **批次视角评审（由批次评审子代理执行）**：评审者只接收评审包；⑩-后 按 `references/backend-checklist.md`、⑩-前 按 `references/frontend-checklist.md` 逐条执行；各评审子代理互不可见、不参考生成过程；可选增强：可用不同模型做交叉复核；但不同模型不得替代隔离评审与 §0.5 记录（隔离评审仍是硬性前置）。另对照 `references/known-issue-patterns.md`（评审方案例库）过一遍，命中即入本批次清单。
+4. **关联专项（由批次评审者执行）**：按 `references/integration-checklist.md` 核查接口契约、数据模型、状态枚举、数据流、权限 / 错误处理；命中项归因后端 / 前端 / 双方。**⑩-后 只验后端侧自洽；⑩-前 做「FTDD 页面字段清单 ⇄ fetch ↔ TDD 出参」三方对账并收口**：「清单有、TDD 出参无」= 契约完备性缺口（两端文档一致地一起缺失，双向比对查不出），归因入任务清单；FTDD 模块 §5 无字段清单 = 方案缺失（该写没写）。
+5. **角色文档落盘（由对应批次评审者产出）**：按 `assets/role-review-template.md` 写本批次角色文档（⑩-后 → `后端技术方案评审.md`；⑩-前 → `前端技术方案评审.md`）至 `.spec/技术方案评审/`；编排方只收产物、核验 §0.5 与证据，不代写评审结论。
+6. **汇总（按运行形态归属）**：单批由该批次评审者直接按 `assets/summary-template.md` 出汇总 + 任务清单；双批由独立汇总子代理只输入「两份批次报告 + 汇总模板」合并去重，重点标前后端关联错误，按 P0/P1/P2 统计。汇总报告须含 §0.5 隔离记录。
 7. **任务清单 + 分级裁决**：按 `assets/issue-list-template.md` 生成任务清单（状态 `待确认`）；每条附**修复判据**；**P0 阻断且须用户确认**，P1/P2 由执行方按 `../../shared/ruling-policy.md` 裁决（修 → `已确认`；延/弃 → `已忽略` + 理由 + 回退方式，记 `.spec/rulings.md`），不逐条等用户；裁决后交 Backend/Frontend-Tech-Design 修改并回填。
-8. **闭环复核 + 双向沉淀判定**：修改方回填 `已修复` 后只验本轮 `已确认` 项；新发现降 P2；同批满 3 轮不收敛：P0 残留保持 BLOCKED；P1 残留不得 PASS，只能经授权并登记例外后 CONDITIONAL；不自动开启第 4 轮
+8. **闭环复核 + 双向沉淀判定**：修改方回填 `已修复` 后由隔离评审者只验本轮 `已确认` 项（不得修复方自验）；新发现降 P2；同批满 3 轮不收敛：P0 残留保持 BLOCKED；P1 残留不得 PASS，只能经授权并登记例外后 CONDITIONAL；不自动开启第 4 轮
 
 > 门禁闭环、防评审死循环三招（含轮次上限 3：满 3 轮未收敛：P0 残留 BLOCKED；P1 残留只能经授权 CONDITIONAL，不得 PASS；不自动放行）——三招与门禁闭环放行判据见仓库根 `../../shared/anti-deadloop.md` §2/§3。
 
@@ -108,6 +127,7 @@ compatibility: Claude Code / Agent SDK / OpenCode
 |---|---|
 | 评审时改方案 | 只记问题，给建议方向 |
 | 两视角混写 | 分端成文，汇总合并 |
+| 同会话自审 / 双批一个子代理混做 | 派发独立 fresh 子代理；无隔离能力 ⇒ BLOCKED（不得降级为自查） |
 | 单批漏出对应角色文档 | ⑩-后 出后端、⑩-前 出前端 |
 | ⑩-后 硬做接口一致性 | 无 FTDD，留 ⑩-前 收口 |
 | 漏接口一致性 / 把双向一致当完备 | ⑩-前 步骤 4 三方对账，页面字段清单为完备性锚 |
@@ -122,6 +142,8 @@ compatibility: Claude Code / Agent SDK / OpenCode
 - `references/backend-checklist.md` / `frontend-checklist.md` / `integration-checklist.md`
 - `references/known-issue-patterns.md`：评审方案例库（闭环沉淀的已知问题模式 + 检出方法）
 - `assets/role-review-template.md` / `summary-template.md` / `issue-list-template.md`
+- `../../shared/review-context-isolation.md`：评审上下文隔离契约（单一规则来源；派发计划 / 评审包 / §0.5 记录）
+- `../../shared/templates/review-package.md`：评审包模板
 - `../../shared/anti-deadloop.md`、`../../shared/browser-policy.md`（仓库根）：公共约定
 - `.spec/技术方案评审/`：归档目录
 

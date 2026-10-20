@@ -7,3 +7,4 @@
 | # | 日期 | 决策 | 理由 | 状态 |
 |---|---|---|---|---|
 | D-01 | 2026-10-18 | State Changes 补全 19 状态合法链（含 6 个 `*_READY`），声明实际转换以 `governance/state-registry.yaml` 为准并补 CHANGE/OPTIMIZE 说明；Procedure 步骤 1 增加〔REQUIRED · 开工前闸门核对〕；下游指名 `ui-workflow`；全文 skill 称呼统一 canonical kebab id | 审计 A-02（P0 状态链非法边）、A-08（上游闸门未落地）、A-16（下游未指名）、A-17（称呼混用） | ✅ 已修 |
+| D-02 | 2026-10-19 | Procedure 步骤 7/8 加〔REQUIRED · 评审隔离〕：PRD 与原型评审均按 `../../shared/review-context-isolation.md` 派发 fresh 评审子代理（原型四维各 1 + 汇总 1）；产出上下文不得自审，编排方只做固定基线、建包、派发、收产物核验与 Gate 落账 | 用户要求审核类 Skill 不在产出上下文评审；评审独立性 | ✅ 规则已改｜◐ 待 fresh 派发复跑 |

@@ -26,6 +26,8 @@
 
 P0 阻断且须用户确认；P1/P2 由执行方按 `../../shared/ruling-policy.md` 裁决；每条附修复判据与建议修改方，裁决记 `.spec/rulings.md`。
 
+> **评审上下文隔离（2026-10-19 起硬性，legacy 保留）**：本 skill 的四维评审（含 `references/legacy-skill.md` 的 legacy 四维流程）只能在隔离评审子代理内执行——四维各 1 个 fresh 评审子代理（互不可见）+ 1 个独立汇总子代理，产出 / 修订原型的上下文不得自审；无隔离能力 ⇒ `BLOCKED`（规则见 `../../shared/review-context-isolation.md`，报告 §0.5 记隔离证据）。
+
 ## 四、目录
 
 ```

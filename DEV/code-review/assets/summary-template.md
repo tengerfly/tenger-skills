@@ -1,8 +1,23 @@
 # 代码评审汇总报告
 
-> 结构基线：仓库根 `../../../shared/templates/review-summary-template.md`（闭环要素[成因/修复判据/状态机]与字段口径以公共版为准；章节组织为本 skill 领域实例）。**公共 §0「上游闸门核对与本轮 Gate」为本报告硬性小节**（四字段判据口径同 `../../../shared/gate-policy.md` §6，不得改口径）：缺该节则本轮结论只能记「未验证」，交回 Workflow 判停，不得 `PASS`。
+> 结构基线：仓库根 `../../../shared/templates/review-summary-template.md`（闭环要素[成因/修复判据/状态机]与字段口径以公共版为准；章节组织为本 skill 领域实例）。**公共 §0「上游闸门核对与本轮 Gate」为本报告硬性小节**（四字段判据口径同 `../../../shared/gate-policy.md` §6，不得改口径）：缺该节则本轮结论只能记「未验证」，交回 Workflow 判停，不得 `PASS`。**公共 §0.5「评审上下文隔离记录」同为硬性小节**：缺该节或隔离证据不符 ⇒ Gate 只能 `BLOCKED`。
 
 > 合并后端/前端两份清单：去重 + 共性 + 统计。需求：{{}}；日期：{{}}。
+
+## 0.5 评审上下文隔离记录（硬性 · 缺本节 Gate 只能 BLOCKED）
+
+> 口径：`../../../shared/review-context-isolation.md` §6。评审判断必须由隔离评审者作出；产出/修复被审代码的上下文（含编排会话）不得自审。
+
+| 字段 | 值 |
+|---|---|
+| isolationMode | subagent / new-session |
+| reviewerRef | {{⑬-后：批次评审子代理 id；⑬-前：前端批次评审子代理 id + Fidelity-Review 评审子代理 id + 汇总子代理 id}} |
+| packageDigest | sha256:{{各单元评审包摘要（多个以逗号分隔）}} |
+| parentExecution | {{主 executionId；有 run-log 时必填}} |
+| producedByContextInvolved | false（必须为 false；true ⇒ BLOCKED） |
+| verifiedArtifacts | {{角色文档 / Fidelity-Review 报告 / 汇总报告 / 任务清单与证据路径}} |
+
+缺本节、`producedByContextInvolved: true`、或 `reviewerRef`/`packageDigest` 为空 ⇒ Gate 不得 `PASS`/`CONDITIONAL`，只能记 `BLOCKED`（缺评审隔离证据）。
 
 ## 一、评审范围
 被审代码、文档基线、静态验证摘要。

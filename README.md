@@ -12,6 +12,7 @@ A modular Skill repository for product discovery, PRD, UI, development, testing,
 ## 流程可见、需求先研究、测试单入口
 
 - 2026-09-22 修订：开工/恢复、阶段交接、阻塞与收尾展示当前步骤、Skill、产物、待决定事项和下一步；规则见 `shared/workflow-visibility.md`。
+- 2026-10-19 修订：所有评审/审计类 Skill 的评审判断必须在隔离上下文执行（fresh 子代理 / 新会话，产出上下文不得自审）；派发、评审包与报告隔离证据见 `shared/review-context-isolation.md`。
 - 对标应用或明确要求竞品时，先给带来源的模块/功能全景，再由用户逐模块选择范围；PRD 原子职责见 `shared/product-workflow-contract.md`。
 - 旧项目接入称“存量项目接管与工程流程补齐”：先 project-onboarding 盘点缺口，不默认重构或只跑测试。
 - 测试唯一入口是 auto-test；Testing 已归档，不再作为备用 Skill 被发现。
@@ -109,6 +110,7 @@ Read the contracts before changing a Skill:
 - `shared/skill-contract.md`
 - `shared/gate-policy.md`
 - `shared/anti-deadloop.md`
+- `shared/review-context-isolation.md`
 - `shared/artifact-contract.md`
 - `shared/lifecycle-contract.md`
 - `shared/product-workflow-contract.md`

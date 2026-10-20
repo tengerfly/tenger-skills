@@ -2,9 +2,9 @@
   "schema": "tenger.eval-baseline/v1",
   "eval": "evals/prd-design/eval.yaml",
   "skill": "prd-design",
-  "savedAt": "2026-10-19T00:48:50+08:00",
+  "savedAt": "2026-10-19T20:33:57+08:00",
   "anchors": {
-    "skillRevision": "sha256:549dd8ad1f034dc554e28abc7caccc023bb7569387de7f5e0b769cb7dadea5b0",
+    "skillRevision": "sha256:c2f819b9823b219b33965ffb22ca345470377278bde0372f37270493a4ff2973",
     "casesVersion": "sha256:60b38671881ff3a9dcc0a1e4ad198a194224a0d02810a44b5f0fc9bac13bd142",
     "engine": "codex",
     "model": "engine-default",

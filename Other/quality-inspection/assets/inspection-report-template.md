@@ -8,7 +8,24 @@
 - 环境：
 - 范围：
 - 上次巡检：
+- 审计上下文：{{审计子代理 id / 新会话 id}}（必须隔离；产出/修复/发布/自查过被巡检代码的上下文不得自审）
+- 评审包摘要：sha256:{{...}}
 - Gate：PASS | CONDITIONAL | BLOCKED（分别对应状态 INSPECTION_PASS / INSPECTION_CONDITIONAL / INSPECTION_BLOCKED）
+
+## 0.5 审计上下文隔离记录（硬性 · 缺本节 Gate 只能 BLOCKED）
+
+> 口径：`../../../shared/review-context-isolation.md` §6。
+
+| 字段 | 值 |
+|---|---|
+| isolationMode | subagent / new-session |
+| reviewerRef | {{子代理 id / 新会话 id}} |
+| packageDigest | sha256:{{...}} |
+| parentExecution | {{主 executionId；有 run-log 时必填}} |
+| producedByContextInvolved | false（必须为 false；true ⇒ BLOCKED） |
+| verifiedArtifacts | {{报告与证据文件路径}} |
+
+缺本节、`producedByContextInvolved: true`、或 `reviewerRef`/`packageDigest` 为空 ⇒ Gate 不得 `PASS`/`CONDITIONAL`，只能记 `BLOCKED`（缺审计隔离证据）。
 
 ## 1. 门禁结果
 

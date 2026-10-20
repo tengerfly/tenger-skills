@@ -123,5 +123,6 @@ verificationOfTheHarness:
 antiPatterns:
   - 用 agent_judge 评 agent 产物却不给 rubric（错误会自我强化）
   - 同一会话改完自评（必须 fresh-agent）
+  - 评审类 skill 在产出上下文自审（必须派发 fresh 评审子代理；报告缺 §0.5 隔离记录 ⇒ Gate 只能 BLOCKED；见 shared/review-context-isolation.md）
   - 无人值守定时任务跑 agent_judge（污染被观测语料且需 Full Access）
   - 把"覆盖率高"当质量：判据未核实的类型宁可不声明，覆盖 0.5% 也要如实显示

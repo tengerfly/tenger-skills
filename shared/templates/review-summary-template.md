@@ -1,6 +1,6 @@
 # 评审汇总报告模板（公共结构基线）
 
-> 适用：5 个链上评审类 skill 的汇总报告（Fidelity-Review 单报告无需汇总）。各 skill 的 summary 模板为本模板的领域实例：闭环要素与字段口径以本文件为准，章节组织可按 skill 领域定制。
+> 适用：链上评审 / 周期审计类 skill 的汇总报告（Fidelity-Review、quality-inspection 用单报告模板，无需汇总）。各 skill 的 summary 模板为本模板的领域实例：闭环要素与字段口径以本文件为准，章节组织可按 skill 领域定制。**§0 上游闸门核对与 §0.5 评审上下文隔离为硬性小节。**
 
 ## 0. 上游闸门核对与本轮 Gate（硬性前置 · 缺本节不得记 `PASS`）
 
@@ -22,6 +22,21 @@ reason: <一句话>
 ```
 
 「判据全闭」是事实记录，不是放行结论；**不得**用注释或正文写「本 `PASS` 仅对旧基线成立」变相放行——下游只读 `gate` / `allowDownstream` 字段，读不到限定语。缺本节 ⇒ Gate 不得写 `PASS`/`CONDITIONAL`：按风险记 `BLOCKED`，并写明缺的是哪一项闸门核对；`gate` 字段只允许 `PASS | CONDITIONAL | BLOCKED` 三值，「未验证」不是合法 Gate 值。
+
+## 0.5 评审上下文隔离记录（硬性 · 缺本节 Gate 只能 BLOCKED）
+
+> 口径：`../review-context-isolation.md` §6。开工前填派发信息，出 Gate 时复核。评审判断必须由隔离上下文作出；产出/修订/自检上下文不得自审。
+
+| 字段 | 值 |
+|---|---|
+| isolationMode | subagent / new-session |
+| reviewerRef | {{全部评审单元的评审者 id（多单元逗号分隔；子代理 id / 新会话 id）}} |
+| packageDigest | sha256:{{...}} |
+| parentExecution | {{主 executionId；有 run-log 时必填}} |
+| producedByContextInvolved | false（必须为 false；true ⇒ BLOCKED） |
+| verifiedArtifacts | {{报告与证据文件路径}} |
+
+缺本节、`producedByContextInvolved: true`、或 `reviewerRef`/`packageDigest` 为空 ⇒ Gate 不得 `PASS`/`CONDITIONAL`，只能记 `BLOCKED`（缺评审隔离证据）。
 
 ## 1. 元数据
 

@@ -1,11 +1,13 @@
 # 设计稿评审维度报告 —— [维度名称]
 
-> 结构基线：仓库根 `../../../shared/templates/review-dimension-template.md`（闭环要素[成因/修复判据/状态机]与字段口径以公共版为准；章节组织为本 skill 领域实例）。
+> 结构基线：仓库根 `../../../shared/templates/review-dimension-template.md`（闭环要素[成因/修复判据/状态机]与字段口径以公共版为准；章节组织为本 skill 领域实例）。评审立场隔离：本报告只能由该维度的隔离评审子代理产出，不读其他维度报告与内部门禁自检结论（口径 `../../../shared/review-context-isolation.md`）。
 
 > 维度范围：[载体与结构零改动 / 文案与字段一致性 / 视觉规范一致性 / 视觉呈现与可交付质量]  
 > 评审基线：PRD（[PRD路径/版本]）+ 布局清单（[路径]）+ design-system（[路径]） vs 设计稿（[路径]）  
 > 评审时间：[YYYY-MM-DD]  
-> 浏览器渲染验证：[已执行（Playwright / browser-use / agent-browser 等，开工硬性预检通过）]
+> 浏览器渲染验证：[已执行（Playwright / browser-use / agent-browser 等，开工硬性预检通过）]  
+> 评审上下文：[subagent id / new-session id]（必须隔离；产出/修订/自检上下文不得自审）  
+> 评审包摘要：sha256:[...]
 
 ---
 

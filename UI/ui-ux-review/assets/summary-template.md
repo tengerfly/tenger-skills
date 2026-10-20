@@ -40,6 +40,33 @@ reason: <一句话>
 
 ---
 
+## 0.5 评审上下文隔离记录（硬性 · 缺本节 Gate 只能 BLOCKED）
+
+> 口径：`../../../shared/review-context-isolation.md` §6；本节是公共基线 `../../../shared/templates/review-summary-template.md` §0.5 的领域实例。评审判断必须由隔离上下文作出；产出/修订/自检上下文不得自审。
+
+| 字段 | 值 |
+|---|---|
+| isolationMode | subagent / new-session |
+| reviewerRef | [子代理 id / 新会话 id] |
+| packageDigest | sha256:[...] |
+| parentExecution | [主 executionId；有 run-log 时必填] |
+| producedByContextInvolved | false（必须为 false；true ⇒ BLOCKED） |
+| verifiedArtifacts | [四份维度报告 / 汇总报告 / 截图 / 实测表路径] |
+
+**四维隔离登记**（逐维一行，防「一个子代理四维混做」）：
+
+| 维度 | reviewerRef | 维度报告 | 隔离确认 |
+|---|---|---|---|
+| 载体与结构零改动 | [子代理 id] | [载体与结构零改动评审.md](./载体与结构零改动评审.md) | ✅ / ❌ |
+| 文案与字段一致性 | [子代理 id] | [文案与字段一致性评审.md](./文案与字段一致性评审.md) | ✅ / ❌ |
+| 视觉规范一致性 | [子代理 id] | [视觉规范一致性评审.md](./视觉规范一致性评审.md) | ✅ / ❌ |
+| 视觉呈现与可交付质量 | [子代理 id] | [视觉呈现与可交付质量评审.md](./视觉呈现与可交付质量评审.md) | ✅ / ❌ |
+| 汇总（独立汇总子代理） | [子代理 id] | 本报告 | ✅ / ❌ |
+
+缺本节、`producedByContextInvolved: true`、或 `reviewerRef`/`packageDigest` 为空 ⇒ Gate 不得 `PASS`/`CONDITIONAL`，只能记 `BLOCKED`（缺评审隔离证据）。
+
+---
+
 ## 一、评审概览
 
 ### 1.1 总体结论

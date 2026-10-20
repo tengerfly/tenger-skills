@@ -1,11 +1,28 @@
 # 页面还原度评审报告 — {{页面/需求名称}}
 
-> 结构基线：仓库根 `../../../shared/templates/review-dimension-template.md`（闭环要素[成因/修复判据/状态机]与字段口径以公共版为准；章节组织为本 skill 领域实例）。
+> 结构基线：仓库根 `../../../shared/templates/review-dimension-template.md`（闭环要素[成因/修复判据/状态机]与字段口径以公共版为准；章节组织为本 skill 领域实例）。评审上下文隔离：单评审单元也须由隔离上下文执行（产出/修订/自检上下文不得自审），口径 `../../../shared/review-context-isolation.md`，硬性记录见 §0.5。
 
 > 评审日期：{{YYYY-MM-DD}}
 > 评审基准：通道 {{A：.spec/设计稿/ / B：外部设计稿{{来源}} / C：低保真原型（无设计稿且已登记 EXC {{EXC-id}}，视觉质量降级；无 EXC 不得选 C）}}（通道 B 标注「按像素目测比对」；通道 C 标注降级）
 > 实现页：{{项目目录 / URL 清单}}
-> 定位：只审不改；一切样式/视觉/溢出问题配截图；每条含现象/期望 vs 实际/成因/修改建议。
+> 定位：只审不改；一切样式/视觉/溢出问题配截图；每条含现象/期望 vs 实际/成因/修改建议。  
+> 评审上下文：{{subagent id / new-session id}}（必须隔离；产出/修订/自检上下文不得自审）  
+> 评审包摘要：sha256:{{...}}
+
+## 0.5 评审上下文隔离记录（硬性 · 缺本节 Gate 只能 BLOCKED）
+
+> 口径：`../../../shared/review-context-isolation.md` §6；字段同公共模板 `../../../shared/templates/review-summary-template.md` §0.5。评审判断必须由隔离上下文作出；产出/修订/自检上下文不得自审。
+
+| 字段 | 值 |
+|---|---|
+| isolationMode | subagent / new-session |
+| reviewerRef | {{子代理 id / 新会话 id}} |
+| packageDigest | sha256:{{...}} |
+| parentExecution | {{主 executionId；有 run-log 时必填}} |
+| producedByContextInvolved | false（必须为 false；true ⇒ BLOCKED） |
+| verifiedArtifacts | {{报告 / 任务清单 / screenshots / 实测证据路径}} |
+
+缺本节、`producedByContextInvolved: true`、或 `reviewerRef`/`packageDigest` 为空 ⇒ 不得出放行结论，Gate 记 `BLOCKED`（缺评审隔离证据）。
 
 ## 一、评审基线
 

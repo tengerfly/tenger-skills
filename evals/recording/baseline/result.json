@@ -2,9 +2,9 @@
   "schema": "tenger.eval-baseline/v1",
   "eval": "evals/recording/eval.yaml",
   "skill": "skill-optimizer",
-  "savedAt": "2026-10-19T00:48:51+08:00",
+  "savedAt": "2026-10-19T20:33:58+08:00",
   "anchors": {
-    "skillRevision": "sha256:b221147acf70e1ed9082196eea26ea7ab6b595f9d10051551858cd5f6e6b857b",
+    "skillRevision": "sha256:c0660c6ec6c834eca3301c75c1c2b14ebac213da01a3bbf7c14ef7ad4d7f2ba5",
     "casesVersion": "sha256:f72ee2292c2c1b8c1fdc290ef0e8ea54ce8ebdad31d2baf855f204e5808c0032",
     "engine": "structure-only",
     "model": "engine-default",

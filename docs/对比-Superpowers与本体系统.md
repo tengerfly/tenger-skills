@@ -82,6 +82,8 @@ R=5 → 逐条裁决 → 只有 load-bearing 的才继续问；其余「停靠�
 
 **对照你的体系**：评审者拿到的是整个会话 + 全部产物 + "找没闭环"的开放式职责。**开放职责 + 全量上下文 = 每轮都能发现新东西**，这正好解释原型评审第 3 轮还能报 93 个 P2。
 
+> 2026-10-19 已落地：新增 `shared/review-context-isolation.md`，7 个评审/审计 Skill 改为派发 fresh 评审子代理 + 只收评审包；报告 §0.5 记录隔离证据。见 §6.2。
+
 **借法**：评审输入必须是**闭合的包**（diff/产物 + 判据集 + 上轮 F1），不是"你去看吧"。
 
 ### ④ 技能即 TDD：写之前先看它怎么失败
@@ -162,9 +164,11 @@ R=5 → 逐条裁决 → 只有 load-bearing 的才继续问；其余「停靠�
 
 它只覆盖"有 spec + plan 之后怎么实现"。没有多端、多环境、发布、运维、事故、需求竞品研究。你的复杂度不是它想解决的问题，直接砍到 15 个会丢能力。
 
-### ✗ 依赖 subagent 作为唯一评审手段
+### ✗ 依赖 subagent 作为唯一评审手段（2026-10-19 已被用户要求覆盖，见 §6.2）
 
 它的评审几乎全靠"派一个新鲜 subagent"。宿主没有多 agent 时它降级成"自己读一遍"（`brainstorming/SKILL.md:176-177` 明说）。**你要求宿主无关，就不能把核心机制押在 subagent 上**——subagent 只能是增强路径。
+
+**2026-10-19 修订（用户要求）**：本仓把「评审上下文隔离」升为硬性规则——首选 fresh 子代理；无子代理能力走新会话；两者都无才 `BLOCKED`，不再降级成同上下文自审。宿主无关仍适用于非评审机制；评审独立性优先。
 
 ---
 
@@ -191,7 +195,7 @@ R=5 → 逐条裁决 → 只有 load-bearing 的才继续问；其余「停靠�
 | 2 | 3 轮后 → 例外登记 + BLOCKED | 3 轮后 → **逐条裁决 + 非关键项停靠 + 继续**；只把 load-bearing 拿出来问 | 以决定收尾，不以阻塞收尾 |
 | 3 | 判据三层（L1/L2/L3） | L3 的输入改成**闭合评审包**（diff/产物 + 判据 + 上轮 F1） | 开放职责 + 全量上下文 = 永远有新增 |
 | 4 | 行为评测留在 `evals/` 回归 | 挂到**"改 skill"这个动作**上，且强制 baseline（无技能必须失败） | 成本结构从回归变成工序 |
-| 5 | 宿主无关靠"文件+脚本" | 补 `hosts/<host>.md` 薄适配 + **核心机制不依赖 subagent** | subagent 只能是增强，不能是必需品 |
+| 5 | 宿主无关靠"文件+脚本" | 补 `hosts/<host>.md` 薄适配 + **核心机制不依赖 subagent**（2026-10-19 修订：评审隔离例外，见 §6.2） | subagent 只能是增强，不能是必需品；评审隔离除外 |
 
 **外加两条新判据类型**（原 J/M/D 不够用）：
 
@@ -224,6 +228,23 @@ R=5 → 逐条裁决 → 只有 load-bearing 的才继续问；其余「停靠�
 **回归待验**：真实项目跑一周，观察「非硬停提问数 / 工作单元」与「到 D3 的日历天」是否下降。**未验证前不声称这套改动有效。**
 
 **未动**：`prototype-review/references/legacy-skill.md`（带 LEGACY COMPATIBILITY NOTICE，按兼容策略只读）、`bug-fix` 的根因 Gate（链外，下一轮再议）、`skill-evolver` 的逐条确认（改的是体系自身规则，保留人工）。
+
+---
+
+### 6.2 已执行：评审上下文隔离硬性化（2026-10-19）
+
+用户要求：评审类 Skill 不得在产出该产物的同一上下文里自审；PRD 审核、UI 审核、代码审核等都要另派子 Agent。本轮落地：
+
+| 改动 | 文件 | 内容 |
+|---|---|---|
+| 新增公共契约 | `shared/review-context-isolation.md` | 适用范围（7 个评审/审计 Skill + 编排方）、铁律、评审包、L1 子代理 / L2 新会话 / L3 BLOCKED 阶梯、多评审单元派发计划、报告 §0.5 隔离记录、反模式 |
+| 新增包模板 | `shared/templates/review-package.md` | 只给产物 + 判据 + 输出契约；禁传产出过程/自检结论/猜测 |
+| 报告模板 | `shared/templates/review-summary-template.md` / `review-dimension-template.md` | 新增硬性 §0.5 评审上下文隔离记录；缺失 ⇒ Gate 只能 BLOCKED |
+| 7 个评审/审计 Skill | prd-review / prototype-review / ui-ux-review / fidelity-review / tech-review / code-review / quality-inspection | 新增隔离节与派发计划；原「条件允许时用 subagent」改为硬性；产出上下文只编排，评审判断在隔离子代理 |
+| 编排层 | `workflow/SKILL.md` §4、`PRD/prd-workflow/SKILL.md` 步骤 7/8、`Test/auto-test/SKILL.md` L2 | 评审节点 REQUIRED 派发隔离子代理；缺隔离记录 ⇒ BLOCKED；tsr 记 `--role review --actor subagent` |
+| 事实 | 本文件 §3「✗ 依赖 subagent」与 §5 表格第 5 行 | 标注 2026-10-19 修订：评审隔离优先于宿主无关；无子代理走新会话，均无才 BLOCKED，不再降级为同上下文自审 |
+
+**验收待补**：结构层校验（skill-contract/refs）通过；真实项目 fresh 子代理派发与「产出上下文不自审」行为验证待跑，未验证前不声称生效。
 
 ---
 
