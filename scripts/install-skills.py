@@ -1,34 +1,44 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""install-skills.py —— 跨平台 skill 安装 / 导出 / 漂移核对入口（Python 3.10+，仅标准库）。
+"""install-skills.py —— v4 skill 安装 / 导出 / 漂移核对入口（Python 3.10+，仅标准库）。
 
 为什么需要它
 ------------
-仓内原有的两份分发脚本都绑定 Windows 场景：sync-skills.sh 依赖 Git Bash + tar，
-link-skills.sh 依赖 Windows junction。要「在别的机器 / 别的 AI 宿主 / 别的项目里直接使用」
-这套 skill 体系，需要一个不依赖 shell、不依赖第三方包的标准入口。本脚本只用标准库，
-Windows / macOS / Linux 行为一致；不要求 PyYAML，frontmatter 只做最小解析（name 行）。
+v4 体系是「核心 10 Skill + shared 4 份 + issue 模板/loop-log」的轻骨架，要能在
+别的机器 / 别的 AI 宿主 / 别的项目里直接安装、核对、整包导出。入口只依赖 Python
+标准库，不依赖 shell、不依赖第三方包；Windows / macOS / Linux 行为一致；不要求
+PyYAML，frontmatter 只做最小解析（name 行）。
 
 它做什么
 --------
-1) 发现：从仓库根向下最多扫描两层目录里的 SKILL.md（根级 workflow/SKILL.md 与
-   <分类>/<skill>/SKILL.md 都覆盖），skill id 取 frontmatter 的 name:；与目录名不一致时
-   打印警告并以 frontmatter 为准。
-2) 拷贝安装（默认）：把每个 skill 目录拷到 <target>/<skill-id>/，并把仓库 shared/ 分发到
+1) 发现：从仓库根向下扫描深度 <= 2 的 SKILL.md（v4 实际为 skills/<id>/SKILL.md），
+   skill id 取 frontmatter 的 name:；与目录名不一致时打印警告并以 frontmatter 为准。
+   发现阶段排除 archive/ 与隐藏目录（.git/.venv/.tmp-v4 等），冻结区不会被安装。
+2) 范围（profile）：--profile core|all，默认 core。core 固定 10 个 id：workflow、
+   onboarding、requirements、tech-design、backend-dev、frontend-dev、auto-test、
+   review、acceptance、bug-fix；缺任一即报错 exit 1（防装出残骨架）。all = 仓内发现的
+   全部 skill。下面的拷贝/链接/核对/导出都只作用于当前 profile 选中的 skill。
+3) 拷贝安装（默认）：把每个 skill 目录拷到 <target>/<skill-id>/，并把仓库 shared/ 分发到
    三个落点：<target>/shared、<parent(target)>/shared、<target>/<skill-id>/shared。
-   三落点是为了让安装副本里任何深度的 shared 相对引用都可解析（判据见 shared/skill-contract.md 1.4）。
-3) 链接安装（--link）：不拷贝内容，直接把 <target>/<skill-id> 建为指向源仓 skill 目录的链接
+   三落点是为了让安装副本里 ../../shared/<file>.md 的相对引用可解析
+   （规则见 shared/skill-authoring.md §4）。
+4) 链接安装（--link）：不拷贝内容，直接把 <target>/<skill-id> 建为指向源仓 skill 目录的链接
    （Windows 用 junction，macOS/Linux 用符号链接）；<target>/shared 与 <parent(target)>/shared
    也链接到源仓 shared/。适合「本机/同文件系统上让宿主直接引用本仓」，源仓改完即时生效。
    --unlink 只删除确认指向本仓的链接，真实目录/文件与仓外链接一律保留。
-4) 核对：--check 只读比对安装副本与源仓。copy 模式比「文件集合 + sha256」，缺失/内容不一致/
+5) 核对：--check 只读比对安装副本与源仓。copy 模式比「文件集合 + sha256」，缺失/内容不一致/
    多余都算漂移；--link 模式校验每个落点是否指向源仓，缺失/指向错误/真实目录都算漂移；两者 exit 1。
-5) 导出：--export DIR 生成可整包带走的 self-contained 安装包：
+6) 导出：--export DIR 生成可整包带走的 self-contained 安装包：
    DIR/skills（skills 根） + DIR/shared（容器级 shared） + DIR/MANIFEST.json。
    导出后可直接用 --check --target DIR/skills 自检。链接不可移植，故 --link 与 --export 互斥。
 
-安装布局
---------
+安装布局（保留三落点）
+----------------------
+为什么要三落点：Skill 用 ../../shared/<file>.md 引用 shared（规则见 shared/skill-authoring.md §4），
+安装后从 <target>/<skill-id>/ 往上不一定能找到仓库源头，靠 <target>/shared 与
+<parent(target)>/shared 兜住；<target>/<skill-id>/shared 让 skill 目录自身也能解析。
+三落点缺一个，安装副本里的相对引用就会断。
+
     <target>/<skill-id>/SKILL.md         每个 skill 的入口与资源（copy=副本；--link=链接整个 skill 目录）
     <target>/<skill-id>/shared/          该 skill 目录内的 shared 副本（link 模式下由 skill 链接整体承接）
     <target>/shared/                     skills 根级 shared（link 模式=指向源仓 shared/ 的链接）
@@ -36,7 +46,7 @@ Windows / macOS / Linux 行为一致；不要求 PyYAML，frontmatter 只做最�
 
     <target> 是宿主的 skills 根，例如 ~/.dsh/skills、~/.qoder-cn/skills、~/.claude/skills。
     copy 模式若发现某 skill 落点已是 junction / 符号链接，会报 linked 跳过、绝不删除链接、
-    绝不往链接目标写文件（旧 sync-skills.sh 踩过的坑）。link 模式遇到真实目录/错误指向则报
+    绝不往链接目标写文件（旧分发脚本踩过的坑）。link 模式遇到真实目录/错误指向则报
     conflict 跳过，绝不删除真实内容。
 
 copy 还是 link（选择与风险）
@@ -48,8 +58,10 @@ copy 还是 link（选择与风险）
 
 用法
 ----
-    python scripts/install-skills.py --list
+    python scripts/install-skills.py --list                         # 默认 --profile core
+    python scripts/install-skills.py --list --profile all
     python scripts/install-skills.py --target ~/.dsh/skills --dry-run
+    python scripts/install-skills.py --target ~/.dsh/skills --profile all
     python scripts/install-skills.py --target ~/.dsh/skills
     python scripts/install-skills.py --target ~/.dsh/skills --target ~/.claude/skills
     python scripts/install-skills.py --check --target ~/.dsh/skills
@@ -100,11 +112,23 @@ SHARED_DIR = "shared"
 MANIFEST_NAME = "MANIFEST.json"
 GENERATOR = "scripts/install-skills.py"
 
-# 发现阶段的顶层排除目录（与任务口径一致；另有 startswith(".") 兜住 .git/.venv/.spec 等隐藏目录）
+# v4 安装范围：core = 固定核心 10 个（skills/ 下目录名，与 BRIEF §3 一致）；all = 仓内全部
+PROFILE_CORE = "core"
+PROFILE_ALL = "all"
+PROFILE_CHOICES = (PROFILE_CORE, PROFILE_ALL)
+DEFAULT_PROFILE = PROFILE_CORE
+CORE_SKILL_IDS = (
+    "workflow", "onboarding", "requirements", "tech-design", "backend-dev",
+    "frontend-dev", "auto-test", "review", "acceptance", "bug-fix",
+)
+CORE_PROFILE = frozenset(CORE_SKILL_IDS)
+
+# 发现阶段的顶层排除目录（v4 口径：archive/ 是冻结区，绝不安装；另有 startswith(".")
+# 兜住 .git/.venv/.tmp-v4 等隐藏目录）
 EXCLUDED_TOP_DIRS = frozenset({
-    ".git", ".venv", "node_modules", "__pycache__", ".spec", "docs", "evals", "issue",
-    "chats", "evolution", "bug-patterns", "governance", "scripts", "shared", "skill-knowledge",
-    "templates", ".tmp-eval", "dist", "coverage",
+    "archive", ".git", ".venv", "node_modules", "__pycache__", ".spec", "docs", "evals",
+    "issue", "chats", "evolution", "bug-patterns", "governance", "scripts", "shared",
+    "skill-knowledge", "templates", ".tmp-eval", "dist", "coverage",
 })
 # 拷贝 / 扫描文件树时排除的派生目录与文件（不随安装副本分发）
 EXCLUDED_DIR_NAMES = frozenset({".git", ".venv", "node_modules", "__pycache__", "dist", "coverage"})
@@ -127,7 +151,14 @@ GIT_SHA_PATTERN = re.compile(r"^[0-9a-fA-F]{40,64}$")
 FILE_ATTRIBUTE_REPARSE_POINT = getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0)
 DETAIL_LIMIT = 40
 
-USAGE_EPILOG = """安装布局（copy 模式=三落点，与 shared/skill-contract.md 1.4 一致）:
+USAGE_EPILOG = """profile:
+    core（默认）: 固定核心 10 个 skill id —— workflow onboarding requirements tech-design
+        backend-dev frontend-dev auto-test review acceptance bug-fix；缺任一即 exit 1。
+    all: 仓库内发现的全部 skill（发现阶段排除 archive/ 与隐藏目录）。
+    本次命令的拷贝/链接/核对/导出都只作用于 --profile 选中的 skill。
+
+安装布局（copy 模式=三落点，让安装后的 ../../shared/<file>.md 仍可解析；
+规则见 shared/skill-authoring.md §4）:
     <target>/<skill-id>/           copy=skill 自身文件副本；--link=junction/symlink（链接整个 skill 目录）
     <target>/<skill-id>/shared/    copy 模式下该 skill 目录内的 shared 副本（link 模式由 skill 链接整体承接）
     <target>/shared/               skills 根级 shared（link 模式=指向源仓 shared/ 的链接）
@@ -148,7 +179,9 @@ USAGE_EPILOG = """安装布局（copy 模式=三落点，与 shared/skill-contra
 
 示例:
     python scripts/install-skills.py --list
+    python scripts/install-skills.py --list --profile all
     python scripts/install-skills.py --target ~/.dsh/skills --dry-run
+    python scripts/install-skills.py --target ~/.dsh/skills --profile all
     python scripts/install-skills.py --target ~/.dsh/skills
     python scripts/install-skills.py --check --target ~/.dsh/skills
     python scripts/install-skills.py --link --target ~/.dsh/skills
@@ -200,7 +233,7 @@ class ScopePlan:
 
 @dataclass
 class TargetPlan:
-    """一个 --target 的完整核对计划：46 个 skill 目录 + 两个 shared 落点。"""
+    """一个 --target 的完整核对计划：当前 profile 的 skill 目录 + 两个 shared 落点。"""
 
     target: Path
     scopes: list[ScopePlan]
@@ -226,6 +259,8 @@ class SourceIndex:
     skill_files: dict[str, dict[str, FileEntry]]
     shared_files: dict[str, FileEntry]
     warnings: list[str]
+    profile: str = DEFAULT_PROFILE
+    total_skills: int = 0
 
 
 # ---------------------------------------------------------------------------
@@ -460,14 +495,39 @@ def discover_skills(root: Path) -> tuple[list[Skill], list[str]]:
     return sorted(found, key=lambda skill: skill.id), sorted(warnings)
 
 
-def build_source_index(root: Path | None = None) -> SourceIndex:
-    """建立源仓快照（哈希每份源文件一次，多个 target 复用）。"""
+def select_profile(skills: Sequence[Skill],
+                   profile: str) -> tuple[list[Skill], list[str], list[Skill]]:
+    """按 profile 过滤发现结果，返回 (选中的 skill, 缺失的核心 id, 未选中的其他 skill)。"""
+    by_id = {skill.id for skill in skills}
+    missing = [skill_id for skill_id in CORE_SKILL_IDS if skill_id not in by_id]
+    if profile == PROFILE_ALL:
+        return list(skills), missing, []
+    selected = [skill for skill in skills if skill.id in CORE_PROFILE]
+    others = [skill for skill in skills if skill.id not in CORE_PROFILE]
+    return selected, missing, others
+
+
+def build_source_index(root: Path | None = None,
+                       profile: str = DEFAULT_PROFILE) -> SourceIndex:
+    """建立源仓快照（哈希每份源文件一次，多个 target 复用；只哈希 profile 选中的 skill）。"""
     root = repo_root() if root is None else Path(root)
-    skills, warnings = discover_skills(root)
-    if not skills:
+    all_skills, warnings = discover_skills(root)
+    if not all_skills:
         raise InstallError(
-            "未在 {} 下发现任何 skill（期望 <skill>/SKILL.md 或 <分类>/<skill>/SKILL.md）；"
+            "未在 {} 下发现任何 skill（期望 skills/<id>/SKILL.md）；"
             "请确认在完整的仓库克隆里运行".format(root)
+        )
+    skills, missing, _others = select_profile(all_skills, profile)
+    if missing:
+        if profile == PROFILE_CORE:
+            raise InstallError(
+                "profile core 缺少核心 skill：{}（已有 {}/{}）；请补齐 skills/<id>/SKILL.md，"
+                "或改用 --profile all".format(
+                    ", ".join(missing), len(skills), len(CORE_SKILL_IDS))
+            )
+        warnings.append(
+            "核心 profile 缺少：{}（--profile core 会失败；当前 --profile all 仍可用）".format(
+                ", ".join(missing))
         )
     shared_root = root / SHARED_DIR
     if not shared_root.is_dir():
@@ -490,17 +550,31 @@ def build_source_index(root: Path | None = None) -> SourceIndex:
             raise InstallError("{} 在扫描后丢失 {}；请检查文件系统状态".format(skill.source, SKILL_ENTRY))
         skill_files[skill.id] = entries
     return SourceIndex(root=root, skills=skills, skill_files=skill_files,
-                       shared_files=shared_files, warnings=warnings)
+                       shared_files=shared_files, warnings=warnings,
+                       profile=profile, total_skills=len(all_skills))
 
 
-def build_link_index(root: Path | None = None) -> SourceIndex:
+def build_link_index(root: Path | None = None,
+                     profile: str = DEFAULT_PROFILE) -> SourceIndex:
     """链接/解链只需要发现结果与 shared 目录，不哈希文件（比 build_source_index 快）。"""
     root = repo_root() if root is None else Path(root)
-    skills, warnings = discover_skills(root)
-    if not skills:
+    all_skills, warnings = discover_skills(root)
+    if not all_skills:
         raise InstallError(
-            "未在 {} 下发现任何 skill（期望 <skill>/SKILL.md 或 <分类>/<skill>/SKILL.md）；"
+            "未在 {} 下发现任何 skill（期望 skills/<id>/SKILL.md）；"
             "请确认在完整的仓库克隆里运行".format(root)
+        )
+    skills, missing, _others = select_profile(all_skills, profile)
+    if missing:
+        if profile == PROFILE_CORE:
+            raise InstallError(
+                "profile core 缺少核心 skill：{}（已有 {}/{}）；请补齐 skills/<id>/SKILL.md，"
+                "或改用 --profile all".format(
+                    ", ".join(missing), len(skills), len(CORE_SKILL_IDS))
+            )
+        warnings.append(
+            "核心 profile 缺少：{}（--profile core 会失败；当前 --profile all 仍可用）".format(
+                ", ".join(missing))
         )
     if not (root / SHARED_DIR).is_dir():
         raise InstallError(
@@ -508,7 +582,7 @@ def build_link_index(root: Path | None = None) -> SourceIndex:
                 root / SHARED_DIR)
         )
     return SourceIndex(root=root, skills=skills, skill_files={}, shared_files={},
-                       warnings=warnings)
+                       warnings=warnings, profile=profile, total_skills=len(all_skills))
 
 
 # ---------------------------------------------------------------------------
@@ -843,6 +917,8 @@ def print_header(index: SourceIndex) -> None:
     print("源仓库：{}".format(index.root))
     revision = git_revision(index.root)
     print("源修订：{}".format(revision or "未知（非 git 工作树或未安装 git）"))
+    print("profile：{}（选中 {} 个 skill；仓库内共发现 {} 个）".format(
+        index.profile, len(index.skills), index.total_skills or len(index.skills)))
     if index.shared_files:
         print("发现 skill：{} 个；shared 文件：{} 个".format(
             len(index.skills), len(index.shared_files)))
@@ -945,24 +1021,30 @@ def print_link_check_landing(landing: LinkLanding) -> None:
 # 子命令实现
 # ---------------------------------------------------------------------------
 
-def _load_index() -> SourceIndex:
-    index = build_source_index(repo_root())
+def _load_index(args: argparse.Namespace) -> SourceIndex:
+    index = build_source_index(repo_root(), profile=args.profile)
     print_warnings(index)
     return index
 
 
-def _load_link_index() -> SourceIndex:
-    index = build_link_index(repo_root())
+def _load_link_index(args: argparse.Namespace) -> SourceIndex:
+    index = build_link_index(repo_root(), profile=args.profile)
     print_warnings(index)
     return index
 
 
 def cmd_list(args: argparse.Namespace) -> int:
-    index = _load_index()
+    index = _load_index(args)
     print("源仓库：{}".format(index.root))
     revision = git_revision(index.root)
     print("源修订：{}".format(revision or "未知（非 git 工作树或未安装 git）"))
-    print("发现 skill：{} 个（深度 <= 2 的 SKILL.md，已排除归档/评测/工具目录）".format(len(index.skills)))
+    if index.profile == PROFILE_ALL:
+        print("profile：all（{} 个 skill；核心 10 个 id 见 CORE_PROFILE）".format(len(index.skills)))
+    else:
+        print("profile：core（{}/{} 个 skill；--profile all 可看仓库内全部）".format(
+            len(index.skills), len(CORE_SKILL_IDS)))
+    print("发现 skill：{} 个（深度 <= 2 的 SKILL.md，已排除 archive/ 等非 skill 目录）".format(
+        len(index.skills)))
     width = max((len(skill.id) for skill in index.skills), default=8) + 2
     for skill in index.skills:
         print("  {}{}".format(skill.id.ljust(width), skill.rel_path))
@@ -988,7 +1070,7 @@ def cmd_list(args: argparse.Namespace) -> int:
 
 
 def cmd_install(args: argparse.Namespace) -> int:
-    index = _load_index()
+    index = _load_index(args)
     targets = resolve_targets(args.target)
     print_header(index)
     print_targets(targets, dry_run=args.dry_run)
@@ -1040,7 +1122,7 @@ def cmd_install(args: argparse.Namespace) -> int:
 
 
 def cmd_check(args: argparse.Namespace) -> int:
-    index = _load_index()
+    index = _load_index(args)
     targets = resolve_targets(args.target)
     print_header(index)
     print_targets(targets)
@@ -1069,7 +1151,7 @@ def cmd_check(args: argparse.Namespace) -> int:
 
 
 def cmd_export(args: argparse.Namespace) -> int:
-    index = _load_index()
+    index = _load_index(args)
     root = index.root
     destination = normalize_path(args.export)
     _assert_outside_repo(destination, root, "导出目录")
@@ -1102,6 +1184,7 @@ def cmd_export(args: argparse.Namespace) -> int:
         "generator": GENERATOR,
         "generatedAt": generated_at,
         "sourceRevision": revision,
+        "profile": index.profile,
         "skills": [skill.id for skill in index.skills],
     }
     manifest_path = destination / MANIFEST_NAME
@@ -1128,7 +1211,7 @@ def cmd_export(args: argparse.Namespace) -> int:
 
 
 def cmd_link_install(args: argparse.Namespace) -> int:
-    index = _load_link_index()
+    index = _load_link_index(args)
     targets = resolve_targets(args.target)
     print_header(index)
     print("模式：link（junction / 符号链接引用源仓；源仓工作区改动即时生效，无 commit 隔离）")
@@ -1180,7 +1263,7 @@ def cmd_link_install(args: argparse.Namespace) -> int:
 
 
 def cmd_link_check(args: argparse.Namespace) -> int:
-    index = _load_link_index()
+    index = _load_link_index(args)
     targets = resolve_targets(args.target)
     print_header(index)
     print("模式：link --check（只读；校验每个落点是否是指向源仓的正确链接）")
@@ -1230,7 +1313,7 @@ def cmd_link_check(args: argparse.Namespace) -> int:
 
 
 def cmd_unlink(args: argparse.Namespace) -> int:
-    index = _load_link_index()
+    index = _load_link_index(args)
     targets = resolve_targets(args.target)
     print_header(index)
     print("模式：unlink（只删除确认指向本仓的链接；真实目录/文件、仓外链接一律保留）")
@@ -1303,6 +1386,10 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--target", action="append", default=[], metavar="DIR",
         help="宿主 skills 根，可重复（如 ~/.dsh/skills）；安装/链接布局见下方说明",
+    )
+    parser.add_argument(
+        "--profile", choices=PROFILE_CHOICES, default=DEFAULT_PROFILE,
+        help="安装范围：core=固定核心 10 个 skill（默认）；all=仓库内发现的全部 skill",
     )
     parser.add_argument(
         "--dry-run", action="store_true",

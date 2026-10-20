@@ -1,0 +1,24 @@
+name: validate-lite
+
+# v4 唯一门禁：只跑 validate_lite + installer 冒烟（上限 5 秒级），不跑旧治理层。
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate-lite:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@v4
+      - name: 安装 Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: v4 骨架校验（结构/引用/问题卡/loop-log/模板/installer）
+        run: python scripts/validate_lite.py
+      - name: installer core 清单（应恰好 10 个 skill）
+        run: python scripts/install-skills.py --list --profile core
+      - name: installer dry-run 冒烟（不写盘）
+        run: python scripts/install-skills.py --target "$RUNNER_TEMP/skills" --profile core --dry-run
