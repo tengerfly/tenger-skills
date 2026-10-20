@@ -1,0 +1,72 @@
+  ✅ skill-optimizer/EV-XREF-001 passed 
+  ✅ skill-optimizer/EV-XREF-002 passed 
+  ✅ skill-optimizer/EV-XREF-003 passed 
+  ✅ skill-optimizer/EV-XREF-004 passed 
+  ✅ ui-ux-review/EV-DR-001 passed 
+  ✅ ui-ux-review/EV-DR-002 passed 
+  ✅ ui-ux-review/EV-DR-003 passed 
+  ✅ ui-ux-review/EV-DR-005 passed 
+  ✅ ui-ux-review/EV-DR-004 passed 
+  ✅ ui-ux-review/EV-DR-006 passed 
+  ✅ ui-ux-review/EV-DR-007 passed 
+  ⏸ fidelity-review/EV-FID-101 blocked 引擎未授权（需 TSR_ALLOW_ENGINE=1 显式开启，防止跑测试就在烧钱）
+  ⏸ frontend-tech-design/EV-FTDD-101 blocked 引擎未授权（需 TSR_ALLOW_ENGINE=1 显式开启，防止跑测试就在烧钱）
+  ⏸ frontend-tech-design/EV-FTDD-102 blocked 引擎未授权（需 TSR_ALLOW_ENGINE=1 显式开启，防止跑测试就在烧钱）
+  ⏸ frontend-tech-design/EV-FE-101 blocked 引擎未授权（需 TSR_ALLOW_ENGINE=1 显式开启，防止跑测试就在烧钱）
+  ⏸ frontend-tech-design/EV-FE-102 blocked 引擎未授权（需 TSR_ALLOW_ENGINE=1 显式开启，防止跑测试就在烧钱）
+  ⏸ frontend-tech-design/EV-FE-103 blocked 引擎未授权（需 TSR_ALLOW_ENGINE=1 显式开启，防止跑测试就在烧钱）
+  ⏸ frontend-tech-design/EV-FE-104 blocked 引擎未授权（需 TSR_ALLOW_ENGINE=1 显式开启，防止跑测试就在烧钱）
+  ✅ workflow/EV-GATE-001 passed 
+  ✅ workflow/EV-GATE-002 passed 
+  ✅ workflow/EV-GATE-003 passed 
+  ✅ workflow/EV-GATE-004 passed 
+  ✅ workflow/EV-GATE-005 passed 
+  ✅ workflow/EV-GATE-006 passed 
+  ✅ workflow/EV-GATE-007 passed 
+  ✅ workflow/EV-GATE-008 passed 
+  ✅ workflow/EV-GATE-009 passed 
+  ✅ workflow/EV-GATE-010 passed 
+  ✅ workflow/EV-GATE-011 passed 
+  ✅ workflow/EV-GATE-012 passed 
+  ✅ workflow/EV-GATE-013 passed 
+  ✅ workflow/EV-GATE-014 passed 
+  ✅ workflow/EV-GATE-015 passed 
+  ✅ workflow/EV-GATE-016 passed 
+  ✅ workflow/EV-GATE-017 passed 
+  ✅ workflow/EV-GATE-018 passed 
+  ✅ workflow/EV-GATE-019 passed 
+  ⏸ workflow/EV-GATE-101 blocked 引擎未授权（需 TSR_ALLOW_ENGINE=1 显式开启，防止跑测试就在烧钱）
+  ⏸ workflow/EV-GATE-102 blocked 引擎未授权（需 TSR_ALLOW_ENGINE=1 显式开启，防止跑测试就在烧钱）
+  ⏸ workflow/EV-GATE-103 blocked 引擎未授权（需 TSR_ALLOW_ENGINE=1 显式开启，防止跑测试就在烧钱）
+  ⏸ workflow/EV-GATE-104 blocked 引擎未授权（需 TSR_ALLOW_ENGINE=1 显式开启，防止跑测试就在烧钱）
+  ✅ workflow/EV-GATE-020 passed 
+  ✅ workflow/EV-GATE-021 passed 
+  ⏸ prd-design/EV-PRD-101 blocked 引擎未授权（需 TSR_ALLOW_ENGINE=1 显式开启，防止跑测试就在烧钱）
+  ⏸ prd-design/EV-PRD-102 blocked 引擎未授权（需 TSR_ALLOW_ENGINE=1 显式开启，防止跑测试就在烧钱）
+  ⏸ prd-design/EV-PRD-103 blocked 引擎未授权（需 TSR_ALLOW_ENGINE=1 显式开启，防止跑测试就在烧钱）
+  ⏸ prototype-review/EV-PTREV-101 blocked 引擎未授权（需 TSR_ALLOW_ENGINE=1 显式开启，防止跑测试就在烧钱）
+  ✅ skill-optimizer/EV-REC-001 passed 
+  ✅ skill-optimizer/EV-REC-002 passed 
+  ✅ skill-optimizer/EV-REC-003 passed 
+  ✅ skill-optimizer/EV-REC-004 passed 
+  ✅ skill-optimizer/EV-REC-005 passed 
+  ✅ skill-optimizer/EV-REC-006 passed 
+  ⏸ skill-optimizer/EV-SOPT-101 blocked 引擎未授权（需 TSR_ALLOW_ENGINE=1 显式开启，防止跑测试就在烧钱）
+  ✅ backend-tech-design/EV-TDD-001 passed 
+  ✅ backend-tech-design/EV-TDD-002 passed 
+  ✅ backend-tech-design/EV-TDD-003 passed 
+  ⏸ backend-tech-design/EV-TDD-101 blocked 引擎未授权（需 TSR_ALLOW_ENGINE=1 显式开启，防止跑测试就在烧钱）
+  ⏸ backend-tech-design/EV-TDD-102 blocked 引擎未授权（需 TSR_ALLOW_ENGINE=1 显式开启，防止跑测试就在烧钱）
+  ⏸ backend-tech-design/EV-TDD-103 blocked 引擎未授权（需 TSR_ALLOW_ENGINE=1 显式开启，防止跑测试就在烧钱）
+  ⏸ tech-review/EV-TR-101 blocked 引擎未授权（需 TSR_ALLOW_ENGINE=1 显式开启，防止跑测试就在烧钱）
+  ✅ workflow/EV-WF-001 passed 
+  ✅ workflow/EV-WF-002 passed 
+  ✅ workflow/EV-WF-003 passed 
+  ✅ workflow/EV-WF-004 passed 
+  ✅ workflow/EV-WF-005 passed 
+  ✅ workflow/EV-WF-006 passed 
+评测 67 条：过 47 ｜ 败 0 ｜ 错 0 ｜ 待引擎 20 ｜ 引擎实耗 token 0
+L2 回流执法：P0/P1 已闭环 28 条 ｜ 已回流 28 条（结构层 10｜仅行为层 18，结论见行为层台账） ｜ 缺回流 0 条 ｜ 悬空引用 0 条 ｜ 判不了 4 条（详单 `python scripts/eval/relay.py`；缺回流即红，不影响上面的用例计数）
+L2 分诊核对：缺回流中已分诊 0 条 ｜ 未分诊 0 条（未分诊即红）｜ 名单过期 1 条（过期只报数，不惩罚进展）
+报告 → .spec/obs/eval-report.json
+行为层台账追加 20 条 → .spec/obs/behaviour-runs.jsonl（append-only 真相，入库；报告覆写抹不掉它）

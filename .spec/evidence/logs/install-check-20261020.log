@@ -1,0 +1,185 @@
+﻿== copy --check : dsh -> C:\Users\15136\.dsh\skills
+源仓库：D:\project\agent-project\tenger-skills
+源修订：47d69082597ddb90f52b38e4525b50d6de300e6b
+发现 skill：45 个；shared 文件：42 个
+目标（1 个）：
+  - C:\Users\15136\.dsh\skills
+
+== C:\Users\15136\.dsh\skills
+   核对：new=0 updated=0 unchanged=2461 stale=0 drift=0 linked=0 errors=0
+   RESULT: PASS
+
+合计：new=0 updated=0 unchanged=2461 stale=0 drift=0 linked=0 errors=0
+RESULT: PASS（安装副本与源仓一致）
+EXIT=0
+== copy --check : qoder-cn -> C:\Users\15136\.qoder-cn\skills
+源仓库：D:\project\agent-project\tenger-skills
+源修订：47d69082597ddb90f52b38e4525b50d6de300e6b
+发现 skill：45 个；shared 文件：42 个
+目标（1 个）：
+  - C:\Users\15136\.qoder-cn\skills
+
+== C:\Users\15136\.qoder-cn\skills
+   核对：new=0 updated=0 unchanged=162 stale=0 drift=0 linked=46 errors=0
+   链接跳过：46 个落点（junction/符号链接，不核对、不写入）
+   RESULT: PASS
+
+合计：new=0 updated=0 unchanged=162 stale=0 drift=0 linked=46 errors=0
+RESULT: PASS（安装副本与源仓一致）
+EXIT=0
+== copy --check : zcode -> C:\Users\15136\.zcode\skills
+源仓库：D:\project\agent-project\tenger-skills
+源修订：47d69082597ddb90f52b38e4525b50d6de300e6b
+发现 skill：45 个；shared 文件：42 个
+目标（1 个）：
+  - C:\Users\15136\.zcode\skills
+
+== C:\Users\15136\.zcode\skills
+   核对：new=0 updated=0 unchanged=2419 stale=0 drift=0 linked=1 errors=0
+   链接跳过：1 个落点（junction/符号链接，不核对、不写入）
+   RESULT: PASS
+
+合计：new=0 updated=0 unchanged=2419 stale=0 drift=0 linked=1 errors=0
+RESULT: PASS（安装副本与源仓一致）
+EXIT=0
+== copy --check : codebuddy -> C:\Users\15136\.codebuddy\skills
+源仓库：D:\project\agent-project\tenger-skills
+源修订：47d69082597ddb90f52b38e4525b50d6de300e6b
+发现 skill：45 个；shared 文件：42 个
+目标（1 个）：
+  - C:\Users\15136\.codebuddy\skills
+
+== C:\Users\15136\.codebuddy\skills
+   核对：new=0 updated=0 unchanged=2461 stale=0 drift=0 linked=0 errors=0
+   RESULT: PASS
+
+合计：new=0 updated=0 unchanged=2461 stale=0 drift=0 linked=0 errors=0
+RESULT: PASS（安装副本与源仓一致）
+EXIT=0
+== copy --check : codex -> C:\Users\15136\.codex\skills
+源仓库：D:\project\agent-project\tenger-skills
+源修订：47d69082597ddb90f52b38e4525b50d6de300e6b
+发现 skill：45 个；shared 文件：42 个
+目标（1 个）：
+  - C:\Users\15136\.codex\skills
+
+== C:\Users\15136\.codex\skills
+   核对：new=0 updated=0 unchanged=2461 stale=0 drift=0 linked=0 errors=0
+   RESULT: PASS
+
+合计：new=0 updated=0 unchanged=2461 stale=0 drift=0 linked=0 errors=0
+RESULT: PASS（安装副本与源仓一致）
+EXIT=0
+== copy --check : claude -> C:\Users\15136\.claude\skills
+源仓库：D:\project\agent-project\tenger-skills
+源修订：47d69082597ddb90f52b38e4525b50d6de300e6b
+发现 skill：45 个；shared 文件：42 个
+目标（1 个）：
+  - C:\Users\15136\.claude\skills
+
+== C:\Users\15136\.claude\skills
+   核对：new=0 updated=0 unchanged=2461 stale=0 drift=0 linked=0 errors=0
+   RESULT: PASS
+
+合计：new=0 updated=0 unchanged=2461 stale=0 drift=0 linked=0 errors=0
+RESULT: PASS（安装副本与源仓一致）
+EXIT=0
+== link --check : qoder-cn
+源仓库：D:\project\agent-project\tenger-skills
+源修订：47d69082597ddb90f52b38e4525b50d6de300e6b
+发现 skill：45 个；shared 目录：D:\project\agent-project\tenger-skills\shared
+模式：link --check（只读；校验每个落点是否是指向源仓的正确链接）
+目标（1 个）：
+  - C:\Users\15136\.qoder-cn\skills
+
+== C:\Users\15136\.qoder-cn\skills
+   [drift]      frontend-dev：目标是真实目录（不是链接，不删除）
+   核对：ok=46 drift=1
+   RESULT: DRIFT(1)；修复：python scripts/install-skills.py --link --target C:\Users\15136\.qoder-cn\skills
+
+合计：ok=46 drift=1
+RESULT: DRIFT(1)；link 模式核对未通过
+EXIT=1
+== link --check : zcode
+源仓库：D:\project\agent-project\tenger-skills
+源修订：47d69082597ddb90f52b38e4525b50d6de300e6b
+发现 skill：45 个；shared 目录：D:\project\agent-project\tenger-skills\shared
+模式：link --check（只读；校验每个落点是否是指向源仓的正确链接）
+目标（1 个）：
+  - C:\Users\15136\.zcode\skills
+
+== C:\Users\15136\.zcode\skills
+   [drift]      application-blueprint：目标是真实目录（不是链接，不删除）
+   [drift]      auto-test：目标是真实目录（不是链接，不删除）
+   [drift]      backend-dev：目标是真实目录（不是链接，不删除）
+   [drift]      backend-tech-design：目标是真实目录（不是链接，不删除）
+   [drift]      bug-fix：目标是真实目录（不是链接，不删除）
+   [drift]      change-intake：目标是真实目录（不是链接，不删除）
+   [drift]      code-review：目标是真实目录（不是链接，不删除）
+   [drift]      competitive-analysis：目标是真实目录（不是链接，不删除）
+   [drift]      defect-triage：目标是真实目录（不是链接，不删除）
+   [drift]      deployment-execution：目标是真实目录（不是链接，不删除）
+   [drift]      essence-distill：目标是真实目录（不是链接，不删除）
+   [drift]      fact-check：目标是真实目录（不是链接，不删除）
+   [drift]      feature-decision：目标是真实目录（不是链接，不删除）
+   [drift]      fidelity-review：目标是真实目录（不是链接，不删除）
+   [drift]      frontend-dev：目标是真实目录（不是链接，不删除）
+   [drift]      frontend-tech-design：目标是真实目录（不是链接，不删除）
+   [drift]      idea-intake：目标是真实目录（不是链接，不删除）
+   [drift]      impact-analysis：目标是真实目录（不是链接，不删除）
+   [drift]      incident-response：目标是真实目录（不是链接，不删除）
+   [drift]      optimization-planning：目标是真实目录（不是链接，不删除）
+   [drift]      oss-radar：目标是真实目录（不是链接，不删除）
+   [drift]      post-release-review：目标是真实目录（不是链接，不删除）
+   [drift]      prd-design：目标是真实目录（不是链接，不删除）
+   [drift]      prd-review：目标是真实目录（不是链接，不删除）
+   [drift]      prd-workflow：目标是真实目录（不是链接，不删除）
+   [drift]      product-analytics：目标是真实目录（不是链接，不删除）
+   [drift]      product-definition：目标是真实目录（不是链接，不删除）
+   [drift]      product-discovery：目标是真实目录（不是链接，不删除）
+   [drift]      project-onboarding：目标是真实目录（不是链接，不删除）
+   [drift]      prototype-design：目标是真实目录（不是链接，不删除）
+   [drift]      prototype-review：目标是真实目录（不是链接，不删除）
+   [drift]      quality-inspection：目标是真实目录（不是链接，不删除）
+   [drift]      refactor-planning：目标是真实目录（不是链接，不删除）
+   [drift]      release-planning：目标是真实目录（不是链接，不删除）
+   [drift]      release-verification：目标是真实目录（不是链接，不删除）
+   [drift]      signal-collection：目标是真实目录（不是链接，不删除）
+   [drift]      signal-triage：目标是真实目录（不是链接，不删除）
+   [drift]      skill-evolver：目标是真实目录（不是链接，不删除）
+   [drift]      skill-lifecycle：目标是真实目录（不是链接，不删除）
+   [drift]      skill-optimizer：目标是真实目录（不是链接，不删除）
+   ... 其余 6 条差异未列出（加 --verbose 查看全部）
+   核对：ok=1 drift=46
+   RESULT: DRIFT(46)；修复：python scripts/install-skills.py --link --target C:\Users\15136\.zcode\skills
+
+合计：ok=1 drift=46
+RESULT: DRIFT(46)；link 模式核对未通过
+EXIT=1
+== export self-check ==
+源仓库：D:\project\agent-project\tenger-skills
+源修订：47d69082597ddb90f52b38e4525b50d6de300e6b
+发现 skill：45 个；shared 文件：42 个
+导出目录：C:\Users\15136\AppData\Local\Temp\tenger-pack-final-1020
+
+导出完成：C:\Users\15136\AppData\Local\Temp\tenger-pack-final-1020
+  skills 根：C:\Users\15136\AppData\Local\Temp\tenger-pack-final-1020\skills
+  容器级 shared：C:\Users\15136\AppData\Local\Temp\tenger-pack-final-1020\shared
+  MANIFEST：C:\Users\15136\AppData\Local\Temp\tenger-pack-final-1020\MANIFEST.json
+  写入 2461 个文件；自检 PASS（--check 口径 drift=0）
+  核对命令：python scripts/install-skills.py --check --target "C:\Users\15136\AppData\Local\Temp\tenger-pack-final-1020\skills"
+  用法：把 tenger-pack-final-1020 整个目录拷到别的机器，或把其中的 skills 拷进宿主 skills 根
+EXPORT_EXIT=0
+源仓库：D:\project\agent-project\tenger-skills
+源修订：47d69082597ddb90f52b38e4525b50d6de300e6b
+发现 skill：45 个；shared 文件：42 个
+目标（1 个）：
+  - C:\Users\15136\AppData\Local\Temp\tenger-pack-final-1020\skills
+
+== C:\Users\15136\AppData\Local\Temp\tenger-pack-final-1020\skills
+   核对：new=0 updated=0 unchanged=2461 stale=0 drift=0 linked=0 errors=0
+   RESULT: PASS
+
+合计：new=0 updated=0 unchanged=2461 stale=0 drift=0 linked=0 errors=0
+RESULT: PASS（安装副本与源仓一致）
+SELFCHECK_EXIT=0
